@@ -10,8 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/jobsapi/ent/job"
-	"github.com/10hourlabs/jobsapi/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/google/uuid"
 )
 

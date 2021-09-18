@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/jobsapi/ent/job"
+	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/google/uuid"
 )
 

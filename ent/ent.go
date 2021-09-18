@@ -8,7 +8,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/jobsapi/ent/job"
+	"github.com/10hourlabs/tentn/ent/job"
 )
 
 // ent aliases to avoid import conflicts in user's code.

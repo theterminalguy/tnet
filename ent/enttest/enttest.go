@@ -5,9 +5,9 @@ package enttest
 import (
 	"context"
 
-	"github.com/10hourlabs/jobsapi/ent"
+	"github.com/10hourlabs/tentn/ent"
 	// required by schema hooks.
-	_ "github.com/10hourlabs/jobsapi/ent/runtime"
+	_ "github.com/10hourlabs/tentn/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
 )

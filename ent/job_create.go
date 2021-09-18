@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/jobsapi/ent/job"
+	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/google/uuid"
 )
 

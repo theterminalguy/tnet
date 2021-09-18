@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/10hourlabs/jobsapi/ent"
+	"github.com/10hourlabs/tentn/ent"
 )
 
 // The JobFunc type is an adapter to allow the use of ordinary

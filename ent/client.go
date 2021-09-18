@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/10hourlabs/jobsapi/ent/migrate"
+	"github.com/10hourlabs/tentn/ent/migrate"
 
-	"github.com/10hourlabs/jobsapi/ent/job"
+	"github.com/10hourlabs/tentn/ent/job"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"

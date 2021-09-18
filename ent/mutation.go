@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/10hourlabs/jobsapi/ent/job"
-	"github.com/10hourlabs/jobsapi/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/google/uuid"
 
 	"entgo.io/ent"

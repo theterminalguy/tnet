@@ -5,8 +5,8 @@ package ent
 import (
 	"time"
 
-	"github.com/10hourlabs/jobsapi/ent/job"
-	"github.com/10hourlabs/jobsapi/ent/schema"
+	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/schema"
 	"github.com/google/uuid"
 )
 
