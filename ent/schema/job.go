@@ -3,6 +3,7 @@ package schema
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // Job holds the schema definition for the Job entity.
@@ -26,7 +27,8 @@ func (Job) Fields() []ent.Field {
 
 		field.String("title"),
 
-		field.String("slug"),
+		field.String("slug").
+			Unique(),
 
 		field.String("location").
 			Default("Remote, Earth"),
@@ -34,10 +36,10 @@ func (Job) Fields() []ent.Field {
 		field.String("summary"),
 
 		field.Enum("employment").
-			Values("Part Time", "Full Time", "Contract"),
+			Values("Part-Time", "Full-Time", "Contract"),
 
 		field.Enum("category").
-			Values("Engineering", "Product & Design"),
+			Values("Engineering", "Product & Design", "Sales & Marketing"),
 
 		field.String("thumbnail"),
 
@@ -46,6 +48,16 @@ func (Job) Fields() []ent.Field {
 		field.JSON("requirements", []string{}),
 
 		field.JSON("youhave", []string{}),
+	}
+}
+
+// Indexes for the Job
+func (Job) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("title"),
+
+		index.Fields("slug").
+			Unique(),
 	}
 }
 

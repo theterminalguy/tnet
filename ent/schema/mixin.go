@@ -5,6 +5,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 	"github.com/google/uuid"
 )
@@ -35,6 +36,14 @@ type UUIDMixin struct {
 func (UUIDMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("uuid", uuid.UUID{}).
+			Unique().
 			Default(uuid.New),
+	}
+}
+
+func (UUIDMixin) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("uuid").
+			Unique(),
 	}
 }
