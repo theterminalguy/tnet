@@ -35,9 +35,11 @@ func (Job) Fields() []ent.Field {
 
 		field.String("summary"),
 
+		// TODO: Add endpoint for returning these values
 		field.Enum("employment").
 			Values("part_time", "full_time", "contract"),
 
+		// TODO: Add endpoint for returning these values
 		field.Enum("category").
 			Values("engineering", "product_design", "sales", "marketing"),
 
