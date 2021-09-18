@@ -65,37 +65,3 @@ func (Job) Indexes() []ent.Index {
 func (Job) Edges() []ent.Edge {
 	return nil
 }
-
-type JobCategory string
-
-// List of valid Job Category enum
-const (
-	Sales JobCategory = "Sales"
-	Design JobCategory = "Design"
-	Product JobCategory = "Product"
-	Marketing JobCategory = "Marketing"
-	Engineering JobCategory = "Engineering"
-)
-
-func (JobCategory) Values (categories []string) {
-	for _, c := range []JobCategory{Sales, Design, Product, Marketing, Engineering} {
-		categories = append(categories, string(c))
-	}
-	return
-}
-
-type Employment string
-
-// List of valid Employment enum
-const (
-	PartTime Employment = "Part-Time"
-	FullTime Employment = "Full-Time"
-	Contract Employment = "Contract"
-)
-
-func (Employment) Values (employments []string) {
-	for _, e := range []Employment{PartTime, FullTime, Contract} {
-		employments = append(employments, string(e))
-	}
-	return
-}
