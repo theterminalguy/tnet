@@ -1,11 +1,8 @@
 package schema
 
 import (
-	"time"
-
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 )
 
 // Job holds the schema definition for the Job entity.
@@ -13,20 +10,17 @@ type Job struct {
 	ent.Schema
 }
 
+// Mixins for the Job
+func (Job) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		UUIDMixin{},
+		TimeStampMixin{},
+	}
+}
+
 // Fields of the Job.
 func (Job) Fields() []ent.Field {
 	return []ent.Field{
-		field.UUID("uuid", uuid.UUID{}).
-			Default(uuid.New),
-	
-		field.Time("created_at").
-			Default(time.Now),
-
-		field.Time("updated_at").
-			Default(time.Now),
-		
-		field.Time("deleted_at"),
-
 		field.Bool("hiring").
 			Default(false),
 
