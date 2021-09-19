@@ -1,4 +1,4 @@
-.PHONY: help
+.PHONY: help generate init-schema
 .DEFAULT_GOAL: help
 
 default: help
@@ -10,3 +10,10 @@ help: ## Output available commands
 
 generate: ## Generate ent Assests
 	@go generate ./ent
+
+init-schema: ## Initialize a new schema
+ifdef name
+	@go run entgo.io/ent/cmd/ent init $$name
+else
+	@echo "Usage: make init-schema name=SchemaName" && exit 64
+endif
