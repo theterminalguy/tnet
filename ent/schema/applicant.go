@@ -4,8 +4,9 @@ import (
 	"crypto/rand"
 	"fmt"
 
-	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
+
+	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 )
@@ -36,7 +37,7 @@ func (Applicant) Fields() []ent.Field {
 
 		field.Int("referrer_id").
 			Optional(),
-		
+
 		field.String("referral_code").
 			Default("NULL").
 			Immutable(),
@@ -47,6 +48,7 @@ func (Applicant) Fields() []ent.Field {
 				b := make([]byte, 5)
 				if _, err := rand.Read(b); err != nil {
 					// TODO: log error to external service
+					// before going live ensure you aren't panicing
 					panic(err)
 				}
 				code = fmt.Sprintf("%X", b)
@@ -85,7 +87,8 @@ func (Applicant) Indexes() []ent.Index {
 // Edges of the Applicant.
 func (Applicant) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("referral", Applicant.Type).
+		edge.To("referees", Applicant.Type).
+			From("referrer").
 			Unique().
 			Field("referrer_id"),
 	}
