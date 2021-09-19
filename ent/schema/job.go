@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"github.com/10hourlabs/tentn/oneword"
@@ -83,5 +84,7 @@ func (Job) Indexes() []ent.Index {
 
 // Edges of the Job.
 func (Job) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.To(oneword.Applications, JobApplication.Type),
+	}
 }
