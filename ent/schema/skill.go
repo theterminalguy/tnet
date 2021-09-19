@@ -2,7 +2,6 @@ package schema
 
 import (
 	"entgo.io/ent"
-	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 )
@@ -17,6 +16,12 @@ func (Skill) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		UUIDMixin{},
 		TimeStampMixin{},
+		BelongsToMixin{
+			ParentName: "applicant",
+			ParentType: Applicant.Type,
+			Ref:        "skills",
+			ForeignKey: "applicant_id",
+		},
 	}
 }
 
@@ -30,26 +35,19 @@ func (Skill) Fields() []ent.Field {
 
 		field.Bool("preferred").
 			Default(false),
-		
+
 		field.Text("note"),
-		
-		field.Int("applicant_id"),
 	}
 }
 
 // Indexes for SKill
 func (Skill) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("name", "applicant_id"),
+		index.Fields("name"),
 	}
 }
 
 // Edges of the Skill.
 func (Skill) Edges() []ent.Edge {
-	return []ent.Edge{
-		edge.From("applicant", Applicant.Type).
-			Ref("skills").
-			Unique().
-			Field("applicant_id"),
-	}
+	return nil
 }
