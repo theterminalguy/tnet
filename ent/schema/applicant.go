@@ -93,5 +93,7 @@ func (Applicant) Edges() []ent.Edge {
 			Field("referrer_id"),
 		
 		edge.To("portfoliolinks", PortfolioLink.Type),
+
+		edge.To("skills", Skill.Type),
 	}
 }
