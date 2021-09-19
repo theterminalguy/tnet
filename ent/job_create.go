@@ -10,7 +10,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/jobsapi/ent/job"
+	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/google/uuid"
 )
 
@@ -133,9 +134,9 @@ func (jc *JobCreate) SetThumbnail(s string) *JobCreate {
 	return jc
 }
 
-// SetWehave sets the "wehave" field.
-func (jc *JobCreate) SetWehave(s []string) *JobCreate {
-	jc.mutation.SetWehave(s)
+// SetWeHave sets the "we_have" field.
+func (jc *JobCreate) SetWeHave(s []string) *JobCreate {
+	jc.mutation.SetWeHave(s)
 	return jc
 }
 
@@ -145,10 +146,25 @@ func (jc *JobCreate) SetRequirements(s []string) *JobCreate {
 	return jc
 }
 
-// SetYouhave sets the "youhave" field.
-func (jc *JobCreate) SetYouhave(s []string) *JobCreate {
-	jc.mutation.SetYouhave(s)
+// SetYouHave sets the "you_have" field.
+func (jc *JobCreate) SetYouHave(s []string) *JobCreate {
+	jc.mutation.SetYouHave(s)
 	return jc
+}
+
+// AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
+func (jc *JobCreate) AddApplicationIDs(ids ...int) *JobCreate {
+	jc.mutation.AddApplicationIDs(ids...)
+	return jc
+}
+
+// AddApplications adds the "applications" edges to the JobApplication entity.
+func (jc *JobCreate) AddApplications(j ...*JobApplication) *JobCreate {
+	ids := make([]int, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return jc.AddApplicationIDs(ids...)
 }
 
 // Mutation returns the JobMutation object of the builder.
@@ -296,14 +312,14 @@ func (jc *JobCreate) check() error {
 	if _, ok := jc.mutation.Thumbnail(); !ok {
 		return &ValidationError{Name: "thumbnail", err: errors.New(`ent: missing required field "thumbnail"`)}
 	}
-	if _, ok := jc.mutation.Wehave(); !ok {
-		return &ValidationError{Name: "wehave", err: errors.New(`ent: missing required field "wehave"`)}
+	if _, ok := jc.mutation.WeHave(); !ok {
+		return &ValidationError{Name: "we_have", err: errors.New(`ent: missing required field "we_have"`)}
 	}
 	if _, ok := jc.mutation.Requirements(); !ok {
 		return &ValidationError{Name: "requirements", err: errors.New(`ent: missing required field "requirements"`)}
 	}
-	if _, ok := jc.mutation.Youhave(); !ok {
-		return &ValidationError{Name: "youhave", err: errors.New(`ent: missing required field "youhave"`)}
+	if _, ok := jc.mutation.YouHave(); !ok {
+		return &ValidationError{Name: "you_have", err: errors.New(`ent: missing required field "you_have"`)}
 	}
 	return nil
 }
@@ -428,13 +444,13 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 		})
 		_node.Thumbnail = value
 	}
-	if value, ok := jc.mutation.Wehave(); ok {
+	if value, ok := jc.mutation.WeHave(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: job.FieldWehave,
+			Column: job.FieldWeHave,
 		})
-		_node.Wehave = value
+		_node.WeHave = value
 	}
 	if value, ok := jc.mutation.Requirements(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -444,13 +460,32 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 		})
 		_node.Requirements = value
 	}
-	if value, ok := jc.mutation.Youhave(); ok {
+	if value, ok := jc.mutation.YouHave(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: job.FieldYouhave,
+			Column: job.FieldYouHave,
 		})
-		_node.Youhave = value
+		_node.YouHave = value
+	}
+	if nodes := jc.mutation.ApplicationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   job.ApplicationsTable,
+			Columns: []string{job.ApplicationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: jobapplication.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

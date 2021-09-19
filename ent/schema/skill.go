@@ -1,0 +1,54 @@
+package schema
+
+import (
+	"entgo.io/ent"
+	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
+	"github.com/10hourlabs/tentn/oneword"
+)
+
+// Skill holds the schema definition for the Skill entity.
+type Skill struct {
+	ent.Schema
+}
+
+// Mixins for Skill
+func (Skill) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		UUIDMixin{},
+		TimeStampMixin{},
+		BelongsToMixin{
+			ParentName: oneword.Applicant,
+			ParentType: Applicant.Type,
+			Ref:        oneword.Skills,
+			ForeignKey: oneword.ApplicantID,
+		},
+	}
+}
+
+// Fields of the Skill.
+func (Skill) Fields() []ent.Field {
+	return []ent.Field{
+		field.String(oneword.Name),
+
+		field.Float32(oneword.YearsOfExperience).
+			Min(1.0),
+
+		field.Bool(oneword.Preferred).
+			Default(false),
+
+		field.Text(oneword.Note),
+	}
+}
+
+// Indexes for SKill
+func (Skill) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields(oneword.Name),
+	}
+}
+
+// Edges of the Skill.
+func (Skill) Edges() []ent.Edge {
+	return nil
+}

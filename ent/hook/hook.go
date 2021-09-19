@@ -6,8 +6,21 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/10hourlabs/jobsapi/ent"
+	"github.com/10hourlabs/tentn/ent"
 )
+
+// The ApplicantFunc type is an adapter to allow the use of ordinary
+// function as Applicant mutator.
+type ApplicantFunc func(context.Context, *ent.ApplicantMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ApplicantFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ApplicantMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ApplicantMutation", m)
+	}
+	return f(ctx, mv)
+}
 
 // The JobFunc type is an adapter to allow the use of ordinary
 // function as Job mutator.
@@ -18,6 +31,45 @@ func (f JobFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) 
 	mv, ok := m.(*ent.JobMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.JobMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The JobApplicationFunc type is an adapter to allow the use of ordinary
+// function as JobApplication mutator.
+type JobApplicationFunc func(context.Context, *ent.JobApplicationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f JobApplicationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.JobApplicationMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.JobApplicationMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The PortfolioLinkFunc type is an adapter to allow the use of ordinary
+// function as PortfolioLink mutator.
+type PortfolioLinkFunc func(context.Context, *ent.PortfolioLinkMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PortfolioLinkFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.PortfolioLinkMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PortfolioLinkMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The SkillFunc type is an adapter to allow the use of ordinary
+// function as Skill mutator.
+type SkillFunc func(context.Context, *ent.SkillMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SkillFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.SkillMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SkillMutation", m)
 	}
 	return f(ctx, mv)
 }

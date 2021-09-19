@@ -38,14 +38,23 @@ const (
 	FieldCategory = "category"
 	// FieldThumbnail holds the string denoting the thumbnail field in the database.
 	FieldThumbnail = "thumbnail"
-	// FieldWehave holds the string denoting the wehave field in the database.
-	FieldWehave = "wehave"
+	// FieldWeHave holds the string denoting the we_have field in the database.
+	FieldWeHave = "we_have"
 	// FieldRequirements holds the string denoting the requirements field in the database.
 	FieldRequirements = "requirements"
-	// FieldYouhave holds the string denoting the youhave field in the database.
-	FieldYouhave = "youhave"
+	// FieldYouHave holds the string denoting the you_have field in the database.
+	FieldYouHave = "you_have"
+	// EdgeApplications holds the string denoting the applications edge name in mutations.
+	EdgeApplications = "applications"
 	// Table holds the table name of the job in the database.
 	Table = "jobs"
+	// ApplicationsTable is the table that holds the applications relation/edge.
+	ApplicationsTable = "job_applications"
+	// ApplicationsInverseTable is the table name for the JobApplication entity.
+	// It exists in this package in order to avoid circular dependency with the "jobapplication" package.
+	ApplicationsInverseTable = "job_applications"
+	// ApplicationsColumn is the table column denoting the applications relation/edge.
+	ApplicationsColumn = "job_id"
 )
 
 // Columns holds all SQL columns for job fields.
@@ -63,9 +72,9 @@ var Columns = []string{
 	FieldEmployment,
 	FieldCategory,
 	FieldThumbnail,
-	FieldWehave,
+	FieldWeHave,
 	FieldRequirements,
-	FieldYouhave,
+	FieldYouHave,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

@@ -5,8 +5,12 @@ package ent
 import (
 	"time"
 
-	"github.com/10hourlabs/jobsapi/ent/job"
-	"github.com/10hourlabs/jobsapi/ent/schema"
+	"github.com/10hourlabs/tentn/ent/applicant"
+	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/portfoliolink"
+	"github.com/10hourlabs/tentn/ent/schema"
+	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/google/uuid"
 )
 
@@ -14,6 +18,57 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	applicantMixin := schema.Applicant{}.Mixin()
+	applicantMixinFields0 := applicantMixin[0].Fields()
+	_ = applicantMixinFields0
+	applicantMixinFields1 := applicantMixin[1].Fields()
+	_ = applicantMixinFields1
+	applicantFields := schema.Applicant{}.Fields()
+	_ = applicantFields
+	// applicantDescUUID is the schema descriptor for uuid field.
+	applicantDescUUID := applicantMixinFields0[0].Descriptor()
+	// applicant.DefaultUUID holds the default value on creation for the uuid field.
+	applicant.DefaultUUID = applicantDescUUID.Default.(func() uuid.UUID)
+	// applicantDescCreatedAt is the schema descriptor for created_at field.
+	applicantDescCreatedAt := applicantMixinFields1[0].Descriptor()
+	// applicant.DefaultCreatedAt holds the default value on creation for the created_at field.
+	applicant.DefaultCreatedAt = applicantDescCreatedAt.Default.(func() time.Time)
+	// applicantDescUpdatedAt is the schema descriptor for updated_at field.
+	applicantDescUpdatedAt := applicantMixinFields1[1].Descriptor()
+	// applicant.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	applicant.DefaultUpdatedAt = applicantDescUpdatedAt.Default.(func() time.Time)
+	// applicant.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	applicant.UpdateDefaultUpdatedAt = applicantDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// applicantDescDeletedAt is the schema descriptor for deleted_at field.
+	applicantDescDeletedAt := applicantMixinFields1[2].Descriptor()
+	// applicant.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	applicant.DefaultDeletedAt = applicantDescDeletedAt.Default.(func() time.Time)
+	// applicantDescReferralCode is the schema descriptor for referral_code field.
+	applicantDescReferralCode := applicantFields[6].Descriptor()
+	// applicant.DefaultReferralCode holds the default value on creation for the referral_code field.
+	applicant.DefaultReferralCode = applicantDescReferralCode.Default.(string)
+	// applicantDescTentnCode is the schema descriptor for tentn_code field.
+	applicantDescTentnCode := applicantFields[7].Descriptor()
+	// applicant.DefaultTentnCode holds the default value on creation for the tentn_code field.
+	applicant.DefaultTentnCode = applicantDescTentnCode.Default.(func() string)
+	// applicantDescCountryCode is the schema descriptor for country_code field.
+	applicantDescCountryCode := applicantFields[11].Descriptor()
+	// applicant.CountryCodeValidator is a validator for the "country_code" field. It is called by the builders before save.
+	applicant.CountryCodeValidator = func() func(string) error {
+		validators := applicantDescCountryCode.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(country_code string) error {
+			for _, fn := range fns {
+				if err := fn(country_code); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	jobMixin := schema.Job{}.Mixin()
 	jobMixinFields0 := jobMixin[0].Fields()
 	_ = jobMixinFields0
@@ -47,4 +102,91 @@ func init() {
 	jobDescLocation := jobFields[3].Descriptor()
 	// job.DefaultLocation holds the default value on creation for the location field.
 	job.DefaultLocation = jobDescLocation.Default.(string)
+	jobapplicationMixin := schema.JobApplication{}.Mixin()
+	jobapplicationMixinFields0 := jobapplicationMixin[0].Fields()
+	_ = jobapplicationMixinFields0
+	jobapplicationMixinFields1 := jobapplicationMixin[1].Fields()
+	_ = jobapplicationMixinFields1
+	jobapplicationFields := schema.JobApplication{}.Fields()
+	_ = jobapplicationFields
+	// jobapplicationDescUUID is the schema descriptor for uuid field.
+	jobapplicationDescUUID := jobapplicationMixinFields0[0].Descriptor()
+	// jobapplication.DefaultUUID holds the default value on creation for the uuid field.
+	jobapplication.DefaultUUID = jobapplicationDescUUID.Default.(func() uuid.UUID)
+	// jobapplicationDescCreatedAt is the schema descriptor for created_at field.
+	jobapplicationDescCreatedAt := jobapplicationMixinFields1[0].Descriptor()
+	// jobapplication.DefaultCreatedAt holds the default value on creation for the created_at field.
+	jobapplication.DefaultCreatedAt = jobapplicationDescCreatedAt.Default.(func() time.Time)
+	// jobapplicationDescUpdatedAt is the schema descriptor for updated_at field.
+	jobapplicationDescUpdatedAt := jobapplicationMixinFields1[1].Descriptor()
+	// jobapplication.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	jobapplication.DefaultUpdatedAt = jobapplicationDescUpdatedAt.Default.(func() time.Time)
+	// jobapplication.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	jobapplication.UpdateDefaultUpdatedAt = jobapplicationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// jobapplicationDescDeletedAt is the schema descriptor for deleted_at field.
+	jobapplicationDescDeletedAt := jobapplicationMixinFields1[2].Descriptor()
+	// jobapplication.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	jobapplication.DefaultDeletedAt = jobapplicationDescDeletedAt.Default.(func() time.Time)
+	portfoliolinkMixin := schema.PortfolioLink{}.Mixin()
+	portfoliolinkMixinFields0 := portfoliolinkMixin[0].Fields()
+	_ = portfoliolinkMixinFields0
+	portfoliolinkMixinFields1 := portfoliolinkMixin[1].Fields()
+	_ = portfoliolinkMixinFields1
+	portfoliolinkFields := schema.PortfolioLink{}.Fields()
+	_ = portfoliolinkFields
+	// portfoliolinkDescUUID is the schema descriptor for uuid field.
+	portfoliolinkDescUUID := portfoliolinkMixinFields0[0].Descriptor()
+	// portfoliolink.DefaultUUID holds the default value on creation for the uuid field.
+	portfoliolink.DefaultUUID = portfoliolinkDescUUID.Default.(func() uuid.UUID)
+	// portfoliolinkDescCreatedAt is the schema descriptor for created_at field.
+	portfoliolinkDescCreatedAt := portfoliolinkMixinFields1[0].Descriptor()
+	// portfoliolink.DefaultCreatedAt holds the default value on creation for the created_at field.
+	portfoliolink.DefaultCreatedAt = portfoliolinkDescCreatedAt.Default.(func() time.Time)
+	// portfoliolinkDescUpdatedAt is the schema descriptor for updated_at field.
+	portfoliolinkDescUpdatedAt := portfoliolinkMixinFields1[1].Descriptor()
+	// portfoliolink.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	portfoliolink.DefaultUpdatedAt = portfoliolinkDescUpdatedAt.Default.(func() time.Time)
+	// portfoliolink.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	portfoliolink.UpdateDefaultUpdatedAt = portfoliolinkDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// portfoliolinkDescDeletedAt is the schema descriptor for deleted_at field.
+	portfoliolinkDescDeletedAt := portfoliolinkMixinFields1[2].Descriptor()
+	// portfoliolink.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	portfoliolink.DefaultDeletedAt = portfoliolinkDescDeletedAt.Default.(func() time.Time)
+	// portfoliolinkDescURL is the schema descriptor for url field.
+	portfoliolinkDescURL := portfoliolinkFields[0].Descriptor()
+	// portfoliolink.URLValidator is a validator for the "url" field. It is called by the builders before save.
+	portfoliolink.URLValidator = portfoliolinkDescURL.Validators[0].(func(string) error)
+	skillMixin := schema.Skill{}.Mixin()
+	skillMixinFields0 := skillMixin[0].Fields()
+	_ = skillMixinFields0
+	skillMixinFields1 := skillMixin[1].Fields()
+	_ = skillMixinFields1
+	skillFields := schema.Skill{}.Fields()
+	_ = skillFields
+	// skillDescUUID is the schema descriptor for uuid field.
+	skillDescUUID := skillMixinFields0[0].Descriptor()
+	// skill.DefaultUUID holds the default value on creation for the uuid field.
+	skill.DefaultUUID = skillDescUUID.Default.(func() uuid.UUID)
+	// skillDescCreatedAt is the schema descriptor for created_at field.
+	skillDescCreatedAt := skillMixinFields1[0].Descriptor()
+	// skill.DefaultCreatedAt holds the default value on creation for the created_at field.
+	skill.DefaultCreatedAt = skillDescCreatedAt.Default.(func() time.Time)
+	// skillDescUpdatedAt is the schema descriptor for updated_at field.
+	skillDescUpdatedAt := skillMixinFields1[1].Descriptor()
+	// skill.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	skill.DefaultUpdatedAt = skillDescUpdatedAt.Default.(func() time.Time)
+	// skill.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	skill.UpdateDefaultUpdatedAt = skillDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// skillDescDeletedAt is the schema descriptor for deleted_at field.
+	skillDescDeletedAt := skillMixinFields1[2].Descriptor()
+	// skill.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	skill.DefaultDeletedAt = skillDescDeletedAt.Default.(func() time.Time)
+	// skillDescYearsOfExperience is the schema descriptor for years_of_experience field.
+	skillDescYearsOfExperience := skillFields[1].Descriptor()
+	// skill.YearsOfExperienceValidator is a validator for the "years_of_experience" field. It is called by the builders before save.
+	skill.YearsOfExperienceValidator = skillDescYearsOfExperience.Validators[0].(func(float32) error)
+	// skillDescPreferred is the schema descriptor for preferred field.
+	skillDescPreferred := skillFields[2].Descriptor()
+	// skill.DefaultPreferred holds the default value on creation for the preferred field.
+	skill.DefaultPreferred = skillDescPreferred.Default.(bool)
 }

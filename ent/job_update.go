@@ -10,8 +10,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/jobsapi/ent/job"
-	"github.com/10hourlabs/jobsapi/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/google/uuid"
 )
 
@@ -118,9 +119,9 @@ func (ju *JobUpdate) SetThumbnail(s string) *JobUpdate {
 	return ju
 }
 
-// SetWehave sets the "wehave" field.
-func (ju *JobUpdate) SetWehave(s []string) *JobUpdate {
-	ju.mutation.SetWehave(s)
+// SetWeHave sets the "we_have" field.
+func (ju *JobUpdate) SetWeHave(s []string) *JobUpdate {
+	ju.mutation.SetWeHave(s)
 	return ju
 }
 
@@ -130,15 +131,51 @@ func (ju *JobUpdate) SetRequirements(s []string) *JobUpdate {
 	return ju
 }
 
-// SetYouhave sets the "youhave" field.
-func (ju *JobUpdate) SetYouhave(s []string) *JobUpdate {
-	ju.mutation.SetYouhave(s)
+// SetYouHave sets the "you_have" field.
+func (ju *JobUpdate) SetYouHave(s []string) *JobUpdate {
+	ju.mutation.SetYouHave(s)
 	return ju
+}
+
+// AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
+func (ju *JobUpdate) AddApplicationIDs(ids ...int) *JobUpdate {
+	ju.mutation.AddApplicationIDs(ids...)
+	return ju
+}
+
+// AddApplications adds the "applications" edges to the JobApplication entity.
+func (ju *JobUpdate) AddApplications(j ...*JobApplication) *JobUpdate {
+	ids := make([]int, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return ju.AddApplicationIDs(ids...)
 }
 
 // Mutation returns the JobMutation object of the builder.
 func (ju *JobUpdate) Mutation() *JobMutation {
 	return ju.mutation
+}
+
+// ClearApplications clears all "applications" edges to the JobApplication entity.
+func (ju *JobUpdate) ClearApplications() *JobUpdate {
+	ju.mutation.ClearApplications()
+	return ju
+}
+
+// RemoveApplicationIDs removes the "applications" edge to JobApplication entities by IDs.
+func (ju *JobUpdate) RemoveApplicationIDs(ids ...int) *JobUpdate {
+	ju.mutation.RemoveApplicationIDs(ids...)
+	return ju
+}
+
+// RemoveApplications removes "applications" edges to JobApplication entities.
+func (ju *JobUpdate) RemoveApplications(j ...*JobApplication) *JobUpdate {
+	ids := make([]int, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return ju.RemoveApplicationIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -320,11 +357,11 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: job.FieldThumbnail,
 		})
 	}
-	if value, ok := ju.mutation.Wehave(); ok {
+	if value, ok := ju.mutation.WeHave(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: job.FieldWehave,
+			Column: job.FieldWeHave,
 		})
 	}
 	if value, ok := ju.mutation.Requirements(); ok {
@@ -334,12 +371,66 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: job.FieldRequirements,
 		})
 	}
-	if value, ok := ju.mutation.Youhave(); ok {
+	if value, ok := ju.mutation.YouHave(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: job.FieldYouhave,
+			Column: job.FieldYouHave,
 		})
+	}
+	if ju.mutation.ApplicationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   job.ApplicationsTable,
+			Columns: []string{job.ApplicationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: jobapplication.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ju.mutation.RemovedApplicationsIDs(); len(nodes) > 0 && !ju.mutation.ApplicationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   job.ApplicationsTable,
+			Columns: []string{job.ApplicationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: jobapplication.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ju.mutation.ApplicationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   job.ApplicationsTable,
+			Columns: []string{job.ApplicationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: jobapplication.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ju.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -450,9 +541,9 @@ func (juo *JobUpdateOne) SetThumbnail(s string) *JobUpdateOne {
 	return juo
 }
 
-// SetWehave sets the "wehave" field.
-func (juo *JobUpdateOne) SetWehave(s []string) *JobUpdateOne {
-	juo.mutation.SetWehave(s)
+// SetWeHave sets the "we_have" field.
+func (juo *JobUpdateOne) SetWeHave(s []string) *JobUpdateOne {
+	juo.mutation.SetWeHave(s)
 	return juo
 }
 
@@ -462,15 +553,51 @@ func (juo *JobUpdateOne) SetRequirements(s []string) *JobUpdateOne {
 	return juo
 }
 
-// SetYouhave sets the "youhave" field.
-func (juo *JobUpdateOne) SetYouhave(s []string) *JobUpdateOne {
-	juo.mutation.SetYouhave(s)
+// SetYouHave sets the "you_have" field.
+func (juo *JobUpdateOne) SetYouHave(s []string) *JobUpdateOne {
+	juo.mutation.SetYouHave(s)
 	return juo
+}
+
+// AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
+func (juo *JobUpdateOne) AddApplicationIDs(ids ...int) *JobUpdateOne {
+	juo.mutation.AddApplicationIDs(ids...)
+	return juo
+}
+
+// AddApplications adds the "applications" edges to the JobApplication entity.
+func (juo *JobUpdateOne) AddApplications(j ...*JobApplication) *JobUpdateOne {
+	ids := make([]int, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return juo.AddApplicationIDs(ids...)
 }
 
 // Mutation returns the JobMutation object of the builder.
 func (juo *JobUpdateOne) Mutation() *JobMutation {
 	return juo.mutation
+}
+
+// ClearApplications clears all "applications" edges to the JobApplication entity.
+func (juo *JobUpdateOne) ClearApplications() *JobUpdateOne {
+	juo.mutation.ClearApplications()
+	return juo
+}
+
+// RemoveApplicationIDs removes the "applications" edge to JobApplication entities by IDs.
+func (juo *JobUpdateOne) RemoveApplicationIDs(ids ...int) *JobUpdateOne {
+	juo.mutation.RemoveApplicationIDs(ids...)
+	return juo
+}
+
+// RemoveApplications removes "applications" edges to JobApplication entities.
+func (juo *JobUpdateOne) RemoveApplications(j ...*JobApplication) *JobUpdateOne {
+	ids := make([]int, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return juo.RemoveApplicationIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -676,11 +803,11 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 			Column: job.FieldThumbnail,
 		})
 	}
-	if value, ok := juo.mutation.Wehave(); ok {
+	if value, ok := juo.mutation.WeHave(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: job.FieldWehave,
+			Column: job.FieldWeHave,
 		})
 	}
 	if value, ok := juo.mutation.Requirements(); ok {
@@ -690,12 +817,66 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 			Column: job.FieldRequirements,
 		})
 	}
-	if value, ok := juo.mutation.Youhave(); ok {
+	if value, ok := juo.mutation.YouHave(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: job.FieldYouhave,
+			Column: job.FieldYouHave,
 		})
+	}
+	if juo.mutation.ApplicationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   job.ApplicationsTable,
+			Columns: []string{job.ApplicationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: jobapplication.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := juo.mutation.RemovedApplicationsIDs(); len(nodes) > 0 && !juo.mutation.ApplicationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   job.ApplicationsTable,
+			Columns: []string{job.ApplicationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: jobapplication.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := juo.mutation.ApplicationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   job.ApplicationsTable,
+			Columns: []string{job.ApplicationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: jobapplication.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Job{config: juo.config}
 	_spec.Assign = _node.assignValues

@@ -4,9 +4,11 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
+	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 )
 
@@ -16,15 +18,15 @@ type TimeStampMixin struct {
 
 func (TimeStampMixin) Fields() []ent.Field {
 	return []ent.Field{
-		field.Time("created_at").
+		field.Time(oneword.CreatedAt).
 			Immutable().
 			Default(time.Now),
 
-		field.Time("updated_at").
+		field.Time(oneword.UpdatedAt).
 			Default(time.Now).
 			UpdateDefault(time.Now),
 
-		field.Time("deleted_at").
+		field.Time(oneword.DeletedAt).
 			Default(time.Now),
 	}
 }
@@ -35,7 +37,7 @@ type UUIDMixin struct {
 
 func (UUIDMixin) Fields() []ent.Field {
 	return []ent.Field{
-		field.UUID("uuid", uuid.UUID{}).
+		field.UUID(oneword.UUID, uuid.UUID{}).
 			Unique().
 			Default(uuid.New),
 	}
@@ -43,7 +45,38 @@ func (UUIDMixin) Fields() []ent.Field {
 
 func (UUIDMixin) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("uuid").
+		index.Fields(oneword.UUID).
 			Unique(),
+	}
+}
+
+// TODO: Blog post on creating resuable mixins
+type BelongsToMixin struct {
+	ParentName string
+	ParentType interface{}
+	Ref        string
+	ForeignKey string
+	mixin.Schema
+}
+
+func (b BelongsToMixin) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.From(b.ParentName, b.ParentType).
+			Ref(b.Ref).
+			Unique().
+			Field(b.ForeignKey),
+	}
+}
+
+func (b BelongsToMixin) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields(b.ForeignKey),
+	}
+}
+
+func (b BelongsToMixin) Fields() []ent.Field {
+	return []ent.Field{
+		field.Int(b.ForeignKey).
+			Optional(),
 	}
 }

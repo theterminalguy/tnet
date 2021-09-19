@@ -6,7 +6,8 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/jobsapi/ent/predicate"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/google/uuid"
 )
 
@@ -1129,6 +1130,34 @@ func ThumbnailEqualFold(v string) predicate.Job {
 func ThumbnailContainsFold(v string) predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldThumbnail), v))
+	})
+}
+
+// HasApplications applies the HasEdge predicate on the "applications" edge.
+func HasApplications() predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ApplicationsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ApplicationsTable, ApplicationsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasApplicationsWith applies the HasEdge predicate on the "applications" edge with a given conditions (other predicates).
+func HasApplicationsWith(preds ...predicate.JobApplication) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ApplicationsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ApplicationsTable, ApplicationsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 
