@@ -7,6 +7,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/schema"
 	"github.com/google/uuid"
 )
@@ -99,4 +100,33 @@ func init() {
 	jobDescLocation := jobFields[3].Descriptor()
 	// job.DefaultLocation holds the default value on creation for the location field.
 	job.DefaultLocation = jobDescLocation.Default.(string)
+	portfoliolinkMixin := schema.PortfolioLink{}.Mixin()
+	portfoliolinkMixinFields0 := portfoliolinkMixin[0].Fields()
+	_ = portfoliolinkMixinFields0
+	portfoliolinkMixinFields1 := portfoliolinkMixin[1].Fields()
+	_ = portfoliolinkMixinFields1
+	portfoliolinkFields := schema.PortfolioLink{}.Fields()
+	_ = portfoliolinkFields
+	// portfoliolinkDescUUID is the schema descriptor for uuid field.
+	portfoliolinkDescUUID := portfoliolinkMixinFields0[0].Descriptor()
+	// portfoliolink.DefaultUUID holds the default value on creation for the uuid field.
+	portfoliolink.DefaultUUID = portfoliolinkDescUUID.Default.(func() uuid.UUID)
+	// portfoliolinkDescCreatedAt is the schema descriptor for created_at field.
+	portfoliolinkDescCreatedAt := portfoliolinkMixinFields1[0].Descriptor()
+	// portfoliolink.DefaultCreatedAt holds the default value on creation for the created_at field.
+	portfoliolink.DefaultCreatedAt = portfoliolinkDescCreatedAt.Default.(func() time.Time)
+	// portfoliolinkDescUpdatedAt is the schema descriptor for updated_at field.
+	portfoliolinkDescUpdatedAt := portfoliolinkMixinFields1[1].Descriptor()
+	// portfoliolink.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	portfoliolink.DefaultUpdatedAt = portfoliolinkDescUpdatedAt.Default.(func() time.Time)
+	// portfoliolink.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	portfoliolink.UpdateDefaultUpdatedAt = portfoliolinkDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// portfoliolinkDescDeletedAt is the schema descriptor for deleted_at field.
+	portfoliolinkDescDeletedAt := portfoliolinkMixinFields1[2].Descriptor()
+	// portfoliolink.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	portfoliolink.DefaultDeletedAt = portfoliolinkDescDeletedAt.Default.(func() time.Time)
+	// portfoliolinkDescURL is the schema descriptor for url field.
+	portfoliolinkDescURL := portfoliolinkFields[0].Descriptor()
+	// portfoliolink.URLValidator is a validator for the "url" field. It is called by the builders before save.
+	portfoliolink.URLValidator = portfoliolinkDescURL.Validators[0].(func(string) error)
 }

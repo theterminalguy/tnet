@@ -103,13 +103,52 @@ var (
 			},
 		},
 	}
+	// PortfolioLinksColumns holds the columns for the "portfolio_links" table.
+	PortfolioLinksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime},
+		{Name: "url", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString},
+		{Name: "applicant_id", Type: field.TypeInt, Nullable: true},
+	}
+	// PortfolioLinksTable holds the schema information for the "portfolio_links" table.
+	PortfolioLinksTable = &schema.Table{
+		Name:       "portfolio_links",
+		Columns:    PortfolioLinksColumns,
+		PrimaryKey: []*schema.Column{PortfolioLinksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "portfolio_links_applicants_portfoliolinks",
+				Columns:    []*schema.Column{PortfolioLinksColumns[7]},
+				RefColumns: []*schema.Column{ApplicantsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "portfoliolink_uuid",
+				Unique:  true,
+				Columns: []*schema.Column{PortfolioLinksColumns[1]},
+			},
+			{
+				Name:    "portfoliolink_applicant_id",
+				Unique:  false,
+				Columns: []*schema.Column{PortfolioLinksColumns[7]},
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		ApplicantsTable,
 		JobsTable,
+		PortfolioLinksTable,
 	}
 )
 
 func init() {
 	ApplicantsTable.ForeignKeys[0].RefTable = ApplicantsTable
+	PortfolioLinksTable.ForeignKeys[0].RefTable = ApplicantsTable
 }

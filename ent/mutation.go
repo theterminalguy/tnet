@@ -10,6 +10,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/google/uuid"
 
@@ -25,8 +26,9 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeApplicant = "Applicant"
-	TypeJob       = "Job"
+	TypeApplicant     = "Applicant"
+	TypeJob           = "Job"
+	TypePortfolioLink = "PortfolioLink"
 )
 
 // ApplicantMutation represents an operation that mutates the Applicant nodes in the graph.
@@ -58,6 +60,9 @@ type ApplicantMutation struct {
 	referees                map[int]struct{}
 	removedreferees         map[int]struct{}
 	clearedreferees         bool
+	portfoliolinks          map[int]struct{}
+	removedportfoliolinks   map[int]struct{}
+	clearedportfoliolinks   bool
 	done                    bool
 	oldValue                func(context.Context) (*Applicant, error)
 	predicates              []predicate.Applicant
@@ -883,6 +888,60 @@ func (m *ApplicantMutation) ResetReferees() {
 	m.removedreferees = nil
 }
 
+// AddPortfoliolinkIDs adds the "portfoliolinks" edge to the PortfolioLink entity by ids.
+func (m *ApplicantMutation) AddPortfoliolinkIDs(ids ...int) {
+	if m.portfoliolinks == nil {
+		m.portfoliolinks = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.portfoliolinks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPortfoliolinks clears the "portfoliolinks" edge to the PortfolioLink entity.
+func (m *ApplicantMutation) ClearPortfoliolinks() {
+	m.clearedportfoliolinks = true
+}
+
+// PortfoliolinksCleared reports if the "portfoliolinks" edge to the PortfolioLink entity was cleared.
+func (m *ApplicantMutation) PortfoliolinksCleared() bool {
+	return m.clearedportfoliolinks
+}
+
+// RemovePortfoliolinkIDs removes the "portfoliolinks" edge to the PortfolioLink entity by IDs.
+func (m *ApplicantMutation) RemovePortfoliolinkIDs(ids ...int) {
+	if m.removedportfoliolinks == nil {
+		m.removedportfoliolinks = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.portfoliolinks, ids[i])
+		m.removedportfoliolinks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPortfoliolinks returns the removed IDs of the "portfoliolinks" edge to the PortfolioLink entity.
+func (m *ApplicantMutation) RemovedPortfoliolinksIDs() (ids []int) {
+	for id := range m.removedportfoliolinks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PortfoliolinksIDs returns the "portfoliolinks" edge IDs in the mutation.
+func (m *ApplicantMutation) PortfoliolinksIDs() (ids []int) {
+	for id := range m.portfoliolinks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPortfoliolinks resets all changes to the "portfoliolinks" edge.
+func (m *ApplicantMutation) ResetPortfoliolinks() {
+	m.portfoliolinks = nil
+	m.clearedportfoliolinks = false
+	m.removedportfoliolinks = nil
+}
+
 // Where appends a list predicates to the ApplicantMutation builder.
 func (m *ApplicantMutation) Where(ps ...predicate.Applicant) {
 	m.predicates = append(m.predicates, ps...)
@@ -1302,12 +1361,15 @@ func (m *ApplicantMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ApplicantMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.referrer != nil {
 		edges = append(edges, applicant.EdgeReferrer)
 	}
 	if m.referees != nil {
 		edges = append(edges, applicant.EdgeReferees)
+	}
+	if m.portfoliolinks != nil {
+		edges = append(edges, applicant.EdgePortfoliolinks)
 	}
 	return edges
 }
@@ -1326,15 +1388,24 @@ func (m *ApplicantMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case applicant.EdgePortfoliolinks:
+		ids := make([]ent.Value, 0, len(m.portfoliolinks))
+		for id := range m.portfoliolinks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ApplicantMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedreferees != nil {
 		edges = append(edges, applicant.EdgeReferees)
+	}
+	if m.removedportfoliolinks != nil {
+		edges = append(edges, applicant.EdgePortfoliolinks)
 	}
 	return edges
 }
@@ -1349,18 +1420,27 @@ func (m *ApplicantMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case applicant.EdgePortfoliolinks:
+		ids := make([]ent.Value, 0, len(m.removedportfoliolinks))
+		for id := range m.removedportfoliolinks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ApplicantMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedreferrer {
 		edges = append(edges, applicant.EdgeReferrer)
 	}
 	if m.clearedreferees {
 		edges = append(edges, applicant.EdgeReferees)
+	}
+	if m.clearedportfoliolinks {
+		edges = append(edges, applicant.EdgePortfoliolinks)
 	}
 	return edges
 }
@@ -1373,6 +1453,8 @@ func (m *ApplicantMutation) EdgeCleared(name string) bool {
 		return m.clearedreferrer
 	case applicant.EdgeReferees:
 		return m.clearedreferees
+	case applicant.EdgePortfoliolinks:
+		return m.clearedportfoliolinks
 	}
 	return false
 }
@@ -1397,6 +1479,9 @@ func (m *ApplicantMutation) ResetEdge(name string) error {
 		return nil
 	case applicant.EdgeReferees:
 		m.ResetReferees()
+		return nil
+	case applicant.EdgePortfoliolinks:
+		m.ResetPortfoliolinks()
 		return nil
 	}
 	return fmt.Errorf("unknown Applicant edge %s", name)
@@ -2448,4 +2533,700 @@ func (m *JobMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *JobMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Job edge %s", name)
+}
+
+// PortfolioLinkMutation represents an operation that mutates the PortfolioLink nodes in the graph.
+type PortfolioLinkMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *int
+	uuid             *uuid.UUID
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	url              *string
+	name             *string
+	clearedFields    map[string]struct{}
+	applicant        *int
+	clearedapplicant bool
+	done             bool
+	oldValue         func(context.Context) (*PortfolioLink, error)
+	predicates       []predicate.PortfolioLink
+}
+
+var _ ent.Mutation = (*PortfolioLinkMutation)(nil)
+
+// portfoliolinkOption allows management of the mutation configuration using functional options.
+type portfoliolinkOption func(*PortfolioLinkMutation)
+
+// newPortfolioLinkMutation creates new mutation for the PortfolioLink entity.
+func newPortfolioLinkMutation(c config, op Op, opts ...portfoliolinkOption) *PortfolioLinkMutation {
+	m := &PortfolioLinkMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePortfolioLink,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPortfolioLinkID sets the ID field of the mutation.
+func withPortfolioLinkID(id int) portfoliolinkOption {
+	return func(m *PortfolioLinkMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *PortfolioLink
+		)
+		m.oldValue = func(ctx context.Context) (*PortfolioLink, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().PortfolioLink.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPortfolioLink sets the old PortfolioLink of the mutation.
+func withPortfolioLink(node *PortfolioLink) portfoliolinkOption {
+	return func(m *PortfolioLinkMutation) {
+		m.oldValue = func(context.Context) (*PortfolioLink, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PortfolioLinkMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PortfolioLinkMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PortfolioLinkMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetUUID sets the "uuid" field.
+func (m *PortfolioLinkMutation) SetUUID(u uuid.UUID) {
+	m.uuid = &u
+}
+
+// UUID returns the value of the "uuid" field in the mutation.
+func (m *PortfolioLinkMutation) UUID() (r uuid.UUID, exists bool) {
+	v := m.uuid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUUID returns the old "uuid" field's value of the PortfolioLink entity.
+// If the PortfolioLink object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortfolioLinkMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUUID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUUID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
+	}
+	return oldValue.UUID, nil
+}
+
+// ResetUUID resets all changes to the "uuid" field.
+func (m *PortfolioLinkMutation) ResetUUID() {
+	m.uuid = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *PortfolioLinkMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *PortfolioLinkMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the PortfolioLink entity.
+// If the PortfolioLink object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortfolioLinkMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *PortfolioLinkMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *PortfolioLinkMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *PortfolioLinkMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the PortfolioLink entity.
+// If the PortfolioLink object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortfolioLinkMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *PortfolioLinkMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *PortfolioLinkMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *PortfolioLinkMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the PortfolioLink entity.
+// If the PortfolioLink object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortfolioLinkMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *PortfolioLinkMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+}
+
+// SetURL sets the "url" field.
+func (m *PortfolioLinkMutation) SetURL(s string) {
+	m.url = &s
+}
+
+// URL returns the value of the "url" field in the mutation.
+func (m *PortfolioLinkMutation) URL() (r string, exists bool) {
+	v := m.url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldURL returns the old "url" field's value of the PortfolioLink entity.
+// If the PortfolioLink object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortfolioLinkMutation) OldURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldURL: %w", err)
+	}
+	return oldValue.URL, nil
+}
+
+// ResetURL resets all changes to the "url" field.
+func (m *PortfolioLinkMutation) ResetURL() {
+	m.url = nil
+}
+
+// SetName sets the "name" field.
+func (m *PortfolioLinkMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *PortfolioLinkMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the PortfolioLink entity.
+// If the PortfolioLink object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortfolioLinkMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *PortfolioLinkMutation) ResetName() {
+	m.name = nil
+}
+
+// SetApplicantID sets the "applicant_id" field.
+func (m *PortfolioLinkMutation) SetApplicantID(i int) {
+	m.applicant = &i
+}
+
+// ApplicantID returns the value of the "applicant_id" field in the mutation.
+func (m *PortfolioLinkMutation) ApplicantID() (r int, exists bool) {
+	v := m.applicant
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldApplicantID returns the old "applicant_id" field's value of the PortfolioLink entity.
+// If the PortfolioLink object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortfolioLinkMutation) OldApplicantID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldApplicantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldApplicantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldApplicantID: %w", err)
+	}
+	return oldValue.ApplicantID, nil
+}
+
+// ClearApplicantID clears the value of the "applicant_id" field.
+func (m *PortfolioLinkMutation) ClearApplicantID() {
+	m.applicant = nil
+	m.clearedFields[portfoliolink.FieldApplicantID] = struct{}{}
+}
+
+// ApplicantIDCleared returns if the "applicant_id" field was cleared in this mutation.
+func (m *PortfolioLinkMutation) ApplicantIDCleared() bool {
+	_, ok := m.clearedFields[portfoliolink.FieldApplicantID]
+	return ok
+}
+
+// ResetApplicantID resets all changes to the "applicant_id" field.
+func (m *PortfolioLinkMutation) ResetApplicantID() {
+	m.applicant = nil
+	delete(m.clearedFields, portfoliolink.FieldApplicantID)
+}
+
+// ClearApplicant clears the "applicant" edge to the Applicant entity.
+func (m *PortfolioLinkMutation) ClearApplicant() {
+	m.clearedapplicant = true
+}
+
+// ApplicantCleared reports if the "applicant" edge to the Applicant entity was cleared.
+func (m *PortfolioLinkMutation) ApplicantCleared() bool {
+	return m.ApplicantIDCleared() || m.clearedapplicant
+}
+
+// ApplicantIDs returns the "applicant" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ApplicantID instead. It exists only for internal usage by the builders.
+func (m *PortfolioLinkMutation) ApplicantIDs() (ids []int) {
+	if id := m.applicant; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetApplicant resets all changes to the "applicant" edge.
+func (m *PortfolioLinkMutation) ResetApplicant() {
+	m.applicant = nil
+	m.clearedapplicant = false
+}
+
+// Where appends a list predicates to the PortfolioLinkMutation builder.
+func (m *PortfolioLinkMutation) Where(ps ...predicate.PortfolioLink) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *PortfolioLinkMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (PortfolioLink).
+func (m *PortfolioLinkMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PortfolioLinkMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.uuid != nil {
+		fields = append(fields, portfoliolink.FieldUUID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, portfoliolink.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, portfoliolink.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, portfoliolink.FieldDeletedAt)
+	}
+	if m.url != nil {
+		fields = append(fields, portfoliolink.FieldURL)
+	}
+	if m.name != nil {
+		fields = append(fields, portfoliolink.FieldName)
+	}
+	if m.applicant != nil {
+		fields = append(fields, portfoliolink.FieldApplicantID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PortfolioLinkMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case portfoliolink.FieldUUID:
+		return m.UUID()
+	case portfoliolink.FieldCreatedAt:
+		return m.CreatedAt()
+	case portfoliolink.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case portfoliolink.FieldDeletedAt:
+		return m.DeletedAt()
+	case portfoliolink.FieldURL:
+		return m.URL()
+	case portfoliolink.FieldName:
+		return m.Name()
+	case portfoliolink.FieldApplicantID:
+		return m.ApplicantID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PortfolioLinkMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case portfoliolink.FieldUUID:
+		return m.OldUUID(ctx)
+	case portfoliolink.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case portfoliolink.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case portfoliolink.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case portfoliolink.FieldURL:
+		return m.OldURL(ctx)
+	case portfoliolink.FieldName:
+		return m.OldName(ctx)
+	case portfoliolink.FieldApplicantID:
+		return m.OldApplicantID(ctx)
+	}
+	return nil, fmt.Errorf("unknown PortfolioLink field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PortfolioLinkMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case portfoliolink.FieldUUID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUUID(v)
+		return nil
+	case portfoliolink.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case portfoliolink.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case portfoliolink.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case portfoliolink.FieldURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetURL(v)
+		return nil
+	case portfoliolink.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case portfoliolink.FieldApplicantID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetApplicantID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PortfolioLink field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PortfolioLinkMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PortfolioLinkMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PortfolioLinkMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown PortfolioLink numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PortfolioLinkMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(portfoliolink.FieldApplicantID) {
+		fields = append(fields, portfoliolink.FieldApplicantID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PortfolioLinkMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PortfolioLinkMutation) ClearField(name string) error {
+	switch name {
+	case portfoliolink.FieldApplicantID:
+		m.ClearApplicantID()
+		return nil
+	}
+	return fmt.Errorf("unknown PortfolioLink nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PortfolioLinkMutation) ResetField(name string) error {
+	switch name {
+	case portfoliolink.FieldUUID:
+		m.ResetUUID()
+		return nil
+	case portfoliolink.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case portfoliolink.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case portfoliolink.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case portfoliolink.FieldURL:
+		m.ResetURL()
+		return nil
+	case portfoliolink.FieldName:
+		m.ResetName()
+		return nil
+	case portfoliolink.FieldApplicantID:
+		m.ResetApplicantID()
+		return nil
+	}
+	return fmt.Errorf("unknown PortfolioLink field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PortfolioLinkMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.applicant != nil {
+		edges = append(edges, portfoliolink.EdgeApplicant)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PortfolioLinkMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case portfoliolink.EdgeApplicant:
+		if id := m.applicant; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PortfolioLinkMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PortfolioLinkMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PortfolioLinkMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedapplicant {
+		edges = append(edges, portfoliolink.EdgeApplicant)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PortfolioLinkMutation) EdgeCleared(name string) bool {
+	switch name {
+	case portfoliolink.EdgeApplicant:
+		return m.clearedapplicant
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PortfolioLinkMutation) ClearEdge(name string) error {
+	switch name {
+	case portfoliolink.EdgeApplicant:
+		m.ClearApplicant()
+		return nil
+	}
+	return fmt.Errorf("unknown PortfolioLink unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PortfolioLinkMutation) ResetEdge(name string) error {
+	switch name {
+	case portfoliolink.EdgeApplicant:
+		m.ResetApplicant()
+		return nil
+	}
+	return fmt.Errorf("unknown PortfolioLink edge %s", name)
 }

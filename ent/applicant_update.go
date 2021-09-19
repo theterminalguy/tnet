@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/applicant"
+	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/google/uuid"
 )
@@ -160,6 +161,21 @@ func (au *ApplicantUpdate) AddReferees(a ...*Applicant) *ApplicantUpdate {
 	return au.AddRefereeIDs(ids...)
 }
 
+// AddPortfoliolinkIDs adds the "portfoliolinks" edge to the PortfolioLink entity by IDs.
+func (au *ApplicantUpdate) AddPortfoliolinkIDs(ids ...int) *ApplicantUpdate {
+	au.mutation.AddPortfoliolinkIDs(ids...)
+	return au
+}
+
+// AddPortfoliolinks adds the "portfoliolinks" edges to the PortfolioLink entity.
+func (au *ApplicantUpdate) AddPortfoliolinks(p ...*PortfolioLink) *ApplicantUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return au.AddPortfoliolinkIDs(ids...)
+}
+
 // Mutation returns the ApplicantMutation object of the builder.
 func (au *ApplicantUpdate) Mutation() *ApplicantMutation {
 	return au.mutation
@@ -190,6 +206,27 @@ func (au *ApplicantUpdate) RemoveReferees(a ...*Applicant) *ApplicantUpdate {
 		ids[i] = a[i].ID
 	}
 	return au.RemoveRefereeIDs(ids...)
+}
+
+// ClearPortfoliolinks clears all "portfoliolinks" edges to the PortfolioLink entity.
+func (au *ApplicantUpdate) ClearPortfoliolinks() *ApplicantUpdate {
+	au.mutation.ClearPortfoliolinks()
+	return au
+}
+
+// RemovePortfoliolinkIDs removes the "portfoliolinks" edge to PortfolioLink entities by IDs.
+func (au *ApplicantUpdate) RemovePortfoliolinkIDs(ids ...int) *ApplicantUpdate {
+	au.mutation.RemovePortfoliolinkIDs(ids...)
+	return au
+}
+
+// RemovePortfoliolinks removes "portfoliolinks" edges to PortfolioLink entities.
+func (au *ApplicantUpdate) RemovePortfoliolinks(p ...*PortfolioLink) *ApplicantUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return au.RemovePortfoliolinkIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -476,6 +513,60 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if au.mutation.PortfoliolinksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.PortfoliolinksTable,
+			Columns: []string{applicant.PortfoliolinksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: portfoliolink.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedPortfoliolinksIDs(); len(nodes) > 0 && !au.mutation.PortfoliolinksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.PortfoliolinksTable,
+			Columns: []string{applicant.PortfoliolinksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: portfoliolink.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.PortfoliolinksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.PortfoliolinksTable,
+			Columns: []string{applicant.PortfoliolinksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: portfoliolink.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{applicant.Label}
@@ -627,6 +718,21 @@ func (auo *ApplicantUpdateOne) AddReferees(a ...*Applicant) *ApplicantUpdateOne 
 	return auo.AddRefereeIDs(ids...)
 }
 
+// AddPortfoliolinkIDs adds the "portfoliolinks" edge to the PortfolioLink entity by IDs.
+func (auo *ApplicantUpdateOne) AddPortfoliolinkIDs(ids ...int) *ApplicantUpdateOne {
+	auo.mutation.AddPortfoliolinkIDs(ids...)
+	return auo
+}
+
+// AddPortfoliolinks adds the "portfoliolinks" edges to the PortfolioLink entity.
+func (auo *ApplicantUpdateOne) AddPortfoliolinks(p ...*PortfolioLink) *ApplicantUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return auo.AddPortfoliolinkIDs(ids...)
+}
+
 // Mutation returns the ApplicantMutation object of the builder.
 func (auo *ApplicantUpdateOne) Mutation() *ApplicantMutation {
 	return auo.mutation
@@ -657,6 +763,27 @@ func (auo *ApplicantUpdateOne) RemoveReferees(a ...*Applicant) *ApplicantUpdateO
 		ids[i] = a[i].ID
 	}
 	return auo.RemoveRefereeIDs(ids...)
+}
+
+// ClearPortfoliolinks clears all "portfoliolinks" edges to the PortfolioLink entity.
+func (auo *ApplicantUpdateOne) ClearPortfoliolinks() *ApplicantUpdateOne {
+	auo.mutation.ClearPortfoliolinks()
+	return auo
+}
+
+// RemovePortfoliolinkIDs removes the "portfoliolinks" edge to PortfolioLink entities by IDs.
+func (auo *ApplicantUpdateOne) RemovePortfoliolinkIDs(ids ...int) *ApplicantUpdateOne {
+	auo.mutation.RemovePortfoliolinkIDs(ids...)
+	return auo
+}
+
+// RemovePortfoliolinks removes "portfoliolinks" edges to PortfolioLink entities.
+func (auo *ApplicantUpdateOne) RemovePortfoliolinks(p ...*PortfolioLink) *ApplicantUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return auo.RemovePortfoliolinkIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -959,6 +1086,60 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: applicant.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.PortfoliolinksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.PortfoliolinksTable,
+			Columns: []string{applicant.PortfoliolinksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: portfoliolink.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedPortfoliolinksIDs(); len(nodes) > 0 && !auo.mutation.PortfoliolinksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.PortfoliolinksTable,
+			Columns: []string{applicant.PortfoliolinksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: portfoliolink.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.PortfoliolinksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.PortfoliolinksTable,
+			Columns: []string{applicant.PortfoliolinksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: portfoliolink.FieldID,
 				},
 			},
 		}

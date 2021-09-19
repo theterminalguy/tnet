@@ -53,6 +53,8 @@ const (
 	EdgeReferrer = "referrer"
 	// EdgeReferees holds the string denoting the referees edge name in mutations.
 	EdgeReferees = "referees"
+	// EdgePortfoliolinks holds the string denoting the portfoliolinks edge name in mutations.
+	EdgePortfoliolinks = "portfoliolinks"
 	// Table holds the table name of the applicant in the database.
 	Table = "applicants"
 	// ReferrerTable is the table that holds the referrer relation/edge.
@@ -63,6 +65,13 @@ const (
 	RefereesTable = "applicants"
 	// RefereesColumn is the table column denoting the referees relation/edge.
 	RefereesColumn = "referrer_id"
+	// PortfoliolinksTable is the table that holds the portfoliolinks relation/edge.
+	PortfoliolinksTable = "portfolio_links"
+	// PortfoliolinksInverseTable is the table name for the PortfolioLink entity.
+	// It exists in this package in order to avoid circular dependency with the "portfoliolink" package.
+	PortfoliolinksInverseTable = "portfolio_links"
+	// PortfoliolinksColumn is the table column denoting the portfoliolinks relation/edge.
+	PortfoliolinksColumn = "applicant_id"
 )
 
 // Columns holds all SQL columns for applicant fields.

@@ -64,9 +64,11 @@ type ApplicantEdges struct {
 	Referrer *Applicant `json:"referrer,omitempty"`
 	// Referees holds the value of the referees edge.
 	Referees []*Applicant `json:"referees,omitempty"`
+	// Portfoliolinks holds the value of the portfoliolinks edge.
+	Portfoliolinks []*PortfolioLink `json:"portfoliolinks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // ReferrerOrErr returns the Referrer value or an error if the edge
@@ -90,6 +92,15 @@ func (e ApplicantEdges) RefereesOrErr() ([]*Applicant, error) {
 		return e.Referees, nil
 	}
 	return nil, &NotLoadedError{edge: "referees"}
+}
+
+// PortfoliolinksOrErr returns the Portfoliolinks value or an error if the edge
+// was not loaded in eager-loading.
+func (e ApplicantEdges) PortfoliolinksOrErr() ([]*PortfolioLink, error) {
+	if e.loadedTypes[2] {
+		return e.Portfoliolinks, nil
+	}
+	return nil, &NotLoadedError{edge: "portfoliolinks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -247,6 +258,11 @@ func (a *Applicant) QueryReferrer() *ApplicantQuery {
 // QueryReferees queries the "referees" edge of the Applicant entity.
 func (a *Applicant) QueryReferees() *ApplicantQuery {
 	return (&ApplicantClient{config: a.config}).QueryReferees(a)
+}
+
+// QueryPortfoliolinks queries the "portfoliolinks" edge of the Applicant entity.
+func (a *Applicant) QueryPortfoliolinks() *PortfolioLinkQuery {
+	return (&ApplicantClient{config: a.config}).QueryPortfoliolinks(a)
 }
 
 // Update returns a builder for updating this Applicant.

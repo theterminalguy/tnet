@@ -4,7 +4,9 @@ import (
 	"net/url"
 
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // PortfolioLink holds the schema definition for the PortfolioLink entity.
@@ -34,10 +36,25 @@ func (PortfolioLink) Fields() []ent.Field {
 			}),
 
 		field.String("name"),
+
+		field.Int("applicant_id").
+			Optional(),
+	}
+}
+
+// Indexes for the PortfolioLink
+func (PortfolioLink) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("applicant_id"),
 	}
 }
 
 // Edges of the PortfolioLink.
 func (PortfolioLink) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.From("applicant", Applicant.Type).
+			Ref("portfoliolinks").
+			Unique().
+			Field("applicant_id"),
+	}
 }

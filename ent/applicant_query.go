@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/applicant"
+	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
 )
 
@@ -26,8 +27,9 @@ type ApplicantQuery struct {
 	fields     []string
 	predicates []predicate.Applicant
 	// eager-loading edges.
-	withReferrer *ApplicantQuery
-	withReferees *ApplicantQuery
+	withReferrer       *ApplicantQuery
+	withReferees       *ApplicantQuery
+	withPortfoliolinks *PortfolioLinkQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -101,6 +103,28 @@ func (aq *ApplicantQuery) QueryReferees() *ApplicantQuery {
 			sqlgraph.From(applicant.Table, applicant.FieldID, selector),
 			sqlgraph.To(applicant.Table, applicant.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, applicant.RefereesTable, applicant.RefereesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPortfoliolinks chains the current query on the "portfoliolinks" edge.
+func (aq *ApplicantQuery) QueryPortfoliolinks() *PortfolioLinkQuery {
+	query := &PortfolioLinkQuery{config: aq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(applicant.Table, applicant.FieldID, selector),
+			sqlgraph.To(portfoliolink.Table, portfoliolink.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, applicant.PortfoliolinksTable, applicant.PortfoliolinksColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -284,13 +308,14 @@ func (aq *ApplicantQuery) Clone() *ApplicantQuery {
 		return nil
 	}
 	return &ApplicantQuery{
-		config:       aq.config,
-		limit:        aq.limit,
-		offset:       aq.offset,
-		order:        append([]OrderFunc{}, aq.order...),
-		predicates:   append([]predicate.Applicant{}, aq.predicates...),
-		withReferrer: aq.withReferrer.Clone(),
-		withReferees: aq.withReferees.Clone(),
+		config:             aq.config,
+		limit:              aq.limit,
+		offset:             aq.offset,
+		order:              append([]OrderFunc{}, aq.order...),
+		predicates:         append([]predicate.Applicant{}, aq.predicates...),
+		withReferrer:       aq.withReferrer.Clone(),
+		withReferees:       aq.withReferees.Clone(),
+		withPortfoliolinks: aq.withPortfoliolinks.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -316,6 +341,17 @@ func (aq *ApplicantQuery) WithReferees(opts ...func(*ApplicantQuery)) *Applicant
 		opt(query)
 	}
 	aq.withReferees = query
+	return aq
+}
+
+// WithPortfoliolinks tells the query-builder to eager-load the nodes that are connected to
+// the "portfoliolinks" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *ApplicantQuery) WithPortfoliolinks(opts ...func(*PortfolioLinkQuery)) *ApplicantQuery {
+	query := &PortfolioLinkQuery{config: aq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withPortfoliolinks = query
 	return aq
 }
 
@@ -384,9 +420,10 @@ func (aq *ApplicantQuery) sqlAll(ctx context.Context) ([]*Applicant, error) {
 	var (
 		nodes       = []*Applicant{}
 		_spec       = aq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			aq.withReferrer != nil,
 			aq.withReferees != nil,
+			aq.withPortfoliolinks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -457,6 +494,31 @@ func (aq *ApplicantQuery) sqlAll(ctx context.Context) ([]*Applicant, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "referrer_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Referees = append(node.Edges.Referees, n)
+		}
+	}
+
+	if query := aq.withPortfoliolinks; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Applicant)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Portfoliolinks = []*PortfolioLink{}
+		}
+		query.Where(predicate.PortfolioLink(func(s *sql.Selector) {
+			s.Where(sql.InValues(applicant.PortfoliolinksColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ApplicantID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "applicant_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Portfoliolinks = append(node.Edges.Portfoliolinks, n)
 		}
 	}
 

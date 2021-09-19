@@ -2015,6 +2015,34 @@ func HasRefereesWith(preds ...predicate.Applicant) predicate.Applicant {
 	})
 }
 
+// HasPortfoliolinks applies the HasEdge predicate on the "portfoliolinks" edge.
+func HasPortfoliolinks() predicate.Applicant {
+	return predicate.Applicant(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PortfoliolinksTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PortfoliolinksTable, PortfoliolinksColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPortfoliolinksWith applies the HasEdge predicate on the "portfoliolinks" edge with a given conditions (other predicates).
+func HasPortfoliolinksWith(preds ...predicate.PortfolioLink) predicate.Applicant {
+	return predicate.Applicant(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PortfoliolinksInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PortfoliolinksTable, PortfoliolinksColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Applicant) predicate.Applicant {
 	return predicate.Applicant(func(s *sql.Selector) {

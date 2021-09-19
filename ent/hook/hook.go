@@ -35,6 +35,19 @@ func (f JobFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) 
 	return f(ctx, mv)
 }
 
+// The PortfolioLinkFunc type is an adapter to allow the use of ordinary
+// function as PortfolioLink mutator.
+type PortfolioLinkFunc func(context.Context, *ent.PortfolioLinkMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PortfolioLinkFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.PortfolioLinkMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PortfolioLinkMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // Condition is a hook condition function.
 type Condition func(context.Context, ent.Mutation) bool
 

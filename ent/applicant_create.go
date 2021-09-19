@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/applicant"
+	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/google/uuid"
 )
 
@@ -195,6 +196,21 @@ func (ac *ApplicantCreate) AddReferees(a ...*Applicant) *ApplicantCreate {
 		ids[i] = a[i].ID
 	}
 	return ac.AddRefereeIDs(ids...)
+}
+
+// AddPortfoliolinkIDs adds the "portfoliolinks" edge to the PortfolioLink entity by IDs.
+func (ac *ApplicantCreate) AddPortfoliolinkIDs(ids ...int) *ApplicantCreate {
+	ac.mutation.AddPortfoliolinkIDs(ids...)
+	return ac
+}
+
+// AddPortfoliolinks adds the "portfoliolinks" edges to the PortfolioLink entity.
+func (ac *ApplicantCreate) AddPortfoliolinks(p ...*PortfolioLink) *ApplicantCreate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ac.AddPortfoliolinkIDs(ids...)
 }
 
 // Mutation returns the ApplicantMutation object of the builder.
@@ -546,6 +562,25 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: applicant.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.PortfoliolinksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.PortfoliolinksTable,
+			Columns: []string{applicant.PortfoliolinksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: portfoliolink.FieldID,
 				},
 			},
 		}

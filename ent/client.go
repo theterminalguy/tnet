@@ -11,6 +11,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/portfoliolink"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -26,6 +27,8 @@ type Client struct {
 	Applicant *ApplicantClient
 	// Job is the client for interacting with the Job builders.
 	Job *JobClient
+	// PortfolioLink is the client for interacting with the PortfolioLink builders.
+	PortfolioLink *PortfolioLinkClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -41,6 +44,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Applicant = NewApplicantClient(c.config)
 	c.Job = NewJobClient(c.config)
+	c.PortfolioLink = NewPortfolioLinkClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -72,10 +76,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:       ctx,
-		config:    cfg,
-		Applicant: NewApplicantClient(cfg),
-		Job:       NewJobClient(cfg),
+		ctx:           ctx,
+		config:        cfg,
+		Applicant:     NewApplicantClient(cfg),
+		Job:           NewJobClient(cfg),
+		PortfolioLink: NewPortfolioLinkClient(cfg),
 	}, nil
 }
 
@@ -93,9 +98,10 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:    cfg,
-		Applicant: NewApplicantClient(cfg),
-		Job:       NewJobClient(cfg),
+		config:        cfg,
+		Applicant:     NewApplicantClient(cfg),
+		Job:           NewJobClient(cfg),
+		PortfolioLink: NewPortfolioLinkClient(cfg),
 	}, nil
 }
 
@@ -127,6 +133,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Applicant.Use(hooks...)
 	c.Job.Use(hooks...)
+	c.PortfolioLink.Use(hooks...)
 }
 
 // ApplicantClient is a client for the Applicant schema.
@@ -246,6 +253,22 @@ func (c *ApplicantClient) QueryReferees(a *Applicant) *ApplicantQuery {
 	return query
 }
 
+// QueryPortfoliolinks queries the portfoliolinks edge of a Applicant.
+func (c *ApplicantClient) QueryPortfoliolinks(a *Applicant) *PortfolioLinkQuery {
+	query := &PortfolioLinkQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(applicant.Table, applicant.FieldID, id),
+			sqlgraph.To(portfoliolink.Table, portfoliolink.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, applicant.PortfoliolinksTable, applicant.PortfoliolinksColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ApplicantClient) Hooks() []Hook {
 	return c.hooks.Applicant
@@ -339,4 +362,110 @@ func (c *JobClient) GetX(ctx context.Context, id int) *Job {
 // Hooks returns the client hooks.
 func (c *JobClient) Hooks() []Hook {
 	return c.hooks.Job
+}
+
+// PortfolioLinkClient is a client for the PortfolioLink schema.
+type PortfolioLinkClient struct {
+	config
+}
+
+// NewPortfolioLinkClient returns a client for the PortfolioLink from the given config.
+func NewPortfolioLinkClient(c config) *PortfolioLinkClient {
+	return &PortfolioLinkClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `portfoliolink.Hooks(f(g(h())))`.
+func (c *PortfolioLinkClient) Use(hooks ...Hook) {
+	c.hooks.PortfolioLink = append(c.hooks.PortfolioLink, hooks...)
+}
+
+// Create returns a create builder for PortfolioLink.
+func (c *PortfolioLinkClient) Create() *PortfolioLinkCreate {
+	mutation := newPortfolioLinkMutation(c.config, OpCreate)
+	return &PortfolioLinkCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PortfolioLink entities.
+func (c *PortfolioLinkClient) CreateBulk(builders ...*PortfolioLinkCreate) *PortfolioLinkCreateBulk {
+	return &PortfolioLinkCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PortfolioLink.
+func (c *PortfolioLinkClient) Update() *PortfolioLinkUpdate {
+	mutation := newPortfolioLinkMutation(c.config, OpUpdate)
+	return &PortfolioLinkUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PortfolioLinkClient) UpdateOne(pl *PortfolioLink) *PortfolioLinkUpdateOne {
+	mutation := newPortfolioLinkMutation(c.config, OpUpdateOne, withPortfolioLink(pl))
+	return &PortfolioLinkUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PortfolioLinkClient) UpdateOneID(id int) *PortfolioLinkUpdateOne {
+	mutation := newPortfolioLinkMutation(c.config, OpUpdateOne, withPortfolioLinkID(id))
+	return &PortfolioLinkUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PortfolioLink.
+func (c *PortfolioLinkClient) Delete() *PortfolioLinkDelete {
+	mutation := newPortfolioLinkMutation(c.config, OpDelete)
+	return &PortfolioLinkDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *PortfolioLinkClient) DeleteOne(pl *PortfolioLink) *PortfolioLinkDeleteOne {
+	return c.DeleteOneID(pl.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *PortfolioLinkClient) DeleteOneID(id int) *PortfolioLinkDeleteOne {
+	builder := c.Delete().Where(portfoliolink.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PortfolioLinkDeleteOne{builder}
+}
+
+// Query returns a query builder for PortfolioLink.
+func (c *PortfolioLinkClient) Query() *PortfolioLinkQuery {
+	return &PortfolioLinkQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a PortfolioLink entity by its id.
+func (c *PortfolioLinkClient) Get(ctx context.Context, id int) (*PortfolioLink, error) {
+	return c.Query().Where(portfoliolink.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PortfolioLinkClient) GetX(ctx context.Context, id int) *PortfolioLink {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryApplicant queries the applicant edge of a PortfolioLink.
+func (c *PortfolioLinkClient) QueryApplicant(pl *PortfolioLink) *ApplicantQuery {
+	query := &ApplicantQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(portfoliolink.Table, portfoliolink.FieldID, id),
+			sqlgraph.To(applicant.Table, applicant.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, portfoliolink.ApplicantTable, portfoliolink.ApplicantColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PortfolioLinkClient) Hooks() []Hook {
+	return c.hooks.PortfolioLink
 }

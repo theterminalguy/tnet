@@ -91,5 +91,7 @@ func (Applicant) Edges() []ent.Edge {
 			From("referrer").
 			Unique().
 			Field("referrer_id"),
+		
+		edge.To("portfoliolinks", PortfolioLink.Type),
 	}
 }
