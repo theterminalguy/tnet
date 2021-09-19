@@ -30,12 +30,25 @@ func DefineRoutes() {
 func createRoutes(h RouteHandler, e *echo.Echo, m ...echo.MiddlewareFunc) {
 	basePath := fmt.Sprintf("/%s", h.BasePath())
 
-	e.GET(fmt.Sprintf("%s/ReadByID", basePath), h.ReadByID, m...)
-	e.GET(fmt.Sprintf("%s/ReadAll", basePath), h.ReadAll, m...)
+	// define READ paths
+	readbyIDPath := fmt.Sprintf("%s/ReadByID", basePath)
+	readAllPath := fmt.Sprintf("%s/ReadAll", basePath)
 
-	e.POST(fmt.Sprintf("%s/CreateOne", basePath), h.CreateOne, m...)
+	// define CREATE paths
+	createOnePath := fmt.Sprintf("%s/CreateOne", basePath)
 
-	e.PUT(fmt.Sprintf("%s/UpdateByID", basePath), h.UpdateByID, m...)
+	// define UPDATE paths
+	updateByIDPath := fmt.Sprintf("%s/UpdateByID", basePath)
 
-	e.DELETE(fmt.Sprintf("%s/DeleteOne", basePath), h.DeleteOne, m...)
+	// define DELETE paths
+	deleteOnePath := fmt.Sprintf("%s/DeleteOne", basePath)
+
+	e.GET(readbyIDPath, h.ReadByID, m...)
+	e.GET(readAllPath, h.ReadAll, m...)
+
+	e.POST(createOnePath, h.CreateOne, m...)
+
+	e.PUT(updateByIDPath, h.UpdateByID, m...)
+
+	e.DELETE(deleteOnePath, h.DeleteOne, m...)
 }
