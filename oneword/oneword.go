@@ -12,6 +12,7 @@ const (
 	Phone                 string = "phone"
 	Title                 string = "title"
 	Hiring                string = "hiring"
+	Status                string = "status"
 	WeHave                string = "we_have"
 	YouHave               string = "you_have"
 	Summary               string = "summary"
@@ -23,6 +24,7 @@ const (
 	UpdatedAt             string = "updated_at"
 	DeletedAt             string = "deleted_at"
 	Thumbnail             string = "thumbnail"
+	Screening             string = "screening"
 	Preferred             string = "preferred"
 	FirstName             string = "first_name"
 	TenTNCode             string = "tentn_code"
@@ -32,22 +34,27 @@ const (
 	Requirements          string = "requirements"
 	PreferredName         string = "preferred_name"
 	JoinedTenTNAt         string = "joined_tentn_at"
+	ReferralSource        string = "referral_source"
 	YearsOfExperience     string = "years_of_experience"
 	PreferredJobTitle     string = "preferred_job_title"
 	ProfessionalStartDate string = "professional_start_date"
 
 	// Database References
-	Skills         string = "skills"
-	Referrer       string = "referrer"
-	Referees       string = "referees"
-	Applicant      string = "applicant"
-	PortfolioLinks string = "portfoliolinks"
+	Job             string = "job"
+	Skills          string = "skills"
+	Referrer        string = "referrer"
+	Referees        string = "referees"
+	Applicant       string = "applicant"
+	Applications    string = "applications"
+	JobApplications string = "job_applications"
+	PortfolioLinks  string = "portfoliolinks"
 
 	// Foreign Keys
+	JobID       string = "job_id"
 	ReferrerID  string = "referrer_id"
 	ApplicantID string = "applicant_id"
 
 	// Default field values
-	NULL string = "NULL"
-	RemoteEarth = "Remote, Earth"
+	NULL        string = "NULL"
+	RemoteEarth string = "Remote, Earth"
 )
