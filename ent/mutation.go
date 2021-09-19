@@ -1582,7 +1582,7 @@ type JobMutation struct {
 	created_at    *time.Time
 	updated_at    *time.Time
 	deleted_at    *time.Time
-	hiring        *bool
+	hirings       *bool
 	title         *string
 	slug          *string
 	location      *string
@@ -1822,40 +1822,40 @@ func (m *JobMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 }
 
-// SetHiring sets the "hiring" field.
-func (m *JobMutation) SetHiring(b bool) {
-	m.hiring = &b
+// SetHirings sets the "hirings" field.
+func (m *JobMutation) SetHirings(b bool) {
+	m.hirings = &b
 }
 
-// Hiring returns the value of the "hiring" field in the mutation.
-func (m *JobMutation) Hiring() (r bool, exists bool) {
-	v := m.hiring
+// Hirings returns the value of the "hirings" field in the mutation.
+func (m *JobMutation) Hirings() (r bool, exists bool) {
+	v := m.hirings
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldHiring returns the old "hiring" field's value of the Job entity.
+// OldHirings returns the old "hirings" field's value of the Job entity.
 // If the Job object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *JobMutation) OldHiring(ctx context.Context) (v bool, err error) {
+func (m *JobMutation) OldHirings(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldHiring is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldHirings is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldHiring requires an ID field in the mutation")
+		return v, fmt.Errorf("OldHirings requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldHiring: %w", err)
+		return v, fmt.Errorf("querying old value for OldHirings: %w", err)
 	}
-	return oldValue.Hiring, nil
+	return oldValue.Hirings, nil
 }
 
-// ResetHiring resets all changes to the "hiring" field.
-func (m *JobMutation) ResetHiring() {
-	m.hiring = nil
+// ResetHirings resets all changes to the "hirings" field.
+func (m *JobMutation) ResetHirings() {
+	m.hirings = nil
 }
 
 // SetTitle sets the "title" field.
@@ -2250,8 +2250,8 @@ func (m *JobMutation) Fields() []string {
 	if m.deleted_at != nil {
 		fields = append(fields, job.FieldDeletedAt)
 	}
-	if m.hiring != nil {
-		fields = append(fields, job.FieldHiring)
+	if m.hirings != nil {
+		fields = append(fields, job.FieldHirings)
 	}
 	if m.title != nil {
 		fields = append(fields, job.FieldTitle)
@@ -2299,8 +2299,8 @@ func (m *JobMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case job.FieldDeletedAt:
 		return m.DeletedAt()
-	case job.FieldHiring:
-		return m.Hiring()
+	case job.FieldHirings:
+		return m.Hirings()
 	case job.FieldTitle:
 		return m.Title()
 	case job.FieldSlug:
@@ -2338,8 +2338,8 @@ func (m *JobMutation) OldField(ctx context.Context, name string) (ent.Value, err
 		return m.OldUpdatedAt(ctx)
 	case job.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case job.FieldHiring:
-		return m.OldHiring(ctx)
+	case job.FieldHirings:
+		return m.OldHirings(ctx)
 	case job.FieldTitle:
 		return m.OldTitle(ctx)
 	case job.FieldSlug:
@@ -2397,12 +2397,12 @@ func (m *JobMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case job.FieldHiring:
+	case job.FieldHirings:
 		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetHiring(v)
+		m.SetHirings(v)
 		return nil
 	case job.FieldTitle:
 		v, ok := value.(string)
@@ -2535,8 +2535,8 @@ func (m *JobMutation) ResetField(name string) error {
 	case job.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case job.FieldHiring:
-		m.ResetHiring()
+	case job.FieldHirings:
+		m.ResetHirings()
 		return nil
 	case job.FieldTitle:
 		m.ResetTitle()

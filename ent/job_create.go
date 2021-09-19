@@ -69,16 +69,16 @@ func (jc *JobCreate) SetNillableDeletedAt(t *time.Time) *JobCreate {
 	return jc
 }
 
-// SetHiring sets the "hiring" field.
-func (jc *JobCreate) SetHiring(b bool) *JobCreate {
-	jc.mutation.SetHiring(b)
+// SetHirings sets the "hirings" field.
+func (jc *JobCreate) SetHirings(b bool) *JobCreate {
+	jc.mutation.SetHirings(b)
 	return jc
 }
 
-// SetNillableHiring sets the "hiring" field if the given value is not nil.
-func (jc *JobCreate) SetNillableHiring(b *bool) *JobCreate {
+// SetNillableHirings sets the "hirings" field if the given value is not nil.
+func (jc *JobCreate) SetNillableHirings(b *bool) *JobCreate {
 	if b != nil {
-		jc.SetHiring(*b)
+		jc.SetHirings(*b)
 	}
 	return jc
 }
@@ -238,9 +238,9 @@ func (jc *JobCreate) defaults() {
 		v := job.DefaultDeletedAt()
 		jc.mutation.SetDeletedAt(v)
 	}
-	if _, ok := jc.mutation.Hiring(); !ok {
-		v := job.DefaultHiring
-		jc.mutation.SetHiring(v)
+	if _, ok := jc.mutation.Hirings(); !ok {
+		v := job.DefaultHirings
+		jc.mutation.SetHirings(v)
 	}
 	if _, ok := jc.mutation.Location(); !ok {
 		v := job.DefaultLocation
@@ -262,8 +262,8 @@ func (jc *JobCreate) check() error {
 	if _, ok := jc.mutation.DeletedAt(); !ok {
 		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "deleted_at"`)}
 	}
-	if _, ok := jc.mutation.Hiring(); !ok {
-		return &ValidationError{Name: "hiring", err: errors.New(`ent: missing required field "hiring"`)}
+	if _, ok := jc.mutation.Hirings(); !ok {
+		return &ValidationError{Name: "hirings", err: errors.New(`ent: missing required field "hirings"`)}
 	}
 	if _, ok := jc.mutation.Title(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "title"`)}
@@ -364,13 +364,13 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 		})
 		_node.DeletedAt = value
 	}
-	if value, ok := jc.mutation.Hiring(); ok {
+	if value, ok := jc.mutation.Hirings(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: job.FieldHiring,
+			Column: job.FieldHirings,
 		})
-		_node.Hiring = value
+		_node.Hirings = value
 	}
 	if value, ok := jc.mutation.Title(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

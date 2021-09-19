@@ -54,16 +54,16 @@ func (ju *JobUpdate) SetNillableDeletedAt(t *time.Time) *JobUpdate {
 	return ju
 }
 
-// SetHiring sets the "hiring" field.
-func (ju *JobUpdate) SetHiring(b bool) *JobUpdate {
-	ju.mutation.SetHiring(b)
+// SetHirings sets the "hirings" field.
+func (ju *JobUpdate) SetHirings(b bool) *JobUpdate {
+	ju.mutation.SetHirings(b)
 	return ju
 }
 
-// SetNillableHiring sets the "hiring" field if the given value is not nil.
-func (ju *JobUpdate) SetNillableHiring(b *bool) *JobUpdate {
+// SetNillableHirings sets the "hirings" field if the given value is not nil.
+func (ju *JobUpdate) SetNillableHirings(b *bool) *JobUpdate {
 	if b != nil {
-		ju.SetHiring(*b)
+		ju.SetHirings(*b)
 	}
 	return ju
 }
@@ -264,11 +264,11 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: job.FieldDeletedAt,
 		})
 	}
-	if value, ok := ju.mutation.Hiring(); ok {
+	if value, ok := ju.mutation.Hirings(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: job.FieldHiring,
+			Column: job.FieldHirings,
 		})
 	}
 	if value, ok := ju.mutation.Title(); ok {
@@ -386,16 +386,16 @@ func (juo *JobUpdateOne) SetNillableDeletedAt(t *time.Time) *JobUpdateOne {
 	return juo
 }
 
-// SetHiring sets the "hiring" field.
-func (juo *JobUpdateOne) SetHiring(b bool) *JobUpdateOne {
-	juo.mutation.SetHiring(b)
+// SetHirings sets the "hirings" field.
+func (juo *JobUpdateOne) SetHirings(b bool) *JobUpdateOne {
+	juo.mutation.SetHirings(b)
 	return juo
 }
 
-// SetNillableHiring sets the "hiring" field if the given value is not nil.
-func (juo *JobUpdateOne) SetNillableHiring(b *bool) *JobUpdateOne {
+// SetNillableHirings sets the "hirings" field if the given value is not nil.
+func (juo *JobUpdateOne) SetNillableHirings(b *bool) *JobUpdateOne {
 	if b != nil {
-		juo.SetHiring(*b)
+		juo.SetHirings(*b)
 	}
 	return juo
 }
@@ -620,11 +620,11 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 			Column: job.FieldDeletedAt,
 		})
 	}
-	if value, ok := juo.mutation.Hiring(); ok {
+	if value, ok := juo.mutation.Hirings(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: job.FieldHiring,
+			Column: job.FieldHirings,
 		})
 	}
 	if value, ok := juo.mutation.Title(); ok {

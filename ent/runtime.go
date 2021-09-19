@@ -93,10 +93,10 @@ func init() {
 	jobDescDeletedAt := jobMixinFields1[2].Descriptor()
 	// job.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	job.DefaultDeletedAt = jobDescDeletedAt.Default.(func() time.Time)
-	// jobDescHiring is the schema descriptor for hiring field.
-	jobDescHiring := jobFields[0].Descriptor()
-	// job.DefaultHiring holds the default value on creation for the hiring field.
-	job.DefaultHiring = jobDescHiring.Default.(bool)
+	// jobDescHirings is the schema descriptor for hirings field.
+	jobDescHirings := jobFields[0].Descriptor()
+	// job.DefaultHirings holds the default value on creation for the hirings field.
+	job.DefaultHirings = jobDescHirings.Default.(bool)
 	// jobDescLocation is the schema descriptor for location field.
 	jobDescLocation := jobFields[3].Descriptor()
 	// job.DefaultLocation holds the default value on creation for the location field.

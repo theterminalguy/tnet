@@ -22,8 +22,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldHiring holds the string denoting the hiring field in the database.
-	FieldHiring = "hiring"
+	// FieldHirings holds the string denoting the hirings field in the database.
+	FieldHirings = "hirings"
 	// FieldTitle holds the string denoting the title field in the database.
 	FieldTitle = "title"
 	// FieldSlug holds the string denoting the slug field in the database.
@@ -55,7 +55,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldHiring,
+	FieldHirings,
 	FieldTitle,
 	FieldSlug,
 	FieldLocation,
@@ -89,8 +89,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultDeletedAt holds the default value on creation for the "deleted_at" field.
 	DefaultDeletedAt func() time.Time
-	// DefaultHiring holds the default value on creation for the "hiring" field.
-	DefaultHiring bool
+	// DefaultHirings holds the default value on creation for the "hirings" field.
+	DefaultHirings bool
 	// DefaultLocation holds the default value on creation for the "location" field.
 	DefaultLocation string
 )

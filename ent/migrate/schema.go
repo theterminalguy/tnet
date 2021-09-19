@@ -68,7 +68,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime},
-		{Name: "hiring", Type: field.TypeBool, Default: false},
+		{Name: "hirings", Type: field.TypeBool, Default: false},
 		{Name: "title", Type: field.TypeString},
 		{Name: "slug", Type: field.TypeString, Unique: true},
 		{Name: "location", Type: field.TypeString, Default: "Remote, Earth"},

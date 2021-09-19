@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+	"github.com/10hourlabs/tentn/oneword"
 )
 
 // Job holds the schema definition for the Job entity.
@@ -19,46 +20,63 @@ func (Job) Mixin() []ent.Mixin {
 	}
 }
 
+func EmploymentTypes() []string {
+	return []string{
+		"part_time",
+		"full_time",
+		"contract",
+	}
+}
+
+func JobCategories() []string {
+	return []string{
+		"engineering",
+		"product_design",
+		"sales",
+		"marketing",
+	}
+}
+
 // Fields of the Job.
 func (Job) Fields() []ent.Field {
 	return []ent.Field{
-		field.Bool("hiring").
+		field.Bool(oneword.Hiring).
 			Default(false),
 
-		field.String("title"),
+		field.String(oneword.Title),
 
-		field.String("slug").
+		field.String(oneword.Slug).
 			Unique(),
 
-		field.String("location").
-			Default("Remote, Earth"),
+		field.String(oneword.Location).
+			Default(oneword.RemoteEarth),
 
-		field.String("summary"),
-
-		// TODO: Add endpoint for returning these values
-		field.Enum("employment").
-			Values("part_time", "full_time", "contract"),
+		field.String(oneword.Summary),
 
 		// TODO: Add endpoint for returning these values
-		field.Enum("category").
-			Values("engineering", "product_design", "sales", "marketing"),
+		field.Enum(oneword.Employment).
+			Values(EmploymentTypes()...),
 
-		field.String("thumbnail"),
+		// TODO: Add endpoint for returning these values
+		field.Enum(oneword.Category).
+			Values(JobCategories()...),
 
-		field.JSON("wehave", []string{}),
+		field.String(oneword.Thumbnail),
 
-		field.JSON("requirements", []string{}),
+		field.JSON(oneword.WeHave, []string{}),
 
-		field.JSON("youhave", []string{}),
+		field.JSON(oneword.Requirements, []string{}),
+
+		field.JSON(oneword.YouHave, []string{}),
 	}
 }
 
 // Indexes for the Job
 func (Job) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("title"),
+		index.Fields(oneword.Title),
 
-		index.Fields("slug").
+		index.Fields(oneword.Slug).
 			Unique(),
 	}
 }
