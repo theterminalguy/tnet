@@ -16,7 +16,7 @@ type Applicant struct {
 	ent.Schema
 }
 
-// Mixins for the Job
+// Mixins for Applicant
 func (Applicant) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		UUIDMixin{},

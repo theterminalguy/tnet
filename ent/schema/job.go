@@ -11,7 +11,7 @@ type Job struct {
 	ent.Schema
 }
 
-// Mixins for the Job
+// Mixins for Job
 func (Job) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		UUIDMixin{},
