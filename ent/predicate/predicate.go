@@ -6,5 +6,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Applicant is the predicate function for applicant builders.
+type Applicant func(*sql.Selector)
+
 // Job is the predicate function for job builders.
 type Job func(*sql.Selector)

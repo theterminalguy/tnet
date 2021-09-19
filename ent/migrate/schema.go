@@ -8,6 +8,59 @@ import (
 )
 
 var (
+	// ApplicantsColumns holds the columns for the "applicants" table.
+	ApplicantsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime},
+		{Name: "first_name", Type: field.TypeString},
+		{Name: "last_name", Type: field.TypeString},
+		{Name: "preferred_name", Type: field.TypeString},
+		{Name: "pronoun", Type: field.TypeString},
+		{Name: "preferred_job_title", Type: field.TypeString},
+		{Name: "referral_code", Type: field.TypeString, Default: "NULL"},
+		{Name: "tentn_code", Type: field.TypeString, Unique: true},
+		{Name: "professional_start_date", Type: field.TypeTime},
+		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "phone", Type: field.TypeString, Unique: true},
+		{Name: "country_code", Type: field.TypeString, Size: 2},
+		{Name: "city", Type: field.TypeString},
+		{Name: "joined_tentn_at", Type: field.TypeTime},
+		{Name: "referrer_id", Type: field.TypeInt, Nullable: true},
+	}
+	// ApplicantsTable holds the schema information for the "applicants" table.
+	ApplicantsTable = &schema.Table{
+		Name:       "applicants",
+		Columns:    ApplicantsColumns,
+		PrimaryKey: []*schema.Column{ApplicantsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "applicants_applicants_referees",
+				Columns:    []*schema.Column{ApplicantsColumns[18]},
+				RefColumns: []*schema.Column{ApplicantsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "applicant_uuid",
+				Unique:  true,
+				Columns: []*schema.Column{ApplicantsColumns[1]},
+			},
+			{
+				Name:    "applicant_referral_code_referrer_id",
+				Unique:  false,
+				Columns: []*schema.Column{ApplicantsColumns[10], ApplicantsColumns[18]},
+			},
+			{
+				Name:    "applicant_tentn_code_email_phone",
+				Unique:  true,
+				Columns: []*schema.Column{ApplicantsColumns[11], ApplicantsColumns[13], ApplicantsColumns[14]},
+			},
+		},
+	}
 	// JobsColumns holds the columns for the "jobs" table.
 	JobsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -52,9 +105,11 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		ApplicantsTable,
 		JobsTable,
 	}
 )
 
 func init() {
+	ApplicantsTable.ForeignKeys[0].RefTable = ApplicantsTable
 }

@@ -9,10 +9,12 @@ import (
 
 	"github.com/10hourlabs/tentn/ent/migrate"
 
+	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/job"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // Client is the client that holds all ent builders.
@@ -20,6 +22,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Applicant is the client for interacting with the Applicant builders.
+	Applicant *ApplicantClient
 	// Job is the client for interacting with the Job builders.
 	Job *JobClient
 }
@@ -35,6 +39,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Applicant = NewApplicantClient(c.config)
 	c.Job = NewJobClient(c.config)
 }
 
@@ -67,9 +72,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Job:    NewJobClient(cfg),
+		ctx:       ctx,
+		config:    cfg,
+		Applicant: NewApplicantClient(cfg),
+		Job:       NewJobClient(cfg),
 	}, nil
 }
 
@@ -87,15 +93,16 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config: cfg,
-		Job:    NewJobClient(cfg),
+		config:    cfg,
+		Applicant: NewApplicantClient(cfg),
+		Job:       NewJobClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Job.
+//		Applicant.
 //		Query().
 //		Count(ctx)
 //
@@ -118,7 +125,130 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.Applicant.Use(hooks...)
 	c.Job.Use(hooks...)
+}
+
+// ApplicantClient is a client for the Applicant schema.
+type ApplicantClient struct {
+	config
+}
+
+// NewApplicantClient returns a client for the Applicant from the given config.
+func NewApplicantClient(c config) *ApplicantClient {
+	return &ApplicantClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `applicant.Hooks(f(g(h())))`.
+func (c *ApplicantClient) Use(hooks ...Hook) {
+	c.hooks.Applicant = append(c.hooks.Applicant, hooks...)
+}
+
+// Create returns a create builder for Applicant.
+func (c *ApplicantClient) Create() *ApplicantCreate {
+	mutation := newApplicantMutation(c.config, OpCreate)
+	return &ApplicantCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Applicant entities.
+func (c *ApplicantClient) CreateBulk(builders ...*ApplicantCreate) *ApplicantCreateBulk {
+	return &ApplicantCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Applicant.
+func (c *ApplicantClient) Update() *ApplicantUpdate {
+	mutation := newApplicantMutation(c.config, OpUpdate)
+	return &ApplicantUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ApplicantClient) UpdateOne(a *Applicant) *ApplicantUpdateOne {
+	mutation := newApplicantMutation(c.config, OpUpdateOne, withApplicant(a))
+	return &ApplicantUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ApplicantClient) UpdateOneID(id int) *ApplicantUpdateOne {
+	mutation := newApplicantMutation(c.config, OpUpdateOne, withApplicantID(id))
+	return &ApplicantUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Applicant.
+func (c *ApplicantClient) Delete() *ApplicantDelete {
+	mutation := newApplicantMutation(c.config, OpDelete)
+	return &ApplicantDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ApplicantClient) DeleteOne(a *Applicant) *ApplicantDeleteOne {
+	return c.DeleteOneID(a.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ApplicantClient) DeleteOneID(id int) *ApplicantDeleteOne {
+	builder := c.Delete().Where(applicant.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ApplicantDeleteOne{builder}
+}
+
+// Query returns a query builder for Applicant.
+func (c *ApplicantClient) Query() *ApplicantQuery {
+	return &ApplicantQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Applicant entity by its id.
+func (c *ApplicantClient) Get(ctx context.Context, id int) (*Applicant, error) {
+	return c.Query().Where(applicant.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ApplicantClient) GetX(ctx context.Context, id int) *Applicant {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryReferrer queries the referrer edge of a Applicant.
+func (c *ApplicantClient) QueryReferrer(a *Applicant) *ApplicantQuery {
+	query := &ApplicantQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(applicant.Table, applicant.FieldID, id),
+			sqlgraph.To(applicant.Table, applicant.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, applicant.ReferrerTable, applicant.ReferrerColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryReferees queries the referees edge of a Applicant.
+func (c *ApplicantClient) QueryReferees(a *Applicant) *ApplicantQuery {
+	query := &ApplicantQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(applicant.Table, applicant.FieldID, id),
+			sqlgraph.To(applicant.Table, applicant.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, applicant.RefereesTable, applicant.RefereesColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ApplicantClient) Hooks() []Hook {
+	return c.hooks.Applicant
 }
 
 // JobClient is a client for the Job schema.
