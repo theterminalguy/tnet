@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+	"github.com/10hourlabs/tentn/oneword"
 )
 
 // Skill holds the schema definition for the Skill entity.
@@ -17,10 +18,10 @@ func (Skill) Mixin() []ent.Mixin {
 		UUIDMixin{},
 		TimeStampMixin{},
 		BelongsToMixin{
-			ParentName: "applicant",
+			ParentName: oneword.Applicant,
 			ParentType: Applicant.Type,
-			Ref:        "skills",
-			ForeignKey: "applicant_id",
+			Ref:        oneword.Skills,
+			ForeignKey: oneword.ApplicantID,
 		},
 	}
 }
@@ -28,22 +29,22 @@ func (Skill) Mixin() []ent.Mixin {
 // Fields of the Skill.
 func (Skill) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("name"),
+		field.String(oneword.Name),
 
-		field.Float32("years_of_experience").
+		field.Float32(oneword.YearsOfExperience).
 			Min(1.0),
 
-		field.Bool("preferred").
+		field.Bool(oneword.Preferred).
 			Default(false),
 
-		field.Text("note"),
+		field.Text(oneword.Note),
 	}
 }
 
 // Indexes for SKill
 func (Skill) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("name"),
+		index.Fields(oneword.Name),
 	}
 }
 

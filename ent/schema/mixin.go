@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
+	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 )
 
@@ -17,15 +18,15 @@ type TimeStampMixin struct {
 
 func (TimeStampMixin) Fields() []ent.Field {
 	return []ent.Field{
-		field.Time("created_at").
+		field.Time(oneword.CreatedAt).
 			Immutable().
 			Default(time.Now),
 
-		field.Time("updated_at").
+		field.Time(oneword.UpdatedAt).
 			Default(time.Now).
 			UpdateDefault(time.Now),
 
-		field.Time("deleted_at").
+		field.Time(oneword.DeletedAt).
 			Default(time.Now),
 	}
 }
@@ -36,7 +37,7 @@ type UUIDMixin struct {
 
 func (UUIDMixin) Fields() []ent.Field {
 	return []ent.Field{
-		field.UUID("uuid", uuid.UUID{}).
+		field.UUID(oneword.UUID, uuid.UUID{}).
 			Unique().
 			Default(uuid.New),
 	}
@@ -44,7 +45,7 @@ func (UUIDMixin) Fields() []ent.Field {
 
 func (UUIDMixin) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("uuid").
+		index.Fields(oneword.UUID).
 			Unique(),
 	}
 }

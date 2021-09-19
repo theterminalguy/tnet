@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"entgo.io/ent/schema/edge"
+	"github.com/10hourlabs/tentn/oneword"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
@@ -27,22 +28,22 @@ func (Applicant) Mixin() []ent.Mixin {
 // Fields of the Applicant.
 func (Applicant) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("first_name"),
-		field.String("last_name"),
-		field.String("preferred_name"),
+		field.String(oneword.FirstName),
+		field.String(oneword.LastName),
+		field.String(oneword.PreferredName),
 
-		field.String("pronoun"),
+		field.String(oneword.Pronoun),
 
-		field.String("preferred_job_title"),
+		field.String(oneword.PreferredJobTitle),
 
-		field.Int("referrer_id").
+		field.Int(oneword.ReferrerID).
 			Optional(),
 
-		field.String("referral_code").
-			Default("NULL").
+		field.String(oneword.ReferralCode).
+			Default(oneword.NULL).
 			Immutable(),
 
-		field.String("tentn_code").
+		field.String(oneword.TenTNCode).
 			// TODO extract this default logic for ease of testing
 			DefaultFunc(func() (code string) {
 				b := make([]byte, 5)
@@ -57,29 +58,29 @@ func (Applicant) Fields() []ent.Field {
 			Unique().
 			Immutable(),
 
-		field.Time("professional_start_date"),
+		field.Time(oneword.ProfessionalStartDate),
 
-		field.String("email").
+		field.String(oneword.Email).
 			Unique(),
 
-		field.String("phone").
+		field.String(oneword.Phone).
 			Unique(),
 
-		field.String("country_code").
+		field.String(oneword.CoutryCode).
 			MinLen(2).
 			MaxLen(2),
 
-		field.String("city"),
+		field.String(oneword.City),
 
-		field.Time("joined_tentn_at"),
+		field.Time(oneword.JoinedTenTNAt),
 	}
 }
 
 func (Applicant) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("referral_code", "referrer_id"),
+		index.Fields(oneword.ReferralCode, oneword.ReferrerID),
 
-		index.Fields("tentn_code", "email", "phone").
+		index.Fields(oneword.TenTNCode, oneword.Email, oneword.Phone).
 			Unique(),
 	}
 }
@@ -87,13 +88,13 @@ func (Applicant) Indexes() []ent.Index {
 // Edges of the Applicant.
 func (Applicant) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("referees", Applicant.Type).
-			From("referrer").
+		edge.To(oneword.Referees, Applicant.Type).
+			From(oneword.Referrer).
 			Unique().
-			Field("referrer_id"),
-		
-		edge.To("portfoliolinks", PortfolioLink.Type),
+			Field(oneword.ReferrerID),
 
-		edge.To("skills", Skill.Type),
+		edge.To(oneword.PortfolioLinks, PortfolioLink.Type),
+
+		edge.To(oneword.Skills, Skill.Type),
 	}
 }
