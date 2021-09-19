@@ -16,6 +16,8 @@ type Tx struct {
 	Applicant *ApplicantClient
 	// Job is the client for interacting with the Job builders.
 	Job *JobClient
+	// JobApplication is the client for interacting with the JobApplication builders.
+	JobApplication *JobApplicationClient
 	// PortfolioLink is the client for interacting with the PortfolioLink builders.
 	PortfolioLink *PortfolioLinkClient
 	// Skill is the client for interacting with the Skill builders.
@@ -157,6 +159,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Applicant = NewApplicantClient(tx.config)
 	tx.Job = NewJobClient(tx.config)
+	tx.JobApplication = NewJobApplicationClient(tx.config)
 	tx.PortfolioLink = NewPortfolioLinkClient(tx.config)
 	tx.Skill = NewSkillClient(tx.config)
 }

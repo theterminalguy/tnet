@@ -57,6 +57,8 @@ const (
 	EdgePortfoliolinks = "portfoliolinks"
 	// EdgeSkills holds the string denoting the skills edge name in mutations.
 	EdgeSkills = "skills"
+	// EdgeJobApplications holds the string denoting the job_applications edge name in mutations.
+	EdgeJobApplications = "job_applications"
 	// Table holds the table name of the applicant in the database.
 	Table = "applicants"
 	// ReferrerTable is the table that holds the referrer relation/edge.
@@ -81,6 +83,13 @@ const (
 	SkillsInverseTable = "skills"
 	// SkillsColumn is the table column denoting the skills relation/edge.
 	SkillsColumn = "applicant_id"
+	// JobApplicationsTable is the table that holds the job_applications relation/edge.
+	JobApplicationsTable = "job_applications"
+	// JobApplicationsInverseTable is the table name for the JobApplication entity.
+	// It exists in this package in order to avoid circular dependency with the "jobapplication" package.
+	JobApplicationsInverseTable = "job_applications"
+	// JobApplicationsColumn is the table column denoting the job_applications relation/edge.
+	JobApplicationsColumn = "applicant_id"
 )
 
 // Columns holds all SQL columns for applicant fields.

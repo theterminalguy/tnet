@@ -48,6 +48,27 @@ type Job struct {
 	Requirements []string `json:"requirements,omitempty"`
 	// YouHave holds the value of the "you_have" field.
 	YouHave []string `json:"you_have,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the JobQuery when eager-loading is set.
+	Edges JobEdges `json:"edges"`
+}
+
+// JobEdges holds the relations/edges for other nodes in the graph.
+type JobEdges struct {
+	// Applications holds the value of the applications edge.
+	Applications []*JobApplication `json:"applications,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// ApplicationsOrErr returns the Applications value or an error if the edge
+// was not loaded in eager-loading.
+func (e JobEdges) ApplicationsOrErr() ([]*JobApplication, error) {
+	if e.loadedTypes[0] {
+		return e.Applications, nil
+	}
+	return nil, &NotLoadedError{edge: "applications"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -187,6 +208,11 @@ func (j *Job) assignValues(columns []string, values []interface{}) error {
 		}
 	}
 	return nil
+}
+
+// QueryApplications queries the "applications" edge of the Job entity.
+func (j *Job) QueryApplications() *JobApplicationQuery {
+	return (&JobClient{config: j.config}).QueryApplications(j)
 }
 
 // Update returns a builder for updating this Job.

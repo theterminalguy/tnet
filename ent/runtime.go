@@ -7,6 +7,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/schema"
 	"github.com/10hourlabs/tentn/ent/skill"
@@ -101,6 +102,31 @@ func init() {
 	jobDescLocation := jobFields[3].Descriptor()
 	// job.DefaultLocation holds the default value on creation for the location field.
 	job.DefaultLocation = jobDescLocation.Default.(string)
+	jobapplicationMixin := schema.JobApplication{}.Mixin()
+	jobapplicationMixinFields0 := jobapplicationMixin[0].Fields()
+	_ = jobapplicationMixinFields0
+	jobapplicationMixinFields1 := jobapplicationMixin[1].Fields()
+	_ = jobapplicationMixinFields1
+	jobapplicationFields := schema.JobApplication{}.Fields()
+	_ = jobapplicationFields
+	// jobapplicationDescUUID is the schema descriptor for uuid field.
+	jobapplicationDescUUID := jobapplicationMixinFields0[0].Descriptor()
+	// jobapplication.DefaultUUID holds the default value on creation for the uuid field.
+	jobapplication.DefaultUUID = jobapplicationDescUUID.Default.(func() uuid.UUID)
+	// jobapplicationDescCreatedAt is the schema descriptor for created_at field.
+	jobapplicationDescCreatedAt := jobapplicationMixinFields1[0].Descriptor()
+	// jobapplication.DefaultCreatedAt holds the default value on creation for the created_at field.
+	jobapplication.DefaultCreatedAt = jobapplicationDescCreatedAt.Default.(func() time.Time)
+	// jobapplicationDescUpdatedAt is the schema descriptor for updated_at field.
+	jobapplicationDescUpdatedAt := jobapplicationMixinFields1[1].Descriptor()
+	// jobapplication.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	jobapplication.DefaultUpdatedAt = jobapplicationDescUpdatedAt.Default.(func() time.Time)
+	// jobapplication.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	jobapplication.UpdateDefaultUpdatedAt = jobapplicationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// jobapplicationDescDeletedAt is the schema descriptor for deleted_at field.
+	jobapplicationDescDeletedAt := jobapplicationMixinFields1[2].Descriptor()
+	// jobapplication.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	jobapplication.DefaultDeletedAt = jobapplicationDescDeletedAt.Default.(func() time.Time)
 	portfoliolinkMixin := schema.PortfolioLink{}.Mixin()
 	portfoliolinkMixinFields0 := portfoliolinkMixin[0].Fields()
 	_ = portfoliolinkMixinFields0

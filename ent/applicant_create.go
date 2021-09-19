@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/applicant"
+	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/google/uuid"
@@ -227,6 +228,21 @@ func (ac *ApplicantCreate) AddSkills(s ...*Skill) *ApplicantCreate {
 		ids[i] = s[i].ID
 	}
 	return ac.AddSkillIDs(ids...)
+}
+
+// AddJobApplicationIDs adds the "job_applications" edge to the JobApplication entity by IDs.
+func (ac *ApplicantCreate) AddJobApplicationIDs(ids ...int) *ApplicantCreate {
+	ac.mutation.AddJobApplicationIDs(ids...)
+	return ac
+}
+
+// AddJobApplications adds the "job_applications" edges to the JobApplication entity.
+func (ac *ApplicantCreate) AddJobApplications(j ...*JobApplication) *ApplicantCreate {
+	ids := make([]int, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return ac.AddJobApplicationIDs(ids...)
 }
 
 // Mutation returns the ApplicantMutation object of the builder.
@@ -616,6 +632,25 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: skill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.JobApplicationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.JobApplicationsTable,
+			Columns: []string{applicant.JobApplicationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: jobapplication.FieldID,
 				},
 			},
 		}

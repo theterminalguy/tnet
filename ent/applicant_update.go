@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/applicant"
+	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/skill"
@@ -192,6 +193,21 @@ func (au *ApplicantUpdate) AddSkills(s ...*Skill) *ApplicantUpdate {
 	return au.AddSkillIDs(ids...)
 }
 
+// AddJobApplicationIDs adds the "job_applications" edge to the JobApplication entity by IDs.
+func (au *ApplicantUpdate) AddJobApplicationIDs(ids ...int) *ApplicantUpdate {
+	au.mutation.AddJobApplicationIDs(ids...)
+	return au
+}
+
+// AddJobApplications adds the "job_applications" edges to the JobApplication entity.
+func (au *ApplicantUpdate) AddJobApplications(j ...*JobApplication) *ApplicantUpdate {
+	ids := make([]int, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return au.AddJobApplicationIDs(ids...)
+}
+
 // Mutation returns the ApplicantMutation object of the builder.
 func (au *ApplicantUpdate) Mutation() *ApplicantMutation {
 	return au.mutation
@@ -264,6 +280,27 @@ func (au *ApplicantUpdate) RemoveSkills(s ...*Skill) *ApplicantUpdate {
 		ids[i] = s[i].ID
 	}
 	return au.RemoveSkillIDs(ids...)
+}
+
+// ClearJobApplications clears all "job_applications" edges to the JobApplication entity.
+func (au *ApplicantUpdate) ClearJobApplications() *ApplicantUpdate {
+	au.mutation.ClearJobApplications()
+	return au
+}
+
+// RemoveJobApplicationIDs removes the "job_applications" edge to JobApplication entities by IDs.
+func (au *ApplicantUpdate) RemoveJobApplicationIDs(ids ...int) *ApplicantUpdate {
+	au.mutation.RemoveJobApplicationIDs(ids...)
+	return au
+}
+
+// RemoveJobApplications removes "job_applications" edges to JobApplication entities.
+func (au *ApplicantUpdate) RemoveJobApplications(j ...*JobApplication) *ApplicantUpdate {
+	ids := make([]int, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return au.RemoveJobApplicationIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -658,6 +695,60 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if au.mutation.JobApplicationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.JobApplicationsTable,
+			Columns: []string{applicant.JobApplicationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: jobapplication.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedJobApplicationsIDs(); len(nodes) > 0 && !au.mutation.JobApplicationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.JobApplicationsTable,
+			Columns: []string{applicant.JobApplicationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: jobapplication.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.JobApplicationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.JobApplicationsTable,
+			Columns: []string{applicant.JobApplicationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: jobapplication.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{applicant.Label}
@@ -839,6 +930,21 @@ func (auo *ApplicantUpdateOne) AddSkills(s ...*Skill) *ApplicantUpdateOne {
 	return auo.AddSkillIDs(ids...)
 }
 
+// AddJobApplicationIDs adds the "job_applications" edge to the JobApplication entity by IDs.
+func (auo *ApplicantUpdateOne) AddJobApplicationIDs(ids ...int) *ApplicantUpdateOne {
+	auo.mutation.AddJobApplicationIDs(ids...)
+	return auo
+}
+
+// AddJobApplications adds the "job_applications" edges to the JobApplication entity.
+func (auo *ApplicantUpdateOne) AddJobApplications(j ...*JobApplication) *ApplicantUpdateOne {
+	ids := make([]int, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return auo.AddJobApplicationIDs(ids...)
+}
+
 // Mutation returns the ApplicantMutation object of the builder.
 func (auo *ApplicantUpdateOne) Mutation() *ApplicantMutation {
 	return auo.mutation
@@ -911,6 +1017,27 @@ func (auo *ApplicantUpdateOne) RemoveSkills(s ...*Skill) *ApplicantUpdateOne {
 		ids[i] = s[i].ID
 	}
 	return auo.RemoveSkillIDs(ids...)
+}
+
+// ClearJobApplications clears all "job_applications" edges to the JobApplication entity.
+func (auo *ApplicantUpdateOne) ClearJobApplications() *ApplicantUpdateOne {
+	auo.mutation.ClearJobApplications()
+	return auo
+}
+
+// RemoveJobApplicationIDs removes the "job_applications" edge to JobApplication entities by IDs.
+func (auo *ApplicantUpdateOne) RemoveJobApplicationIDs(ids ...int) *ApplicantUpdateOne {
+	auo.mutation.RemoveJobApplicationIDs(ids...)
+	return auo
+}
+
+// RemoveJobApplications removes "job_applications" edges to JobApplication entities.
+func (auo *ApplicantUpdateOne) RemoveJobApplications(j ...*JobApplication) *ApplicantUpdateOne {
+	ids := make([]int, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return auo.RemoveJobApplicationIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1321,6 +1448,60 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: skill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.JobApplicationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.JobApplicationsTable,
+			Columns: []string{applicant.JobApplicationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: jobapplication.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedJobApplicationsIDs(); len(nodes) > 0 && !auo.mutation.JobApplicationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.JobApplicationsTable,
+			Columns: []string{applicant.JobApplicationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: jobapplication.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.JobApplicationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.JobApplicationsTable,
+			Columns: []string{applicant.JobApplicationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: jobapplication.FieldID,
 				},
 			},
 		}

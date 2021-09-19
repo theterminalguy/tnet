@@ -11,6 +11,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/skill"
 
@@ -28,6 +29,8 @@ type Client struct {
 	Applicant *ApplicantClient
 	// Job is the client for interacting with the Job builders.
 	Job *JobClient
+	// JobApplication is the client for interacting with the JobApplication builders.
+	JobApplication *JobApplicationClient
 	// PortfolioLink is the client for interacting with the PortfolioLink builders.
 	PortfolioLink *PortfolioLinkClient
 	// Skill is the client for interacting with the Skill builders.
@@ -47,6 +50,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Applicant = NewApplicantClient(c.config)
 	c.Job = NewJobClient(c.config)
+	c.JobApplication = NewJobApplicationClient(c.config)
 	c.PortfolioLink = NewPortfolioLinkClient(c.config)
 	c.Skill = NewSkillClient(c.config)
 }
@@ -80,12 +84,13 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:           ctx,
-		config:        cfg,
-		Applicant:     NewApplicantClient(cfg),
-		Job:           NewJobClient(cfg),
-		PortfolioLink: NewPortfolioLinkClient(cfg),
-		Skill:         NewSkillClient(cfg),
+		ctx:            ctx,
+		config:         cfg,
+		Applicant:      NewApplicantClient(cfg),
+		Job:            NewJobClient(cfg),
+		JobApplication: NewJobApplicationClient(cfg),
+		PortfolioLink:  NewPortfolioLinkClient(cfg),
+		Skill:          NewSkillClient(cfg),
 	}, nil
 }
 
@@ -103,11 +108,12 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:        cfg,
-		Applicant:     NewApplicantClient(cfg),
-		Job:           NewJobClient(cfg),
-		PortfolioLink: NewPortfolioLinkClient(cfg),
-		Skill:         NewSkillClient(cfg),
+		config:         cfg,
+		Applicant:      NewApplicantClient(cfg),
+		Job:            NewJobClient(cfg),
+		JobApplication: NewJobApplicationClient(cfg),
+		PortfolioLink:  NewPortfolioLinkClient(cfg),
+		Skill:          NewSkillClient(cfg),
 	}, nil
 }
 
@@ -139,6 +145,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Applicant.Use(hooks...)
 	c.Job.Use(hooks...)
+	c.JobApplication.Use(hooks...)
 	c.PortfolioLink.Use(hooks...)
 	c.Skill.Use(hooks...)
 }
@@ -292,6 +299,22 @@ func (c *ApplicantClient) QuerySkills(a *Applicant) *SkillQuery {
 	return query
 }
 
+// QueryJobApplications queries the job_applications edge of a Applicant.
+func (c *ApplicantClient) QueryJobApplications(a *Applicant) *JobApplicationQuery {
+	query := &JobApplicationQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(applicant.Table, applicant.FieldID, id),
+			sqlgraph.To(jobapplication.Table, jobapplication.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, applicant.JobApplicationsTable, applicant.JobApplicationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ApplicantClient) Hooks() []Hook {
 	return c.hooks.Applicant
@@ -382,9 +405,147 @@ func (c *JobClient) GetX(ctx context.Context, id int) *Job {
 	return obj
 }
 
+// QueryApplications queries the applications edge of a Job.
+func (c *JobClient) QueryApplications(j *Job) *JobApplicationQuery {
+	query := &JobApplicationQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := j.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(job.Table, job.FieldID, id),
+			sqlgraph.To(jobapplication.Table, jobapplication.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, job.ApplicationsTable, job.ApplicationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(j.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *JobClient) Hooks() []Hook {
 	return c.hooks.Job
+}
+
+// JobApplicationClient is a client for the JobApplication schema.
+type JobApplicationClient struct {
+	config
+}
+
+// NewJobApplicationClient returns a client for the JobApplication from the given config.
+func NewJobApplicationClient(c config) *JobApplicationClient {
+	return &JobApplicationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `jobapplication.Hooks(f(g(h())))`.
+func (c *JobApplicationClient) Use(hooks ...Hook) {
+	c.hooks.JobApplication = append(c.hooks.JobApplication, hooks...)
+}
+
+// Create returns a create builder for JobApplication.
+func (c *JobApplicationClient) Create() *JobApplicationCreate {
+	mutation := newJobApplicationMutation(c.config, OpCreate)
+	return &JobApplicationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of JobApplication entities.
+func (c *JobApplicationClient) CreateBulk(builders ...*JobApplicationCreate) *JobApplicationCreateBulk {
+	return &JobApplicationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for JobApplication.
+func (c *JobApplicationClient) Update() *JobApplicationUpdate {
+	mutation := newJobApplicationMutation(c.config, OpUpdate)
+	return &JobApplicationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *JobApplicationClient) UpdateOne(ja *JobApplication) *JobApplicationUpdateOne {
+	mutation := newJobApplicationMutation(c.config, OpUpdateOne, withJobApplication(ja))
+	return &JobApplicationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *JobApplicationClient) UpdateOneID(id int) *JobApplicationUpdateOne {
+	mutation := newJobApplicationMutation(c.config, OpUpdateOne, withJobApplicationID(id))
+	return &JobApplicationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for JobApplication.
+func (c *JobApplicationClient) Delete() *JobApplicationDelete {
+	mutation := newJobApplicationMutation(c.config, OpDelete)
+	return &JobApplicationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *JobApplicationClient) DeleteOne(ja *JobApplication) *JobApplicationDeleteOne {
+	return c.DeleteOneID(ja.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *JobApplicationClient) DeleteOneID(id int) *JobApplicationDeleteOne {
+	builder := c.Delete().Where(jobapplication.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &JobApplicationDeleteOne{builder}
+}
+
+// Query returns a query builder for JobApplication.
+func (c *JobApplicationClient) Query() *JobApplicationQuery {
+	return &JobApplicationQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a JobApplication entity by its id.
+func (c *JobApplicationClient) Get(ctx context.Context, id int) (*JobApplication, error) {
+	return c.Query().Where(jobapplication.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *JobApplicationClient) GetX(ctx context.Context, id int) *JobApplication {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryApplicant queries the applicant edge of a JobApplication.
+func (c *JobApplicationClient) QueryApplicant(ja *JobApplication) *ApplicantQuery {
+	query := &ApplicantQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ja.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(jobapplication.Table, jobapplication.FieldID, id),
+			sqlgraph.To(applicant.Table, applicant.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, jobapplication.ApplicantTable, jobapplication.ApplicantColumn),
+		)
+		fromV = sqlgraph.Neighbors(ja.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryJob queries the job edge of a JobApplication.
+func (c *JobApplicationClient) QueryJob(ja *JobApplication) *JobQuery {
+	query := &JobQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ja.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(jobapplication.Table, jobapplication.FieldID, id),
+			sqlgraph.To(job.Table, job.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, jobapplication.JobTable, jobapplication.JobColumn),
+		)
+		fromV = sqlgraph.Neighbors(ja.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *JobApplicationClient) Hooks() []Hook {
+	return c.hooks.JobApplication
 }
 
 // PortfolioLinkClient is a client for the PortfolioLink schema.

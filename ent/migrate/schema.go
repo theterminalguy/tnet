@@ -103,6 +103,56 @@ var (
 			},
 		},
 	}
+	// JobApplicationsColumns holds the columns for the "job_applications" table.
+	JobApplicationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime},
+		{Name: "referral_source", Type: field.TypeString},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"screening", "shortlisted", "interviewing", "hired", "rejected"}, Default: "screening"},
+		{Name: "note", Type: field.TypeString, Size: 2147483647},
+		{Name: "applicant_id", Type: field.TypeInt, Nullable: true},
+		{Name: "job_id", Type: field.TypeInt, Nullable: true},
+	}
+	// JobApplicationsTable holds the schema information for the "job_applications" table.
+	JobApplicationsTable = &schema.Table{
+		Name:       "job_applications",
+		Columns:    JobApplicationsColumns,
+		PrimaryKey: []*schema.Column{JobApplicationsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "job_applications_applicants_job_applications",
+				Columns:    []*schema.Column{JobApplicationsColumns[8]},
+				RefColumns: []*schema.Column{ApplicantsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "job_applications_jobs_applications",
+				Columns:    []*schema.Column{JobApplicationsColumns[9]},
+				RefColumns: []*schema.Column{JobsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "jobapplication_uuid",
+				Unique:  true,
+				Columns: []*schema.Column{JobApplicationsColumns[1]},
+			},
+			{
+				Name:    "jobapplication_applicant_id",
+				Unique:  false,
+				Columns: []*schema.Column{JobApplicationsColumns[8]},
+			},
+			{
+				Name:    "jobapplication_job_id",
+				Unique:  false,
+				Columns: []*schema.Column{JobApplicationsColumns[9]},
+			},
+		},
+	}
 	// PortfolioLinksColumns holds the columns for the "portfolio_links" table.
 	PortfolioLinksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -188,6 +238,7 @@ var (
 	Tables = []*schema.Table{
 		ApplicantsTable,
 		JobsTable,
+		JobApplicationsTable,
 		PortfolioLinksTable,
 		SkillsTable,
 	}
@@ -195,6 +246,8 @@ var (
 
 func init() {
 	ApplicantsTable.ForeignKeys[0].RefTable = ApplicantsTable
+	JobApplicationsTable.ForeignKeys[0].RefTable = ApplicantsTable
+	JobApplicationsTable.ForeignKeys[1].RefTable = JobsTable
 	PortfolioLinksTable.ForeignKeys[0].RefTable = ApplicantsTable
 	SkillsTable.ForeignKeys[0].RefTable = ApplicantsTable
 }
