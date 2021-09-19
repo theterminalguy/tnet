@@ -1582,7 +1582,7 @@ type JobMutation struct {
 	created_at    *time.Time
 	updated_at    *time.Time
 	deleted_at    *time.Time
-	hirings       *bool
+	hiring        *bool
 	title         *string
 	slug          *string
 	location      *string
@@ -1590,9 +1590,9 @@ type JobMutation struct {
 	employment    *job.Employment
 	category      *job.Category
 	thumbnail     *string
-	wehave        *[]string
+	we_have       *[]string
 	requirements  *[]string
-	youhave       *[]string
+	you_have      *[]string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Job, error)
@@ -1822,40 +1822,40 @@ func (m *JobMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 }
 
-// SetHirings sets the "hirings" field.
-func (m *JobMutation) SetHirings(b bool) {
-	m.hirings = &b
+// SetHiring sets the "hiring" field.
+func (m *JobMutation) SetHiring(b bool) {
+	m.hiring = &b
 }
 
-// Hirings returns the value of the "hirings" field in the mutation.
-func (m *JobMutation) Hirings() (r bool, exists bool) {
-	v := m.hirings
+// Hiring returns the value of the "hiring" field in the mutation.
+func (m *JobMutation) Hiring() (r bool, exists bool) {
+	v := m.hiring
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldHirings returns the old "hirings" field's value of the Job entity.
+// OldHiring returns the old "hiring" field's value of the Job entity.
 // If the Job object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *JobMutation) OldHirings(ctx context.Context) (v bool, err error) {
+func (m *JobMutation) OldHiring(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldHirings is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldHiring is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldHirings requires an ID field in the mutation")
+		return v, fmt.Errorf("OldHiring requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldHirings: %w", err)
+		return v, fmt.Errorf("querying old value for OldHiring: %w", err)
 	}
-	return oldValue.Hirings, nil
+	return oldValue.Hiring, nil
 }
 
-// ResetHirings resets all changes to the "hirings" field.
-func (m *JobMutation) ResetHirings() {
-	m.hirings = nil
+// ResetHiring resets all changes to the "hiring" field.
+func (m *JobMutation) ResetHiring() {
+	m.hiring = nil
 }
 
 // SetTitle sets the "title" field.
@@ -2110,40 +2110,40 @@ func (m *JobMutation) ResetThumbnail() {
 	m.thumbnail = nil
 }
 
-// SetWehave sets the "wehave" field.
-func (m *JobMutation) SetWehave(s []string) {
-	m.wehave = &s
+// SetWeHave sets the "we_have" field.
+func (m *JobMutation) SetWeHave(s []string) {
+	m.we_have = &s
 }
 
-// Wehave returns the value of the "wehave" field in the mutation.
-func (m *JobMutation) Wehave() (r []string, exists bool) {
-	v := m.wehave
+// WeHave returns the value of the "we_have" field in the mutation.
+func (m *JobMutation) WeHave() (r []string, exists bool) {
+	v := m.we_have
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldWehave returns the old "wehave" field's value of the Job entity.
+// OldWeHave returns the old "we_have" field's value of the Job entity.
 // If the Job object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *JobMutation) OldWehave(ctx context.Context) (v []string, err error) {
+func (m *JobMutation) OldWeHave(ctx context.Context) (v []string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldWehave is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldWeHave is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldWehave requires an ID field in the mutation")
+		return v, fmt.Errorf("OldWeHave requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldWehave: %w", err)
+		return v, fmt.Errorf("querying old value for OldWeHave: %w", err)
 	}
-	return oldValue.Wehave, nil
+	return oldValue.WeHave, nil
 }
 
-// ResetWehave resets all changes to the "wehave" field.
-func (m *JobMutation) ResetWehave() {
-	m.wehave = nil
+// ResetWeHave resets all changes to the "we_have" field.
+func (m *JobMutation) ResetWeHave() {
+	m.we_have = nil
 }
 
 // SetRequirements sets the "requirements" field.
@@ -2182,40 +2182,40 @@ func (m *JobMutation) ResetRequirements() {
 	m.requirements = nil
 }
 
-// SetYouhave sets the "youhave" field.
-func (m *JobMutation) SetYouhave(s []string) {
-	m.youhave = &s
+// SetYouHave sets the "you_have" field.
+func (m *JobMutation) SetYouHave(s []string) {
+	m.you_have = &s
 }
 
-// Youhave returns the value of the "youhave" field in the mutation.
-func (m *JobMutation) Youhave() (r []string, exists bool) {
-	v := m.youhave
+// YouHave returns the value of the "you_have" field in the mutation.
+func (m *JobMutation) YouHave() (r []string, exists bool) {
+	v := m.you_have
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldYouhave returns the old "youhave" field's value of the Job entity.
+// OldYouHave returns the old "you_have" field's value of the Job entity.
 // If the Job object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *JobMutation) OldYouhave(ctx context.Context) (v []string, err error) {
+func (m *JobMutation) OldYouHave(ctx context.Context) (v []string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldYouhave is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldYouHave is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldYouhave requires an ID field in the mutation")
+		return v, fmt.Errorf("OldYouHave requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldYouhave: %w", err)
+		return v, fmt.Errorf("querying old value for OldYouHave: %w", err)
 	}
-	return oldValue.Youhave, nil
+	return oldValue.YouHave, nil
 }
 
-// ResetYouhave resets all changes to the "youhave" field.
-func (m *JobMutation) ResetYouhave() {
-	m.youhave = nil
+// ResetYouHave resets all changes to the "you_have" field.
+func (m *JobMutation) ResetYouHave() {
+	m.you_have = nil
 }
 
 // Where appends a list predicates to the JobMutation builder.
@@ -2250,8 +2250,8 @@ func (m *JobMutation) Fields() []string {
 	if m.deleted_at != nil {
 		fields = append(fields, job.FieldDeletedAt)
 	}
-	if m.hirings != nil {
-		fields = append(fields, job.FieldHirings)
+	if m.hiring != nil {
+		fields = append(fields, job.FieldHiring)
 	}
 	if m.title != nil {
 		fields = append(fields, job.FieldTitle)
@@ -2274,14 +2274,14 @@ func (m *JobMutation) Fields() []string {
 	if m.thumbnail != nil {
 		fields = append(fields, job.FieldThumbnail)
 	}
-	if m.wehave != nil {
-		fields = append(fields, job.FieldWehave)
+	if m.we_have != nil {
+		fields = append(fields, job.FieldWeHave)
 	}
 	if m.requirements != nil {
 		fields = append(fields, job.FieldRequirements)
 	}
-	if m.youhave != nil {
-		fields = append(fields, job.FieldYouhave)
+	if m.you_have != nil {
+		fields = append(fields, job.FieldYouHave)
 	}
 	return fields
 }
@@ -2299,8 +2299,8 @@ func (m *JobMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case job.FieldDeletedAt:
 		return m.DeletedAt()
-	case job.FieldHirings:
-		return m.Hirings()
+	case job.FieldHiring:
+		return m.Hiring()
 	case job.FieldTitle:
 		return m.Title()
 	case job.FieldSlug:
@@ -2315,12 +2315,12 @@ func (m *JobMutation) Field(name string) (ent.Value, bool) {
 		return m.Category()
 	case job.FieldThumbnail:
 		return m.Thumbnail()
-	case job.FieldWehave:
-		return m.Wehave()
+	case job.FieldWeHave:
+		return m.WeHave()
 	case job.FieldRequirements:
 		return m.Requirements()
-	case job.FieldYouhave:
-		return m.Youhave()
+	case job.FieldYouHave:
+		return m.YouHave()
 	}
 	return nil, false
 }
@@ -2338,8 +2338,8 @@ func (m *JobMutation) OldField(ctx context.Context, name string) (ent.Value, err
 		return m.OldUpdatedAt(ctx)
 	case job.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case job.FieldHirings:
-		return m.OldHirings(ctx)
+	case job.FieldHiring:
+		return m.OldHiring(ctx)
 	case job.FieldTitle:
 		return m.OldTitle(ctx)
 	case job.FieldSlug:
@@ -2354,12 +2354,12 @@ func (m *JobMutation) OldField(ctx context.Context, name string) (ent.Value, err
 		return m.OldCategory(ctx)
 	case job.FieldThumbnail:
 		return m.OldThumbnail(ctx)
-	case job.FieldWehave:
-		return m.OldWehave(ctx)
+	case job.FieldWeHave:
+		return m.OldWeHave(ctx)
 	case job.FieldRequirements:
 		return m.OldRequirements(ctx)
-	case job.FieldYouhave:
-		return m.OldYouhave(ctx)
+	case job.FieldYouHave:
+		return m.OldYouHave(ctx)
 	}
 	return nil, fmt.Errorf("unknown Job field %s", name)
 }
@@ -2397,12 +2397,12 @@ func (m *JobMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case job.FieldHirings:
+	case job.FieldHiring:
 		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetHirings(v)
+		m.SetHiring(v)
 		return nil
 	case job.FieldTitle:
 		v, ok := value.(string)
@@ -2453,12 +2453,12 @@ func (m *JobMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetThumbnail(v)
 		return nil
-	case job.FieldWehave:
+	case job.FieldWeHave:
 		v, ok := value.([]string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetWehave(v)
+		m.SetWeHave(v)
 		return nil
 	case job.FieldRequirements:
 		v, ok := value.([]string)
@@ -2467,12 +2467,12 @@ func (m *JobMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRequirements(v)
 		return nil
-	case job.FieldYouhave:
+	case job.FieldYouHave:
 		v, ok := value.([]string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetYouhave(v)
+		m.SetYouHave(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Job field %s", name)
@@ -2535,8 +2535,8 @@ func (m *JobMutation) ResetField(name string) error {
 	case job.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case job.FieldHirings:
-		m.ResetHirings()
+	case job.FieldHiring:
+		m.ResetHiring()
 		return nil
 	case job.FieldTitle:
 		m.ResetTitle()
@@ -2559,14 +2559,14 @@ func (m *JobMutation) ResetField(name string) error {
 	case job.FieldThumbnail:
 		m.ResetThumbnail()
 		return nil
-	case job.FieldWehave:
-		m.ResetWehave()
+	case job.FieldWeHave:
+		m.ResetWeHave()
 		return nil
 	case job.FieldRequirements:
 		m.ResetRequirements()
 		return nil
-	case job.FieldYouhave:
-		m.ResetYouhave()
+	case job.FieldYouHave:
+		m.ResetYouHave()
 		return nil
 	}
 	return fmt.Errorf("unknown Job field %s", name)

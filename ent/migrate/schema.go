@@ -68,7 +68,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime},
-		{Name: "hirings", Type: field.TypeBool, Default: false},
+		{Name: "hiring", Type: field.TypeBool, Default: false},
 		{Name: "title", Type: field.TypeString},
 		{Name: "slug", Type: field.TypeString, Unique: true},
 		{Name: "location", Type: field.TypeString, Default: "Remote, Earth"},
@@ -76,9 +76,9 @@ var (
 		{Name: "employment", Type: field.TypeEnum, Enums: []string{"part_time", "full_time", "contract"}},
 		{Name: "category", Type: field.TypeEnum, Enums: []string{"engineering", "product_design", "sales", "marketing"}},
 		{Name: "thumbnail", Type: field.TypeString},
-		{Name: "wehave", Type: field.TypeJSON},
+		{Name: "we_have", Type: field.TypeJSON},
 		{Name: "requirements", Type: field.TypeJSON},
-		{Name: "youhave", Type: field.TypeJSON},
+		{Name: "you_have", Type: field.TypeJSON},
 	}
 	// JobsTable holds the schema information for the "jobs" table.
 	JobsTable = &schema.Table{

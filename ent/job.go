@@ -26,8 +26,8 @@ type Job struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt time.Time `json:"deleted_at,omitempty"`
-	// Hirings holds the value of the "hirings" field.
-	Hirings bool `json:"hirings,omitempty"`
+	// Hiring holds the value of the "hiring" field.
+	Hiring bool `json:"hiring,omitempty"`
 	// Title holds the value of the "title" field.
 	Title string `json:"title,omitempty"`
 	// Slug holds the value of the "slug" field.
@@ -42,12 +42,12 @@ type Job struct {
 	Category job.Category `json:"category,omitempty"`
 	// Thumbnail holds the value of the "thumbnail" field.
 	Thumbnail string `json:"thumbnail,omitempty"`
-	// Wehave holds the value of the "wehave" field.
-	Wehave []string `json:"wehave,omitempty"`
+	// WeHave holds the value of the "we_have" field.
+	WeHave []string `json:"we_have,omitempty"`
 	// Requirements holds the value of the "requirements" field.
 	Requirements []string `json:"requirements,omitempty"`
-	// Youhave holds the value of the "youhave" field.
-	Youhave []string `json:"youhave,omitempty"`
+	// YouHave holds the value of the "you_have" field.
+	YouHave []string `json:"you_have,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -55,9 +55,9 @@ func (*Job) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case job.FieldWehave, job.FieldRequirements, job.FieldYouhave:
+		case job.FieldWeHave, job.FieldRequirements, job.FieldYouHave:
 			values[i] = new([]byte)
-		case job.FieldHirings:
+		case job.FieldHiring:
 			values[i] = new(sql.NullBool)
 		case job.FieldID:
 			values[i] = new(sql.NullInt64)
@@ -112,11 +112,11 @@ func (j *Job) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				j.DeletedAt = value.Time
 			}
-		case job.FieldHirings:
+		case job.FieldHiring:
 			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field hirings", values[i])
+				return fmt.Errorf("unexpected type %T for field hiring", values[i])
 			} else if value.Valid {
-				j.Hirings = value.Bool
+				j.Hiring = value.Bool
 			}
 		case job.FieldTitle:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -160,12 +160,12 @@ func (j *Job) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				j.Thumbnail = value.String
 			}
-		case job.FieldWehave:
+		case job.FieldWeHave:
 			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field wehave", values[i])
+				return fmt.Errorf("unexpected type %T for field we_have", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &j.Wehave); err != nil {
-					return fmt.Errorf("unmarshal field wehave: %w", err)
+				if err := json.Unmarshal(*value, &j.WeHave); err != nil {
+					return fmt.Errorf("unmarshal field we_have: %w", err)
 				}
 			}
 		case job.FieldRequirements:
@@ -176,12 +176,12 @@ func (j *Job) assignValues(columns []string, values []interface{}) error {
 					return fmt.Errorf("unmarshal field requirements: %w", err)
 				}
 			}
-		case job.FieldYouhave:
+		case job.FieldYouHave:
 			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field youhave", values[i])
+				return fmt.Errorf("unexpected type %T for field you_have", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &j.Youhave); err != nil {
-					return fmt.Errorf("unmarshal field youhave: %w", err)
+				if err := json.Unmarshal(*value, &j.YouHave); err != nil {
+					return fmt.Errorf("unmarshal field you_have: %w", err)
 				}
 			}
 		}
@@ -220,8 +220,8 @@ func (j *Job) String() string {
 	builder.WriteString(j.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", deleted_at=")
 	builder.WriteString(j.DeletedAt.Format(time.ANSIC))
-	builder.WriteString(", hirings=")
-	builder.WriteString(fmt.Sprintf("%v", j.Hirings))
+	builder.WriteString(", hiring=")
+	builder.WriteString(fmt.Sprintf("%v", j.Hiring))
 	builder.WriteString(", title=")
 	builder.WriteString(j.Title)
 	builder.WriteString(", slug=")
@@ -236,12 +236,12 @@ func (j *Job) String() string {
 	builder.WriteString(fmt.Sprintf("%v", j.Category))
 	builder.WriteString(", thumbnail=")
 	builder.WriteString(j.Thumbnail)
-	builder.WriteString(", wehave=")
-	builder.WriteString(fmt.Sprintf("%v", j.Wehave))
+	builder.WriteString(", we_have=")
+	builder.WriteString(fmt.Sprintf("%v", j.WeHave))
 	builder.WriteString(", requirements=")
 	builder.WriteString(fmt.Sprintf("%v", j.Requirements))
-	builder.WriteString(", youhave=")
-	builder.WriteString(fmt.Sprintf("%v", j.Youhave))
+	builder.WriteString(", you_have=")
+	builder.WriteString(fmt.Sprintf("%v", j.YouHave))
 	builder.WriteByte(')')
 	return builder.String()
 }

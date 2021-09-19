@@ -69,16 +69,16 @@ func (jc *JobCreate) SetNillableDeletedAt(t *time.Time) *JobCreate {
 	return jc
 }
 
-// SetHirings sets the "hirings" field.
-func (jc *JobCreate) SetHirings(b bool) *JobCreate {
-	jc.mutation.SetHirings(b)
+// SetHiring sets the "hiring" field.
+func (jc *JobCreate) SetHiring(b bool) *JobCreate {
+	jc.mutation.SetHiring(b)
 	return jc
 }
 
-// SetNillableHirings sets the "hirings" field if the given value is not nil.
-func (jc *JobCreate) SetNillableHirings(b *bool) *JobCreate {
+// SetNillableHiring sets the "hiring" field if the given value is not nil.
+func (jc *JobCreate) SetNillableHiring(b *bool) *JobCreate {
 	if b != nil {
-		jc.SetHirings(*b)
+		jc.SetHiring(*b)
 	}
 	return jc
 }
@@ -133,9 +133,9 @@ func (jc *JobCreate) SetThumbnail(s string) *JobCreate {
 	return jc
 }
 
-// SetWehave sets the "wehave" field.
-func (jc *JobCreate) SetWehave(s []string) *JobCreate {
-	jc.mutation.SetWehave(s)
+// SetWeHave sets the "we_have" field.
+func (jc *JobCreate) SetWeHave(s []string) *JobCreate {
+	jc.mutation.SetWeHave(s)
 	return jc
 }
 
@@ -145,9 +145,9 @@ func (jc *JobCreate) SetRequirements(s []string) *JobCreate {
 	return jc
 }
 
-// SetYouhave sets the "youhave" field.
-func (jc *JobCreate) SetYouhave(s []string) *JobCreate {
-	jc.mutation.SetYouhave(s)
+// SetYouHave sets the "you_have" field.
+func (jc *JobCreate) SetYouHave(s []string) *JobCreate {
+	jc.mutation.SetYouHave(s)
 	return jc
 }
 
@@ -238,9 +238,9 @@ func (jc *JobCreate) defaults() {
 		v := job.DefaultDeletedAt()
 		jc.mutation.SetDeletedAt(v)
 	}
-	if _, ok := jc.mutation.Hirings(); !ok {
-		v := job.DefaultHirings
-		jc.mutation.SetHirings(v)
+	if _, ok := jc.mutation.Hiring(); !ok {
+		v := job.DefaultHiring
+		jc.mutation.SetHiring(v)
 	}
 	if _, ok := jc.mutation.Location(); !ok {
 		v := job.DefaultLocation
@@ -262,8 +262,8 @@ func (jc *JobCreate) check() error {
 	if _, ok := jc.mutation.DeletedAt(); !ok {
 		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "deleted_at"`)}
 	}
-	if _, ok := jc.mutation.Hirings(); !ok {
-		return &ValidationError{Name: "hirings", err: errors.New(`ent: missing required field "hirings"`)}
+	if _, ok := jc.mutation.Hiring(); !ok {
+		return &ValidationError{Name: "hiring", err: errors.New(`ent: missing required field "hiring"`)}
 	}
 	if _, ok := jc.mutation.Title(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "title"`)}
@@ -296,14 +296,14 @@ func (jc *JobCreate) check() error {
 	if _, ok := jc.mutation.Thumbnail(); !ok {
 		return &ValidationError{Name: "thumbnail", err: errors.New(`ent: missing required field "thumbnail"`)}
 	}
-	if _, ok := jc.mutation.Wehave(); !ok {
-		return &ValidationError{Name: "wehave", err: errors.New(`ent: missing required field "wehave"`)}
+	if _, ok := jc.mutation.WeHave(); !ok {
+		return &ValidationError{Name: "we_have", err: errors.New(`ent: missing required field "we_have"`)}
 	}
 	if _, ok := jc.mutation.Requirements(); !ok {
 		return &ValidationError{Name: "requirements", err: errors.New(`ent: missing required field "requirements"`)}
 	}
-	if _, ok := jc.mutation.Youhave(); !ok {
-		return &ValidationError{Name: "youhave", err: errors.New(`ent: missing required field "youhave"`)}
+	if _, ok := jc.mutation.YouHave(); !ok {
+		return &ValidationError{Name: "you_have", err: errors.New(`ent: missing required field "you_have"`)}
 	}
 	return nil
 }
@@ -364,13 +364,13 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 		})
 		_node.DeletedAt = value
 	}
-	if value, ok := jc.mutation.Hirings(); ok {
+	if value, ok := jc.mutation.Hiring(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: job.FieldHirings,
+			Column: job.FieldHiring,
 		})
-		_node.Hirings = value
+		_node.Hiring = value
 	}
 	if value, ok := jc.mutation.Title(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -428,13 +428,13 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 		})
 		_node.Thumbnail = value
 	}
-	if value, ok := jc.mutation.Wehave(); ok {
+	if value, ok := jc.mutation.WeHave(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: job.FieldWehave,
+			Column: job.FieldWeHave,
 		})
-		_node.Wehave = value
+		_node.WeHave = value
 	}
 	if value, ok := jc.mutation.Requirements(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -444,13 +444,13 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 		})
 		_node.Requirements = value
 	}
-	if value, ok := jc.mutation.Youhave(); ok {
+	if value, ok := jc.mutation.YouHave(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: job.FieldYouhave,
+			Column: job.FieldYouHave,
 		})
-		_node.Youhave = value
+		_node.YouHave = value
 	}
 	return _node, _spec
 }

@@ -121,10 +121,10 @@ func DeletedAt(v time.Time) predicate.Job {
 	})
 }
 
-// Hirings applies equality check predicate on the "hirings" field. It's identical to HiringsEQ.
-func Hirings(v bool) predicate.Job {
+// Hiring applies equality check predicate on the "hiring" field. It's identical to HiringEQ.
+func Hiring(v bool) predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldHirings), v))
+		s.Where(sql.EQ(s.C(FieldHiring), v))
 	})
 }
 
@@ -467,17 +467,17 @@ func DeletedAtLTE(v time.Time) predicate.Job {
 	})
 }
 
-// HiringsEQ applies the EQ predicate on the "hirings" field.
-func HiringsEQ(v bool) predicate.Job {
+// HiringEQ applies the EQ predicate on the "hiring" field.
+func HiringEQ(v bool) predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldHirings), v))
+		s.Where(sql.EQ(s.C(FieldHiring), v))
 	})
 }
 
-// HiringsNEQ applies the NEQ predicate on the "hirings" field.
-func HiringsNEQ(v bool) predicate.Job {
+// HiringNEQ applies the NEQ predicate on the "hiring" field.
+func HiringNEQ(v bool) predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldHirings), v))
+		s.Where(sql.NEQ(s.C(FieldHiring), v))
 	})
 }
 

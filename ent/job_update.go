@@ -54,16 +54,16 @@ func (ju *JobUpdate) SetNillableDeletedAt(t *time.Time) *JobUpdate {
 	return ju
 }
 
-// SetHirings sets the "hirings" field.
-func (ju *JobUpdate) SetHirings(b bool) *JobUpdate {
-	ju.mutation.SetHirings(b)
+// SetHiring sets the "hiring" field.
+func (ju *JobUpdate) SetHiring(b bool) *JobUpdate {
+	ju.mutation.SetHiring(b)
 	return ju
 }
 
-// SetNillableHirings sets the "hirings" field if the given value is not nil.
-func (ju *JobUpdate) SetNillableHirings(b *bool) *JobUpdate {
+// SetNillableHiring sets the "hiring" field if the given value is not nil.
+func (ju *JobUpdate) SetNillableHiring(b *bool) *JobUpdate {
 	if b != nil {
-		ju.SetHirings(*b)
+		ju.SetHiring(*b)
 	}
 	return ju
 }
@@ -118,9 +118,9 @@ func (ju *JobUpdate) SetThumbnail(s string) *JobUpdate {
 	return ju
 }
 
-// SetWehave sets the "wehave" field.
-func (ju *JobUpdate) SetWehave(s []string) *JobUpdate {
-	ju.mutation.SetWehave(s)
+// SetWeHave sets the "we_have" field.
+func (ju *JobUpdate) SetWeHave(s []string) *JobUpdate {
+	ju.mutation.SetWeHave(s)
 	return ju
 }
 
@@ -130,9 +130,9 @@ func (ju *JobUpdate) SetRequirements(s []string) *JobUpdate {
 	return ju
 }
 
-// SetYouhave sets the "youhave" field.
-func (ju *JobUpdate) SetYouhave(s []string) *JobUpdate {
-	ju.mutation.SetYouhave(s)
+// SetYouHave sets the "you_have" field.
+func (ju *JobUpdate) SetYouHave(s []string) *JobUpdate {
+	ju.mutation.SetYouHave(s)
 	return ju
 }
 
@@ -264,11 +264,11 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: job.FieldDeletedAt,
 		})
 	}
-	if value, ok := ju.mutation.Hirings(); ok {
+	if value, ok := ju.mutation.Hiring(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: job.FieldHirings,
+			Column: job.FieldHiring,
 		})
 	}
 	if value, ok := ju.mutation.Title(); ok {
@@ -320,11 +320,11 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: job.FieldThumbnail,
 		})
 	}
-	if value, ok := ju.mutation.Wehave(); ok {
+	if value, ok := ju.mutation.WeHave(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: job.FieldWehave,
+			Column: job.FieldWeHave,
 		})
 	}
 	if value, ok := ju.mutation.Requirements(); ok {
@@ -334,11 +334,11 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: job.FieldRequirements,
 		})
 	}
-	if value, ok := ju.mutation.Youhave(); ok {
+	if value, ok := ju.mutation.YouHave(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: job.FieldYouhave,
+			Column: job.FieldYouHave,
 		})
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ju.driver, _spec); err != nil {
@@ -386,16 +386,16 @@ func (juo *JobUpdateOne) SetNillableDeletedAt(t *time.Time) *JobUpdateOne {
 	return juo
 }
 
-// SetHirings sets the "hirings" field.
-func (juo *JobUpdateOne) SetHirings(b bool) *JobUpdateOne {
-	juo.mutation.SetHirings(b)
+// SetHiring sets the "hiring" field.
+func (juo *JobUpdateOne) SetHiring(b bool) *JobUpdateOne {
+	juo.mutation.SetHiring(b)
 	return juo
 }
 
-// SetNillableHirings sets the "hirings" field if the given value is not nil.
-func (juo *JobUpdateOne) SetNillableHirings(b *bool) *JobUpdateOne {
+// SetNillableHiring sets the "hiring" field if the given value is not nil.
+func (juo *JobUpdateOne) SetNillableHiring(b *bool) *JobUpdateOne {
 	if b != nil {
-		juo.SetHirings(*b)
+		juo.SetHiring(*b)
 	}
 	return juo
 }
@@ -450,9 +450,9 @@ func (juo *JobUpdateOne) SetThumbnail(s string) *JobUpdateOne {
 	return juo
 }
 
-// SetWehave sets the "wehave" field.
-func (juo *JobUpdateOne) SetWehave(s []string) *JobUpdateOne {
-	juo.mutation.SetWehave(s)
+// SetWeHave sets the "we_have" field.
+func (juo *JobUpdateOne) SetWeHave(s []string) *JobUpdateOne {
+	juo.mutation.SetWeHave(s)
 	return juo
 }
 
@@ -462,9 +462,9 @@ func (juo *JobUpdateOne) SetRequirements(s []string) *JobUpdateOne {
 	return juo
 }
 
-// SetYouhave sets the "youhave" field.
-func (juo *JobUpdateOne) SetYouhave(s []string) *JobUpdateOne {
-	juo.mutation.SetYouhave(s)
+// SetYouHave sets the "you_have" field.
+func (juo *JobUpdateOne) SetYouHave(s []string) *JobUpdateOne {
+	juo.mutation.SetYouHave(s)
 	return juo
 }
 
@@ -620,11 +620,11 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 			Column: job.FieldDeletedAt,
 		})
 	}
-	if value, ok := juo.mutation.Hirings(); ok {
+	if value, ok := juo.mutation.Hiring(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: job.FieldHirings,
+			Column: job.FieldHiring,
 		})
 	}
 	if value, ok := juo.mutation.Title(); ok {
@@ -676,11 +676,11 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 			Column: job.FieldThumbnail,
 		})
 	}
-	if value, ok := juo.mutation.Wehave(); ok {
+	if value, ok := juo.mutation.WeHave(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: job.FieldWehave,
+			Column: job.FieldWeHave,
 		})
 	}
 	if value, ok := juo.mutation.Requirements(); ok {
@@ -690,11 +690,11 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 			Column: job.FieldRequirements,
 		})
 	}
-	if value, ok := juo.mutation.Youhave(); ok {
+	if value, ok := juo.mutation.YouHave(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: job.FieldYouhave,
+			Column: job.FieldYouHave,
 		})
 	}
 	_node = &Job{config: juo.config}

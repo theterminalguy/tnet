@@ -22,8 +22,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldHirings holds the string denoting the hirings field in the database.
-	FieldHirings = "hirings"
+	// FieldHiring holds the string denoting the hiring field in the database.
+	FieldHiring = "hiring"
 	// FieldTitle holds the string denoting the title field in the database.
 	FieldTitle = "title"
 	// FieldSlug holds the string denoting the slug field in the database.
@@ -38,12 +38,12 @@ const (
 	FieldCategory = "category"
 	// FieldThumbnail holds the string denoting the thumbnail field in the database.
 	FieldThumbnail = "thumbnail"
-	// FieldWehave holds the string denoting the wehave field in the database.
-	FieldWehave = "wehave"
+	// FieldWeHave holds the string denoting the we_have field in the database.
+	FieldWeHave = "we_have"
 	// FieldRequirements holds the string denoting the requirements field in the database.
 	FieldRequirements = "requirements"
-	// FieldYouhave holds the string denoting the youhave field in the database.
-	FieldYouhave = "youhave"
+	// FieldYouHave holds the string denoting the you_have field in the database.
+	FieldYouHave = "you_have"
 	// Table holds the table name of the job in the database.
 	Table = "jobs"
 )
@@ -55,7 +55,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldHirings,
+	FieldHiring,
 	FieldTitle,
 	FieldSlug,
 	FieldLocation,
@@ -63,9 +63,9 @@ var Columns = []string{
 	FieldEmployment,
 	FieldCategory,
 	FieldThumbnail,
-	FieldWehave,
+	FieldWeHave,
 	FieldRequirements,
-	FieldYouhave,
+	FieldYouHave,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -89,8 +89,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultDeletedAt holds the default value on creation for the "deleted_at" field.
 	DefaultDeletedAt func() time.Time
-	// DefaultHirings holds the default value on creation for the "hirings" field.
-	DefaultHirings bool
+	// DefaultHiring holds the default value on creation for the "hiring" field.
+	DefaultHiring bool
 	// DefaultLocation holds the default value on creation for the "location" field.
 	DefaultLocation string
 )
