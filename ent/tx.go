@@ -18,6 +18,8 @@ type Tx struct {
 	Job *JobClient
 	// PortfolioLink is the client for interacting with the PortfolioLink builders.
 	PortfolioLink *PortfolioLinkClient
+	// Skill is the client for interacting with the Skill builders.
+	Skill *SkillClient
 
 	// lazily loaded.
 	client     *Client
@@ -156,6 +158,7 @@ func (tx *Tx) init() {
 	tx.Applicant = NewApplicantClient(tx.config)
 	tx.Job = NewJobClient(tx.config)
 	tx.PortfolioLink = NewPortfolioLinkClient(tx.config)
+	tx.Skill = NewSkillClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
+	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/google/uuid"
 )
 
@@ -211,6 +212,21 @@ func (ac *ApplicantCreate) AddPortfoliolinks(p ...*PortfolioLink) *ApplicantCrea
 		ids[i] = p[i].ID
 	}
 	return ac.AddPortfoliolinkIDs(ids...)
+}
+
+// AddSkillIDs adds the "skills" edge to the Skill entity by IDs.
+func (ac *ApplicantCreate) AddSkillIDs(ids ...int) *ApplicantCreate {
+	ac.mutation.AddSkillIDs(ids...)
+	return ac
+}
+
+// AddSkills adds the "skills" edges to the Skill entity.
+func (ac *ApplicantCreate) AddSkills(s ...*Skill) *ApplicantCreate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return ac.AddSkillIDs(ids...)
 }
 
 // Mutation returns the ApplicantMutation object of the builder.
@@ -581,6 +597,25 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: portfoliolink.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.SkillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.SkillsTable,
+			Columns: []string{applicant.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: skill.FieldID,
 				},
 			},
 		}

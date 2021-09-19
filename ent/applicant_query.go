@@ -15,6 +15,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/skill"
 )
 
 // ApplicantQuery is the builder for querying Applicant entities.
@@ -30,6 +31,7 @@ type ApplicantQuery struct {
 	withReferrer       *ApplicantQuery
 	withReferees       *ApplicantQuery
 	withPortfoliolinks *PortfolioLinkQuery
+	withSkills         *SkillQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -125,6 +127,28 @@ func (aq *ApplicantQuery) QueryPortfoliolinks() *PortfolioLinkQuery {
 			sqlgraph.From(applicant.Table, applicant.FieldID, selector),
 			sqlgraph.To(portfoliolink.Table, portfoliolink.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, applicant.PortfoliolinksTable, applicant.PortfoliolinksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySkills chains the current query on the "skills" edge.
+func (aq *ApplicantQuery) QuerySkills() *SkillQuery {
+	query := &SkillQuery{config: aq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(applicant.Table, applicant.FieldID, selector),
+			sqlgraph.To(skill.Table, skill.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, applicant.SkillsTable, applicant.SkillsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -316,6 +340,7 @@ func (aq *ApplicantQuery) Clone() *ApplicantQuery {
 		withReferrer:       aq.withReferrer.Clone(),
 		withReferees:       aq.withReferees.Clone(),
 		withPortfoliolinks: aq.withPortfoliolinks.Clone(),
+		withSkills:         aq.withSkills.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -352,6 +377,17 @@ func (aq *ApplicantQuery) WithPortfoliolinks(opts ...func(*PortfolioLinkQuery)) 
 		opt(query)
 	}
 	aq.withPortfoliolinks = query
+	return aq
+}
+
+// WithSkills tells the query-builder to eager-load the nodes that are connected to
+// the "skills" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *ApplicantQuery) WithSkills(opts ...func(*SkillQuery)) *ApplicantQuery {
+	query := &SkillQuery{config: aq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withSkills = query
 	return aq
 }
 
@@ -420,10 +456,11 @@ func (aq *ApplicantQuery) sqlAll(ctx context.Context) ([]*Applicant, error) {
 	var (
 		nodes       = []*Applicant{}
 		_spec       = aq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			aq.withReferrer != nil,
 			aq.withReferees != nil,
 			aq.withPortfoliolinks != nil,
+			aq.withSkills != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -519,6 +556,31 @@ func (aq *ApplicantQuery) sqlAll(ctx context.Context) ([]*Applicant, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "applicant_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Portfoliolinks = append(node.Edges.Portfoliolinks, n)
+		}
+	}
+
+	if query := aq.withSkills; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Applicant)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Skills = []*Skill{}
+		}
+		query.Where(predicate.Skill(func(s *sql.Selector) {
+			s.Where(sql.InValues(applicant.SkillsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ApplicantID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "applicant_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Skills = append(node.Edges.Skills, n)
 		}
 	}
 

@@ -11,6 +11,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
+	"github.com/10hourlabs/tentn/ent/skill"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -34,6 +35,7 @@ func columnChecker(table string) func(string) error {
 		applicant.Table:     applicant.ValidColumn,
 		job.Table:           job.ValidColumn,
 		portfoliolink.Table: portfoliolink.ValidColumn,
+		skill.Table:         skill.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

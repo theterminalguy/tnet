@@ -66,9 +66,11 @@ type ApplicantEdges struct {
 	Referees []*Applicant `json:"referees,omitempty"`
 	// Portfoliolinks holds the value of the portfoliolinks edge.
 	Portfoliolinks []*PortfolioLink `json:"portfoliolinks,omitempty"`
+	// Skills holds the value of the skills edge.
+	Skills []*Skill `json:"skills,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // ReferrerOrErr returns the Referrer value or an error if the edge
@@ -101,6 +103,15 @@ func (e ApplicantEdges) PortfoliolinksOrErr() ([]*PortfolioLink, error) {
 		return e.Portfoliolinks, nil
 	}
 	return nil, &NotLoadedError{edge: "portfoliolinks"}
+}
+
+// SkillsOrErr returns the Skills value or an error if the edge
+// was not loaded in eager-loading.
+func (e ApplicantEdges) SkillsOrErr() ([]*Skill, error) {
+	if e.loadedTypes[3] {
+		return e.Skills, nil
+	}
+	return nil, &NotLoadedError{edge: "skills"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -263,6 +274,11 @@ func (a *Applicant) QueryReferees() *ApplicantQuery {
 // QueryPortfoliolinks queries the "portfoliolinks" edge of the Applicant entity.
 func (a *Applicant) QueryPortfoliolinks() *PortfolioLinkQuery {
 	return (&ApplicantClient{config: a.config}).QueryPortfoliolinks(a)
+}
+
+// QuerySkills queries the "skills" edge of the Applicant entity.
+func (a *Applicant) QuerySkills() *SkillQuery {
+	return (&ApplicantClient{config: a.config}).QuerySkills(a)
 }
 
 // Update returns a builder for updating this Applicant.

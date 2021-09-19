@@ -14,3 +14,6 @@ type Job func(*sql.Selector)
 
 // PortfolioLink is the predicate function for portfoliolink builders.
 type PortfolioLink func(*sql.Selector)
+
+// Skill is the predicate function for skill builders.
+type Skill func(*sql.Selector)

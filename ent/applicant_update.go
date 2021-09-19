@@ -13,6 +13,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/google/uuid"
 )
 
@@ -176,6 +177,21 @@ func (au *ApplicantUpdate) AddPortfoliolinks(p ...*PortfolioLink) *ApplicantUpda
 	return au.AddPortfoliolinkIDs(ids...)
 }
 
+// AddSkillIDs adds the "skills" edge to the Skill entity by IDs.
+func (au *ApplicantUpdate) AddSkillIDs(ids ...int) *ApplicantUpdate {
+	au.mutation.AddSkillIDs(ids...)
+	return au
+}
+
+// AddSkills adds the "skills" edges to the Skill entity.
+func (au *ApplicantUpdate) AddSkills(s ...*Skill) *ApplicantUpdate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return au.AddSkillIDs(ids...)
+}
+
 // Mutation returns the ApplicantMutation object of the builder.
 func (au *ApplicantUpdate) Mutation() *ApplicantMutation {
 	return au.mutation
@@ -227,6 +243,27 @@ func (au *ApplicantUpdate) RemovePortfoliolinks(p ...*PortfolioLink) *ApplicantU
 		ids[i] = p[i].ID
 	}
 	return au.RemovePortfoliolinkIDs(ids...)
+}
+
+// ClearSkills clears all "skills" edges to the Skill entity.
+func (au *ApplicantUpdate) ClearSkills() *ApplicantUpdate {
+	au.mutation.ClearSkills()
+	return au
+}
+
+// RemoveSkillIDs removes the "skills" edge to Skill entities by IDs.
+func (au *ApplicantUpdate) RemoveSkillIDs(ids ...int) *ApplicantUpdate {
+	au.mutation.RemoveSkillIDs(ids...)
+	return au
+}
+
+// RemoveSkills removes "skills" edges to Skill entities.
+func (au *ApplicantUpdate) RemoveSkills(s ...*Skill) *ApplicantUpdate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return au.RemoveSkillIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -567,6 +604,60 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if au.mutation.SkillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.SkillsTable,
+			Columns: []string{applicant.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: skill.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedSkillsIDs(); len(nodes) > 0 && !au.mutation.SkillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.SkillsTable,
+			Columns: []string{applicant.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: skill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.SkillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.SkillsTable,
+			Columns: []string{applicant.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: skill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{applicant.Label}
@@ -733,6 +824,21 @@ func (auo *ApplicantUpdateOne) AddPortfoliolinks(p ...*PortfolioLink) *Applicant
 	return auo.AddPortfoliolinkIDs(ids...)
 }
 
+// AddSkillIDs adds the "skills" edge to the Skill entity by IDs.
+func (auo *ApplicantUpdateOne) AddSkillIDs(ids ...int) *ApplicantUpdateOne {
+	auo.mutation.AddSkillIDs(ids...)
+	return auo
+}
+
+// AddSkills adds the "skills" edges to the Skill entity.
+func (auo *ApplicantUpdateOne) AddSkills(s ...*Skill) *ApplicantUpdateOne {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return auo.AddSkillIDs(ids...)
+}
+
 // Mutation returns the ApplicantMutation object of the builder.
 func (auo *ApplicantUpdateOne) Mutation() *ApplicantMutation {
 	return auo.mutation
@@ -784,6 +890,27 @@ func (auo *ApplicantUpdateOne) RemovePortfoliolinks(p ...*PortfolioLink) *Applic
 		ids[i] = p[i].ID
 	}
 	return auo.RemovePortfoliolinkIDs(ids...)
+}
+
+// ClearSkills clears all "skills" edges to the Skill entity.
+func (auo *ApplicantUpdateOne) ClearSkills() *ApplicantUpdateOne {
+	auo.mutation.ClearSkills()
+	return auo
+}
+
+// RemoveSkillIDs removes the "skills" edge to Skill entities by IDs.
+func (auo *ApplicantUpdateOne) RemoveSkillIDs(ids ...int) *ApplicantUpdateOne {
+	auo.mutation.RemoveSkillIDs(ids...)
+	return auo
+}
+
+// RemoveSkills removes "skills" edges to Skill entities.
+func (auo *ApplicantUpdateOne) RemoveSkills(s ...*Skill) *ApplicantUpdateOne {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return auo.RemoveSkillIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1140,6 +1267,60 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: portfoliolink.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.SkillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.SkillsTable,
+			Columns: []string{applicant.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: skill.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedSkillsIDs(); len(nodes) > 0 && !auo.mutation.SkillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.SkillsTable,
+			Columns: []string{applicant.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: skill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.SkillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.SkillsTable,
+			Columns: []string{applicant.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: skill.FieldID,
 				},
 			},
 		}

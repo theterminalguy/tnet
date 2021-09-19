@@ -140,15 +140,61 @@ var (
 			},
 		},
 	}
+	// SkillsColumns holds the columns for the "skills" table.
+	SkillsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString},
+		{Name: "years_of_experience", Type: field.TypeFloat32},
+		{Name: "preferred", Type: field.TypeBool, Default: false},
+		{Name: "note", Type: field.TypeString, Size: 2147483647},
+		{Name: "applicant_id", Type: field.TypeInt, Nullable: true},
+	}
+	// SkillsTable holds the schema information for the "skills" table.
+	SkillsTable = &schema.Table{
+		Name:       "skills",
+		Columns:    SkillsColumns,
+		PrimaryKey: []*schema.Column{SkillsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "skills_applicants_skills",
+				Columns:    []*schema.Column{SkillsColumns[9]},
+				RefColumns: []*schema.Column{ApplicantsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "skill_uuid",
+				Unique:  true,
+				Columns: []*schema.Column{SkillsColumns[1]},
+			},
+			{
+				Name:    "skill_applicant_id",
+				Unique:  false,
+				Columns: []*schema.Column{SkillsColumns[9]},
+			},
+			{
+				Name:    "skill_name",
+				Unique:  false,
+				Columns: []*schema.Column{SkillsColumns[5]},
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		ApplicantsTable,
 		JobsTable,
 		PortfolioLinksTable,
+		SkillsTable,
 	}
 )
 
 func init() {
 	ApplicantsTable.ForeignKeys[0].RefTable = ApplicantsTable
 	PortfolioLinksTable.ForeignKeys[0].RefTable = ApplicantsTable
+	SkillsTable.ForeignKeys[0].RefTable = ApplicantsTable
 }

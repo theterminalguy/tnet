@@ -55,6 +55,8 @@ const (
 	EdgeReferees = "referees"
 	// EdgePortfoliolinks holds the string denoting the portfoliolinks edge name in mutations.
 	EdgePortfoliolinks = "portfoliolinks"
+	// EdgeSkills holds the string denoting the skills edge name in mutations.
+	EdgeSkills = "skills"
 	// Table holds the table name of the applicant in the database.
 	Table = "applicants"
 	// ReferrerTable is the table that holds the referrer relation/edge.
@@ -72,6 +74,13 @@ const (
 	PortfoliolinksInverseTable = "portfolio_links"
 	// PortfoliolinksColumn is the table column denoting the portfoliolinks relation/edge.
 	PortfoliolinksColumn = "applicant_id"
+	// SkillsTable is the table that holds the skills relation/edge.
+	SkillsTable = "skills"
+	// SkillsInverseTable is the table name for the Skill entity.
+	// It exists in this package in order to avoid circular dependency with the "skill" package.
+	SkillsInverseTable = "skills"
+	// SkillsColumn is the table column denoting the skills relation/edge.
+	SkillsColumn = "applicant_id"
 )
 
 // Columns holds all SQL columns for applicant fields.

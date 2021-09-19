@@ -9,6 +9,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/schema"
+	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/google/uuid"
 )
 
@@ -129,4 +130,37 @@ func init() {
 	portfoliolinkDescURL := portfoliolinkFields[0].Descriptor()
 	// portfoliolink.URLValidator is a validator for the "url" field. It is called by the builders before save.
 	portfoliolink.URLValidator = portfoliolinkDescURL.Validators[0].(func(string) error)
+	skillMixin := schema.Skill{}.Mixin()
+	skillMixinFields0 := skillMixin[0].Fields()
+	_ = skillMixinFields0
+	skillMixinFields1 := skillMixin[1].Fields()
+	_ = skillMixinFields1
+	skillFields := schema.Skill{}.Fields()
+	_ = skillFields
+	// skillDescUUID is the schema descriptor for uuid field.
+	skillDescUUID := skillMixinFields0[0].Descriptor()
+	// skill.DefaultUUID holds the default value on creation for the uuid field.
+	skill.DefaultUUID = skillDescUUID.Default.(func() uuid.UUID)
+	// skillDescCreatedAt is the schema descriptor for created_at field.
+	skillDescCreatedAt := skillMixinFields1[0].Descriptor()
+	// skill.DefaultCreatedAt holds the default value on creation for the created_at field.
+	skill.DefaultCreatedAt = skillDescCreatedAt.Default.(func() time.Time)
+	// skillDescUpdatedAt is the schema descriptor for updated_at field.
+	skillDescUpdatedAt := skillMixinFields1[1].Descriptor()
+	// skill.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	skill.DefaultUpdatedAt = skillDescUpdatedAt.Default.(func() time.Time)
+	// skill.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	skill.UpdateDefaultUpdatedAt = skillDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// skillDescDeletedAt is the schema descriptor for deleted_at field.
+	skillDescDeletedAt := skillMixinFields1[2].Descriptor()
+	// skill.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	skill.DefaultDeletedAt = skillDescDeletedAt.Default.(func() time.Time)
+	// skillDescYearsOfExperience is the schema descriptor for years_of_experience field.
+	skillDescYearsOfExperience := skillFields[1].Descriptor()
+	// skill.YearsOfExperienceValidator is a validator for the "years_of_experience" field. It is called by the builders before save.
+	skill.YearsOfExperienceValidator = skillDescYearsOfExperience.Validators[0].(func(float32) error)
+	// skillDescPreferred is the schema descriptor for preferred field.
+	skillDescPreferred := skillFields[2].Descriptor()
+	// skill.DefaultPreferred holds the default value on creation for the preferred field.
+	skill.DefaultPreferred = skillDescPreferred.Default.(bool)
 }
