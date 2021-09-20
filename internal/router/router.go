@@ -10,8 +10,8 @@ import (
 type RouteHandler interface {
 	BasePath() string
 
-	ReadByID(c echo.Context) error
 	ReadAll(c echo.Context) error
+	ReadByID(c echo.Context) error
 
 	CreateOne(c echo.Context) error
 
@@ -20,19 +20,21 @@ type RouteHandler interface {
 	DeleteOne(c echo.Context) error
 }
 
-func DefineRoutes() {
+func DefineRoutes() *echo.Echo {
 	e := echo.New()
 
 	// JobController Routes
 	createRoutes(handler.JobHandler{}, e)
+
+	return e
 }
 
 func createRoutes(h RouteHandler, e *echo.Echo, m ...echo.MiddlewareFunc) {
 	basePath := fmt.Sprintf("/%s", h.BasePath())
 
 	// define READ paths
-	readbyIDPath := fmt.Sprintf("%s/ReadByID", basePath)
 	readAllPath := fmt.Sprintf("%s/ReadAll", basePath)
+	readbyIDPath := fmt.Sprintf("%s/ReadByID", basePath)
 
 	// define CREATE paths
 	createOnePath := fmt.Sprintf("%s/CreateOne", basePath)
@@ -43,8 +45,8 @@ func createRoutes(h RouteHandler, e *echo.Echo, m ...echo.MiddlewareFunc) {
 	// define DELETE paths
 	deleteOnePath := fmt.Sprintf("%s/DeleteOne", basePath)
 
-	e.GET(readbyIDPath, h.ReadByID, m...)
 	e.GET(readAllPath, h.ReadAll, m...)
+	e.GET(readbyIDPath, h.ReadByID, m...)
 
 	e.POST(createOnePath, h.CreateOne, m...)
 

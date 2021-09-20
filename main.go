@@ -1,15 +1,11 @@
 package main
 
 import (
-	"net/http"
-
-	"github.com/labstack/echo"
+	"github.com/10hourlabs/tentn/internal/router"
 )
 
 func main() {
-	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello JOB API")
-	})
+	e := router.DefineRoutes()
+
 	e.Logger.Fatal(e.Start(":1323"))
 }
