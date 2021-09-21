@@ -57,4 +57,7 @@ const (
 	// Default field values
 	NULL        string = "NULL"
 	RemoteEarth string = "Remote, Earth"
+
+	// Others
+	Jobs string = "jobs"
 )
