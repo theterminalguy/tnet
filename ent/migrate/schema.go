@@ -21,7 +21,7 @@ var (
 		{Name: "pronoun", Type: field.TypeString},
 		{Name: "preferred_job_title", Type: field.TypeString},
 		{Name: "referral_code", Type: field.TypeString, Default: "NULL"},
-		{Name: "tentn_code", Type: field.TypeString, Unique: true},
+		{Name: "tentn_code", Type: field.TypeString, Unique: true, Size: 10},
 		{Name: "professional_start_date", Type: field.TypeTime},
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "phone", Type: field.TypeString, Unique: true},

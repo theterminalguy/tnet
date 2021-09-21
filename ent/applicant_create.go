@@ -136,14 +136,6 @@ func (ac *ApplicantCreate) SetTentnCode(s string) *ApplicantCreate {
 	return ac
 }
 
-// SetNillableTentnCode sets the "tentn_code" field if the given value is not nil.
-func (ac *ApplicantCreate) SetNillableTentnCode(s *string) *ApplicantCreate {
-	if s != nil {
-		ac.SetTentnCode(*s)
-	}
-	return ac
-}
-
 // SetProfessionalStartDate sets the "professional_start_date" field.
 func (ac *ApplicantCreate) SetProfessionalStartDate(t time.Time) *ApplicantCreate {
 	ac.mutation.SetProfessionalStartDate(t)
@@ -336,10 +328,6 @@ func (ac *ApplicantCreate) defaults() {
 		v := applicant.DefaultReferralCode
 		ac.mutation.SetReferralCode(v)
 	}
-	if _, ok := ac.mutation.TentnCode(); !ok {
-		v := applicant.DefaultTentnCode()
-		ac.mutation.SetTentnCode(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -376,6 +364,11 @@ func (ac *ApplicantCreate) check() error {
 	}
 	if _, ok := ac.mutation.TentnCode(); !ok {
 		return &ValidationError{Name: "tentn_code", err: errors.New(`ent: missing required field "tentn_code"`)}
+	}
+	if v, ok := ac.mutation.TentnCode(); ok {
+		if err := applicant.TentnCodeValidator(v); err != nil {
+			return &ValidationError{Name: "tentn_code", err: fmt.Errorf(`ent: validator failed for field "tentn_code": %w`, err)}
+		}
 	}
 	if _, ok := ac.mutation.ProfessionalStartDate(); !ok {
 		return &ValidationError{Name: "professional_start_date", err: errors.New(`ent: missing required field "professional_start_date"`)}
