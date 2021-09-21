@@ -1,8 +1,7 @@
 package schema
 
 import (
-	"crypto/rand"
-	"fmt"
+	"regexp"
 
 	"entgo.io/ent/schema/edge"
 	"github.com/10hourlabs/tentn/oneword"
@@ -44,17 +43,9 @@ func (Applicant) Fields() []ent.Field {
 			Immutable(),
 
 		field.String(oneword.TenTNCode).
-			// TODO extract this default logic for ease of testing
-			DefaultFunc(func() (code string) {
-				b := make([]byte, 5)
-				if _, err := rand.Read(b); err != nil {
-					// TODO: log error to external service
-					// before going live ensure you aren't panicing
-					panic(err)
-				}
-				code = fmt.Sprintf("%X", b)
-				return
-			}).
+			Match(regexp.MustCompile("[0-9a-zA-Z-]+$")).
+			MinLen(5).
+			MaxLen(10).
 			Unique().
 			Immutable(),
 
