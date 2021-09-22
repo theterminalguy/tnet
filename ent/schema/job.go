@@ -46,6 +46,7 @@ func (Job) Fields() []ent.Field {
 
 		field.String(oneword.Title),
 
+		// Todo, add a default title for this
 		field.String(oneword.Slug).
 			Unique(),
 

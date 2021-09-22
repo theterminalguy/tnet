@@ -30,7 +30,10 @@ func DefineRoutes() *echo.Echo {
 }
 
 func createRoutes(h RouteHandler, e *echo.Echo, m ...echo.MiddlewareFunc) {
-	basePath := fmt.Sprintf("/%s", h.BasePath())
+	// TODO: use Echo Group construct
+	namespace := "v1"
+
+	basePath := fmt.Sprintf("/%s/%s", namespace, h.BasePath())
 
 	// define READ paths
 	readAllPath := fmt.Sprintf("%s/ReadAll", basePath)
