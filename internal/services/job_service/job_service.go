@@ -1,5 +1,7 @@
 package job_service
 
-func CreateJob() {
+import "github.com/10hourlabs/tentn/ent"
 
+func CreateJob(job *ent.Job) (*ent.Job, error) {
+	return &ent.Job{}, nil
 }

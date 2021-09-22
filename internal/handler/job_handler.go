@@ -3,6 +3,9 @@ package handler
 import (
 	"net/http"
 
+	"github.com/10hourlabs/tentn/ent"
+	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/internal/services/job_service"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/labstack/echo"
 )
@@ -34,9 +37,24 @@ func (JobHandler) ReadByID(c echo.Context) error {
 }
 
 func (JobHandler) CreateOne(c echo.Context) error {
-	j := new(JobCreateParams)
-	if err := c.Bind(j); err != nil {
+	params := new(JobCreateParams)
+	if err := c.Bind(params); err != nil {
 		return err
+	}
+	j := ent.Job{
+		Hiring:       params.Hiring,
+		Title:        params.Title,
+		Summary:      params.Summary,
+		Employment:   job.Employment(params.Employment),
+		Category:     job.Category(params.Category),
+		Thumbnail:    params.Thumbnail,
+		WeHave:       params.WeHave,
+		Requirements: params.Requirements,
+		YouHave:      params.YouHave,
+	}
+	_, err := job_service.CreateJob(&j)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 	return c.JSON(http.StatusCreated, j)
 }
