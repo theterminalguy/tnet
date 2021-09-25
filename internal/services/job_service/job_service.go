@@ -9,6 +9,8 @@ import (
 )
 
 func CreateJob(job *ent.Job) (*ent.Job, error) {
+	// TODO: move database to a service struct
+	// so we don't have to call database in each method
 	client, err := database.NewSQLite3InMemoryClient()
 	if err != nil {
 		return nil, err
@@ -32,6 +34,7 @@ func CreateJob(job *ent.Job) (*ent.Job, error) {
 	if err != nil {
 		return nil, err
 	}
+	// TODO: remove logs
 	log.Println("job was created: ", job)
 	return job, nil
 }
@@ -47,5 +50,7 @@ func GetAllJobs() ([]*ent.Job, error) {
 	if err != nil {
 		return nil, err
 	}
+	// TODO: remove logs
+	log.Println("found jobs", jobs)
 	return jobs, nil
 }

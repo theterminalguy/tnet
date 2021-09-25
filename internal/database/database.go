@@ -10,9 +10,20 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+type Database interface {
+	Open() error
+	GetConnectionString() string
+	RunMigration() error
+	GetClient() *ent.Client
+}
+
 type DBSQLite3 struct {
 	ConnectionString string
 	client           *ent.Client
+}
+
+func (d *DBSQLite3) Open() (*ent.Client, error) {
+	return ent.Open(dialect.SQLite, d.GetConnectionString())
 }
 
 func (d *DBSQLite3) GetConnectionString() string {
@@ -29,19 +40,19 @@ func (d *DBSQLite3) RunMigration() error {
 }
 
 func NewSQLite3InMemoryClient() (*ent.Client, error) {
-	adapter := &DBSQLite3{
+	db := &DBSQLite3{
 		ConnectionString: "file:ent?mode=memory&cache=shared&_fk=1",
 	}
-	client, err := ent.Open(dialect.SQLite, adapter.GetConnectionString())
+	client, err := db.Open()
 	if err != nil {
 		// TODO refactor error string
 		// see https://travix.io/errors-derived-from-constants-in-go-fda6748b4072
 		return nil, errors.New(fmt.Sprintf("failed opening connection to sqlite: %v", err))
 	}
-	adapter.client = client
+	db.client = client
 	// Run the automatic migration tool to create all schema resources
-	if err = adapter.RunMigration(); err != nil {
+	if err = db.RunMigration(); err != nil {
 		return nil, err
 	}
-	return adapter.client, nil
+	return db.client, nil
 }
