@@ -42,7 +42,8 @@ func JobCategories() []string {
 func (Job) Fields() []ent.Field {
 	return []ent.Field{
 		field.Bool(oneword.Hiring).
-			Default(false),
+			Default(false).
+			StructTag(`json:"hiring"`),
 
 		field.String(oneword.Title),
 
