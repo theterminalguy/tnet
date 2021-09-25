@@ -15,6 +15,7 @@ type JobHandler struct{}
 type JobCreateParams struct {
 	Hiring       bool     `json:"hiring"`
 	Title        string   `json:"title"`
+	Slug         string   `json:"slug"`
 	Summary      string   `json:"summary"`
 	Employment   string   `json:"employment"`
 	Category     string   `json:"category"`
@@ -29,7 +30,11 @@ func (JobHandler) BasePath() string {
 }
 
 func (JobHandler) ReadAll(c echo.Context) error {
-	return c.String(http.StatusOK, "GET /ReadAll")
+	jobs, err := job_service.GetAllJobs()
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusOK, jobs)
 }
 
 func (JobHandler) ReadByID(c echo.Context) error {
@@ -52,11 +57,11 @@ func (JobHandler) CreateOne(c echo.Context) error {
 		Requirements: params.Requirements,
 		YouHave:      params.YouHave,
 	}
-	_, err := job_service.CreateJob(&j)
+	job, err := job_service.CreateJob(&j)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	return c.JSON(http.StatusCreated, j)
+	return c.JSON(http.StatusCreated, job)
 }
 
 func (JobHandler) UpdateByID(c echo.Context) error {
