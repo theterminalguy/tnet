@@ -2,8 +2,6 @@ package database
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
 	"entgo.io/ent/dialect"
 	"github.com/10hourlabs/tentn/ent"
@@ -25,9 +23,7 @@ func (d *DBSQLite3) GetConnectionString() string {
 
 func (d *DBSQLite3) RunMigration() error {
 	if err := d.client.Schema.Create(context.Background()); err != nil {
-		// TODO refactor error string
-		// see https://travix.io/errors-derived-from-constants-in-go-fda6748b4072
-		return errors.New(fmt.Sprintf("failed creating schema resources: %v", err))
+		return NewCreateSchemaError(err)
 	}
 	return nil
 }
@@ -38,9 +34,7 @@ func NewSQLite3InMemoryClient() (*ent.Client, error) {
 	}
 	client, err := db.Open()
 	if err != nil {
-		// TODO refactor error string
-		// see https://travix.io/errors-derived-from-constants-in-go-fda6748b4072
-		return nil, errors.New(fmt.Sprintf("failed opening connection to sqlite: %v", err))
+		return nil, NewConnectionError(err)
 	}
 	db.client = client
 	// Run the automatic migration tool to create all schema resources
