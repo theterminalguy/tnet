@@ -10,9 +10,11 @@ import (
 	"github.com/labstack/echo"
 )
 
-type JobHandler struct{}
+type JobHandler struct{
+	JobService job_service.Service
+}
 
-type JobCreateParams struct {
+type jobCreateParams struct {
 	Hiring       bool     `json:"hiring"`
 	Title        string   `json:"title"`
 	Slug         string   `json:"slug"`
@@ -30,9 +32,13 @@ func (JobHandler) BasePath() string {
 }
 
 func (JobHandler) ReadAll(c echo.Context) error {
-	jobs, err := job_service.GetAllJobs()
+	js, err := job_service.NewJobService()
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
+	}
+	jobs, err := js.GetAllJobs()
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	return c.JSON(http.StatusOK, jobs)
 }
@@ -42,11 +48,11 @@ func (JobHandler) ReadByID(c echo.Context) error {
 }
 
 func (JobHandler) CreateOne(c echo.Context) error {
-	params := new(JobCreateParams)
+	params := new(jobCreateParams)
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	j := ent.Job{
+	j := &ent.Job{
 		Hiring:       params.Hiring,
 		Title:        params.Title,
 		Summary:      params.Summary,
@@ -57,11 +63,12 @@ func (JobHandler) CreateOne(c echo.Context) error {
 		Requirements: params.Requirements,
 		YouHave:      params.YouHave,
 	}
-	job, err := job_service.CreateJob(&j)
+	js, err := job_service.NewJobService()
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	return c.JSON(http.StatusCreated, job)
+	j, err = js.CreateJob(j)
+	return c.JSON(http.StatusCreated, j)
 }
 
 func (JobHandler) UpdateByID(c echo.Context) error {
