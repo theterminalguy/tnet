@@ -45,7 +45,7 @@ type jobCreateParams struct {
 	YouHave      []string `json:"you_have"`
 }
 
-func (*JobHandler) BasePath() string {
+func (*JobHandler) ResourceName() string {
 	return oneword.Jobs
 }
 

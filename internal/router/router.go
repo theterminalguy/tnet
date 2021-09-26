@@ -8,7 +8,7 @@ import (
 )
 
 type RouteHandler interface {
-	BasePath() string
+	ResourceName() string
 
 	ReadAll(c echo.Context) error
 	ReadByID(c echo.Context) error
@@ -33,7 +33,7 @@ func createRoutes(h RouteHandler, e *echo.Echo, m ...echo.MiddlewareFunc) {
 	// TODO: use Echo Group construct
 	namespace := "v1"
 
-	basePath := fmt.Sprintf("/%s/%s", namespace, h.BasePath())
+	basePath := fmt.Sprintf("/%s/%s", namespace, h.ResourceName())
 
 	// define READ paths
 	readAllPath := fmt.Sprintf("%s/ReadAll", basePath)
