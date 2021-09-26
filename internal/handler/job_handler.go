@@ -98,6 +98,11 @@ func (*JobHandler) UpdateByID(c echo.Context) error {
 	return c.String(http.StatusOK, "PUT /UpdateByID")
 }
 
-func (*JobHandler) DeleteOne(c echo.Context) error {
-	return c.String(http.StatusNoContent, "DELETE /DeleteOne")
+func (h *JobHandler) DeleteOne(c echo.Context) error {
+	jobUUID := uuid.MustParse(c.Param(oneword.UUID))
+	err := h.JobService.DeleteJob(jobUUID)
+	if err != nil {
+		return c.String(http.StatusNotFound, err.Error())
+	}
+	return c.String(http.StatusNoContent, "")
 }

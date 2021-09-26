@@ -46,7 +46,7 @@ func createRoutes(h RouteHandler, e *echo.Echo, m ...echo.MiddlewareFunc) {
 	updateByIDPath := fmt.Sprintf("%s/UpdateByID", basePath)
 
 	// define DELETE paths
-	deleteOnePath := fmt.Sprintf("%s/DeleteOne", basePath)
+	deleteOnePath := fmt.Sprintf("%s/DeleteOne/:uuid", basePath)
 
 	e.GET(readAllPath, h.ReadAll, m...)
 	e.GET(readbyIDPath, h.ReadByID, m...)

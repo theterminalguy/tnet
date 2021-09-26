@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/job"
@@ -16,7 +17,7 @@ import (
 )
 
 type JobService struct {
-	psqlClient *ent.Client
+	psqlClient   *ent.Client
 	queryContext context.Context
 }
 
@@ -29,7 +30,7 @@ func NewJobService() (*JobService, error) {
 		return nil, err
 	}
 	return &JobService{
-		psqlClient: client,
+		psqlClient:   client,
 		queryContext: context.Background(),
 	}, nil
 }
@@ -77,4 +78,15 @@ func (js *JobService) GetJob(jobUUID uuid.UUID) (*ent.Job, error) {
 		return nil, err
 	}
 	return job, nil
+}
+
+func (js *JobService) DeleteJob(jobUUID uuid.UUID) error {
+	_, err := js.psqlClient.Job.Update().
+		Where(job.UUIDEQ(jobUUID)).
+		SetDeletedAt(time.Now()).
+		Save(js.queryContext)
+	if err != nil {
+		return err
+	}
+	return nil
 }
