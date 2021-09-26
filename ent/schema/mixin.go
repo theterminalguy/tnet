@@ -27,7 +27,8 @@ func (TimeStampMixin) Fields() []ent.Field {
 			UpdateDefault(time.Now),
 
 		field.Time(oneword.DeletedAt).
-			Default(time.Now),
+			Nillable().
+			Optional(),
 	}
 }
 

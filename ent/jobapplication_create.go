@@ -218,10 +218,6 @@ func (jac *JobApplicationCreate) defaults() {
 		v := jobapplication.DefaultUpdatedAt()
 		jac.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := jac.mutation.DeletedAt(); !ok {
-		v := jobapplication.DefaultDeletedAt()
-		jac.mutation.SetDeletedAt(v)
-	}
 	if _, ok := jac.mutation.Status(); !ok {
 		v := jobapplication.DefaultStatus
 		jac.mutation.SetStatus(v)
@@ -238,9 +234,6 @@ func (jac *JobApplicationCreate) check() error {
 	}
 	if _, ok := jac.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
-	}
-	if _, ok := jac.mutation.DeletedAt(); !ok {
-		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "deleted_at"`)}
 	}
 	if _, ok := jac.mutation.ReferralSource(); !ok {
 		return &ValidationError{Name: "referral_source", err: errors.New(`ent: missing required field "referral_source"`)}
@@ -313,7 +306,7 @@ func (jac *JobApplicationCreate) createSpec() (*JobApplication, *sqlgraph.Create
 			Value:  value,
 			Column: jobapplication.FieldDeletedAt,
 		})
-		_node.DeletedAt = value
+		_node.DeletedAt = &value
 	}
 	if value, ok := jac.mutation.ReferralSource(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

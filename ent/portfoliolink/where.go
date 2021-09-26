@@ -447,6 +447,20 @@ func DeletedAtLTE(v time.Time) predicate.PortfolioLink {
 	})
 }
 
+// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
+func DeletedAtIsNil() predicate.PortfolioLink {
+	return predicate.PortfolioLink(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
+	})
+}
+
+// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
+func DeletedAtNotNil() predicate.PortfolioLink {
+	return predicate.PortfolioLink(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
+	})
+}
+
 // URLEQ applies the EQ predicate on the "url" field.
 func URLEQ(v string) predicate.PortfolioLink {
 	return predicate.PortfolioLink(func(s *sql.Selector) {

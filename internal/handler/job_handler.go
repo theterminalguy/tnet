@@ -45,7 +45,7 @@ type jobCreateParams struct {
 	YouHave      []string `json:"you_have"`
 }
 
-func (*JobHandler) BasePath() string {
+func (*JobHandler) ResourceName() string {
 	return oneword.Jobs
 }
 
@@ -58,6 +58,10 @@ func (h *JobHandler) ReadAll(c echo.Context) error {
 }
 
 func (*JobHandler) ReadByID(c echo.Context) error {
+	// TODO: implement pagination
+	// most likely coursor based
+	// also, jobs with hiring = false should
+	// not be returned
 	return c.String(http.StatusOK, "GET /ReadByID")
 }
 

@@ -204,10 +204,6 @@ func (sc *SkillCreate) defaults() {
 		v := skill.DefaultUpdatedAt()
 		sc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := sc.mutation.DeletedAt(); !ok {
-		v := skill.DefaultDeletedAt()
-		sc.mutation.SetDeletedAt(v)
-	}
 	if _, ok := sc.mutation.Preferred(); !ok {
 		v := skill.DefaultPreferred
 		sc.mutation.SetPreferred(v)
@@ -224,9 +220,6 @@ func (sc *SkillCreate) check() error {
 	}
 	if _, ok := sc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
-	}
-	if _, ok := sc.mutation.DeletedAt(); !ok {
-		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "deleted_at"`)}
 	}
 	if _, ok := sc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
@@ -302,7 +295,7 @@ func (sc *SkillCreate) createSpec() (*Skill, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: skill.FieldDeletedAt,
 		})
-		_node.DeletedAt = value
+		_node.DeletedAt = &value
 	}
 	if value, ok := sc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

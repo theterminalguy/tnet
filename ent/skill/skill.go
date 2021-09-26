@@ -77,8 +77,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultDeletedAt holds the default value on creation for the "deleted_at" field.
-	DefaultDeletedAt func() time.Time
 	// YearsOfExperienceValidator is a validator for the "years_of_experience" field. It is called by the builders before save.
 	YearsOfExperienceValidator func(float32) error
 	// DefaultPreferred holds the default value on creation for the "preferred" field.

@@ -152,6 +152,12 @@ func (jc *JobCreate) SetYouHave(s []string) *JobCreate {
 	return jc
 }
 
+// SetID sets the "id" field.
+func (jc *JobCreate) SetID(i int) *JobCreate {
+	jc.mutation.SetID(i)
+	return jc
+}
+
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
 func (jc *JobCreate) AddApplicationIDs(ids ...int) *JobCreate {
 	jc.mutation.AddApplicationIDs(ids...)
@@ -250,10 +256,6 @@ func (jc *JobCreate) defaults() {
 		v := job.DefaultUpdatedAt()
 		jc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := jc.mutation.DeletedAt(); !ok {
-		v := job.DefaultDeletedAt()
-		jc.mutation.SetDeletedAt(v)
-	}
 	if _, ok := jc.mutation.Hiring(); !ok {
 		v := job.DefaultHiring
 		jc.mutation.SetHiring(v)
@@ -274,9 +276,6 @@ func (jc *JobCreate) check() error {
 	}
 	if _, ok := jc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
-	}
-	if _, ok := jc.mutation.DeletedAt(); !ok {
-		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "deleted_at"`)}
 	}
 	if _, ok := jc.mutation.Hiring(); !ok {
 		return &ValidationError{Name: "hiring", err: errors.New(`ent: missing required field "hiring"`)}
@@ -332,8 +331,10 @@ func (jc *JobCreate) sqlSave(ctx context.Context) (*Job, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = int(id)
+	}
 	return _node, nil
 }
 
@@ -348,6 +349,10 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	if id, ok := jc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := jc.mutation.UUID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
@@ -378,7 +383,7 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: job.FieldDeletedAt,
 		})
-		_node.DeletedAt = value
+		_node.DeletedAt = &value
 	}
 	if value, ok := jc.mutation.Hiring(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -532,7 +537,7 @@ func (jcb *JobCreateBulk) Save(ctx context.Context) ([]*Job, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = int(id)
 				}

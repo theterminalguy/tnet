@@ -25,7 +25,7 @@ type Skill struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// ApplicantID holds the value of the "applicant_id" field.
 	ApplicantID int `json:"applicant_id,omitempty"`
 	// Name holds the value of the "name" field.
@@ -124,7 +124,8 @@ func (s *Skill) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				s.DeletedAt = value.Time
+				s.DeletedAt = new(time.Time)
+				*s.DeletedAt = value.Time
 			}
 		case skill.FieldApplicantID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -195,8 +196,10 @@ func (s *Skill) String() string {
 	builder.WriteString(s.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(s.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", deleted_at=")
-	builder.WriteString(s.DeletedAt.Format(time.ANSIC))
+	if v := s.DeletedAt; v != nil {
+		builder.WriteString(", deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", applicant_id=")
 	builder.WriteString(fmt.Sprintf("%v", s.ApplicantID))
 	builder.WriteString(", name=")

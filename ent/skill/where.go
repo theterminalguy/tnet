@@ -461,6 +461,20 @@ func DeletedAtLTE(v time.Time) predicate.Skill {
 	})
 }
 
+// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
+func DeletedAtIsNil() predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
+	})
+}
+
+// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
+func DeletedAtNotNil() predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
+	})
+}
+
 // ApplicantIDEQ applies the EQ predicate on the "applicant_id" field.
 func ApplicantIDEQ(v int) predicate.Skill {
 	return predicate.Skill(func(s *sql.Selector) {

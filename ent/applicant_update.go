@@ -57,6 +57,12 @@ func (au *ApplicantUpdate) SetNillableDeletedAt(t *time.Time) *ApplicantUpdate {
 	return au
 }
 
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (au *ApplicantUpdate) ClearDeletedAt() *ApplicantUpdate {
+	au.mutation.ClearDeletedAt()
+	return au
+}
+
 // SetFirstName sets the "first_name" field.
 func (au *ApplicantUpdate) SetFirstName(s string) *ApplicantUpdate {
 	au.mutation.SetFirstName(s)
@@ -418,6 +424,12 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: applicant.FieldDeletedAt,
+		})
+	}
+	if au.mutation.DeletedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: applicant.FieldDeletedAt,
 		})
 	}
@@ -791,6 +803,12 @@ func (auo *ApplicantUpdateOne) SetNillableDeletedAt(t *time.Time) *ApplicantUpda
 	if t != nil {
 		auo.SetDeletedAt(*t)
 	}
+	return auo
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (auo *ApplicantUpdateOne) ClearDeletedAt() *ApplicantUpdateOne {
+	auo.mutation.ClearDeletedAt()
 	return auo
 }
 
@@ -1179,6 +1197,12 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: applicant.FieldDeletedAt,
+		})
+	}
+	if auo.mutation.DeletedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: applicant.FieldDeletedAt,
 		})
 	}

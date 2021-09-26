@@ -41,6 +41,9 @@ func JobCategories() []string {
 // Fields of the Job.
 func (Job) Fields() []ent.Field {
 	return []ent.Field{
+		field.Int("id").
+			StructTag(`json:"-"`),
+
 		field.Bool(oneword.Hiring).
 			Default(false).
 			StructTag(`json:"hiring"`),
@@ -49,7 +52,8 @@ func (Job) Fields() []ent.Field {
 
 		// Todo, add a default title for this
 		field.String(oneword.Slug).
-			Unique(),
+			Unique().
+			Immutable(),
 
 		field.String(oneword.Location).
 			Default(oneword.RemoteEarth),

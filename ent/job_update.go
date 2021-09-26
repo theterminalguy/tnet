@@ -55,6 +55,12 @@ func (ju *JobUpdate) SetNillableDeletedAt(t *time.Time) *JobUpdate {
 	return ju
 }
 
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (ju *JobUpdate) ClearDeletedAt() *JobUpdate {
+	ju.mutation.ClearDeletedAt()
+	return ju
+}
+
 // SetHiring sets the "hiring" field.
 func (ju *JobUpdate) SetHiring(b bool) *JobUpdate {
 	ju.mutation.SetHiring(b)
@@ -72,12 +78,6 @@ func (ju *JobUpdate) SetNillableHiring(b *bool) *JobUpdate {
 // SetTitle sets the "title" field.
 func (ju *JobUpdate) SetTitle(s string) *JobUpdate {
 	ju.mutation.SetTitle(s)
-	return ju
-}
-
-// SetSlug sets the "slug" field.
-func (ju *JobUpdate) SetSlug(s string) *JobUpdate {
-	ju.mutation.SetSlug(s)
 	return ju
 }
 
@@ -301,6 +301,12 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: job.FieldDeletedAt,
 		})
 	}
+	if ju.mutation.DeletedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: job.FieldDeletedAt,
+		})
+	}
 	if value, ok := ju.mutation.Hiring(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -313,13 +319,6 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: job.FieldTitle,
-		})
-	}
-	if value, ok := ju.mutation.Slug(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: job.FieldSlug,
 		})
 	}
 	if value, ok := ju.mutation.Location(); ok {
@@ -477,6 +476,12 @@ func (juo *JobUpdateOne) SetNillableDeletedAt(t *time.Time) *JobUpdateOne {
 	return juo
 }
 
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (juo *JobUpdateOne) ClearDeletedAt() *JobUpdateOne {
+	juo.mutation.ClearDeletedAt()
+	return juo
+}
+
 // SetHiring sets the "hiring" field.
 func (juo *JobUpdateOne) SetHiring(b bool) *JobUpdateOne {
 	juo.mutation.SetHiring(b)
@@ -494,12 +499,6 @@ func (juo *JobUpdateOne) SetNillableHiring(b *bool) *JobUpdateOne {
 // SetTitle sets the "title" field.
 func (juo *JobUpdateOne) SetTitle(s string) *JobUpdateOne {
 	juo.mutation.SetTitle(s)
-	return juo
-}
-
-// SetSlug sets the "slug" field.
-func (juo *JobUpdateOne) SetSlug(s string) *JobUpdateOne {
-	juo.mutation.SetSlug(s)
 	return juo
 }
 
@@ -747,6 +746,12 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 			Column: job.FieldDeletedAt,
 		})
 	}
+	if juo.mutation.DeletedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: job.FieldDeletedAt,
+		})
+	}
 	if value, ok := juo.mutation.Hiring(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -759,13 +764,6 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: job.FieldTitle,
-		})
-	}
-	if value, ok := juo.mutation.Slug(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: job.FieldSlug,
 		})
 	}
 	if value, ok := juo.mutation.Location(); ok {

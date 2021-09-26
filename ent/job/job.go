@@ -96,8 +96,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultDeletedAt holds the default value on creation for the "deleted_at" field.
-	DefaultDeletedAt func() time.Time
 	// DefaultHiring holds the default value on creation for the "hiring" field.
 	DefaultHiring bool
 	// DefaultLocation holds the default value on creation for the "location" field.
