@@ -58,6 +58,10 @@ func (h *JobHandler) ReadAll(c echo.Context) error {
 }
 
 func (*JobHandler) ReadByID(c echo.Context) error {
+	// TODO: implement pagination
+	// most likely coursor based
+	// also, jobs with hiring = false should
+	// not be returned
 	return c.String(http.StatusOK, "GET /ReadByID")
 }
 
