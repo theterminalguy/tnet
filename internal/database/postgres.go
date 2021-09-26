@@ -8,16 +8,18 @@ import (
 )
 
 type DBPostgres struct {
-	ConnectionString string
-	client           *ent.Client
+	dsn    string
+	client *ent.Client
 }
+
+var _ Databaser = (*DBPostgres)(nil)
 
 func (d *DBPostgres) Open() (*ent.Client, error) {
-	return ent.Open(dialect.Postgres, d.GetConnectionString())
+	return ent.Open(dialect.Postgres, d.GetDSN())
 }
 
-func (d *DBPostgres) GetConnectionString() string {
-	return d.ConnectionString
+func (d *DBPostgres) GetDSN() string {
+	return d.dsn
 }
 
 func (d *DBPostgres) RunMigration() error {
@@ -29,7 +31,8 @@ func (d *DBPostgres) RunMigration() error {
 
 func NewPostgresClient() (*ent.Client, error) {
 	db := &DBPostgres{
-		ConnectionString: "",
+		// TODO: move dsn to environmental variable
+		dsn: "host=localhost port=5341 user=theterminalguy dbname=tentn_dev",
 	}
 	client, err := db.Open()
 	if err != nil {

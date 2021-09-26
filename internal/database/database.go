@@ -1,10 +1,14 @@
 package database
 
-import "fmt"
+import (
+	"fmt"
 
-type Database interface {
-	Open() error
-	GetConnectionString() string
+	"github.com/10hourlabs/tentn/ent"
+)
+
+type Databaser interface {
+	Open() (*ent.Client, error)
+	GetDSN() string
 	RunMigration() error
 }
 

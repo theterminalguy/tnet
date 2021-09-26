@@ -9,16 +9,18 @@ import (
 )
 
 type DBSQLite3 struct {
-	ConnectionString string
-	client           *ent.Client
+	dsn    string
+	client *ent.Client
 }
+
+var _ Databaser = (*DBSQLite3)(nil)
 
 func (d *DBSQLite3) Open() (*ent.Client, error) {
-	return ent.Open(dialect.SQLite, d.GetConnectionString())
+	return ent.Open(dialect.SQLite, d.GetDSN())
 }
 
-func (d *DBSQLite3) GetConnectionString() string {
-	return d.ConnectionString
+func (d *DBSQLite3) GetDSN() string {
+	return d.dsn
 }
 
 func (d *DBSQLite3) RunMigration() error {
@@ -30,7 +32,8 @@ func (d *DBSQLite3) RunMigration() error {
 
 func NewSQLite3InMemoryClient() (*ent.Client, error) {
 	db := &DBSQLite3{
-		ConnectionString: "file:ent?mode=memory&cache=shared&_fk=1",
+		// TODO: move dsn to environmental variable
+		dsn: "file:ent?mode=memory&cache=shared&_fk=1",
 	}
 	client, err := db.Open()
 	if err != nil {
