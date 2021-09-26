@@ -1,28 +1,29 @@
-package job_service
+package service
 
 import (
 	"context"
 	"log"
+	"os"
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/internal/database"
 )
 
-type Service struct {
+type JobService struct {
 	psqlClient *ent.Client
 }
 
-func NewJobService() (*Service, error) {
-	client, err := database.NewPostgresClient()
+func NewJobService() (*JobService, error) {
+	client, err := database.NewPostgresClient(os.Getenv("TENTN_POSTGRES_DSN"))
 	if err != nil {
 		return nil, err
 	}
-	return &Service{
+	return &JobService{
 		psqlClient: client,
 	}, nil
 }
 
-func (js *Service) CreateJob(job *ent.Job) (*ent.Job, error) {
+func (js *JobService) CreateJob(job *ent.Job) (*ent.Job, error) {
 	defer js.psqlClient.Close()
 
 	job, err := js.psqlClient.Job.
@@ -47,7 +48,7 @@ func (js *Service) CreateJob(job *ent.Job) (*ent.Job, error) {
 	return job, nil
 }
 
-func (js *Service) GetAllJobs() ([]*ent.Job, error) {
+func (js *JobService) GetAllJobs() ([]*ent.Job, error) {
 	defer js.psqlClient.Close()
 
 	jobs, err := js.psqlClient.Job.Query().All(context.Background())

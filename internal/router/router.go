@@ -24,7 +24,7 @@ func DefineRoutes() *echo.Echo {
 	e := echo.New()
 
 	// JobController Routes
-	createRoutes(handler.JobHandler{}, e)
+	createRoutes(handler.NewJobHandler(), e)
 
 	return e
 }

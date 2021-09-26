@@ -5,6 +5,7 @@ import (
 
 	"entgo.io/ent/dialect"
 	"github.com/10hourlabs/tentn/ent"
+	_ "github.com/lib/pq"
 )
 
 type DBPostgres struct {
@@ -29,10 +30,10 @@ func (d *DBPostgres) RunMigration() error {
 	return nil
 }
 
-func NewPostgresClient() (*ent.Client, error) {
+func NewPostgresClient(dsn string) (*ent.Client, error) {
 	db := &DBPostgres{
 		// TODO: move dsn to environmental variable
-		dsn: "host=localhost port=5341 user=theterminalguy dbname=tentn_dev",
+		dsn: dsn,
 	}
 	client, err := db.Open()
 	if err != nil {
