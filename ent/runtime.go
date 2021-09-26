@@ -26,7 +26,7 @@ func init() {
 	applicantFields := schema.Applicant{}.Fields()
 	_ = applicantFields
 	// applicantDescUUID is the schema descriptor for uuid field.
-	applicantDescUUID := applicantMixinFields0[0].Descriptor()
+	applicantDescUUID := applicantMixinFields0[1].Descriptor()
 	// applicant.DefaultUUID holds the default value on creation for the uuid field.
 	applicant.DefaultUUID = applicantDescUUID.Default.(func() uuid.UUID)
 	// applicantDescCreatedAt is the schema descriptor for created_at field.
@@ -88,7 +88,7 @@ func init() {
 	jobFields := schema.Job{}.Fields()
 	_ = jobFields
 	// jobDescUUID is the schema descriptor for uuid field.
-	jobDescUUID := jobMixinFields0[0].Descriptor()
+	jobDescUUID := jobMixinFields0[1].Descriptor()
 	// job.DefaultUUID holds the default value on creation for the uuid field.
 	job.DefaultUUID = jobDescUUID.Default.(func() uuid.UUID)
 	// jobDescCreatedAt is the schema descriptor for created_at field.
@@ -102,11 +102,11 @@ func init() {
 	// job.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	job.UpdateDefaultUpdatedAt = jobDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// jobDescHiring is the schema descriptor for hiring field.
-	jobDescHiring := jobFields[1].Descriptor()
+	jobDescHiring := jobFields[0].Descriptor()
 	// job.DefaultHiring holds the default value on creation for the hiring field.
 	job.DefaultHiring = jobDescHiring.Default.(bool)
 	// jobDescLocation is the schema descriptor for location field.
-	jobDescLocation := jobFields[4].Descriptor()
+	jobDescLocation := jobFields[3].Descriptor()
 	// job.DefaultLocation holds the default value on creation for the location field.
 	job.DefaultLocation = jobDescLocation.Default.(string)
 	jobapplicationMixin := schema.JobApplication{}.Mixin()
@@ -117,7 +117,7 @@ func init() {
 	jobapplicationFields := schema.JobApplication{}.Fields()
 	_ = jobapplicationFields
 	// jobapplicationDescUUID is the schema descriptor for uuid field.
-	jobapplicationDescUUID := jobapplicationMixinFields0[0].Descriptor()
+	jobapplicationDescUUID := jobapplicationMixinFields0[1].Descriptor()
 	// jobapplication.DefaultUUID holds the default value on creation for the uuid field.
 	jobapplication.DefaultUUID = jobapplicationDescUUID.Default.(func() uuid.UUID)
 	// jobapplicationDescCreatedAt is the schema descriptor for created_at field.
@@ -138,7 +138,7 @@ func init() {
 	portfoliolinkFields := schema.PortfolioLink{}.Fields()
 	_ = portfoliolinkFields
 	// portfoliolinkDescUUID is the schema descriptor for uuid field.
-	portfoliolinkDescUUID := portfoliolinkMixinFields0[0].Descriptor()
+	portfoliolinkDescUUID := portfoliolinkMixinFields0[1].Descriptor()
 	// portfoliolink.DefaultUUID holds the default value on creation for the uuid field.
 	portfoliolink.DefaultUUID = portfoliolinkDescUUID.Default.(func() uuid.UUID)
 	// portfoliolinkDescCreatedAt is the schema descriptor for created_at field.
@@ -163,7 +163,7 @@ func init() {
 	skillFields := schema.Skill{}.Fields()
 	_ = skillFields
 	// skillDescUUID is the schema descriptor for uuid field.
-	skillDescUUID := skillMixinFields0[0].Descriptor()
+	skillDescUUID := skillMixinFields0[1].Descriptor()
 	// skill.DefaultUUID holds the default value on creation for the uuid field.
 	skill.DefaultUUID = skillDescUUID.Default.(func() uuid.UUID)
 	// skillDescCreatedAt is the schema descriptor for created_at field.

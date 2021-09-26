@@ -28,7 +28,8 @@ func (TimeStampMixin) Fields() []ent.Field {
 
 		field.Time(oneword.DeletedAt).
 			Nillable().
-			Optional(),
+			Optional().
+			StructTag(`json:"deleted_at"`),
 	}
 }
 
@@ -38,6 +39,9 @@ type UUIDMixin struct {
 
 func (UUIDMixin) Fields() []ent.Field {
 	return []ent.Field{
+		field.Int("id").
+			StructTag(`json:"-"`),
+		
 		field.UUID(oneword.UUID, uuid.UUID{}).
 			Unique().
 			Default(uuid.New),

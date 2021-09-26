@@ -25,7 +25,7 @@ type Job struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deleted_at"`
 	// Hiring holds the value of the "hiring" field.
 	Hiring bool `json:"hiring"`
 	// Title holds the value of the "title" field.

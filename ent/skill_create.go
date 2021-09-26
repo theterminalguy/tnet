@@ -116,6 +116,12 @@ func (sc *SkillCreate) SetNote(s string) *SkillCreate {
 	return sc
 }
 
+// SetID sets the "id" field.
+func (sc *SkillCreate) SetID(i int) *SkillCreate {
+	sc.mutation.SetID(i)
+	return sc
+}
+
 // SetApplicant sets the "applicant" edge to the Applicant entity.
 func (sc *SkillCreate) SetApplicant(a *Applicant) *SkillCreate {
 	return sc.SetApplicantID(a.ID)
@@ -249,8 +255,10 @@ func (sc *SkillCreate) sqlSave(ctx context.Context) (*Skill, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = int(id)
+	}
 	return _node, nil
 }
 
@@ -265,6 +273,10 @@ func (sc *SkillCreate) createSpec() (*Skill, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	if id, ok := sc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := sc.mutation.UUID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
@@ -394,7 +406,7 @@ func (scb *SkillCreateBulk) Save(ctx context.Context) ([]*Skill, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = int(id)
 				}

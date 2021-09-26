@@ -41,9 +41,6 @@ func JobCategories() []string {
 // Fields of the Job.
 func (Job) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int("id").
-			StructTag(`json:"-"`),
-
 		field.Bool(oneword.Hiring).
 			Default(false).
 			StructTag(`json:"hiring"`),
