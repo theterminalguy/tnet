@@ -7,6 +7,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/internal/database"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 type JobService struct {
@@ -27,8 +28,6 @@ func NewJobService() (*JobService, error) {
 }
 
 func (js *JobService) CreateJob(job *ent.Job) (*ent.Job, error) {
-	defer js.psqlClient.Close()
-
 	job, err := js.psqlClient.Job.
 		Create().
 		SetHiring(job.Hiring).
@@ -52,8 +51,6 @@ func (js *JobService) CreateJob(job *ent.Job) (*ent.Job, error) {
 }
 
 func (js *JobService) GetAllJobs() ([]*ent.Job, error) {
-	defer js.psqlClient.Close()
-
 	jobs, err := js.psqlClient.Job.Query().All(context.Background())
 	if err != nil {
 		return nil, err
