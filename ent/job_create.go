@@ -250,10 +250,6 @@ func (jc *JobCreate) defaults() {
 		v := job.DefaultUpdatedAt()
 		jc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := jc.mutation.DeletedAt(); !ok {
-		v := job.DefaultDeletedAt()
-		jc.mutation.SetDeletedAt(v)
-	}
 	if _, ok := jc.mutation.Hiring(); !ok {
 		v := job.DefaultHiring
 		jc.mutation.SetHiring(v)
@@ -274,9 +270,6 @@ func (jc *JobCreate) check() error {
 	}
 	if _, ok := jc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
-	}
-	if _, ok := jc.mutation.DeletedAt(); !ok {
-		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "deleted_at"`)}
 	}
 	if _, ok := jc.mutation.Hiring(); !ok {
 		return &ValidationError{Name: "hiring", err: errors.New(`ent: missing required field "hiring"`)}
@@ -378,7 +371,7 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: job.FieldDeletedAt,
 		})
-		_node.DeletedAt = value
+		_node.DeletedAt = &value
 	}
 	if value, ok := jc.mutation.Hiring(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

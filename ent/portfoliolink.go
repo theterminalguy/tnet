@@ -25,7 +25,7 @@ type PortfolioLink struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// URL holds the value of the "url" field.
 	URL string `json:"url,omitempty"`
 	// Name holds the value of the "name" field.
@@ -116,7 +116,8 @@ func (pl *PortfolioLink) assignValues(columns []string, values []interface{}) er
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				pl.DeletedAt = value.Time
+				pl.DeletedAt = new(time.Time)
+				*pl.DeletedAt = value.Time
 			}
 		case portfoliolink.FieldURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -175,8 +176,10 @@ func (pl *PortfolioLink) String() string {
 	builder.WriteString(pl.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(pl.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", deleted_at=")
-	builder.WriteString(pl.DeletedAt.Format(time.ANSIC))
+	if v := pl.DeletedAt; v != nil {
+		builder.WriteString(", deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", url=")
 	builder.WriteString(pl.URL)
 	builder.WriteString(", name=")

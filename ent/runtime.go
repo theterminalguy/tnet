@@ -39,10 +39,6 @@ func init() {
 	applicant.DefaultUpdatedAt = applicantDescUpdatedAt.Default.(func() time.Time)
 	// applicant.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	applicant.UpdateDefaultUpdatedAt = applicantDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// applicantDescDeletedAt is the schema descriptor for deleted_at field.
-	applicantDescDeletedAt := applicantMixinFields1[2].Descriptor()
-	// applicant.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	applicant.DefaultDeletedAt = applicantDescDeletedAt.Default.(func() time.Time)
 	// applicantDescReferralCode is the schema descriptor for referral_code field.
 	applicantDescReferralCode := applicantFields[6].Descriptor()
 	// applicant.DefaultReferralCode holds the default value on creation for the referral_code field.
@@ -105,10 +101,6 @@ func init() {
 	job.DefaultUpdatedAt = jobDescUpdatedAt.Default.(func() time.Time)
 	// job.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	job.UpdateDefaultUpdatedAt = jobDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// jobDescDeletedAt is the schema descriptor for deleted_at field.
-	jobDescDeletedAt := jobMixinFields1[2].Descriptor()
-	// job.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	job.DefaultDeletedAt = jobDescDeletedAt.Default.(func() time.Time)
 	// jobDescHiring is the schema descriptor for hiring field.
 	jobDescHiring := jobFields[0].Descriptor()
 	// job.DefaultHiring holds the default value on creation for the hiring field.
@@ -138,10 +130,6 @@ func init() {
 	jobapplication.DefaultUpdatedAt = jobapplicationDescUpdatedAt.Default.(func() time.Time)
 	// jobapplication.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	jobapplication.UpdateDefaultUpdatedAt = jobapplicationDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// jobapplicationDescDeletedAt is the schema descriptor for deleted_at field.
-	jobapplicationDescDeletedAt := jobapplicationMixinFields1[2].Descriptor()
-	// jobapplication.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	jobapplication.DefaultDeletedAt = jobapplicationDescDeletedAt.Default.(func() time.Time)
 	portfoliolinkMixin := schema.PortfolioLink{}.Mixin()
 	portfoliolinkMixinFields0 := portfoliolinkMixin[0].Fields()
 	_ = portfoliolinkMixinFields0
@@ -163,10 +151,6 @@ func init() {
 	portfoliolink.DefaultUpdatedAt = portfoliolinkDescUpdatedAt.Default.(func() time.Time)
 	// portfoliolink.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	portfoliolink.UpdateDefaultUpdatedAt = portfoliolinkDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// portfoliolinkDescDeletedAt is the schema descriptor for deleted_at field.
-	portfoliolinkDescDeletedAt := portfoliolinkMixinFields1[2].Descriptor()
-	// portfoliolink.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	portfoliolink.DefaultDeletedAt = portfoliolinkDescDeletedAt.Default.(func() time.Time)
 	// portfoliolinkDescURL is the schema descriptor for url field.
 	portfoliolinkDescURL := portfoliolinkFields[0].Descriptor()
 	// portfoliolink.URLValidator is a validator for the "url" field. It is called by the builders before save.
@@ -192,10 +176,6 @@ func init() {
 	skill.DefaultUpdatedAt = skillDescUpdatedAt.Default.(func() time.Time)
 	// skill.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	skill.UpdateDefaultUpdatedAt = skillDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// skillDescDeletedAt is the schema descriptor for deleted_at field.
-	skillDescDeletedAt := skillMixinFields1[2].Descriptor()
-	// skill.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	skill.DefaultDeletedAt = skillDescDeletedAt.Default.(func() time.Time)
 	// skillDescYearsOfExperience is the schema descriptor for years_of_experience field.
 	skillDescYearsOfExperience := skillFields[1].Descriptor()
 	// skill.YearsOfExperienceValidator is a validator for the "years_of_experience" field. It is called by the builders before save.

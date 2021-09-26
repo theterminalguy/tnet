@@ -282,7 +282,7 @@ func (m *ApplicantMutation) DeletedAt() (r time.Time, exists bool) {
 // OldDeletedAt returns the old "deleted_at" field's value of the Applicant entity.
 // If the Applicant object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApplicantMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
+func (m *ApplicantMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldDeletedAt is only allowed on UpdateOne operations")
 	}
@@ -296,9 +296,22 @@ func (m *ApplicantMutation) OldDeletedAt(ctx context.Context) (v time.Time, err 
 	return oldValue.DeletedAt, nil
 }
 
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *ApplicantMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[applicant.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *ApplicantMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[applicant.FieldDeletedAt]
+	return ok
+}
+
 // ResetDeletedAt resets all changes to the "deleted_at" field.
 func (m *ApplicantMutation) ResetDeletedAt() {
 	m.deleted_at = nil
+	delete(m.clearedFields, applicant.FieldDeletedAt)
 }
 
 // SetFirstName sets the "first_name" field.
@@ -1391,6 +1404,9 @@ func (m *ApplicantMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *ApplicantMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(applicant.FieldDeletedAt) {
+		fields = append(fields, applicant.FieldDeletedAt)
+	}
 	if m.FieldCleared(applicant.FieldReferrerID) {
 		fields = append(fields, applicant.FieldReferrerID)
 	}
@@ -1408,6 +1424,9 @@ func (m *ApplicantMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *ApplicantMutation) ClearField(name string) error {
 	switch name {
+	case applicant.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
 	case applicant.FieldReferrerID:
 		m.ClearReferrerID()
 		return nil
@@ -1891,7 +1910,7 @@ func (m *JobMutation) DeletedAt() (r time.Time, exists bool) {
 // OldDeletedAt returns the old "deleted_at" field's value of the Job entity.
 // If the Job object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *JobMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
+func (m *JobMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldDeletedAt is only allowed on UpdateOne operations")
 	}
@@ -1905,9 +1924,22 @@ func (m *JobMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error)
 	return oldValue.DeletedAt, nil
 }
 
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *JobMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[job.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *JobMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[job.FieldDeletedAt]
+	return ok
+}
+
 // ResetDeletedAt resets all changes to the "deleted_at" field.
 func (m *JobMutation) ResetDeletedAt() {
 	m.deleted_at = nil
+	delete(m.clearedFields, job.FieldDeletedAt)
 }
 
 // SetHiring sets the "hiring" field.
@@ -2645,7 +2677,11 @@ func (m *JobMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *JobMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(job.FieldDeletedAt) {
+		fields = append(fields, job.FieldDeletedAt)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -2658,6 +2694,11 @@ func (m *JobMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *JobMutation) ClearField(name string) error {
+	switch name {
+	case job.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	}
 	return fmt.Errorf("unknown Job nullable field %s", name)
 }
 
@@ -3025,7 +3066,7 @@ func (m *JobApplicationMutation) DeletedAt() (r time.Time, exists bool) {
 // OldDeletedAt returns the old "deleted_at" field's value of the JobApplication entity.
 // If the JobApplication object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *JobApplicationMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
+func (m *JobApplicationMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldDeletedAt is only allowed on UpdateOne operations")
 	}
@@ -3039,9 +3080,22 @@ func (m *JobApplicationMutation) OldDeletedAt(ctx context.Context) (v time.Time,
 	return oldValue.DeletedAt, nil
 }
 
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *JobApplicationMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[jobapplication.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *JobApplicationMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[jobapplication.FieldDeletedAt]
+	return ok
+}
+
 // ResetDeletedAt resets all changes to the "deleted_at" field.
 func (m *JobApplicationMutation) ResetDeletedAt() {
 	m.deleted_at = nil
+	delete(m.clearedFields, jobapplication.FieldDeletedAt)
 }
 
 // SetApplicantID sets the "applicant_id" field.
@@ -3507,6 +3561,9 @@ func (m *JobApplicationMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *JobApplicationMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(jobapplication.FieldDeletedAt) {
+		fields = append(fields, jobapplication.FieldDeletedAt)
+	}
 	if m.FieldCleared(jobapplication.FieldApplicantID) {
 		fields = append(fields, jobapplication.FieldApplicantID)
 	}
@@ -3527,6 +3584,9 @@ func (m *JobApplicationMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *JobApplicationMutation) ClearField(name string) error {
 	switch name {
+	case jobapplication.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
 	case jobapplication.FieldApplicantID:
 		m.ClearApplicantID()
 		return nil
@@ -3890,7 +3950,7 @@ func (m *PortfolioLinkMutation) DeletedAt() (r time.Time, exists bool) {
 // OldDeletedAt returns the old "deleted_at" field's value of the PortfolioLink entity.
 // If the PortfolioLink object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PortfolioLinkMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
+func (m *PortfolioLinkMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldDeletedAt is only allowed on UpdateOne operations")
 	}
@@ -3904,9 +3964,22 @@ func (m *PortfolioLinkMutation) OldDeletedAt(ctx context.Context) (v time.Time, 
 	return oldValue.DeletedAt, nil
 }
 
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *PortfolioLinkMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[portfoliolink.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *PortfolioLinkMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[portfoliolink.FieldDeletedAt]
+	return ok
+}
+
 // ResetDeletedAt resets all changes to the "deleted_at" field.
 func (m *PortfolioLinkMutation) ResetDeletedAt() {
 	m.deleted_at = nil
+	delete(m.clearedFields, portfoliolink.FieldDeletedAt)
 }
 
 // SetURL sets the "url" field.
@@ -4233,6 +4306,9 @@ func (m *PortfolioLinkMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *PortfolioLinkMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(portfoliolink.FieldDeletedAt) {
+		fields = append(fields, portfoliolink.FieldDeletedAt)
+	}
 	if m.FieldCleared(portfoliolink.FieldApplicantID) {
 		fields = append(fields, portfoliolink.FieldApplicantID)
 	}
@@ -4250,6 +4326,9 @@ func (m *PortfolioLinkMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *PortfolioLinkMutation) ClearField(name string) error {
 	switch name {
+	case portfoliolink.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
 	case portfoliolink.FieldApplicantID:
 		m.ClearApplicantID()
 		return nil
@@ -4589,7 +4668,7 @@ func (m *SkillMutation) DeletedAt() (r time.Time, exists bool) {
 // OldDeletedAt returns the old "deleted_at" field's value of the Skill entity.
 // If the Skill object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SkillMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
+func (m *SkillMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldDeletedAt is only allowed on UpdateOne operations")
 	}
@@ -4603,9 +4682,22 @@ func (m *SkillMutation) OldDeletedAt(ctx context.Context) (v time.Time, err erro
 	return oldValue.DeletedAt, nil
 }
 
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *SkillMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[skill.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *SkillMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[skill.FieldDeletedAt]
+	return ok
+}
+
 // ResetDeletedAt resets all changes to the "deleted_at" field.
 func (m *SkillMutation) ResetDeletedAt() {
 	m.deleted_at = nil
+	delete(m.clearedFields, skill.FieldDeletedAt)
 }
 
 // SetApplicantID sets the "applicant_id" field.
@@ -5064,6 +5156,9 @@ func (m *SkillMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *SkillMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(skill.FieldDeletedAt) {
+		fields = append(fields, skill.FieldDeletedAt)
+	}
 	if m.FieldCleared(skill.FieldApplicantID) {
 		fields = append(fields, skill.FieldApplicantID)
 	}
@@ -5081,6 +5176,9 @@ func (m *SkillMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *SkillMutation) ClearField(name string) error {
 	switch name {
+	case skill.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
 	case skill.FieldApplicantID:
 		m.ClearApplicantID()
 		return nil

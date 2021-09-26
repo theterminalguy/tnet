@@ -56,6 +56,12 @@ func (jau *JobApplicationUpdate) SetNillableDeletedAt(t *time.Time) *JobApplicat
 	return jau
 }
 
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (jau *JobApplicationUpdate) ClearDeletedAt() *JobApplicationUpdate {
+	jau.mutation.ClearDeletedAt()
+	return jau
+}
+
 // SetApplicantID sets the "applicant_id" field.
 func (jau *JobApplicationUpdate) SetApplicantID(i int) *JobApplicationUpdate {
 	jau.mutation.SetApplicantID(i)
@@ -267,6 +273,12 @@ func (jau *JobApplicationUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: jobapplication.FieldDeletedAt,
 		})
 	}
+	if jau.mutation.DeletedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: jobapplication.FieldDeletedAt,
+		})
+	}
 	if value, ok := jau.mutation.ReferralSource(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -400,6 +412,12 @@ func (jauo *JobApplicationUpdateOne) SetNillableDeletedAt(t *time.Time) *JobAppl
 	if t != nil {
 		jauo.SetDeletedAt(*t)
 	}
+	return jauo
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (jauo *JobApplicationUpdateOne) ClearDeletedAt() *JobApplicationUpdateOne {
+	jauo.mutation.ClearDeletedAt()
 	return jauo
 }
 
@@ -635,6 +653,12 @@ func (jauo *JobApplicationUpdateOne) sqlSave(ctx context.Context) (_node *JobApp
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: jobapplication.FieldDeletedAt,
+		})
+	}
+	if jauo.mutation.DeletedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: jobapplication.FieldDeletedAt,
 		})
 	}

@@ -320,10 +320,6 @@ func (ac *ApplicantCreate) defaults() {
 		v := applicant.DefaultUpdatedAt()
 		ac.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := ac.mutation.DeletedAt(); !ok {
-		v := applicant.DefaultDeletedAt()
-		ac.mutation.SetDeletedAt(v)
-	}
 	if _, ok := ac.mutation.ReferralCode(); !ok {
 		v := applicant.DefaultReferralCode
 		ac.mutation.SetReferralCode(v)
@@ -340,9 +336,6 @@ func (ac *ApplicantCreate) check() error {
 	}
 	if _, ok := ac.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
-	}
-	if _, ok := ac.mutation.DeletedAt(); !ok {
-		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "deleted_at"`)}
 	}
 	if _, ok := ac.mutation.FirstName(); !ok {
 		return &ValidationError{Name: "first_name", err: errors.New(`ent: missing required field "first_name"`)}
@@ -450,7 +443,7 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: applicant.FieldDeletedAt,
 		})
-		_node.DeletedAt = value
+		_node.DeletedAt = &value
 	}
 	if value, ok := ac.mutation.FirstName(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

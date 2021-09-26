@@ -25,7 +25,7 @@ type Job struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// Hiring holds the value of the "hiring" field.
 	Hiring bool `json:"hiring"`
 	// Title holds the value of the "title" field.
@@ -131,7 +131,8 @@ func (j *Job) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				j.DeletedAt = value.Time
+				j.DeletedAt = new(time.Time)
+				*j.DeletedAt = value.Time
 			}
 		case job.FieldHiring:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -244,8 +245,10 @@ func (j *Job) String() string {
 	builder.WriteString(j.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(j.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", deleted_at=")
-	builder.WriteString(j.DeletedAt.Format(time.ANSIC))
+	if v := j.DeletedAt; v != nil {
+		builder.WriteString(", deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", hiring=")
 	builder.WriteString(fmt.Sprintf("%v", j.Hiring))
 	builder.WriteString(", title=")

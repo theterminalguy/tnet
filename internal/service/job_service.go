@@ -2,11 +2,15 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/internal/database"
+	"github.com/google/uuid"
+	"github.com/gosimple/slug"
+
 	_ "github.com/joho/godotenv/autoload"
 )
 
@@ -28,13 +32,15 @@ func NewJobService() (*JobService, error) {
 }
 
 func (js *JobService) CreateJob(job *ent.Job) (*ent.Job, error) {
+	jobUUID := uuid.New()
+	jobSlug := slug.Make(fmt.Sprintf("%v %v", job.Title, jobUUID))
 	job, err := js.psqlClient.Job.
 		Create().
+		SetUUID(jobUUID).
 		SetHiring(job.Hiring).
 		SetTitle(job.Title).
 		SetSummary(job.Summary).
-		// TODO slug should be automatically built
-		SetSlug(job.Slug).
+		SetSlug(jobSlug).
 		SetEmployment(job.Employment).
 		SetCategory(job.Category).
 		SetThumbnail(job.Thumbnail).

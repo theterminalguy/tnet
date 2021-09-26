@@ -49,7 +49,8 @@ func (Job) Fields() []ent.Field {
 
 		// Todo, add a default title for this
 		field.String(oneword.Slug).
-			Unique(),
+			Unique().
+			Immutable(),
 
 		field.String(oneword.Location).
 			Default(oneword.RemoteEarth),

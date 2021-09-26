@@ -55,6 +55,12 @@ func (plu *PortfolioLinkUpdate) SetNillableDeletedAt(t *time.Time) *PortfolioLin
 	return plu
 }
 
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (plu *PortfolioLinkUpdate) ClearDeletedAt() *PortfolioLinkUpdate {
+	plu.mutation.ClearDeletedAt()
+	return plu
+}
+
 // SetURL sets the "url" field.
 func (plu *PortfolioLinkUpdate) SetURL(s string) *PortfolioLinkUpdate {
 	plu.mutation.SetURL(s)
@@ -221,6 +227,12 @@ func (plu *PortfolioLinkUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Column: portfoliolink.FieldDeletedAt,
 		})
 	}
+	if plu.mutation.DeletedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: portfoliolink.FieldDeletedAt,
+		})
+	}
 	if value, ok := plu.mutation.URL(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -312,6 +324,12 @@ func (pluo *PortfolioLinkUpdateOne) SetNillableDeletedAt(t *time.Time) *Portfoli
 	if t != nil {
 		pluo.SetDeletedAt(*t)
 	}
+	return pluo
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (pluo *PortfolioLinkUpdateOne) ClearDeletedAt() *PortfolioLinkUpdateOne {
+	pluo.mutation.ClearDeletedAt()
 	return pluo
 }
 
@@ -502,6 +520,12 @@ func (pluo *PortfolioLinkUpdateOne) sqlSave(ctx context.Context) (_node *Portfol
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: portfoliolink.FieldDeletedAt,
+		})
+	}
+	if pluo.mutation.DeletedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: portfoliolink.FieldDeletedAt,
 		})
 	}

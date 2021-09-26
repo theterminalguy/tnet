@@ -468,6 +468,20 @@ func DeletedAtLTE(v time.Time) predicate.Job {
 	})
 }
 
+// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
+func DeletedAtIsNil() predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldDeletedAt)))
+	})
+}
+
+// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
+func DeletedAtNotNil() predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
+	})
+}
+
 // HiringEQ applies the EQ predicate on the "hiring" field.
 func HiringEQ(v bool) predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {

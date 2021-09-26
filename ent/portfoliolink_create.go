@@ -184,10 +184,6 @@ func (plc *PortfolioLinkCreate) defaults() {
 		v := portfoliolink.DefaultUpdatedAt()
 		plc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := plc.mutation.DeletedAt(); !ok {
-		v := portfoliolink.DefaultDeletedAt()
-		plc.mutation.SetDeletedAt(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -200,9 +196,6 @@ func (plc *PortfolioLinkCreate) check() error {
 	}
 	if _, ok := plc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
-	}
-	if _, ok := plc.mutation.DeletedAt(); !ok {
-		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "deleted_at"`)}
 	}
 	if _, ok := plc.mutation.URL(); !ok {
 		return &ValidationError{Name: "url", err: errors.New(`ent: missing required field "url"`)}
@@ -272,7 +265,7 @@ func (plc *PortfolioLinkCreate) createSpec() (*PortfolioLink, *sqlgraph.CreateSp
 			Value:  value,
 			Column: portfoliolink.FieldDeletedAt,
 		})
-		_node.DeletedAt = value
+		_node.DeletedAt = &value
 	}
 	if value, ok := plc.mutation.URL(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
