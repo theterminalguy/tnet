@@ -1,23 +1,32 @@
-package job_service
+package service
 
 import (
 	"context"
 	"log"
+	"os"
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/internal/database"
 )
 
-func CreateJob(job *ent.Job) (*ent.Job, error) {
-	// TODO: move database to a service struct
-	// so we don't have to call database in each method
-	client, err := database.NewSQLite3InMemoryClient()
+type JobService struct {
+	psqlClient *ent.Client
+}
+
+func NewJobService() (*JobService, error) {
+	client, err := database.NewPostgresClient(os.Getenv("TENTN_POSTGRES_DSN"))
 	if err != nil {
 		return nil, err
 	}
-	defer client.Close()
+	return &JobService{
+		psqlClient: client,
+	}, nil
+}
 
-	job, err = client.Job.
+func (js *JobService) CreateJob(job *ent.Job) (*ent.Job, error) {
+	defer js.psqlClient.Close()
+
+	job, err := js.psqlClient.Job.
 		Create().
 		SetHiring(job.Hiring).
 		SetTitle(job.Title).
@@ -39,14 +48,10 @@ func CreateJob(job *ent.Job) (*ent.Job, error) {
 	return job, nil
 }
 
-func GetAllJobs() ([]*ent.Job, error) {
-	client, err := database.NewSQLite3InMemoryClient()
-	if err != nil {
-		return nil, err
-	}
-	defer client.Close()
+func (js *JobService) GetAllJobs() ([]*ent.Job, error) {
+	defer js.psqlClient.Close()
 
-	jobs, err := client.Job.Query().All(context.Background())
+	jobs, err := js.psqlClient.Job.Query().All(context.Background())
 	if err != nil {
 		return nil, err
 	}

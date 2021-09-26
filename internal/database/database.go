@@ -1,58 +1,40 @@
 package database
 
 import (
-	"context"
-	"errors"
 	"fmt"
 
-	"entgo.io/ent/dialect"
 	"github.com/10hourlabs/tentn/ent"
-	_ "github.com/mattn/go-sqlite3"
 )
 
-type Database interface {
-	Open() error
-	GetConnectionString() string
+type Databaser interface {
+	Open() (*ent.Client, error)
+	GetDSN() string
 	RunMigration() error
-	GetClient() *ent.Client
 }
 
-type DBSQLite3 struct {
-	ConnectionString string
-	client           *ent.Client
+type Error struct {
+	Summary string
+	Err     error
 }
 
-func (d *DBSQLite3) Open() (*ent.Client, error) {
-	return ent.Open(dialect.SQLite, d.GetConnectionString())
+func (e Error) Error() string {
+	return fmt.Sprintf("%s: %v", e.Summary, e.Err)
 }
 
-func (d *DBSQLite3) GetConnectionString() string {
-	return d.ConnectionString
-}
+type CreateSchemaError error
 
-func (d *DBSQLite3) RunMigration() error {
-	if err := d.client.Schema.Create(context.Background()); err != nil {
-		// TODO refactor error string
-		// see https://travix.io/errors-derived-from-constants-in-go-fda6748b4072
-		return errors.New(fmt.Sprintf("failed creating schema resources: %v", err))
+func NewCreateSchemaError(err error) CreateSchemaError {
+	return &Error{
+		Summary: "failed creating schema resources",
+		Err:     err,
 	}
-	return nil
 }
 
-func NewSQLite3InMemoryClient() (*ent.Client, error) {
-	db := &DBSQLite3{
-		ConnectionString: "file:ent?mode=memory&cache=shared&_fk=1",
+type ConnectionError error
+
+func NewConnectionError(err error) ConnectionError {
+	return &Error{
+		Summary: "failed opening connection to database",
+		Err:     err,
 	}
-	client, err := db.Open()
-	if err != nil {
-		// TODO refactor error string
-		// see https://travix.io/errors-derived-from-constants-in-go-fda6748b4072
-		return nil, errors.New(fmt.Sprintf("failed opening connection to sqlite: %v", err))
-	}
-	db.client = client
-	// Run the automatic migration tool to create all schema resources
-	if err = db.RunMigration(); err != nil {
-		return nil, err
-	}
-	return db.client, nil
 }
