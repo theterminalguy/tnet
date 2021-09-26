@@ -152,6 +152,12 @@ func (jc *JobCreate) SetYouHave(s []string) *JobCreate {
 	return jc
 }
 
+// SetID sets the "id" field.
+func (jc *JobCreate) SetID(i int) *JobCreate {
+	jc.mutation.SetID(i)
+	return jc
+}
+
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
 func (jc *JobCreate) AddApplicationIDs(ids ...int) *JobCreate {
 	jc.mutation.AddApplicationIDs(ids...)
@@ -325,8 +331,10 @@ func (jc *JobCreate) sqlSave(ctx context.Context) (*Job, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = int(id)
+	}
 	return _node, nil
 }
 
@@ -341,6 +349,10 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	if id, ok := jc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := jc.mutation.UUID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
@@ -525,7 +537,7 @@ func (jcb *JobCreateBulk) Save(ctx context.Context) ([]*Job, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = int(id)
 				}

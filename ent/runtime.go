@@ -102,11 +102,11 @@ func init() {
 	// job.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	job.UpdateDefaultUpdatedAt = jobDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// jobDescHiring is the schema descriptor for hiring field.
-	jobDescHiring := jobFields[0].Descriptor()
+	jobDescHiring := jobFields[1].Descriptor()
 	// job.DefaultHiring holds the default value on creation for the hiring field.
 	job.DefaultHiring = jobDescHiring.Default.(bool)
 	// jobDescLocation is the schema descriptor for location field.
-	jobDescLocation := jobFields[3].Descriptor()
+	jobDescLocation := jobFields[4].Descriptor()
 	// job.DefaultLocation holds the default value on creation for the location field.
 	job.DefaultLocation = jobDescLocation.Default.(string)
 	jobapplicationMixin := schema.JobApplication{}.Mixin()
