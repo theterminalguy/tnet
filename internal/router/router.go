@@ -43,7 +43,7 @@ func createRoutes(h RouteHandler, e *echo.Echo, m ...echo.MiddlewareFunc) {
 	createOnePath := fmt.Sprintf("%s/CreateOne", basePath)
 
 	// define UPDATE paths
-	updateByIDPath := fmt.Sprintf("%s/UpdateByID", basePath)
+	updateByIDPath := fmt.Sprintf("%s/UpdateByID/:uuid", basePath)
 
 	// define DELETE paths
 	deleteOnePath := fmt.Sprintf("%s/DeleteOne/:uuid", basePath)
