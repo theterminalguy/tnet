@@ -37,7 +37,7 @@ func createRoutes(h RouteHandler, e *echo.Echo, m ...echo.MiddlewareFunc) {
 
 	// define READ paths
 	readAllPath := fmt.Sprintf("%s/ReadAll", basePath)
-	readbyIDPath := fmt.Sprintf("%s/ReadByID", basePath)
+	readbyIDPath := fmt.Sprintf("%s/ReadByID/:uuid", basePath)
 
 	// define CREATE paths
 	createOnePath := fmt.Sprintf("%s/CreateOne", basePath)

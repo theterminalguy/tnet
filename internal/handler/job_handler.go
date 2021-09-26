@@ -7,6 +7,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/oneword"
+	"github.com/google/uuid"
 	"github.com/labstack/echo"
 )
 
@@ -50,6 +51,10 @@ func (*JobHandler) ResourceName() string {
 }
 
 func (h *JobHandler) ReadAll(c echo.Context) error {
+	// TODO: implement pagination
+	// most likely coursor based
+	// also, jobs with hiring = false should
+	// not be returned
 	jobs, err := h.JobService.GetAllJobs()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
@@ -57,12 +62,13 @@ func (h *JobHandler) ReadAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, jobs)
 }
 
-func (*JobHandler) ReadByID(c echo.Context) error {
-	// TODO: implement pagination
-	// most likely coursor based
-	// also, jobs with hiring = false should
-	// not be returned
-	return c.String(http.StatusOK, "GET /ReadByID")
+func (h *JobHandler) ReadByID(c echo.Context) error {
+	jobUUID := uuid.MustParse(c.Param(oneword.UUID))
+	job, err := h.JobService.GetJob(jobUUID)
+	if err != nil {
+		return c.String(http.StatusNotFound, err.Error())
+	}
+	return c.JSON(http.StatusOK, job)
 }
 
 func (h *JobHandler) CreateOne(c echo.Context) error {

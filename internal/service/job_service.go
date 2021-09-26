@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/10hourlabs/tentn/ent"
+	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/internal/database"
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
@@ -16,6 +17,7 @@ import (
 
 type JobService struct {
 	psqlClient *ent.Client
+	queryContext context.Context
 }
 
 func NewJobService() (*JobService, error) {
@@ -28,6 +30,7 @@ func NewJobService() (*JobService, error) {
 	}
 	return &JobService{
 		psqlClient: client,
+		queryContext: context.Background(),
 	}, nil
 }
 
@@ -57,11 +60,21 @@ func (js *JobService) CreateJob(job *ent.Job) (*ent.Job, error) {
 }
 
 func (js *JobService) GetAllJobs() ([]*ent.Job, error) {
-	jobs, err := js.psqlClient.Job.Query().All(context.Background())
+	jobs, err := js.psqlClient.Job.Query().All(js.queryContext)
 	if err != nil {
 		return nil, err
 	}
 	// TODO: remove logs
 	log.Println("found jobs", jobs)
 	return jobs, nil
+}
+
+func (js *JobService) GetJob(jobUUID uuid.UUID) (*ent.Job, error) {
+	job, err := js.psqlClient.Job.Query().
+		Where(job.UUIDEQ(jobUUID)).
+		Only(js.queryContext)
+	if err != nil {
+		return nil, err
+	}
+	return job, nil
 }
