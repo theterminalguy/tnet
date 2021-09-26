@@ -14,6 +14,9 @@ type JobService struct {
 }
 
 func NewJobService() (*JobService, error) {
+	// TODO: consider moving database initialization
+	// to a Service type that is then embedded into each individual service
+	// the init() function of the service can setup all dependencies first
 	client, err := database.NewPostgresClient(os.Getenv("TENTN_POSTGRES_DSN"))
 	if err != nil {
 		return nil, err
