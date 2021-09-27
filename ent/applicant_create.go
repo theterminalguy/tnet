@@ -172,6 +172,12 @@ func (ac *ApplicantCreate) SetJoinedTentnAt(t time.Time) *ApplicantCreate {
 	return ac
 }
 
+// SetID sets the "id" field.
+func (ac *ApplicantCreate) SetID(i int) *ApplicantCreate {
+	ac.mutation.SetID(i)
+	return ac
+}
+
 // SetReferrer sets the "referrer" edge to the Applicant entity.
 func (ac *ApplicantCreate) SetReferrer(a *Applicant) *ApplicantCreate {
 	return ac.SetReferrerID(a.ID)
@@ -397,8 +403,10 @@ func (ac *ApplicantCreate) sqlSave(ctx context.Context) (*Applicant, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = int(id)
+	}
 	return _node, nil
 }
 
@@ -413,6 +421,10 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	if id, ok := ac.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := ac.mutation.UUID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
@@ -690,7 +702,7 @@ func (acb *ApplicantCreateBulk) Save(ctx context.Context) ([]*Applicant, error) 
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = int(id)
 				}

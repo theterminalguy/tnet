@@ -7,6 +7,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/oneword"
+	"github.com/google/uuid"
 	"github.com/labstack/echo"
 )
 
@@ -43,6 +44,7 @@ type jobCreateParams struct {
 	WeHave       []string `json:"we_have"`
 	Requirements []string `json:"requirements"`
 	YouHave      []string `json:"you_have"`
+	// TODO: Add Location ?
 }
 
 func (*JobHandler) ResourceName() string {
@@ -50,6 +52,10 @@ func (*JobHandler) ResourceName() string {
 }
 
 func (h *JobHandler) ReadAll(c echo.Context) error {
+	// TODO: implement pagination
+	// most likely coursor based
+	// also, jobs with hiring = false should
+	// not be returned
 	jobs, err := h.JobService.GetAllJobs()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
@@ -57,12 +63,13 @@ func (h *JobHandler) ReadAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, jobs)
 }
 
-func (*JobHandler) ReadByID(c echo.Context) error {
-	// TODO: implement pagination
-	// most likely coursor based
-	// also, jobs with hiring = false should
-	// not be returned
-	return c.String(http.StatusOK, "GET /ReadByID")
+func (h *JobHandler) ReadByID(c echo.Context) error {
+	jobUUID := uuid.MustParse(c.Param(oneword.UUID))
+	job, err := h.JobService.GetJob(jobUUID)
+	if err != nil {
+		return c.String(http.StatusNotFound, err.Error())
+	}
+	return c.JSON(http.StatusOK, job)
 }
 
 func (h *JobHandler) CreateOne(c echo.Context) error {
@@ -88,10 +95,36 @@ func (h *JobHandler) CreateOne(c echo.Context) error {
 	return c.JSON(http.StatusCreated, j)
 }
 
-func (*JobHandler) UpdateByID(c echo.Context) error {
-	return c.String(http.StatusOK, "PUT /UpdateByID")
+func (h *JobHandler) UpdateByID(c echo.Context) error {
+	// TODO: should you be able to update a delete job?
+	jobUUID := uuid.MustParse(c.Param(oneword.UUID))
+	params := new(jobCreateParams)
+	if err := c.Bind(params); err != nil {
+		return err
+	}
+	j := &ent.Job{
+		Hiring:       params.Hiring,
+		Title:        params.Title,
+		Summary:      params.Summary,
+		Employment:   job.Employment(params.Employment),
+		Category:     job.Category(params.Category),
+		Thumbnail:    params.Thumbnail,
+		WeHave:       params.WeHave,
+		Requirements: params.Requirements,
+		YouHave:      params.YouHave,
+	}
+	job, err := h.JobService.UpdateJob(jobUUID, j)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusOK, job)
 }
 
-func (*JobHandler) DeleteOne(c echo.Context) error {
-	return c.String(http.StatusNoContent, "DELETE /DeleteOne")
+func (h *JobHandler) DeleteOne(c echo.Context) error {
+	jobUUID := uuid.MustParse(c.Param(oneword.UUID))
+	err := h.JobService.DeleteJob(jobUUID)
+	if err != nil {
+		return c.String(http.StatusNotFound, err.Error())
+	}
+	return c.String(http.StatusNoContent, "")
 }

@@ -96,6 +96,12 @@ func (plc *PortfolioLinkCreate) SetNillableApplicantID(i *int) *PortfolioLinkCre
 	return plc
 }
 
+// SetID sets the "id" field.
+func (plc *PortfolioLinkCreate) SetID(i int) *PortfolioLinkCreate {
+	plc.mutation.SetID(i)
+	return plc
+}
+
 // SetApplicant sets the "applicant" edge to the Applicant entity.
 func (plc *PortfolioLinkCreate) SetApplicant(a *Applicant) *PortfolioLinkCreate {
 	return plc.SetApplicantID(a.ID)
@@ -219,8 +225,10 @@ func (plc *PortfolioLinkCreate) sqlSave(ctx context.Context) (*PortfolioLink, er
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = int(id)
+	}
 	return _node, nil
 }
 
@@ -235,6 +243,10 @@ func (plc *PortfolioLinkCreate) createSpec() (*PortfolioLink, *sqlgraph.CreateSp
 			},
 		}
 	)
+	if id, ok := plc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := plc.mutation.UUID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
@@ -348,7 +360,7 @@ func (plcb *PortfolioLinkCreateBulk) Save(ctx context.Context) ([]*PortfolioLink
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = int(id)
 				}
