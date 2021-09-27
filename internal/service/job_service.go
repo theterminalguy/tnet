@@ -85,7 +85,7 @@ func (js *JobService) GetJob(jobUUID uuid.UUID) (*ent.Job, error) {
 }
 
 func (js *JobService) DeleteJob(jobUUID uuid.UUID) error {
-	// TODO: should we check if the job is 
+	// TODO: should we check if the job is
 	// already updated before allowing UPDATE?
 	// this will prevent unecessary updates
 	_, err := js.psqlClient.Job.Update().
@@ -100,7 +100,7 @@ func (js *JobService) DeleteJob(jobUUID uuid.UUID) error {
 }
 
 func (js *JobService) UpdateJob(jobUUID uuid.UUID, j *ent.Job) (*ent.Job, error) {
-	_, err := js.psqlClient.Job.Update().
+	id, err := js.psqlClient.Job.Update().
 		Where(job.UUIDEQ(jobUUID)).
 		SetHiring(j.Hiring).
 		SetTitle(j.Title).
@@ -112,6 +112,11 @@ func (js *JobService) UpdateJob(jobUUID uuid.UUID, j *ent.Job) (*ent.Job, error)
 		SetRequirements(j.Requirements).
 		SetYouHave(j.YouHave).
 		Save(js.queryContext)
+	if err != nil {
+		return nil, err
+	}
+	// TODO: remove unecessary GET call
+	j, err = js.psqlClient.Job.Get(js.queryContext, id)
 	if err != nil {
 		return nil, err
 	}
