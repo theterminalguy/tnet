@@ -34,26 +34,21 @@ func createRoutes(h RouteHandler, e *echo.Echo, m ...echo.MiddlewareFunc) {
 	namespace := "v1"
 
 	basePath := fmt.Sprintf("/%s/%s", namespace, h.ResourceName())
+	allPath := fmt.Sprintf("%s", basePath)
+	byIDPath := fmt.Sprintf("%s/:uuid", basePath)
 
-	// define READ paths
-	readAllPath := fmt.Sprintf("%s/ReadAll", basePath)
-	readbyIDPath := fmt.Sprintf("%s/ReadByID/:uuid", basePath)
+	// GET /resources
+	e.GET(allPath, h.ReadAll, m...)
 
-	// define CREATE paths
-	createOnePath := fmt.Sprintf("%s/CreateOne", basePath)
+	// GET /resources/:id
+	e.GET(byIDPath, h.ReadByID, m...)
 
-	// define UPDATE paths
-	updateByIDPath := fmt.Sprintf("%s/UpdateByID/:uuid", basePath)
+	// POST /resources
+	e.POST(byIDPath, h.CreateOne, m...)
 
-	// define DELETE paths
-	deleteOnePath := fmt.Sprintf("%s/DeleteOne/:uuid", basePath)
+	// PUT /resources/:id
+	e.PUT(byIDPath, h.UpdateByID, m...)
 
-	e.GET(readAllPath, h.ReadAll, m...)
-	e.GET(readbyIDPath, h.ReadByID, m...)
-
-	e.POST(createOnePath, h.CreateOne, m...)
-
-	e.PUT(updateByIDPath, h.UpdateByID, m...)
-
-	e.DELETE(deleteOnePath, h.DeleteOne, m...)
+	// DELETE /resources/:id
+	e.DELETE(byIDPath, h.DeleteOne, m...)
 }
