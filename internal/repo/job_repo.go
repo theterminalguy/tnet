@@ -44,3 +44,8 @@ func (jr *JobRepository) GetByUUID(jobUUID uuid.UUID) (*ent.Job, error) {
 	}
 	return job, nil
 }
+
+// TODO: implement save
+// func (jr *JobRepository) Save(j *ent.Job) (*ent.Job, error) {
+// 	j.Update().SetCategory()
+// }
