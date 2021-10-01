@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-type RouteHandler interface {
+type RequestHandler interface {
 	ResourceName() string
 
 	ReadAll(c echo.Context) error
@@ -20,35 +20,56 @@ type RouteHandler interface {
 	DeleteOne(c echo.Context) error
 }
 
-func DefineRoutes() *echo.Echo {
-	e := echo.New()
+type RouteHandler struct {
+	Handler    RequestHandler
+	Middleware []echo.MiddlewareFunc
+}
 
-	// JobController Routes
-	createRoutes(handler.NewJobHandler(), e)
+type v1Router struct {
+	namespace string
+	handlers  []RouteHandler
+}
 
+func (v1 *v1Router) createRoutes(e *echo.Echo) *echo.Echo {
+	for _, h := range v1.handlers {
+		createRoutes(v1.namespace, h, e)
+	}
 	return e
 }
 
-func createRoutes(h RouteHandler, e *echo.Echo, m ...echo.MiddlewareFunc) {
+func NewV1Router() *v1Router {
 	// TODO: use Echo Group construct
-	namespace := "v1"
+	return &v1Router{
+		namespace: "v1",
+		handlers: []RouteHandler{
+			{Handler: handler.NewJobHandler(), Middleware: []echo.MiddlewareFunc{}},
+			{Handler: handler.NewApplicantHandler(), Middleware: []echo.MiddlewareFunc{}},
+		},
+	}
+}
 
-	basePath := fmt.Sprintf("/%s/%s", namespace, h.ResourceName())
+func DefineRoutes() *echo.Echo {
+	e := echo.New()
+	return NewV1Router().createRoutes(e)
+}
+
+func createRoutes(namespace string, rh RouteHandler, e *echo.Echo) {
+	basePath := fmt.Sprintf("/%s/%s", namespace, rh.Handler.ResourceName())
 	allPath := fmt.Sprintf("%s", basePath)
 	byIDPath := fmt.Sprintf("%s/:uuid", basePath)
 
 	// GET /resources
-	e.GET(allPath, h.ReadAll, m...)
+	e.GET(allPath, rh.Handler.ReadAll, rh.Middleware...)
 
 	// GET /resources/:id
-	e.GET(byIDPath, h.ReadByID, m...)
+	e.GET(byIDPath, rh.Handler.ReadByID, rh.Middleware...)
 
 	// POST /resources
-	e.POST(byIDPath, h.CreateOne, m...)
+	e.POST(byIDPath, rh.Handler.CreateOne, rh.Middleware...)
 
 	// PUT /resources/:id
-	e.PUT(byIDPath, h.UpdateByID, m...)
+	e.PUT(byIDPath, rh.Handler.UpdateByID, rh.Middleware...)
 
 	// DELETE /resources/:id
-	e.DELETE(byIDPath, h.DeleteOne, m...)
+	e.DELETE(byIDPath, rh.Handler.DeleteOne, rh.Middleware...)
 }
