@@ -11,6 +11,9 @@ help: ## Output available commands
 generate: ## Generate ent Assests
 	@go generate ./ent
 
+start: ## Start the app
+	@go run .
+
 init-schema: ## Initialize a new schema
 ifdef name
 	@go run entgo.io/ent/cmd/ent init $$name

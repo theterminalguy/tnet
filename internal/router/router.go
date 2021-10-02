@@ -67,7 +67,7 @@ func createRoutes(namespace string, rh RouteHandler, e *echo.Echo) {
 	e.GET(byIDPath, rh.Handler.ReadByID, rh.Middleware...)
 
 	// POST /resources
-	e.POST(byIDPath, rh.Handler.CreateOne, rh.Middleware...)
+	e.POST(allPath, rh.Handler.CreateOne, rh.Middleware...)
 
 	// PUT /resources/:id
 	e.PUT(byIDPath, rh.Handler.UpdateByID, rh.Middleware...)

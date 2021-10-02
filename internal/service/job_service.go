@@ -35,7 +35,7 @@ func NewJobService() (*JobService, error) {
 	}, nil
 }
 
-func (js *JobService) CreateJob(job *ent.Job) (*ent.Job, error) {
+func (js *JobService) Create(job *ent.Job) (*ent.Job, error) {
 	jobUUID := uuid.New()
 	jobSlug := slug.Make(fmt.Sprintf("%v %v", job.Title, jobUUID))
 	job, err := js.psqlClient.Job.

@@ -35,9 +35,15 @@ func (Applicant) Fields() []ent.Field {
 
 		field.String(oneword.PreferredJobTitle),
 
+		// Set on create. 
+		// This is the applicant referrer database id
 		field.Int(oneword.ReferrerID).
 			Optional(),
 
+		// Provided by the user
+		// Should be validate against existing
+		// Applicants TenTNCode
+		// This should be optional
 		field.String(oneword.ReferralCode).
 			Default(oneword.NULL).
 			Immutable(),

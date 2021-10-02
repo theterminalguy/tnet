@@ -88,7 +88,7 @@ func (h *JobHandler) CreateOne(c echo.Context) error {
 		Requirements: params.Requirements,
 		YouHave:      params.YouHave,
 	}
-	j, err := h.JobService.CreateJob(j)
+	j, err := h.JobService.Create(j)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
