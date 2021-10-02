@@ -5,6 +5,7 @@ import (
 
 	"github.com/10hourlabs/tentn/internal/handler"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
 
 type RequestHandler interface {
@@ -50,6 +51,7 @@ func NewV1Router() *v1Router {
 
 func DefineRoutes() *echo.Echo {
 	e := echo.New()
+	e.Use(middleware.Logger())
 	return NewV1Router().createRoutes(e)
 }
 
