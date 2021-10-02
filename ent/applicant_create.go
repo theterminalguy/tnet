@@ -358,16 +358,8 @@ func (ac *ApplicantCreate) check() error {
 	if _, ok := ac.mutation.PreferredJobTitle(); !ok {
 		return &ValidationError{Name: "preferred_job_title", err: errors.New(`ent: missing required field "preferred_job_title"`)}
 	}
-	if _, ok := ac.mutation.ReferralCode(); !ok {
-		return &ValidationError{Name: "referral_code", err: errors.New(`ent: missing required field "referral_code"`)}
-	}
 	if _, ok := ac.mutation.TentnCode(); !ok {
 		return &ValidationError{Name: "tentn_code", err: errors.New(`ent: missing required field "tentn_code"`)}
-	}
-	if v, ok := ac.mutation.TentnCode(); ok {
-		if err := applicant.TentnCodeValidator(v); err != nil {
-			return &ValidationError{Name: "tentn_code", err: fmt.Errorf(`ent: validator failed for field "tentn_code": %w`, err)}
-		}
 	}
 	if _, ok := ac.mutation.ProfessionalStartDate(); !ok {
 		return &ValidationError{Name: "professional_start_date", err: errors.New(`ent: missing required field "professional_start_date"`)}

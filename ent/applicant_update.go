@@ -468,6 +468,12 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: applicant.FieldPreferredJobTitle,
 		})
 	}
+	if au.mutation.ReferralCodeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: applicant.FieldReferralCode,
+		})
+	}
 	if value, ok := au.mutation.ProfessionalStartDate(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -1239,6 +1245,12 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 			Type:   field.TypeString,
 			Value:  value,
 			Column: applicant.FieldPreferredJobTitle,
+		})
+	}
+	if auo.mutation.ReferralCodeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: applicant.FieldReferralCode,
 		})
 	}
 	if value, ok := auo.mutation.ProfessionalStartDate(); ok {

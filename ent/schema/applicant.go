@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"regexp"
-
 	"entgo.io/ent/schema/edge"
 	"github.com/10hourlabs/tentn/oneword"
 
@@ -35,7 +33,7 @@ func (Applicant) Fields() []ent.Field {
 
 		field.String(oneword.PreferredJobTitle),
 
-		// Set on create. 
+		// Set on create.
 		// This is the applicant referrer database id
 		field.Int(oneword.ReferrerID).
 			Optional(),
@@ -46,12 +44,11 @@ func (Applicant) Fields() []ent.Field {
 		// This should be optional
 		field.String(oneword.ReferralCode).
 			Default(oneword.NULL).
+			Optional().
 			Immutable(),
 
+		// Set on create
 		field.String(oneword.TenTNCode).
-			Match(regexp.MustCompile("[0-9a-zA-Z-]+$")).
-			MinLen(5).
-			MaxLen(10).
 			Unique().
 			Immutable(),
 

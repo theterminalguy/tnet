@@ -580,9 +580,22 @@ func (m *ApplicantMutation) OldReferralCode(ctx context.Context) (v string, err 
 	return oldValue.ReferralCode, nil
 }
 
+// ClearReferralCode clears the value of the "referral_code" field.
+func (m *ApplicantMutation) ClearReferralCode() {
+	m.referral_code = nil
+	m.clearedFields[applicant.FieldReferralCode] = struct{}{}
+}
+
+// ReferralCodeCleared returns if the "referral_code" field was cleared in this mutation.
+func (m *ApplicantMutation) ReferralCodeCleared() bool {
+	_, ok := m.clearedFields[applicant.FieldReferralCode]
+	return ok
+}
+
 // ResetReferralCode resets all changes to the "referral_code" field.
 func (m *ApplicantMutation) ResetReferralCode() {
 	m.referral_code = nil
+	delete(m.clearedFields, applicant.FieldReferralCode)
 }
 
 // SetTentnCode sets the "tentn_code" field.
@@ -1416,6 +1429,9 @@ func (m *ApplicantMutation) ClearedFields() []string {
 	if m.FieldCleared(applicant.FieldReferrerID) {
 		fields = append(fields, applicant.FieldReferrerID)
 	}
+	if m.FieldCleared(applicant.FieldReferralCode) {
+		fields = append(fields, applicant.FieldReferralCode)
+	}
 	return fields
 }
 
@@ -1435,6 +1451,9 @@ func (m *ApplicantMutation) ClearField(name string) error {
 		return nil
 	case applicant.FieldReferrerID:
 		m.ClearReferrerID()
+		return nil
+	case applicant.FieldReferralCode:
+		m.ClearReferralCode()
 		return nil
 	}
 	return fmt.Errorf("unknown Applicant nullable field %s", name)

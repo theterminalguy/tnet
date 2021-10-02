@@ -1252,6 +1252,20 @@ func ReferralCodeHasSuffix(v string) predicate.Applicant {
 	})
 }
 
+// ReferralCodeIsNil applies the IsNil predicate on the "referral_code" field.
+func ReferralCodeIsNil() predicate.Applicant {
+	return predicate.Applicant(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldReferralCode)))
+	})
+}
+
+// ReferralCodeNotNil applies the NotNil predicate on the "referral_code" field.
+func ReferralCodeNotNil() predicate.Applicant {
+	return predicate.Applicant(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldReferralCode)))
+	})
+}
+
 // ReferralCodeEqualFold applies the EqualFold predicate on the "referral_code" field.
 func ReferralCodeEqualFold(v string) predicate.Applicant {
 	return predicate.Applicant(func(s *sql.Selector) {

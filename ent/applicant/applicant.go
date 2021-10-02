@@ -136,8 +136,6 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultReferralCode holds the default value on creation for the "referral_code" field.
 	DefaultReferralCode string
-	// TentnCodeValidator is a validator for the "tentn_code" field. It is called by the builders before save.
-	TentnCodeValidator func(string) error
 	// CountryCodeValidator is a validator for the "country_code" field. It is called by the builders before save.
 	CountryCodeValidator func(string) error
 )
