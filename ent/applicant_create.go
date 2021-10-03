@@ -172,6 +172,14 @@ func (ac *ApplicantCreate) SetJoinedTentnAt(t time.Time) *ApplicantCreate {
 	return ac
 }
 
+// SetNillableJoinedTentnAt sets the "joined_tentn_at" field if the given value is not nil.
+func (ac *ApplicantCreate) SetNillableJoinedTentnAt(t *time.Time) *ApplicantCreate {
+	if t != nil {
+		ac.SetJoinedTentnAt(*t)
+	}
+	return ac
+}
+
 // SetID sets the "id" field.
 func (ac *ApplicantCreate) SetID(i int) *ApplicantCreate {
 	ac.mutation.SetID(i)
@@ -381,9 +389,6 @@ func (ac *ApplicantCreate) check() error {
 	if _, ok := ac.mutation.City(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required field "city"`)}
 	}
-	if _, ok := ac.mutation.JoinedTentnAt(); !ok {
-		return &ValidationError{Name: "joined_tentn_at", err: errors.New(`ent: missing required field "joined_tentn_at"`)}
-	}
 	return nil
 }
 
@@ -551,7 +556,7 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: applicant.FieldJoinedTentnAt,
 		})
-		_node.JoinedTentnAt = value
+		_node.JoinedTentnAt = &value
 	}
 	if nodes := ac.mutation.ReferrerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

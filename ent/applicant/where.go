@@ -1987,6 +1987,20 @@ func JoinedTentnAtLTE(v time.Time) predicate.Applicant {
 	})
 }
 
+// JoinedTentnAtIsNil applies the IsNil predicate on the "joined_tentn_at" field.
+func JoinedTentnAtIsNil() predicate.Applicant {
+	return predicate.Applicant(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldJoinedTentnAt)))
+	})
+}
+
+// JoinedTentnAtNotNil applies the NotNil predicate on the "joined_tentn_at" field.
+func JoinedTentnAtNotNil() predicate.Applicant {
+	return predicate.Applicant(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldJoinedTentnAt)))
+	})
+}
+
 // HasReferrer applies the HasEdge predicate on the "referrer" edge.
 func HasReferrer() predicate.Applicant {
 	return predicate.Applicant(func(s *sql.Selector) {

@@ -27,7 +27,7 @@ var (
 		{Name: "phone", Type: field.TypeString, Unique: true},
 		{Name: "country_code", Type: field.TypeString, Size: 2},
 		{Name: "city", Type: field.TypeString},
-		{Name: "joined_tentn_at", Type: field.TypeTime},
+		{Name: "joined_tentn_at", Type: field.TypeTime, Nullable: true},
 		{Name: "referrer_id", Type: field.TypeInt, Nullable: true},
 	}
 	// ApplicantsTable holds the schema information for the "applicants" table.

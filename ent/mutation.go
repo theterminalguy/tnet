@@ -831,7 +831,7 @@ func (m *ApplicantMutation) JoinedTentnAt() (r time.Time, exists bool) {
 // OldJoinedTentnAt returns the old "joined_tentn_at" field's value of the Applicant entity.
 // If the Applicant object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApplicantMutation) OldJoinedTentnAt(ctx context.Context) (v time.Time, err error) {
+func (m *ApplicantMutation) OldJoinedTentnAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldJoinedTentnAt is only allowed on UpdateOne operations")
 	}
@@ -845,9 +845,22 @@ func (m *ApplicantMutation) OldJoinedTentnAt(ctx context.Context) (v time.Time, 
 	return oldValue.JoinedTentnAt, nil
 }
 
+// ClearJoinedTentnAt clears the value of the "joined_tentn_at" field.
+func (m *ApplicantMutation) ClearJoinedTentnAt() {
+	m.joined_tentn_at = nil
+	m.clearedFields[applicant.FieldJoinedTentnAt] = struct{}{}
+}
+
+// JoinedTentnAtCleared returns if the "joined_tentn_at" field was cleared in this mutation.
+func (m *ApplicantMutation) JoinedTentnAtCleared() bool {
+	_, ok := m.clearedFields[applicant.FieldJoinedTentnAt]
+	return ok
+}
+
 // ResetJoinedTentnAt resets all changes to the "joined_tentn_at" field.
 func (m *ApplicantMutation) ResetJoinedTentnAt() {
 	m.joined_tentn_at = nil
+	delete(m.clearedFields, applicant.FieldJoinedTentnAt)
 }
 
 // ClearReferrer clears the "referrer" edge to the Applicant entity.
@@ -1432,6 +1445,9 @@ func (m *ApplicantMutation) ClearedFields() []string {
 	if m.FieldCleared(applicant.FieldReferralCode) {
 		fields = append(fields, applicant.FieldReferralCode)
 	}
+	if m.FieldCleared(applicant.FieldJoinedTentnAt) {
+		fields = append(fields, applicant.FieldJoinedTentnAt)
+	}
 	return fields
 }
 
@@ -1454,6 +1470,9 @@ func (m *ApplicantMutation) ClearField(name string) error {
 		return nil
 	case applicant.FieldReferralCode:
 		m.ClearReferralCode()
+		return nil
+	case applicant.FieldJoinedTentnAt:
+		m.ClearJoinedTentnAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Applicant nullable field %s", name)

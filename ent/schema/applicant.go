@@ -66,7 +66,9 @@ func (Applicant) Fields() []ent.Field {
 
 		field.String(oneword.City),
 
-		field.Time(oneword.JoinedTenTNAt),
+		field.Time(oneword.JoinedTenTNAt).
+			Nillable().
+			Optional(),
 	}
 }
 
