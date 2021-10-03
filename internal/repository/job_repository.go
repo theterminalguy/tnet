@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"log"
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
@@ -13,15 +12,18 @@ type JobRepository struct{}
 
 type JobParams struct {
 	Hiring       bool     `json:"hiring"`
-	Title        string   `json:"title"`
-	Slug         string   `json:"slug"`
-	Summary      string   `json:"summary"`
-	Employment   string   `json:"employment"`
-	Category     string   `json:"category"`
-	Thumbnail    string   `json:"thumbnail"`
-	WeHave       []string `json:"we_have"`
-	Requirements []string `json:"requirements"`
-	YouHave      []string `json:"you_have"`
+	Title        string   `json:"title" validate:"required"`
+	Summary      string   `json:"summary" validate:"required"`
+	Employment   string   `json:"employment" validate:"required"`
+	Category     string   `json:"category" validate:"required"`
+
+	// TODO thumbnail url should be validate against value provided
+	// if we ever go public, not a concern for now
+	// Go public in this context means if the api is made publicly available
+	Thumbnail    string   `json:"thumbnail" validate:"required,url"`
+	WeHave       []string `json:"we_have" validate:"required"`
+	Requirements []string `json:"requirements" validate:"required"`
+	YouHave      []string `json:"you_have" validate:"required"`
 }
 
 func NewJobRepository() *JobRepository {
@@ -30,19 +32,17 @@ func NewJobRepository() *JobRepository {
 
 func (*JobRepository) GetAll() ([]*ent.Job, error) {
 	jobs, err := dBConn.Job.Query().
-		Where(job.DeletedAtNotNil()).
+		Where(job.DeletedAtIsNil()).
 		All(dBContext)
 	if err != nil {
 		return nil, err
 	}
-	// TODO: remove logs
-	log.Println("found jobs", jobs)
 	return jobs, nil
 }
 
-func (*JobRepository) GetByUUID(jobUUID uuid.UUID) (*ent.Job, error) {
+func (*JobRepository) GetByUUID(id uuid.UUID) (*ent.Job, error) {
 	j, err := dBConn.Job.Query().
-		Where(job.UUIDEQ(jobUUID)).
+		Where(job.UUIDEQ(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -54,6 +54,10 @@ func (*JobRepository) GetByUUID(jobUUID uuid.UUID) (*ent.Job, error) {
 }
 
 func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
+	err := validateParams(p)
+	if err != nil {
+		return nil, err
+	}
 	jobUUID := uuid.New()
 	j, err := dBConn.Job.
 		Create().
@@ -72,13 +76,15 @@ func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
 	if err != nil {
 		return nil, err
 	}
-	// TODO: remove logs
-	log.Println("job was created: ", j)
 	return j, err
 }
 
-func (r *JobRepository) Update(jobUUID uuid.UUID, p JobParams) (*ent.Job, error) {
-	j, err := r.GetByUUID(jobUUID)
+func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, error) {
+	err := validateParams(p)
+	if err != nil {
+		return nil, err
+	}
+	j, err := r.GetByUUID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -96,19 +102,13 @@ func (r *JobRepository) Update(jobUUID uuid.UUID, p JobParams) (*ent.Job, error)
 	if err != nil {
 		return nil, err
 	}
-	// TODO: potential for bug
-	// does j gets updated after
-	// a database update? :thinking_face:
 	return j, nil
 }
 
 func (r *JobRepository) DeleteByUUID(id uuid.UUID) error {
-	j, err := r.GetByUUID(id)
+	_, err := r.GetByUUID(id)
 	if err != nil {
 		return err
-	}
-	if j.Hiring == false {
-		return RecordNotFoundError
 	}
 	_, err = dBConn.Job.Update().
 		SetDeletedAt(time.Now()).

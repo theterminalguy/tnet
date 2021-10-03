@@ -39,7 +39,7 @@ func NewApplicantRepository() *ApplicantRepository {
 
 func (*ApplicantRepository) GetAll() ([]*ent.Applicant, error) {
 	applicants, err := dBConn.Applicant.Query().
-		Where(applicant.DeletedAtNotNil()).
+		Where(applicant.DeletedAtIsNil()).
 		All(dBContext)
 	if err != nil {
 		return nil, err

@@ -11,6 +11,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 var (
@@ -28,8 +29,7 @@ func init() {
 	dBContext = context.Background()
 	client, err := database.NewPostgresClient(os.Getenv("TENTN_POSTGRES_DSN"))
 	if err != nil {
-		// TODO should we panic or switch to in memory sql database?
-		panic("Failed to initialize database")
+		panic(fmt.Sprintf("Database Error %v", err))
 	}
 	dBConn = client
 }
