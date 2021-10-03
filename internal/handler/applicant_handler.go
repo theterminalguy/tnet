@@ -62,6 +62,14 @@ func (*ApplicantHandler) UpdateByID(c echo.Context) error {
 	return c.String(http.StatusOK, "PUT /applicants/:some-id")
 }
 
-func (*ApplicantHandler) DeleteOne(c echo.Context) error {
-	return c.String(http.StatusOK, "DELETE /applicants/:some-id")
+func (h *ApplicantHandler) DeleteOne(c echo.Context) error {
+	id, err := uuid.Parse(c.Param(oneword.UUID))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	err = h.ApplicantRepository.DeleteByUUID(id)
+	if err != nil {
+		return c.String(http.StatusNotFound, err.Error())
+	}
+	return c.NoContent(http.StatusNoContent)
 }
