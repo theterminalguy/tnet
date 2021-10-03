@@ -10,9 +10,8 @@ import (
 	"github.com/google/uuid"
 )
 
-var JobNotFoundError error = errors.New("job not found")
-
 type JobRepository struct{}
+
 type JobParams struct {
 	Hiring       bool     `json:"hiring"`
 	Title        string   `json:"title"`
@@ -50,7 +49,7 @@ func (*JobRepository) GetByUUID(jobUUID uuid.UUID) (*ent.Job, error) {
 		return nil, err
 	}
 	if j.DeletedAt != nil {
-		return nil, JobNotFoundError
+		return nil, RecordNotFoundError
 	}
 	return j, nil
 }
@@ -79,8 +78,8 @@ func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
 	return j, err
 }
 
-func (jr *JobRepository) Update(jobUUID uuid.UUID, p JobParams) (*ent.Job, error) {
-	j, err := jr.GetByUUID(jobUUID)
+func (r *JobRepository) Update(jobUUID uuid.UUID, p JobParams) (*ent.Job, error) {
+	j, err := r.GetByUUID(jobUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -104,13 +103,13 @@ func (jr *JobRepository) Update(jobUUID uuid.UUID, p JobParams) (*ent.Job, error
 	return j, nil
 }
 
-func (jr *JobRepository) DeleteByUUID(id uuid.UUID) error {
-	j, err := jr.GetByUUID(id)
+func (r *JobRepository) DeleteByUUID(id uuid.UUID) error {
+	j, err := r.GetByUUID(id)
 	if err != nil {
 		return err
 	}
 	if j.Hiring == false {
-		return JobNotFoundError
+		return RecordNotFoundError
 	}
 	_, err = dBConn.Job.Update().
 		SetDeletedAt(time.Now()).

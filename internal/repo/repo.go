@@ -2,11 +2,13 @@ package repo
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/internal/database"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
 )
@@ -17,6 +19,9 @@ var (
 
 	// database query context
 	dBContext context.Context
+
+	// errors
+	RecordNotFoundError error = errors.New("entity not found")
 )
 
 func init() {
@@ -31,4 +36,11 @@ func init() {
 
 func slugify(title string, id uuid.UUID) string {
 	return slug.Make(fmt.Sprintf("%v %v", title, id))
+}
+
+func validateParams(s interface{}) error {
+	if err := validator.New().Struct(s); err != nil {
+		return err
+	}
+	return nil
 }
