@@ -1,13 +1,18 @@
 package repository
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/applicant"
+	"github.com/10hourlabs/tentn/randutil"
 	"github.com/google/uuid"
 )
+
+var invalidReferralCodeError error = errors.New("invalid referral code")
 
 type ApplicantRepository struct{}
 
@@ -44,8 +49,6 @@ func (*ApplicantRepository) GetAll() ([]*ent.Applicant, error) {
 	if err != nil {
 		return nil, err
 	}
-	// TODO: remove logs
-	log.Println("found applicants", applicants)
 	return applicants, nil
 }
 
@@ -62,7 +65,7 @@ func (*ApplicantRepository) GetByUUID(id uuid.UUID) (*ent.Applicant, error) {
 	return a, nil
 }
 
-func (*ApplicantRepository) Create(p ApplicantParams) (*ent.Applicant, error) {
+func (r *ApplicantRepository) Create(p ApplicantParams) (*ent.Applicant, error) {
 	err := validateParams(p)
 	if err != nil {
 		return nil, err
@@ -71,7 +74,7 @@ func (*ApplicantRepository) Create(p ApplicantParams) (*ent.Applicant, error) {
 	if err != nil {
 		return nil, err
 	}
-	a, err := dBConn.Applicant.
+	q := dBConn.Applicant.
 		Create().
 		SetFirstName(p.FirstName).
 		SetLastName(p.LastName).
@@ -83,13 +86,22 @@ func (*ApplicantRepository) Create(p ApplicantParams) (*ent.Applicant, error) {
 		SetEmail(p.Email).
 		SetPhone(p.Phone).
 		SetCountryCode(p.CountryCode).
-		SetCity(p.City).
-		Save(dBContext)
+		SetTentnCode(r.genTenTNCode(p)).
+		SetCity(p.City)
+	if len(p.ReferralCode) > 1 {
+		ref, err := dBConn.Applicant.Query().
+			Where(applicant.TentnCodeEQ(p.ReferralCode)).
+			Only(dBContext)
+		if err != nil {
+			return nil, invalidReferralCodeError
+		}
+		q.SetReferrerID(ref.ID)
+		q.SetReferralCode(ref.TentnCode)
+	}
+	a, err := q.Save(dBContext)
 	if err != nil {
 		return nil, err
 	}
-	// TODO: remove logs
-	log.Println("applicant was created: ", a)
 	return a, err
 }
 
@@ -111,9 +123,6 @@ func (r *ApplicantRepository) Update(id uuid.UUID, p ApplicantParams) (*ent.Appl
 	if err != nil {
 		return nil, err
 	}
-	// TODO: potential for bug
-	// does a gets updated after
-	// a database update? :thinking_face:
 	return a, nil
 }
 
@@ -129,4 +138,27 @@ func (r *ApplicantRepository) DeleteByUUID(id uuid.UUID) error {
 		return err
 	}
 	return nil
+}
+
+func (r *ApplicantRepository) genTenTNCode(p ApplicantParams) string {
+	attempts := 0
+	for {
+		if attempts == 4 {
+			break
+		}
+		code := fmt.Sprintf("%v-%v", p.PreferredName, randutil.String(5))
+		a, err := dBConn.Applicant.Query().
+			Where(applicant.TentnCode(code)).
+			Only(dBContext)
+		if a == nil {
+			return code
+		} else {
+			log.Println(fmt.Sprintf("Duplicate TenTNCode exists: %v", err))
+		}
+		if err != nil {
+			log.Println(err)
+		}
+		attempts += 1
+	}
+	return randutil.StringWithCharset(10, p.FirstName+p.LastName+"0123456789")
 }
