@@ -1,5 +1,10 @@
 package service
 
+import (
+	"github.com/10hourlabs/tentn/ent"
+	"github.com/google/uuid"
+)
+
 type CreateApplicantParams struct {
 	FirstName             string `json:"first_name" validate:"required"`
 	LastName              string `json:"last_name" validate:"required"`

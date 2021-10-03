@@ -3,8 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/internal/repo"
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
@@ -13,38 +12,14 @@ import (
 
 type JobHandler struct {
 	JobService *service.JobService
+	JobRepo    *repo.JobRepository
 }
 
 func NewJobHandler() *JobHandler {
-	// TODO: Decide how to handle failure caused by
-	// initializing new service
-	// we currently ignore errors caused by dependencies
-	// if initialiliz the job service failed
-	js, err := service.NewJobService()
-	if err != nil {
-		// TODO: alternatively, you could add a
-		// serviceError field to the JobHandler struct
-		// this should get set to true if there was an error initialize a service
-		// and you should return internal service error
-		return &JobHandler{}
-	}
 	return &JobHandler{
-		JobService: js,
+		JobService: service.NewJobService(),
+		JobRepo:    repo.NewJobRepository(),
 	}
-}
-
-type jobCreateParams struct {
-	Hiring       bool     `json:"hiring"`
-	Title        string   `json:"title"`
-	Slug         string   `json:"slug"`
-	Summary      string   `json:"summary"`
-	Employment   string   `json:"employment"`
-	Category     string   `json:"category"`
-	Thumbnail    string   `json:"thumbnail"`
-	WeHave       []string `json:"we_have"`
-	Requirements []string `json:"requirements"`
-	YouHave      []string `json:"you_have"`
-	// TODO: Add Location ?
 }
 
 func (*JobHandler) ResourceName() string {
@@ -54,9 +29,9 @@ func (*JobHandler) ResourceName() string {
 func (h *JobHandler) ReadAll(c echo.Context) error {
 	// TODO: implement pagination
 	// most likely coursor based
-	// also, jobs with hiring = false should
-	// not be returned
-	jobs, err := h.JobService.GetAllJobs()
+	// also, jobs with hiring = false should NOT
+	// be returned
+	jobs, err := h.JobRepo.GetAll()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
@@ -65,7 +40,7 @@ func (h *JobHandler) ReadAll(c echo.Context) error {
 
 func (h *JobHandler) ReadByID(c echo.Context) error {
 	jobUUID := uuid.MustParse(c.Param(oneword.UUID))
-	job, err := h.JobService.GetJob(jobUUID)
+	job, err := h.JobRepo.GetByUUID(jobUUID)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -73,22 +48,11 @@ func (h *JobHandler) ReadByID(c echo.Context) error {
 }
 
 func (h *JobHandler) CreateOne(c echo.Context) error {
-	params := new(jobCreateParams)
+	params := new(repo.JobParams)
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	j := &ent.Job{
-		Hiring:       params.Hiring,
-		Title:        params.Title,
-		Summary:      params.Summary,
-		Employment:   job.Employment(params.Employment),
-		Category:     job.Category(params.Category),
-		Thumbnail:    params.Thumbnail,
-		WeHave:       params.WeHave,
-		Requirements: params.Requirements,
-		YouHave:      params.YouHave,
-	}
-	j, err := h.JobService.Create(j)
+	j, err := h.JobRepo.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -96,24 +60,13 @@ func (h *JobHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *JobHandler) UpdateByID(c echo.Context) error {
-	// TODO: should you be able to update a delete job?
+	// TODO: should you be able to update a deleted job?
 	jobUUID := uuid.MustParse(c.Param(oneword.UUID))
-	params := new(jobCreateParams)
+	params := new(repo.JobParams)
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	j := &ent.Job{
-		Hiring:       params.Hiring,
-		Title:        params.Title,
-		Summary:      params.Summary,
-		Employment:   job.Employment(params.Employment),
-		Category:     job.Category(params.Category),
-		Thumbnail:    params.Thumbnail,
-		WeHave:       params.WeHave,
-		Requirements: params.Requirements,
-		YouHave:      params.YouHave,
-	}
-	job, err := h.JobService.UpdateJob(jobUUID, j)
+	job, err := h.JobRepo.Update(jobUUID, *params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -121,8 +74,11 @@ func (h *JobHandler) UpdateByID(c echo.Context) error {
 }
 
 func (h *JobHandler) DeleteOne(c echo.Context) error {
-	jobUUID := uuid.MustParse(c.Param(oneword.UUID))
-	err := h.JobService.DeleteJob(jobUUID)
+	jobUUID, err := uuid.Parse(c.Param(oneword.UUID))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	err = h.JobRepo.DeleteByUUID(jobUUID)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

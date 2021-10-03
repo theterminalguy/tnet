@@ -1,51 +1,123 @@
 package repo
 
 import (
-	"context"
-	"os"
+	"errors"
+	"log"
+	"time"
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/internal/database"
 	"github.com/google/uuid"
 )
 
-type JobRepository struct {
-	db           *ent.Client
-	queryContext context.Context
+var JobNotFoundError error = errors.New("job not found")
+
+type JobRepository struct{}
+type JobParams struct {
+	Hiring       bool     `json:"hiring"`
+	Title        string   `json:"title"`
+	Slug         string   `json:"slug"`
+	Summary      string   `json:"summary"`
+	Employment   string   `json:"employment"`
+	Category     string   `json:"category"`
+	Thumbnail    string   `json:"thumbnail"`
+	WeHave       []string `json:"we_have"`
+	Requirements []string `json:"requirements"`
+	YouHave      []string `json:"you_have"`
 }
 
 func NewJobRepository() *JobRepository {
-	// TODO: see NewJobService
-	client, err := database.NewPostgresClient(os.Getenv("TENTN_POSTGRES_DSN"))
-	if err != nil {
-		return nil
-	}
-	return &JobRepository{
-		db:           client,
-		queryContext: context.Background(),
-	}
+	return &JobRepository{}
 }
 
-func (jr *JobRepository) GetAll() ([]*ent.Job, error) {
-	jobs, err := jr.db.Job.Query().All(jr.queryContext)
-	if err != nil {
-		return []*ent.Job{}, err
-	}
-	return jobs, nil
-}
-
-func (jr *JobRepository) GetByUUID(jobUUID uuid.UUID) (*ent.Job, error) {
-	job, err := jr.db.Job.Query().
-		Where(job.UUIDEQ(jobUUID)).
-		Only(jr.queryContext)
+func (*JobRepository) GetAll() ([]*ent.Job, error) {
+	jobs, err := dBConn.Job.Query().
+		Where(job.DeletedAtNotNil()).
+		All(dBContext)
 	if err != nil {
 		return nil, err
 	}
-	return job, nil
+	// TODO: remove logs
+	log.Println("found jobs", jobs)
+	return jobs, nil
 }
 
-// TODO: implement save
-// func (jr *JobRepository) Save(j *ent.Job) (*ent.Job, error) {
-// 	j.Update().SetCategory()
-// }
+func (*JobRepository) GetByUUID(jobUUID uuid.UUID) (*ent.Job, error) {
+	j, err := dBConn.Job.Query().
+		Where(job.UUIDEQ(jobUUID)).
+		Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	if j.DeletedAt != nil {
+		return nil, JobNotFoundError
+	}
+	return j, nil
+}
+
+func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
+	jobUUID := uuid.New()
+	j, err := dBConn.Job.
+		Create().
+		SetUUID(jobUUID).
+		SetHiring(p.Hiring).
+		SetTitle(p.Title).
+		SetSummary(p.Summary).
+		SetSlug(slugify(p.Title, jobUUID)).
+		SetEmployment(job.Employment(p.Employment)).
+		SetCategory(job.Category(p.Category)).
+		SetThumbnail(p.Thumbnail).
+		SetWeHave(p.WeHave).
+		SetRequirements(p.Requirements).
+		SetYouHave(p.YouHave).
+		Save(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	// TODO: remove logs
+	log.Println("job was created: ", j)
+	return j, err
+}
+
+func (jr *JobRepository) Update(jobUUID uuid.UUID, p JobParams) (*ent.Job, error) {
+	j, err := jr.GetByUUID(jobUUID)
+	if err != nil {
+		return nil, err
+	}
+	_, err = dBConn.Job.Update().
+		SetHiring(p.Hiring).
+		SetTitle(p.Title).
+		SetSummary(p.Summary).
+		SetEmployment(job.Employment(p.Employment)).
+		SetCategory(job.Category(p.Category)).
+		SetThumbnail(p.Thumbnail).
+		SetWeHave(p.WeHave).
+		SetRequirements(p.Requirements).
+		SetYouHave(p.YouHave).
+		Save(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	// TODO: potential for bug
+	// does j gets updated after
+	// a database update? :thinking_face:
+	return j, nil
+}
+
+func (jr *JobRepository) DeleteByUUID(id uuid.UUID) error {
+	j, err := jr.GetByUUID(id)
+	if err != nil {
+		return err
+	}
+	if j.Hiring == false {
+		return JobNotFoundError
+	}
+	_, err = dBConn.Job.Update().
+		SetDeletedAt(time.Now()).
+		SetHiring(false).
+		Save(dBContext)
+	if err != nil {
+		return err
+	}
+	return nil
+}
