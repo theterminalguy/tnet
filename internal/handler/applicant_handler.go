@@ -41,7 +41,7 @@ func (h *ApplicantHandler) ReadByID(c echo.Context) error {
 	}
 	a, err := h.ApplicantRepository.GetByUUID(id)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, err)
+		return c.String(http.StatusNotFound, err.Error())
 	}
 	return c.JSON(http.StatusOK, a)
 }

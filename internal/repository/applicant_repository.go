@@ -59,6 +59,15 @@ func (*ApplicantRepository) GetByUUID(id uuid.UUID) (*ent.Applicant, error) {
 	if err != nil {
 		return nil, err
 	}
+	// TODO: this code server as a how to on how to
+	// add edges to a node
+	// ```
+	// 		peeps, _ := a.QueryReferees().All(dBContext)
+	// 		log.Println("Peeps", peeps)
+	// 		a.Edges = ent.ApplicantEdges{
+	// 			Referees: peeps,
+	// 		}
+	// ```
 	if a.DeletedAt != nil {
 		return nil, RecordNotFoundError
 	}
