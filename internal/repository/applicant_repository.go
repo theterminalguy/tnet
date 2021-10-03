@@ -146,7 +146,7 @@ func (r *ApplicantRepository) genTenTNCode(p ApplicantParams) string {
 		if attempts == 4 {
 			break
 		}
-		code := fmt.Sprintf("%v-%v", p.PreferredName, randutil.String(5))
+		code := fmt.Sprintf("%v%v", p.PreferredName, randutil.String(5))
 		a, err := dBConn.Applicant.Query().
 			Where(applicant.TentnCode(code)).
 			Only(dBContext)
