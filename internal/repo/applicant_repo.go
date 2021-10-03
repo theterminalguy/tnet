@@ -94,6 +94,10 @@ func (*ApplicantRepository) Create(p ApplicantParams) (*ent.Applicant, error) {
 }
 
 func (r *ApplicantRepository) Update(id uuid.UUID, p ApplicantParams) (*ent.Applicant, error) {
+	err := validateParams(p, "Email", "Phone", "CountryCode", "City")
+	if err != nil {
+		return nil, err
+	}
 	a, err := r.GetByUUID(id)
 	if err != nil {
 		return nil, err
