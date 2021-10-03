@@ -69,11 +69,11 @@ func (h *JobHandler) UpdateByID(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	job, err := h.JobRepository.Update(id, *params)
+	j, err := h.JobRepository.Update(id, *params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	return c.JSON(http.StatusOK, job)
+	return c.JSON(http.StatusOK, j)
 }
 
 func (h *JobHandler) DeleteOne(c echo.Context) error {

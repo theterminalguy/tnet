@@ -58,8 +58,20 @@ func (h *ApplicantHandler) CreateOne(c echo.Context) error {
 	return c.JSON(http.StatusCreated, a)
 }
 
-func (*ApplicantHandler) UpdateByID(c echo.Context) error {
-	return c.String(http.StatusOK, "PUT /applicants/:some-id")
+func (h *ApplicantHandler) UpdateByID(c echo.Context) error {
+	id, err := uuid.Parse(c.Param(oneword.UUID))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	params := new(repo.ApplicantParams)
+	if err := c.Bind(params); err != nil {
+		return err
+	}
+	a, err := h.ApplicantRepository.Update(id, *params)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusOK, a)
 }
 
 func (h *ApplicantHandler) DeleteOne(c echo.Context) error {

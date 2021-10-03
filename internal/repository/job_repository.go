@@ -11,11 +11,11 @@ import (
 type JobRepository struct{}
 
 type JobParams struct {
-	Hiring       bool     `json:"hiring"`
-	Title        string   `json:"title" validate:"required"`
-	Summary      string   `json:"summary" validate:"required"`
-	Employment   string   `json:"employment" validate:"required"`
-	Category     string   `json:"category" validate:"required"`
+	Hiring     bool   `json:"hiring"`
+	Title      string `json:"title" validate:"required"`
+	Summary    string `json:"summary" validate:"required"`
+	Employment string `json:"employment" validate:"required"`
+	Category   string `json:"category" validate:"required"`
 
 	// TODO thumbnail url should be validate against value provided
 	// if we ever go public, not a concern for now
@@ -106,11 +106,11 @@ func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, error) {
 }
 
 func (r *JobRepository) DeleteByUUID(id uuid.UUID) error {
-	_, err := r.GetByUUID(id)
+	j, err := r.GetByUUID(id)
 	if err != nil {
 		return err
 	}
-	_, err = dBConn.Job.Update().
+	_, err = dBConn.Job.UpdateOne(j).
 		SetDeletedAt(time.Now()).
 		SetHiring(false).
 		Save(dBContext)

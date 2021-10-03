@@ -127,11 +127,11 @@ func (r *ApplicantRepository) Update(id uuid.UUID, p ApplicantParams) (*ent.Appl
 }
 
 func (r *ApplicantRepository) DeleteByUUID(id uuid.UUID) error {
-	_, err := r.GetByUUID(id)
+	a, err := r.GetByUUID(id)
 	if err != nil {
 		return err
 	}
-	_, err = dBConn.Applicant.Update().
+	_, err = dBConn.Applicant.UpdateOne(a).
 		SetDeletedAt(time.Now()).
 		Save(dBContext)
 	if err != nil {
