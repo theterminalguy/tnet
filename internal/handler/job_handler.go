@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/10hourlabs/tentn/internal/repo"
+	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
@@ -12,13 +12,13 @@ import (
 
 type JobHandler struct {
 	JobService *service.JobService
-	JobRepo    *repo.JobRepository
+	JobRepository    *repo.JobRepository
 }
 
 func NewJobHandler() *JobHandler {
 	return &JobHandler{
 		JobService: service.NewJobService(),
-		JobRepo:    repo.NewJobRepository(),
+		JobRepository:    repo.NewJobRepository(),
 	}
 }
 
@@ -31,7 +31,7 @@ func (h *JobHandler) ReadAll(c echo.Context) error {
 	// most likely coursor based
 	// also, jobs with hiring = false should NOT
 	// be returned
-	jobs, err := h.JobRepo.GetAll()
+	jobs, err := h.JobRepository.GetAll()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
@@ -40,7 +40,7 @@ func (h *JobHandler) ReadAll(c echo.Context) error {
 
 func (h *JobHandler) ReadByID(c echo.Context) error {
 	jobUUID := uuid.MustParse(c.Param(oneword.UUID))
-	job, err := h.JobRepo.GetByUUID(jobUUID)
+	job, err := h.JobRepository.GetByUUID(jobUUID)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -52,7 +52,7 @@ func (h *JobHandler) CreateOne(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	j, err := h.JobRepo.Create(*params)
+	j, err := h.JobRepository.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -66,7 +66,7 @@ func (h *JobHandler) UpdateByID(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	job, err := h.JobRepo.Update(jobUUID, *params)
+	job, err := h.JobRepository.Update(jobUUID, *params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -78,7 +78,7 @@ func (h *JobHandler) DeleteOne(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.JobRepo.DeleteByUUID(jobUUID)
+	err = h.JobRepository.DeleteByUUID(jobUUID)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
