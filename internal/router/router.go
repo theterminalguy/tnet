@@ -5,9 +5,10 @@ import (
 
 	"github.com/10hourlabs/tentn/internal/handler"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
 
-type RouteHandler interface {
+type RequestHandler interface {
 	ResourceName() string
 
 	ReadAll(c echo.Context) error
@@ -20,40 +21,57 @@ type RouteHandler interface {
 	DeleteOne(c echo.Context) error
 }
 
-func DefineRoutes() *echo.Echo {
-	e := echo.New()
+type RouteHandler struct {
+	Handler    RequestHandler
+	Middleware []echo.MiddlewareFunc
+}
 
-	// JobController Routes
-	createRoutes(handler.NewJobHandler(), e)
+type v1Router struct {
+	namespace string
+	handlers  []RouteHandler
+}
 
+func (v1 *v1Router) createRoutes(e *echo.Echo) *echo.Echo {
+	for _, h := range v1.handlers {
+		createRoutes(v1.namespace, h, e)
+	}
 	return e
 }
 
-func createRoutes(h RouteHandler, e *echo.Echo, m ...echo.MiddlewareFunc) {
+func NewV1Router() *v1Router {
 	// TODO: use Echo Group construct
-	namespace := "v1"
+	return &v1Router{
+		namespace: "v1",
+		handlers: []RouteHandler{
+			{Handler: handler.NewJobHandler(), Middleware: []echo.MiddlewareFunc{}},
+			{Handler: handler.NewApplicantHandler(), Middleware: []echo.MiddlewareFunc{}},
+		},
+	}
+}
 
-	basePath := fmt.Sprintf("/%s/%s", namespace, h.ResourceName())
+func DefineRoutes() *echo.Echo {
+	e := echo.New()
+	e.Use(middleware.Logger())
+	return NewV1Router().createRoutes(e)
+}
 
-	// define READ paths
-	readAllPath := fmt.Sprintf("%s/ReadAll", basePath)
-	readbyIDPath := fmt.Sprintf("%s/ReadByID/:uuid", basePath)
+func createRoutes(namespace string, rh RouteHandler, e *echo.Echo) {
+	basePath := fmt.Sprintf("/%s/%s", namespace, rh.Handler.ResourceName())
+	allPath := fmt.Sprintf("%s", basePath)
+	byIDPath := fmt.Sprintf("%s/:uuid", basePath)
 
-	// define CREATE paths
-	createOnePath := fmt.Sprintf("%s/CreateOne", basePath)
+	// GET /resources
+	e.GET(allPath, rh.Handler.ReadAll, rh.Middleware...)
 
-	// define UPDATE paths
-	updateByIDPath := fmt.Sprintf("%s/UpdateByID/:uuid", basePath)
+	// GET /resources/:id
+	e.GET(byIDPath, rh.Handler.ReadByID, rh.Middleware...)
 
-	// define DELETE paths
-	deleteOnePath := fmt.Sprintf("%s/DeleteOne/:uuid", basePath)
+	// POST /resources
+	e.POST(allPath, rh.Handler.CreateOne, rh.Middleware...)
 
-	e.GET(readAllPath, h.ReadAll, m...)
-	e.GET(readbyIDPath, h.ReadByID, m...)
+	// PUT /resources/:id
+	e.PUT(byIDPath, rh.Handler.UpdateByID, rh.Middleware...)
 
-	e.POST(createOnePath, h.CreateOne, m...)
-
-	e.PUT(updateByIDPath, h.UpdateByID, m...)
-
-	e.DELETE(deleteOnePath, h.DeleteOne, m...)
+	// DELETE /resources/:id
+	e.DELETE(byIDPath, rh.Handler.DeleteOne, rh.Middleware...)
 }

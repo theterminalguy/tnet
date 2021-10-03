@@ -36,7 +36,7 @@ type Applicant struct {
 	// PreferredJobTitle holds the value of the "preferred_job_title" field.
 	PreferredJobTitle string `json:"preferred_job_title,omitempty"`
 	// ReferrerID holds the value of the "referrer_id" field.
-	ReferrerID int `json:"referrer_id,omitempty"`
+	ReferrerID int `json:"-"`
 	// ReferralCode holds the value of the "referral_code" field.
 	ReferralCode string `json:"referral_code,omitempty"`
 	// TentnCode holds the value of the "tentn_code" field.
@@ -52,7 +52,7 @@ type Applicant struct {
 	// City holds the value of the "city" field.
 	City string `json:"city,omitempty"`
 	// JoinedTentnAt holds the value of the "joined_tentn_at" field.
-	JoinedTentnAt time.Time `json:"joined_tentn_at,omitempty"`
+	JoinedTentnAt *time.Time `json:"joined_tentn_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ApplicantQuery when eager-loading is set.
 	Edges ApplicantEdges `json:"edges"`
@@ -266,7 +266,8 @@ func (a *Applicant) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field joined_tentn_at", values[i])
 			} else if value.Valid {
-				a.JoinedTentnAt = value.Time
+				a.JoinedTentnAt = new(time.Time)
+				*a.JoinedTentnAt = value.Time
 			}
 		}
 	}
@@ -357,8 +358,10 @@ func (a *Applicant) String() string {
 	builder.WriteString(a.CountryCode)
 	builder.WriteString(", city=")
 	builder.WriteString(a.City)
-	builder.WriteString(", joined_tentn_at=")
-	builder.WriteString(a.JoinedTentnAt.Format(time.ANSIC))
+	if v := a.JoinedTentnAt; v != nil {
+		builder.WriteString(", joined_tentn_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

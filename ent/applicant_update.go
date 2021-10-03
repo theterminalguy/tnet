@@ -149,6 +149,20 @@ func (au *ApplicantUpdate) SetJoinedTentnAt(t time.Time) *ApplicantUpdate {
 	return au
 }
 
+// SetNillableJoinedTentnAt sets the "joined_tentn_at" field if the given value is not nil.
+func (au *ApplicantUpdate) SetNillableJoinedTentnAt(t *time.Time) *ApplicantUpdate {
+	if t != nil {
+		au.SetJoinedTentnAt(*t)
+	}
+	return au
+}
+
+// ClearJoinedTentnAt clears the value of the "joined_tentn_at" field.
+func (au *ApplicantUpdate) ClearJoinedTentnAt() *ApplicantUpdate {
+	au.mutation.ClearJoinedTentnAt()
+	return au
+}
+
 // SetReferrer sets the "referrer" edge to the Applicant entity.
 func (au *ApplicantUpdate) SetReferrer(a *Applicant) *ApplicantUpdate {
 	return au.SetReferrerID(a.ID)
@@ -468,6 +482,12 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: applicant.FieldPreferredJobTitle,
 		})
 	}
+	if au.mutation.ReferralCodeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: applicant.FieldReferralCode,
+		})
+	}
 	if value, ok := au.mutation.ProfessionalStartDate(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -507,6 +527,12 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: applicant.FieldJoinedTentnAt,
+		})
+	}
+	if au.mutation.JoinedTentnAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: applicant.FieldJoinedTentnAt,
 		})
 	}
@@ -898,6 +924,20 @@ func (auo *ApplicantUpdateOne) SetJoinedTentnAt(t time.Time) *ApplicantUpdateOne
 	return auo
 }
 
+// SetNillableJoinedTentnAt sets the "joined_tentn_at" field if the given value is not nil.
+func (auo *ApplicantUpdateOne) SetNillableJoinedTentnAt(t *time.Time) *ApplicantUpdateOne {
+	if t != nil {
+		auo.SetJoinedTentnAt(*t)
+	}
+	return auo
+}
+
+// ClearJoinedTentnAt clears the value of the "joined_tentn_at" field.
+func (auo *ApplicantUpdateOne) ClearJoinedTentnAt() *ApplicantUpdateOne {
+	auo.mutation.ClearJoinedTentnAt()
+	return auo
+}
+
 // SetReferrer sets the "referrer" edge to the Applicant entity.
 func (auo *ApplicantUpdateOne) SetReferrer(a *Applicant) *ApplicantUpdateOne {
 	return auo.SetReferrerID(a.ID)
@@ -1241,6 +1281,12 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 			Column: applicant.FieldPreferredJobTitle,
 		})
 	}
+	if auo.mutation.ReferralCodeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: applicant.FieldReferralCode,
+		})
+	}
 	if value, ok := auo.mutation.ProfessionalStartDate(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -1280,6 +1326,12 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: applicant.FieldJoinedTentnAt,
+		})
+	}
+	if auo.mutation.JoinedTentnAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: applicant.FieldJoinedTentnAt,
 		})
 	}

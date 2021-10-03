@@ -172,6 +172,14 @@ func (ac *ApplicantCreate) SetJoinedTentnAt(t time.Time) *ApplicantCreate {
 	return ac
 }
 
+// SetNillableJoinedTentnAt sets the "joined_tentn_at" field if the given value is not nil.
+func (ac *ApplicantCreate) SetNillableJoinedTentnAt(t *time.Time) *ApplicantCreate {
+	if t != nil {
+		ac.SetJoinedTentnAt(*t)
+	}
+	return ac
+}
+
 // SetID sets the "id" field.
 func (ac *ApplicantCreate) SetID(i int) *ApplicantCreate {
 	ac.mutation.SetID(i)
@@ -358,16 +366,8 @@ func (ac *ApplicantCreate) check() error {
 	if _, ok := ac.mutation.PreferredJobTitle(); !ok {
 		return &ValidationError{Name: "preferred_job_title", err: errors.New(`ent: missing required field "preferred_job_title"`)}
 	}
-	if _, ok := ac.mutation.ReferralCode(); !ok {
-		return &ValidationError{Name: "referral_code", err: errors.New(`ent: missing required field "referral_code"`)}
-	}
 	if _, ok := ac.mutation.TentnCode(); !ok {
 		return &ValidationError{Name: "tentn_code", err: errors.New(`ent: missing required field "tentn_code"`)}
-	}
-	if v, ok := ac.mutation.TentnCode(); ok {
-		if err := applicant.TentnCodeValidator(v); err != nil {
-			return &ValidationError{Name: "tentn_code", err: fmt.Errorf(`ent: validator failed for field "tentn_code": %w`, err)}
-		}
 	}
 	if _, ok := ac.mutation.ProfessionalStartDate(); !ok {
 		return &ValidationError{Name: "professional_start_date", err: errors.New(`ent: missing required field "professional_start_date"`)}
@@ -388,9 +388,6 @@ func (ac *ApplicantCreate) check() error {
 	}
 	if _, ok := ac.mutation.City(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required field "city"`)}
-	}
-	if _, ok := ac.mutation.JoinedTentnAt(); !ok {
-		return &ValidationError{Name: "joined_tentn_at", err: errors.New(`ent: missing required field "joined_tentn_at"`)}
 	}
 	return nil
 }
@@ -559,7 +556,7 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: applicant.FieldJoinedTentnAt,
 		})
-		_node.JoinedTentnAt = value
+		_node.JoinedTentnAt = &value
 	}
 	if nodes := ac.mutation.ReferrerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

@@ -43,25 +43,6 @@ func init() {
 	applicantDescReferralCode := applicantFields[6].Descriptor()
 	// applicant.DefaultReferralCode holds the default value on creation for the referral_code field.
 	applicant.DefaultReferralCode = applicantDescReferralCode.Default.(string)
-	// applicantDescTentnCode is the schema descriptor for tentn_code field.
-	applicantDescTentnCode := applicantFields[7].Descriptor()
-	// applicant.TentnCodeValidator is a validator for the "tentn_code" field. It is called by the builders before save.
-	applicant.TentnCodeValidator = func() func(string) error {
-		validators := applicantDescTentnCode.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-			validators[2].(func(string) error),
-		}
-		return func(tentn_code string) error {
-			for _, fn := range fns {
-				if err := fn(tentn_code); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
 	// applicantDescCountryCode is the schema descriptor for country_code field.
 	applicantDescCountryCode := applicantFields[11].Descriptor()
 	// applicant.CountryCodeValidator is a validator for the "country_code" field. It is called by the builders before save.

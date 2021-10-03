@@ -45,6 +45,7 @@ const (
 	Referrer        string = "referrer"
 	Referees        string = "referees"
 	Applicant       string = "applicant"
+	Applicants      string = "applicants"
 	Applications    string = "applications"
 	JobApplications string = "job_applications"
 	PortfolioLinks  string = "portfoliolinks"
