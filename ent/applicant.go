@@ -36,7 +36,7 @@ type Applicant struct {
 	// PreferredJobTitle holds the value of the "preferred_job_title" field.
 	PreferredJobTitle string `json:"preferred_job_title,omitempty"`
 	// ReferrerID holds the value of the "referrer_id" field.
-	ReferrerID int `json:"referrer_id,omitempty"`
+	ReferrerID int `json:"-"`
 	// ReferralCode holds the value of the "referral_code" field.
 	ReferralCode string `json:"referral_code,omitempty"`
 	// TentnCode holds the value of the "tentn_code" field.

@@ -36,7 +36,8 @@ func (Applicant) Fields() []ent.Field {
 		// Set on create.
 		// This is the applicant referrer database id
 		field.Int(oneword.ReferrerID).
-			Optional(),
+			Optional().
+			StructTag(`json:"-"`),
 
 		// Provided by the user
 		// Should be validate against existing
