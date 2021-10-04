@@ -14,5 +14,5 @@ func TitlelizeUnderscore(s string) string {
 		}
 		return strings.Join(s, "")
 	}
-	return s
+	return strings.Title(s)
 }
