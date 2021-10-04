@@ -11,51 +11,82 @@ import (
 )
 
 // template files
-const (
-	serviceTemplate     string = "cmd/generate/templates/service.tmpl"
-	respositoryTemplate string = "cmd/generate/templates/repository.tmpl"
-)
+const ()
 
-type Resource struct {
-	Entity   string
-	FileName string
+type Templater interface {
+	OutDir() string
+	Exists() bool
+	Name() string
+	Generate() error
 }
 
-func (r *Resource) ServiceFileExists() bool {
-	_, err := os.Stat(r.ServiceFilePath())
+type Template struct {
+	FileName string
+	Entity   string
+	Kind     string
+}
+
+func (t *Template) Exists() bool {
+	_, err := os.Stat(t.OutDir())
 	return err == nil
 }
 
-func (r *Resource) ServiceFilePath() string {
-	return fmt.Sprintf("internal/service/%v_service.go", r.FileName)
+func (t *Template) Name() string {
+	return t.FileName
 }
 
-func (r *Resource) GenerateTemplate() {
-	tmpl, err := template.ParseFiles(serviceTemplate, respositoryTemplate)
+func (t *Template) Generate() error {
+	tmpl, err := template.ParseFiles(t.sourceDir())
 	if err != nil {
-		panic(err)
+		return err
 	}
-	for _, t := range tmpl.Templates() {
-		switch t.Name() {
-		case "service.tmpl":
-			if r.ServiceFileExists() {
-				fmt.Println("[skipping] " + r.ServiceFilePath())
-				continue
-			}
-			err = t.Execute(os.Stdout, r)
-			if err != nil {
-				panic(err)
-			}
-		case "repository.tmpl":
-			if r.ServiceFileExists() {
-				fmt.Println("[skipping] " + r.ServiceFilePath())
-				continue
-			}
-			err = t.Execute(os.Stdout, r)
-			if err != nil {
-				panic(err)
-			}
+	err = tmpl.Execute(os.Stdout, t)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t *Template) OutDir() string {
+	switch t.Kind {
+	case "service":
+		return fmt.Sprintf("internal/service/%v_service.go", t.FileName)
+	case "repository":
+		return fmt.Sprintf("internal/repository/%v_repository.go", t.FileName)
+	default:
+		panic("unknown template kind")
+	}
+}
+
+func (t *Template) sourceDir() string {
+	switch t.Kind {
+	case "service":
+		return "cmd/generate/templates/service.tmpl"
+	case "repository":
+		return "cmd/generate/templates/repository.tmpl"
+	default:
+		panic("unknown template kind")
+	}
+}
+
+func GenerateTemplates(entityName, fileName string) {
+	var templates []Templater
+	templates = append(templates, &Template{
+		Entity:   entityName,
+		FileName: fileName,
+		Kind:     "service",
+	})
+	templates = append(templates, &Template{
+		Entity:   entityName,
+		FileName: fileName,
+		Kind:     "repository",
+	})
+	for _, t := range templates {
+		if t.Exists() {
+			fmt.Println("[skipping] " + t.OutDir())
+			continue
 		}
+		t.Generate()
 	}
 }
 
@@ -66,10 +97,5 @@ func main() {
 	}
 	fileName := os.Args[1]
 	resourceName := util.TitlelizeUnderscore(fileName)
-	resource := Resource{Entity: resourceName, FileName: fileName}
-	if resource.ServiceFileExists() {
-		fmt.Println("[skipping] " + resource.ServiceFilePath())
-	} else {
-		resource.GenerateTemplate()
-	}
+	GenerateTemplates(resourceName, fileName)
 }
