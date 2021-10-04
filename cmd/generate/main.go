@@ -1,25 +1,34 @@
+// +build ignore
+
 package main
 
 import (
 	"fmt"
 	"html/template"
 	"os"
+
+	"github.com/10hourlabs/tentn/util"
 )
 
+// template directories
 const (
-	serviceTemplateDir string = "cmd/generate/templates/service.tmpl"
+	serviceTemplate string = "cmd/generate/templates/service.tmpl"
 )
 
 type Resource struct {
-	Entity string
+	Entity   string
+	FileName string
 }
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Please provide an entity name. For example: Job")
+		fmt.Println("Please provide an entity name. For example: job_application")
+		os.Exit(2)
 	}
-	resource := Resource{Entity: os.Args[1]}
-	tmpl, err := template.ParseFiles(serviceTemplateDir)
+	fileName := os.Args[1]
+	resourceName := util.TitlelizeUnderscore(fileName)
+	resource := Resource{Entity: resourceName, FileName: fileName}
+	tmpl, err := template.ParseFiles(serviceTemplate)
 	if err != nil {
 		panic(err)
 	}
