@@ -10,9 +10,6 @@ import (
 	"github.com/10hourlabs/tentn/util"
 )
 
-// template files
-const ()
-
 type Templater interface {
 	OutDir() string
 	Exists() bool
