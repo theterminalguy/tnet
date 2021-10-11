@@ -105,11 +105,11 @@ func GenerateTemplates(entityName, fileName string) {
 func InitEntSchema(resourceName string) {
 	fmt.Printf("Generating ent schema for %v...\n", resourceName)
 	cmd := exec.Command("go", "run", "entgo.io/ent/cmd/ent", "init", resourceName)
-	out, err := cmd.Output()
+	_, err := cmd.Output()
 	if err != nil {
 		fmt.Printf("An error occured initializing ent schema! %v\n", err)
 	}
-	fmt.Println(out)
+	fmt.Printf("[created] %v\n", "ent/schema/person.go")
 }
 
 func main() {
