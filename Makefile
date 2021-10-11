@@ -1,4 +1,4 @@
-.PHONY: help generate init-schema
+.PHONY: help generate scaffold
 .DEFAULT_GOAL: help
 
 default: help
@@ -14,9 +14,9 @@ generate: ## Generate ent Assests
 start: ## Start the app
 	@go run .
 
-init-schema: ## Initialize a new schema
-ifdef name
-	@go run entgo.io/ent/cmd/ent init $$name
+scaffold: ## Generate a new resource scaffold
+ifdef resource
+	@go run cmd/generate/main.go $$resource
 else
-	@echo "Usage: make init-schema name=SchemaName" && exit 64
+	@echo "Usage: make scaffold resource=resource_name" && exit 64
 endif

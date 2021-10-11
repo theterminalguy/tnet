@@ -1,0 +1,88 @@
+package repository
+
+import (
+	"time"
+
+	"github.com/10hourlabs/tentn/ent"
+	"github.com/10hourlabs/tentn/ent/{{.FileName}}"
+	"github.com/google/uuid"
+)
+
+type {{.Entity}}Repository struct{}
+
+type {{.Entity}}Params struct {
+}
+
+func New{{.Entity}}Repository() *{{.Entity}}Repository {
+	return &{{.Entity}}Repository{}
+}
+
+func (*{{.Entity}}Repository) GetAll() ([]*ent.{{.Entity}}, error) {
+	records, err := dBConn.{{.Entity}}.Query().
+		Where({{.FileName}}.DeletedAtIsNil()).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return records, nil
+}
+
+func (*{{.Entity}}Repository) GetByUUID(id uuid.UUID) (*ent.{{.Entity}}, error) {
+	record, err := dBConn.{{.Entity}}.Query().
+		Where({{.FileName}}.UUIDEQ(id)).
+		Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	if record.DeletedAt != nil {
+		return nil, RecordNotFoundError
+	}
+	return record, nil
+}
+
+func (*{{.Entity}}Repository) Create(p {{.Entity}}Params) (*ent.{{.Entity}}, error) {
+	err := validateParams(p)
+	if err != nil {
+		return nil, err
+	}
+	record, err := dBConn.{{.Entity}}.
+		Create().
+		// TODO: set other fields here
+		Save(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return record, err
+}
+
+func (r *{{.Entity}}Repository) Update(id uuid.UUID, p {{.Entity}}Params) (*ent.{{.Entity}}, error) {
+	err := validateParams(p)
+	if err != nil {
+		return nil, err
+	}
+	record, err := r.GetByUUID(id)
+	if err != nil {
+		return nil, err
+	}
+	_, err = dBConn.{{.Entity}}.Update().
+		// TODO: set other fields here
+		Save(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return record, nil
+}
+
+func (r *{{.Entity}}Repository) DeleteByUUID(id uuid.UUID) error {
+	record, err := r.GetByUUID(id)
+	if err != nil {
+		return err
+	}
+	_, err = dBConn.{{.Entity}}.UpdateOne(record).
+		SetDeletedAt(time.Now()).
+		Save(dBContext)
+	if err != nil {
+		return err
+	}
+	return nil
+}
