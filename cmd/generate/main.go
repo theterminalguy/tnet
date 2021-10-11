@@ -33,11 +33,19 @@ func (t *Template) Name() string {
 }
 
 func (t *Template) Generate() error {
+	if t.Exists() {
+		fmt.Printf("[skipping] %v\n", t.OutDir())
+		return nil
+	}
 	tmpl, err := template.ParseFiles(t.sourceDir())
 	if err != nil {
 		return err
 	}
-	err = tmpl.Execute(os.Stdout, t)
+	f, err := os.Create(t.OutDir())
+	if err != nil {
+		fmt.Printf("Failed to generate template: %v\n", err)
+	}
+	err = tmpl.Execute(f, t)
 	if err != nil {
 		return err
 	}
@@ -88,10 +96,6 @@ func GenerateTemplates(entityName, fileName string) {
 		Kind:     "handler",
 	})
 	for _, t := range templates {
-		if t.Exists() {
-			fmt.Println("[skipping] " + t.OutDir())
-			continue
-		}
 		t.Generate()
 	}
 }
