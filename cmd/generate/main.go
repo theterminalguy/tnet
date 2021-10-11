@@ -50,6 +50,8 @@ func (t *Template) OutDir() string {
 		return fmt.Sprintf("internal/service/%v_service.go", t.FileName)
 	case "repository":
 		return fmt.Sprintf("internal/repository/%v_repository.go", t.FileName)
+	case "handler":
+		return fmt.Sprintf("internal/handler/%v_handler.go", t.FileName)
 	default:
 		panic("unknown template kind")
 	}
@@ -61,6 +63,8 @@ func (t *Template) sourceDir() string {
 		return "cmd/generate/templates/service.tmpl"
 	case "repository":
 		return "cmd/generate/templates/repository.tmpl"
+	case "handler":
+		return "cmd/generate/templates/handler.tmpl"
 	default:
 		panic("unknown template kind")
 	}
@@ -77,6 +81,11 @@ func GenerateTemplates(entityName, fileName string) {
 		Entity:   entityName,
 		FileName: fileName,
 		Kind:     "repository",
+	})
+	templates = append(templates, &Template{
+		Entity:   entityName,
+		FileName: fileName,
+		Kind:     "handler",
 	})
 	for _, t := range templates {
 		if t.Exists() {
