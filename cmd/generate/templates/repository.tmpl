@@ -17,7 +17,7 @@ func New{{.Entity}}Repository() *{{.Entity}}Repository {
 	return &{{.Entity}}Repository{}
 }
 
-func (*{{.Entity}}Repository) GetAll() ([]*ent.{.Entity}, error) {
+func (*{{.Entity}}Repository) GetAll() ([]*ent.{{.Entity}}, error) {
 	records, err := dBConn.{{.Entity}}.Query().
 		Where({{.FileName}}.DeletedAtIsNil()).
 		All(dBContext)

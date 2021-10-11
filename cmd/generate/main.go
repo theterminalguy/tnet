@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"os"
+	"os/exec"
 
 	"github.com/10hourlabs/tentn/util"
 )
@@ -49,6 +50,7 @@ func (t *Template) Generate() error {
 	if err != nil {
 		return err
 	}
+	fmt.Printf("[created] %v\n", t.OutDir())
 	return nil
 }
 
@@ -100,6 +102,16 @@ func GenerateTemplates(entityName, fileName string) {
 	}
 }
 
+func InitEntSchema(resourceName string) {
+	fmt.Printf("Generating ent schema for %v...\n", resourceName)
+	cmd := exec.Command("go", "run", "entgo.io/ent/cmd/ent", "init", resourceName)
+	out, err := cmd.Output()
+	if err != nil {
+		fmt.Printf("An error occured initializing ent schema! %v\n", err)
+	}
+	fmt.Println(out)
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("Please provide a resource name. For example: job_application")
@@ -107,5 +119,6 @@ func main() {
 	}
 	fileName := os.Args[1]
 	resourceName := util.TitlelizeUnderscore(fileName)
+	InitEntSchema(resourceName)
 	GenerateTemplates(resourceName, fileName)
 }

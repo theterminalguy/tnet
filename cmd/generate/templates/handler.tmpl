@@ -23,7 +23,7 @@ func New{{.Entity}}Handler() *{{.Entity}}Handler {
 }
 
 func (*{{.Entity}}Handler) ResourceName() string {
-	return {{.FileName}}
+	return "{{.FileName}}"
 }
 
 func (h *{{.Entity}}Handler) ReadAll(c echo.Context) error {
