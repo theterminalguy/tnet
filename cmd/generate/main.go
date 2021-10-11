@@ -44,12 +44,13 @@ func (t *Template) Generate() error {
 	}
 	f, err := os.Create(t.OutDir())
 	if err != nil {
-		fmt.Printf("Failed to generate template: %v\n", err)
+		fmt.Printf("Unable to create file: %v\n", err)
 	}
 	err = tmpl.Execute(f, t)
 	if err != nil {
-		return err
+		fmt.Printf("Failed to generate template: %v\n", err)
 	}
+	f.Close()
 	fmt.Printf("[created] %v\n", t.OutDir())
 	return nil
 }
@@ -102,23 +103,32 @@ func GenerateTemplates(entityName, fileName string) {
 	}
 }
 
-func InitEntSchema(resourceName string) {
-	fmt.Printf("Generating ent schema for %v...\n", resourceName)
+func InitEntSchema(resourceName, fileName string) error {
+	outDir := fmt.Sprintf("ent/schema/%v.go", fileName)
+	if _, err := os.Stat(outDir); err == nil {
+		fmt.Printf("[skipping] %v\n", outDir)
+		return nil
+	}
 	cmd := exec.Command("go", "run", "entgo.io/ent/cmd/ent", "init", resourceName)
 	_, err := cmd.Output()
 	if err != nil {
-		fmt.Printf("An error occured initializing ent schema! %v\n", err)
+		return fmt.Errorf("An error occured initializing ent schema! %v\n", err)
 	}
-	fmt.Printf("[created] %v\n", "ent/schema/person.go")
+	fmt.Printf("[created] %v\n", outDir)
+	return nil
 }
 
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("Please provide a resource name. For example: job_application")
-		os.Exit(2)
+		os.Exit(64)
 	}
 	fileName := os.Args[1]
 	resourceName := util.TitlelizeUnderscore(fileName)
-	InitEntSchema(resourceName)
+	fmt.Printf("Generating scaffold for %v...\n", resourceName)
+	if err := InitEntSchema(resourceName, fileName); err != nil {
+		fmt.Println(err)
+		os.Exit(64)
+	}
 	GenerateTemplates(resourceName, fileName)
 }
