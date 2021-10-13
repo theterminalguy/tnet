@@ -11,7 +11,9 @@ import (
 type JobApplicationRepository struct{}
 
 type JobApplicationParams struct {
-
+	JobUUID        uuid.UUID `json:"jobUUID"`
+	ApplicantUUID  uuid.UUID `json:"applicantUUID"`
+	ReferralSource string    `json:"referral_source"`
 }
 
 func NewJobApplicationRepository() *JobApplicationRepository {
@@ -46,9 +48,19 @@ func (*JobApplicationRepository) Create(p JobApplicationParams) (*ent.JobApplica
 	if err != nil {
 		return nil, err
 	}
+	a, err := NewApplicantRepository().GetByUUID(p.ApplicantUUID)
+	if err != nil {
+		return nil, err
+	}
+	j, err := NewJobRepository().GetByUUID(p.JobUUID)
+	if err != nil {
+		return nil, err
+	}
 	record, err := dBConn.JobApplication.
 		Create().
-		// TODO: set other fields here
+		SetApplicantID(a.ID).
+		SetJobID(j.ID).
+		SetReferralSource(p.ReferralSource).
 		Save(dBContext)
 	if err != nil {
 		return nil, err
