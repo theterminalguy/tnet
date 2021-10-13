@@ -125,6 +125,14 @@ func (jac *JobApplicationCreate) SetNote(s string) *JobApplicationCreate {
 	return jac
 }
 
+// SetNillableNote sets the "note" field if the given value is not nil.
+func (jac *JobApplicationCreate) SetNillableNote(s *string) *JobApplicationCreate {
+	if s != nil {
+		jac.SetNote(*s)
+	}
+	return jac
+}
+
 // SetID sets the "id" field.
 func (jac *JobApplicationCreate) SetID(i int) *JobApplicationCreate {
 	jac.mutation.SetID(i)
@@ -251,9 +259,6 @@ func (jac *JobApplicationCreate) check() error {
 		if err := jobapplication.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "status": %w`, err)}
 		}
-	}
-	if _, ok := jac.mutation.Note(); !ok {
-		return &ValidationError{Name: "note", err: errors.New(`ent: missing required field "note"`)}
 	}
 	return nil
 }

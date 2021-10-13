@@ -50,7 +50,8 @@ func (JobApplication) Fields() []ent.Field {
 			Values(JobApplicationStatuses()...).
 			Default(oneword.Screening),
 
-		field.Text(oneword.Note),
+		field.Text(oneword.Note).
+			Optional(),
 	}
 }
 

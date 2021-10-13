@@ -128,6 +128,20 @@ func (jau *JobApplicationUpdate) SetNote(s string) *JobApplicationUpdate {
 	return jau
 }
 
+// SetNillableNote sets the "note" field if the given value is not nil.
+func (jau *JobApplicationUpdate) SetNillableNote(s *string) *JobApplicationUpdate {
+	if s != nil {
+		jau.SetNote(*s)
+	}
+	return jau
+}
+
+// ClearNote clears the value of the "note" field.
+func (jau *JobApplicationUpdate) ClearNote() *JobApplicationUpdate {
+	jau.mutation.ClearNote()
+	return jau
+}
+
 // SetApplicant sets the "applicant" edge to the Applicant entity.
 func (jau *JobApplicationUpdate) SetApplicant(a *Applicant) *JobApplicationUpdate {
 	return jau.SetApplicantID(a.ID)
@@ -297,6 +311,12 @@ func (jau *JobApplicationUpdate) sqlSave(ctx context.Context) (n int, err error)
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: jobapplication.FieldNote,
+		})
+	}
+	if jau.mutation.NoteCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: jobapplication.FieldNote,
 		})
 	}
@@ -484,6 +504,20 @@ func (jauo *JobApplicationUpdateOne) SetNillableStatus(j *jobapplication.Status)
 // SetNote sets the "note" field.
 func (jauo *JobApplicationUpdateOne) SetNote(s string) *JobApplicationUpdateOne {
 	jauo.mutation.SetNote(s)
+	return jauo
+}
+
+// SetNillableNote sets the "note" field if the given value is not nil.
+func (jauo *JobApplicationUpdateOne) SetNillableNote(s *string) *JobApplicationUpdateOne {
+	if s != nil {
+		jauo.SetNote(*s)
+	}
+	return jauo
+}
+
+// ClearNote clears the value of the "note" field.
+func (jauo *JobApplicationUpdateOne) ClearNote() *JobApplicationUpdateOne {
+	jauo.mutation.ClearNote()
 	return jauo
 }
 
@@ -680,6 +714,12 @@ func (jauo *JobApplicationUpdateOne) sqlSave(ctx context.Context) (_node *JobApp
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: jobapplication.FieldNote,
+		})
+	}
+	if jauo.mutation.NoteCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: jobapplication.FieldNote,
 		})
 	}
