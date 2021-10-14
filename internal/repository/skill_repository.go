@@ -1,0 +1,106 @@
+package repository
+
+import (
+	"time"
+
+	"github.com/10hourlabs/tentn/ent"
+	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/google/uuid"
+)
+
+type SkillRepository struct{}
+
+type SkillParams struct {
+	ApplicantUUID uuid.UUID `json:"applicant_uuid" validate:"required"`
+
+	// Applicant can specify years of experience in decimal where 1.5 equals 1 and a half year
+	YearsOfExperience float32 `json:"years_of_experience" validate:"gte=1.0"`
+	Preferred         bool    `json:"name" validate:"boolean"`
+
+	// Applicant should add details on this specific skills
+	// how they have used them in the past, things they've built or done with it
+	Note string `json:"note" validate:"required"`
+}
+
+func NewSkillRepository() *SkillRepository {
+	return &SkillRepository{}
+}
+
+func (*SkillRepository) GetAll() ([]*ent.Skill, error) {
+	records, err := dBConn.Skill.Query().
+		Where(skill.DeletedAtIsNil()).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return records, nil
+}
+
+func (*SkillRepository) GetByUUID(id uuid.UUID) (*ent.Skill, error) {
+	record, err := dBConn.Skill.Query().
+		Where(skill.UUIDEQ(id)).
+		Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	if record.DeletedAt != nil {
+		return nil, RecordNotFoundError
+	}
+	return record, nil
+}
+
+func (*SkillRepository) Create(p SkillParams) (*ent.Skill, error) {
+	err := validateParams(p)
+	if err != nil {
+		return nil, err
+	}
+	a, err := NewApplicantRepository().GetByUUID(p.ApplicantUUID)
+	if err != nil {
+		return nil, err
+	}
+	record, err := dBConn.Skill.
+		Create().
+		SetApplicantID(a.ID).
+		SetPreferred(p.Preferred).
+		SetYearsOfExperience(p.YearsOfExperience).
+		SetNote(p.Note).
+		Save(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return record, err
+}
+
+func (r *SkillRepository) Update(id uuid.UUID, p SkillParams) (*ent.Skill, error) {
+	err := validateParams(p)
+	if err != nil {
+		return nil, err
+	}
+	record, err := r.GetByUUID(id)
+	if err != nil {
+		return nil, err
+	}
+	_, err = record.Update().
+		SetPreferred(p.Preferred).
+		SetYearsOfExperience(p.YearsOfExperience).
+		SetNote(p.Note).
+		Save(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return record, nil
+}
+
+func (r *SkillRepository) DeleteByUUID(id uuid.UUID) error {
+	record, err := r.GetByUUID(id)
+	if err != nil {
+		return err
+	}
+	_, err = record.Update().
+		SetDeletedAt(time.Now()).
+		Save(dBContext)
+	if err != nil {
+		return err
+	}
+	return nil
+}
