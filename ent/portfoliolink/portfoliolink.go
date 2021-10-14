@@ -71,6 +71,4 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// URLValidator is a validator for the "url" field. It is called by the builders before save.
-	URLValidator func(string) error
 )

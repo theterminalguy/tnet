@@ -117,18 +117,12 @@ func (plu *PortfolioLinkUpdate) Save(ctx context.Context) (int, error) {
 	)
 	plu.defaults()
 	if len(plu.hooks) == 0 {
-		if err = plu.check(); err != nil {
-			return 0, err
-		}
 		affected, err = plu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*PortfolioLinkMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = plu.check(); err != nil {
-				return 0, err
 			}
 			plu.mutation = mutation
 			affected, err = plu.sqlSave(ctx)
@@ -176,16 +170,6 @@ func (plu *PortfolioLinkUpdate) defaults() {
 		v := portfoliolink.UpdateDefaultUpdatedAt()
 		plu.mutation.SetUpdatedAt(v)
 	}
-}
-
-// check runs all checks and user-defined validators on the builder.
-func (plu *PortfolioLinkUpdate) check() error {
-	if v, ok := plu.mutation.URL(); ok {
-		if err := portfoliolink.URLValidator(v); err != nil {
-			return &ValidationError{Name: "url", err: fmt.Errorf("ent: validator failed for field \"url\": %w", err)}
-		}
-	}
-	return nil
 }
 
 func (plu *PortfolioLinkUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -396,18 +380,12 @@ func (pluo *PortfolioLinkUpdateOne) Save(ctx context.Context) (*PortfolioLink, e
 	)
 	pluo.defaults()
 	if len(pluo.hooks) == 0 {
-		if err = pluo.check(); err != nil {
-			return nil, err
-		}
 		node, err = pluo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*PortfolioLinkMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = pluo.check(); err != nil {
-				return nil, err
 			}
 			pluo.mutation = mutation
 			node, err = pluo.sqlSave(ctx)
@@ -455,16 +433,6 @@ func (pluo *PortfolioLinkUpdateOne) defaults() {
 		v := portfoliolink.UpdateDefaultUpdatedAt()
 		pluo.mutation.SetUpdatedAt(v)
 	}
-}
-
-// check runs all checks and user-defined validators on the builder.
-func (pluo *PortfolioLinkUpdateOne) check() error {
-	if v, ok := pluo.mutation.URL(); ok {
-		if err := portfoliolink.URLValidator(v); err != nil {
-			return &ValidationError{Name: "url", err: fmt.Errorf("ent: validator failed for field \"url\": %w", err)}
-		}
-	}
-	return nil
 }
 
 func (pluo *PortfolioLinkUpdateOne) sqlSave(ctx context.Context) (_node *PortfolioLink, err error) {

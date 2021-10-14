@@ -132,10 +132,6 @@ func init() {
 	portfoliolink.DefaultUpdatedAt = portfoliolinkDescUpdatedAt.Default.(func() time.Time)
 	// portfoliolink.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	portfoliolink.UpdateDefaultUpdatedAt = portfoliolinkDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// portfoliolinkDescURL is the schema descriptor for url field.
-	portfoliolinkDescURL := portfoliolinkFields[0].Descriptor()
-	// portfoliolink.URLValidator is a validator for the "url" field. It is called by the builders before save.
-	portfoliolink.URLValidator = portfoliolinkDescURL.Validators[0].(func(string) error)
 	skillMixin := schema.Skill{}.Mixin()
 	skillMixinFields0 := skillMixin[0].Fields()
 	_ = skillMixinFields0
