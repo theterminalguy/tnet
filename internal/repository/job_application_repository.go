@@ -1,10 +1,12 @@
 package repository
 
 import (
+	"errors"
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/util/collections"
 	"github.com/google/uuid"
 )
 
@@ -55,6 +57,14 @@ func (*JobApplicationRepository) Create(p JobApplicationParams) (*ent.JobApplica
 	j, err := NewJobRepository().GetByUUID(p.JobUUID)
 	if err != nil {
 		return nil, err
+	}
+	records, err := dBConn.JobApplication.Query().Where(
+		jobapplication.And(
+			jobapplication.JobID(j.ID),
+			jobapplication.ApplicantID(a.ID),
+		)).All(dBContext)
+	if collections.HasAny(records) {
+		return nil, errors.New("applicant already applied for this job")
 	}
 	record, err := dBConn.JobApplication.
 		Create().
