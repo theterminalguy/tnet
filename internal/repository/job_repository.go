@@ -84,11 +84,11 @@ func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, error) {
 	if err != nil {
 		return nil, err
 	}
-	j, err := r.GetByUUID(id)
+	record, err := r.GetByUUID(id)
 	if err != nil {
 		return nil, err
 	}
-	_, err = dBConn.Job.Update().
+	_, err = record.Update().
 		SetHiring(p.Hiring).
 		SetTitle(p.Title).
 		SetSummary(p.Summary).
@@ -102,15 +102,15 @@ func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, error) {
 	if err != nil {
 		return nil, err
 	}
-	return j, nil
+	return record, nil
 }
 
 func (r *JobRepository) DeleteByUUID(id uuid.UUID) error {
-	j, err := r.GetByUUID(id)
+	record, err := r.GetByUUID(id)
 	if err != nil {
 		return err
 	}
-	_, err = dBConn.Job.UpdateOne(j).
+	_, err = record.Update().
 		SetDeletedAt(time.Now()).
 		SetHiring(false).
 		Save(dBContext)

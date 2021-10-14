@@ -119,11 +119,11 @@ func (r *ApplicantRepository) Update(id uuid.UUID, p ApplicantParams) (*ent.Appl
 	if err != nil {
 		return nil, err
 	}
-	a, err := r.GetByUUID(id)
+	record, err := r.GetByUUID(id)
 	if err != nil {
 		return nil, err
 	}
-	_, err = dBConn.Applicant.Update().
+	_, err = record.Update().
 		SetEmail(p.Email).
 		SetPhone(p.Phone).
 		SetCountryCode(p.CountryCode).
@@ -132,15 +132,15 @@ func (r *ApplicantRepository) Update(id uuid.UUID, p ApplicantParams) (*ent.Appl
 	if err != nil {
 		return nil, err
 	}
-	return a, nil
+	return record, nil
 }
 
 func (r *ApplicantRepository) DeleteByUUID(id uuid.UUID) error {
-	a, err := r.GetByUUID(id)
+	record, err := r.GetByUUID(id)
 	if err != nil {
 		return err
 	}
-	_, err = dBConn.Applicant.UpdateOne(a).
+	_, err = record.Update().
 		SetDeletedAt(time.Now()).
 		Save(dBContext)
 	if err != nil {

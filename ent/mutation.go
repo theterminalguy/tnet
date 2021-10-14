@@ -3355,9 +3355,22 @@ func (m *JobApplicationMutation) OldNote(ctx context.Context) (v string, err err
 	return oldValue.Note, nil
 }
 
+// ClearNote clears the value of the "note" field.
+func (m *JobApplicationMutation) ClearNote() {
+	m.note = nil
+	m.clearedFields[jobapplication.FieldNote] = struct{}{}
+}
+
+// NoteCleared returns if the "note" field was cleared in this mutation.
+func (m *JobApplicationMutation) NoteCleared() bool {
+	_, ok := m.clearedFields[jobapplication.FieldNote]
+	return ok
+}
+
 // ResetNote resets all changes to the "note" field.
 func (m *JobApplicationMutation) ResetNote() {
 	m.note = nil
+	delete(m.clearedFields, jobapplication.FieldNote)
 }
 
 // ClearApplicant clears the "applicant" edge to the Applicant entity.
@@ -3626,6 +3639,9 @@ func (m *JobApplicationMutation) ClearedFields() []string {
 	if m.FieldCleared(jobapplication.FieldJobID) {
 		fields = append(fields, jobapplication.FieldJobID)
 	}
+	if m.FieldCleared(jobapplication.FieldNote) {
+		fields = append(fields, jobapplication.FieldNote)
+	}
 	return fields
 }
 
@@ -3648,6 +3664,9 @@ func (m *JobApplicationMutation) ClearField(name string) error {
 		return nil
 	case jobapplication.FieldJobID:
 		m.ClearJobID()
+		return nil
+	case jobapplication.FieldNote:
+		m.ClearNote()
 		return nil
 	}
 	return fmt.Errorf("unknown JobApplication nullable field %s", name)

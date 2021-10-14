@@ -112,7 +112,7 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "referral_source", Type: field.TypeString},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"screening", "shortlisted", "interviewing", "hired", "rejected"}, Default: "screening"},
-		{Name: "note", Type: field.TypeString, Size: 2147483647},
+		{Name: "note", Type: field.TypeString, Nullable: true, Size: 2147483647},
 		{Name: "applicant_id", Type: field.TypeInt, Nullable: true},
 		{Name: "job_id", Type: field.TypeInt, Nullable: true},
 	}

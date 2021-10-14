@@ -27,7 +27,7 @@ type Skill struct {
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
 	// ApplicantID holds the value of the "applicant_id" field.
-	ApplicantID int `json:"applicant_id,omitempty"`
+	ApplicantID int `json:"-"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// YearsOfExperience holds the value of the "years_of_experience" field.

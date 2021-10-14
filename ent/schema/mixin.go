@@ -41,7 +41,7 @@ func (UUIDMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("id").
 			StructTag(`json:"-"`),
-		
+
 		field.UUID(oneword.UUID, uuid.UUID{}).
 			Unique().
 			Default(uuid.New),
@@ -82,6 +82,7 @@ func (b BelongsToMixin) Indexes() []ent.Index {
 func (b BelongsToMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int(b.ForeignKey).
-			Optional(),
+			Optional().
+			StructTag(`json:"-"`),
 	}
 }

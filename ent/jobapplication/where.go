@@ -848,6 +848,20 @@ func NoteHasSuffix(v string) predicate.JobApplication {
 	})
 }
 
+// NoteIsNil applies the IsNil predicate on the "note" field.
+func NoteIsNil() predicate.JobApplication {
+	return predicate.JobApplication(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldNote)))
+	})
+}
+
+// NoteNotNil applies the NotNil predicate on the "note" field.
+func NoteNotNil() predicate.JobApplication {
+	return predicate.JobApplication(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldNote)))
+	})
+}
+
 // NoteEqualFold applies the EqualFold predicate on the "note" field.
 func NoteEqualFold(v string) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
