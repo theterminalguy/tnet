@@ -29,7 +29,8 @@ func (PortfolioLink) Fields() []ent.Field {
 		field.String(oneword.Name),
 
 		field.Int(oneword.ApplicantID).
-			Optional(),
+			Optional().
+			StructTag(`json:"-"`),
 	}
 }
 

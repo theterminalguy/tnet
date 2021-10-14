@@ -12,7 +12,7 @@ type PortfolioLinkRepository struct{}
 
 type PortfolioLinkParams struct {
 	URL           string    `json:"url" validate:"required,url"`
-	ApplicantUUID uuid.UUID `json:"applicantUUID"`
+	ApplicantUUID uuid.UUID `json:"applicant_uuid"`
 	Name          string    `json:"name"`
 }
 
