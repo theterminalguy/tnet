@@ -16,6 +16,8 @@ type JobApplicationParams struct {
 	JobUUID        uuid.UUID `json:"jobUUID"`
 	ApplicantUUID  uuid.UUID `json:"applicantUUID"`
 	ReferralSource string    `json:"referral_source"`
+	Note           string    `json:"note"`
+	Status         string    `json:"status"`
 }
 
 func NewJobApplicationRepository() *JobApplicationRepository {
@@ -87,8 +89,9 @@ func (r *JobApplicationRepository) Update(id uuid.UUID, p JobApplicationParams) 
 	if err != nil {
 		return nil, err
 	}
-	_, err = dBConn.JobApplication.Update().
-		// TODO: set other fields here
+	_, err = record.Update().
+		SetNote(p.Note).
+		SetStatus(jobapplication.Status(p.Status)).
 		Save(dBContext)
 	if err != nil {
 		return nil, err
@@ -101,7 +104,7 @@ func (r *JobApplicationRepository) DeleteByUUID(id uuid.UUID) error {
 	if err != nil {
 		return err
 	}
-	_, err = dBConn.JobApplication.UpdateOne(record).
+	_, err = record.Update().
 		SetDeletedAt(time.Now()).
 		Save(dBContext)
 	if err != nil {
