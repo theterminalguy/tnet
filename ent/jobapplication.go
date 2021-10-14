@@ -28,9 +28,9 @@ type JobApplication struct {
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
 	// ApplicantID holds the value of the "applicant_id" field.
-	ApplicantID int `json:"applicant_id,omitempty"`
+	ApplicantID int `json:"-"`
 	// JobID holds the value of the "job_id" field.
-	JobID int `json:"job_id,omitempty"`
+	JobID int `json:"-"`
 	// ReferralSource holds the value of the "referral_source" field.
 	ReferralSource string `json:"referral_source,omitempty"`
 	// Status holds the value of the "status" field.
