@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"github.com/10hourlabs/tentn/internal/router"
+)
 
 func main() {
-	fmt.Println("hello web")
+	e := router.DefineRoutes()
+
+	e.Logger.Fatal(e.Start(":1323"))
 }

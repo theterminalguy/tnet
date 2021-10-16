@@ -11,6 +11,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/schema"
 	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/10hourlabs/tentn/ent/workexperience"
 	"github.com/google/uuid"
 )
 
@@ -161,4 +162,25 @@ func init() {
 	skillDescPreferred := skillFields[2].Descriptor()
 	// skill.DefaultPreferred holds the default value on creation for the preferred field.
 	skill.DefaultPreferred = skillDescPreferred.Default.(bool)
+	workexperienceMixin := schema.WorkExperience{}.Mixin()
+	workexperienceMixinFields0 := workexperienceMixin[0].Fields()
+	_ = workexperienceMixinFields0
+	workexperienceMixinFields1 := workexperienceMixin[1].Fields()
+	_ = workexperienceMixinFields1
+	workexperienceFields := schema.WorkExperience{}.Fields()
+	_ = workexperienceFields
+	// workexperienceDescUUID is the schema descriptor for uuid field.
+	workexperienceDescUUID := workexperienceMixinFields0[1].Descriptor()
+	// workexperience.DefaultUUID holds the default value on creation for the uuid field.
+	workexperience.DefaultUUID = workexperienceDescUUID.Default.(func() uuid.UUID)
+	// workexperienceDescCreatedAt is the schema descriptor for created_at field.
+	workexperienceDescCreatedAt := workexperienceMixinFields1[0].Descriptor()
+	// workexperience.DefaultCreatedAt holds the default value on creation for the created_at field.
+	workexperience.DefaultCreatedAt = workexperienceDescCreatedAt.Default.(func() time.Time)
+	// workexperienceDescUpdatedAt is the schema descriptor for updated_at field.
+	workexperienceDescUpdatedAt := workexperienceMixinFields1[1].Descriptor()
+	// workexperience.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	workexperience.DefaultUpdatedAt = workexperienceDescUpdatedAt.Default.(func() time.Time)
+	// workexperience.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	workexperience.UpdateDefaultUpdatedAt = workexperienceDescUpdatedAt.UpdateDefault.(func() time.Time)
 }

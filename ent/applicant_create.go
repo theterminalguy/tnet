@@ -14,6 +14,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/10hourlabs/tentn/ent/workexperience"
 	"github.com/google/uuid"
 )
 
@@ -249,6 +250,21 @@ func (ac *ApplicantCreate) AddJobApplications(j ...*JobApplication) *ApplicantCr
 		ids[i] = j[i].ID
 	}
 	return ac.AddJobApplicationIDs(ids...)
+}
+
+// AddWorkExperienceIDs adds the "work_experiences" edge to the WorkExperience entity by IDs.
+func (ac *ApplicantCreate) AddWorkExperienceIDs(ids ...int) *ApplicantCreate {
+	ac.mutation.AddWorkExperienceIDs(ids...)
+	return ac
+}
+
+// AddWorkExperiences adds the "work_experiences" edges to the WorkExperience entity.
+func (ac *ApplicantCreate) AddWorkExperiences(w ...*WorkExperience) *ApplicantCreate {
+	ids := make([]int, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return ac.AddWorkExperienceIDs(ids...)
 }
 
 // Mutation returns the ApplicantMutation object of the builder.
@@ -646,6 +662,25 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: jobapplication.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.WorkExperiencesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.WorkExperiencesTable,
+			Columns: []string{applicant.WorkExperiencesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: workexperience.FieldID,
 				},
 			},
 		}
