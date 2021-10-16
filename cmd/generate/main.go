@@ -43,6 +43,7 @@ func (t *Template) Generate() error {
 		return err
 	}
 	f, err := os.Create(t.OutDir())
+	defer f.Close()
 	if err != nil {
 		fmt.Printf("Unable to create file: %v\n", err)
 	}
@@ -50,7 +51,6 @@ func (t *Template) Generate() error {
 	if err != nil {
 		fmt.Printf("Failed to generate template: %v\n", err)
 	}
-	f.Close()
 	fmt.Printf("[created] %v\n", t.OutDir())
 	return nil
 }

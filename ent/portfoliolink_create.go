@@ -206,11 +206,6 @@ func (plc *PortfolioLinkCreate) check() error {
 	if _, ok := plc.mutation.URL(); !ok {
 		return &ValidationError{Name: "url", err: errors.New(`ent: missing required field "url"`)}
 	}
-	if v, ok := plc.mutation.URL(); ok {
-		if err := portfoliolink.URLValidator(v); err != nil {
-			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "url": %w`, err)}
-		}
-	}
 	if _, ok := plc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
 	}

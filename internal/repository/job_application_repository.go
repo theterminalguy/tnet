@@ -13,11 +13,15 @@ import (
 type JobApplicationRepository struct{}
 
 type JobApplicationParams struct {
-	JobUUID        uuid.UUID `json:"jobUUID"`
-	ApplicantUUID  uuid.UUID `json:"applicantUUID"`
+	JobUUID        uuid.UUID `json:"job_uuid" validate:"required"`
+	ApplicantUUID  uuid.UUID `json:"applicant_uuid" validate:"required"`
 	ReferralSource string    `json:"referral_source"`
-	Note           string    `json:"note"`
-	Status         string    `json:"status"`
+
+	// The Note field is only used internal by 10HL admins/recruiters
+	// this is used to keep track of useful notes related to a candidate
+	// application for a specific job
+	Note   string `json:"note"`
+	Status string `json:"status"`
 }
 
 func NewJobApplicationRepository() *JobApplicationRepository {

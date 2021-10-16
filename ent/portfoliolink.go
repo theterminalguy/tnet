@@ -31,7 +31,7 @@ type PortfolioLink struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// ApplicantID holds the value of the "applicant_id" field.
-	ApplicantID int `json:"applicant_id,omitempty"`
+	ApplicantID int `json:"-"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PortfolioLinkQuery when eager-loading is set.
 	Edges PortfolioLinkEdges `json:"edges"`
