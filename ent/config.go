@@ -29,6 +29,7 @@ type hooks struct {
 	JobApplication []ent.Hook
 	PortfolioLink  []ent.Hook
 	Skill          []ent.Hook
+	WorkExperience []ent.Hook
 }
 
 // Options applies the options on the config object.

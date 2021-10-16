@@ -2141,6 +2141,34 @@ func HasJobApplicationsWith(preds ...predicate.JobApplication) predicate.Applica
 	})
 }
 
+// HasWorkExperiences applies the HasEdge predicate on the "work_experiences" edge.
+func HasWorkExperiences() predicate.Applicant {
+	return predicate.Applicant(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(WorkExperiencesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, WorkExperiencesTable, WorkExperiencesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasWorkExperiencesWith applies the HasEdge predicate on the "work_experiences" edge with a given conditions (other predicates).
+func HasWorkExperiencesWith(preds ...predicate.WorkExperience) predicate.Applicant {
+	return predicate.Applicant(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(WorkExperiencesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, WorkExperiencesTable, WorkExperiencesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Applicant) predicate.Applicant {
 	return predicate.Applicant(func(s *sql.Selector) {

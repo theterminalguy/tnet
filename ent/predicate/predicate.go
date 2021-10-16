@@ -20,3 +20,6 @@ type PortfolioLink func(*sql.Selector)
 
 // Skill is the predicate function for skill builders.
 type Skill func(*sql.Selector)
+
+// WorkExperience is the predicate function for workexperience builders.
+type WorkExperience func(*sql.Selector)

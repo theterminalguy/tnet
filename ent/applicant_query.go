@@ -17,6 +17,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/10hourlabs/tentn/ent/workexperience"
 )
 
 // ApplicantQuery is the builder for querying Applicant entities.
@@ -34,6 +35,7 @@ type ApplicantQuery struct {
 	withPortfoliolinks  *PortfolioLinkQuery
 	withSkills          *SkillQuery
 	withJobApplications *JobApplicationQuery
+	withWorkExperiences *WorkExperienceQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -173,6 +175,28 @@ func (aq *ApplicantQuery) QueryJobApplications() *JobApplicationQuery {
 			sqlgraph.From(applicant.Table, applicant.FieldID, selector),
 			sqlgraph.To(jobapplication.Table, jobapplication.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, applicant.JobApplicationsTable, applicant.JobApplicationsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryWorkExperiences chains the current query on the "work_experiences" edge.
+func (aq *ApplicantQuery) QueryWorkExperiences() *WorkExperienceQuery {
+	query := &WorkExperienceQuery{config: aq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(applicant.Table, applicant.FieldID, selector),
+			sqlgraph.To(workexperience.Table, workexperience.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, applicant.WorkExperiencesTable, applicant.WorkExperiencesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -366,6 +390,7 @@ func (aq *ApplicantQuery) Clone() *ApplicantQuery {
 		withPortfoliolinks:  aq.withPortfoliolinks.Clone(),
 		withSkills:          aq.withSkills.Clone(),
 		withJobApplications: aq.withJobApplications.Clone(),
+		withWorkExperiences: aq.withWorkExperiences.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -424,6 +449,17 @@ func (aq *ApplicantQuery) WithJobApplications(opts ...func(*JobApplicationQuery)
 		opt(query)
 	}
 	aq.withJobApplications = query
+	return aq
+}
+
+// WithWorkExperiences tells the query-builder to eager-load the nodes that are connected to
+// the "work_experiences" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *ApplicantQuery) WithWorkExperiences(opts ...func(*WorkExperienceQuery)) *ApplicantQuery {
+	query := &WorkExperienceQuery{config: aq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withWorkExperiences = query
 	return aq
 }
 
@@ -492,12 +528,13 @@ func (aq *ApplicantQuery) sqlAll(ctx context.Context) ([]*Applicant, error) {
 	var (
 		nodes       = []*Applicant{}
 		_spec       = aq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			aq.withReferrer != nil,
 			aq.withReferees != nil,
 			aq.withPortfoliolinks != nil,
 			aq.withSkills != nil,
 			aq.withJobApplications != nil,
+			aq.withWorkExperiences != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -643,6 +680,31 @@ func (aq *ApplicantQuery) sqlAll(ctx context.Context) ([]*Applicant, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "applicant_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.JobApplications = append(node.Edges.JobApplications, n)
+		}
+	}
+
+	if query := aq.withWorkExperiences; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Applicant)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.WorkExperiences = []*WorkExperience{}
+		}
+		query.Where(predicate.WorkExperience(func(s *sql.Selector) {
+			s.Where(sql.InValues(applicant.WorkExperiencesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ApplicantID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "applicant_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.WorkExperiences = append(node.Edges.WorkExperiences, n)
 		}
 	}
 

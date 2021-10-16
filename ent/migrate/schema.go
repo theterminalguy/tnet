@@ -234,6 +234,47 @@ var (
 			},
 		},
 	}
+	// WorkExperiencesColumns holds the columns for the "work_experiences" table.
+	WorkExperiencesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "company_name", Type: field.TypeString},
+		{Name: "location", Type: field.TypeString},
+		{Name: "job_title", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Size: 2147483647},
+		{Name: "start_date", Type: field.TypeTime},
+		{Name: "end_date", Type: field.TypeTime, Nullable: true},
+		{Name: "applicant_id", Type: field.TypeInt, Nullable: true},
+	}
+	// WorkExperiencesTable holds the schema information for the "work_experiences" table.
+	WorkExperiencesTable = &schema.Table{
+		Name:       "work_experiences",
+		Columns:    WorkExperiencesColumns,
+		PrimaryKey: []*schema.Column{WorkExperiencesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "work_experiences_applicants_work_experiences",
+				Columns:    []*schema.Column{WorkExperiencesColumns[11]},
+				RefColumns: []*schema.Column{ApplicantsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "workexperience_uuid",
+				Unique:  true,
+				Columns: []*schema.Column{WorkExperiencesColumns[1]},
+			},
+			{
+				Name:    "workexperience_applicant_id",
+				Unique:  false,
+				Columns: []*schema.Column{WorkExperiencesColumns[11]},
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		ApplicantsTable,
@@ -241,6 +282,7 @@ var (
 		JobApplicationsTable,
 		PortfolioLinksTable,
 		SkillsTable,
+		WorkExperiencesTable,
 	}
 )
 
@@ -250,4 +292,5 @@ func init() {
 	JobApplicationsTable.ForeignKeys[1].RefTable = JobsTable
 	PortfolioLinksTable.ForeignKeys[0].RefTable = ApplicantsTable
 	SkillsTable.ForeignKeys[0].RefTable = ApplicantsTable
+	WorkExperiencesTable.ForeignKeys[0].RefTable = ApplicantsTable
 }

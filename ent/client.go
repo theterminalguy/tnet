@@ -14,6 +14,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/10hourlabs/tentn/ent/workexperience"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -35,6 +36,8 @@ type Client struct {
 	PortfolioLink *PortfolioLinkClient
 	// Skill is the client for interacting with the Skill builders.
 	Skill *SkillClient
+	// WorkExperience is the client for interacting with the WorkExperience builders.
+	WorkExperience *WorkExperienceClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -53,6 +56,7 @@ func (c *Client) init() {
 	c.JobApplication = NewJobApplicationClient(c.config)
 	c.PortfolioLink = NewPortfolioLinkClient(c.config)
 	c.Skill = NewSkillClient(c.config)
+	c.WorkExperience = NewWorkExperienceClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -91,6 +95,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		JobApplication: NewJobApplicationClient(cfg),
 		PortfolioLink:  NewPortfolioLinkClient(cfg),
 		Skill:          NewSkillClient(cfg),
+		WorkExperience: NewWorkExperienceClient(cfg),
 	}, nil
 }
 
@@ -114,6 +119,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		JobApplication: NewJobApplicationClient(cfg),
 		PortfolioLink:  NewPortfolioLinkClient(cfg),
 		Skill:          NewSkillClient(cfg),
+		WorkExperience: NewWorkExperienceClient(cfg),
 	}, nil
 }
 
@@ -148,6 +154,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.JobApplication.Use(hooks...)
 	c.PortfolioLink.Use(hooks...)
 	c.Skill.Use(hooks...)
+	c.WorkExperience.Use(hooks...)
 }
 
 // ApplicantClient is a client for the Applicant schema.
@@ -308,6 +315,22 @@ func (c *ApplicantClient) QueryJobApplications(a *Applicant) *JobApplicationQuer
 			sqlgraph.From(applicant.Table, applicant.FieldID, id),
 			sqlgraph.To(jobapplication.Table, jobapplication.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, applicant.JobApplicationsTable, applicant.JobApplicationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryWorkExperiences queries the work_experiences edge of a Applicant.
+func (c *ApplicantClient) QueryWorkExperiences(a *Applicant) *WorkExperienceQuery {
+	query := &WorkExperienceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(applicant.Table, applicant.FieldID, id),
+			sqlgraph.To(workexperience.Table, workexperience.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, applicant.WorkExperiencesTable, applicant.WorkExperiencesColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -758,4 +781,110 @@ func (c *SkillClient) QueryApplicant(s *Skill) *ApplicantQuery {
 // Hooks returns the client hooks.
 func (c *SkillClient) Hooks() []Hook {
 	return c.hooks.Skill
+}
+
+// WorkExperienceClient is a client for the WorkExperience schema.
+type WorkExperienceClient struct {
+	config
+}
+
+// NewWorkExperienceClient returns a client for the WorkExperience from the given config.
+func NewWorkExperienceClient(c config) *WorkExperienceClient {
+	return &WorkExperienceClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `workexperience.Hooks(f(g(h())))`.
+func (c *WorkExperienceClient) Use(hooks ...Hook) {
+	c.hooks.WorkExperience = append(c.hooks.WorkExperience, hooks...)
+}
+
+// Create returns a create builder for WorkExperience.
+func (c *WorkExperienceClient) Create() *WorkExperienceCreate {
+	mutation := newWorkExperienceMutation(c.config, OpCreate)
+	return &WorkExperienceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of WorkExperience entities.
+func (c *WorkExperienceClient) CreateBulk(builders ...*WorkExperienceCreate) *WorkExperienceCreateBulk {
+	return &WorkExperienceCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for WorkExperience.
+func (c *WorkExperienceClient) Update() *WorkExperienceUpdate {
+	mutation := newWorkExperienceMutation(c.config, OpUpdate)
+	return &WorkExperienceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *WorkExperienceClient) UpdateOne(we *WorkExperience) *WorkExperienceUpdateOne {
+	mutation := newWorkExperienceMutation(c.config, OpUpdateOne, withWorkExperience(we))
+	return &WorkExperienceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *WorkExperienceClient) UpdateOneID(id int) *WorkExperienceUpdateOne {
+	mutation := newWorkExperienceMutation(c.config, OpUpdateOne, withWorkExperienceID(id))
+	return &WorkExperienceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for WorkExperience.
+func (c *WorkExperienceClient) Delete() *WorkExperienceDelete {
+	mutation := newWorkExperienceMutation(c.config, OpDelete)
+	return &WorkExperienceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *WorkExperienceClient) DeleteOne(we *WorkExperience) *WorkExperienceDeleteOne {
+	return c.DeleteOneID(we.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *WorkExperienceClient) DeleteOneID(id int) *WorkExperienceDeleteOne {
+	builder := c.Delete().Where(workexperience.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &WorkExperienceDeleteOne{builder}
+}
+
+// Query returns a query builder for WorkExperience.
+func (c *WorkExperienceClient) Query() *WorkExperienceQuery {
+	return &WorkExperienceQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a WorkExperience entity by its id.
+func (c *WorkExperienceClient) Get(ctx context.Context, id int) (*WorkExperience, error) {
+	return c.Query().Where(workexperience.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *WorkExperienceClient) GetX(ctx context.Context, id int) *WorkExperience {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryApplicant queries the applicant edge of a WorkExperience.
+func (c *WorkExperienceClient) QueryApplicant(we *WorkExperience) *ApplicantQuery {
+	query := &ApplicantQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := we.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workexperience.Table, workexperience.FieldID, id),
+			sqlgraph.To(applicant.Table, applicant.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, workexperience.ApplicantTable, workexperience.ApplicantColumn),
+		)
+		fromV = sqlgraph.Neighbors(we.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *WorkExperienceClient) Hooks() []Hook {
+	return c.hooks.WorkExperience
 }

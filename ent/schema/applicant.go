@@ -95,5 +95,7 @@ func (Applicant) Edges() []ent.Edge {
 		edge.To(oneword.Skills, Skill.Type),
 
 		edge.To(oneword.JobApplications, JobApplication.Type),
+
+		edge.To("work_experiences", WorkExperience.Type),
 	}
 }

@@ -15,6 +15,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/10hourlabs/tentn/ent/workexperience"
 	"github.com/google/uuid"
 )
 
@@ -228,6 +229,21 @@ func (au *ApplicantUpdate) AddJobApplications(j ...*JobApplication) *ApplicantUp
 	return au.AddJobApplicationIDs(ids...)
 }
 
+// AddWorkExperienceIDs adds the "work_experiences" edge to the WorkExperience entity by IDs.
+func (au *ApplicantUpdate) AddWorkExperienceIDs(ids ...int) *ApplicantUpdate {
+	au.mutation.AddWorkExperienceIDs(ids...)
+	return au
+}
+
+// AddWorkExperiences adds the "work_experiences" edges to the WorkExperience entity.
+func (au *ApplicantUpdate) AddWorkExperiences(w ...*WorkExperience) *ApplicantUpdate {
+	ids := make([]int, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return au.AddWorkExperienceIDs(ids...)
+}
+
 // Mutation returns the ApplicantMutation object of the builder.
 func (au *ApplicantUpdate) Mutation() *ApplicantMutation {
 	return au.mutation
@@ -321,6 +337,27 @@ func (au *ApplicantUpdate) RemoveJobApplications(j ...*JobApplication) *Applican
 		ids[i] = j[i].ID
 	}
 	return au.RemoveJobApplicationIDs(ids...)
+}
+
+// ClearWorkExperiences clears all "work_experiences" edges to the WorkExperience entity.
+func (au *ApplicantUpdate) ClearWorkExperiences() *ApplicantUpdate {
+	au.mutation.ClearWorkExperiences()
+	return au
+}
+
+// RemoveWorkExperienceIDs removes the "work_experiences" edge to WorkExperience entities by IDs.
+func (au *ApplicantUpdate) RemoveWorkExperienceIDs(ids ...int) *ApplicantUpdate {
+	au.mutation.RemoveWorkExperienceIDs(ids...)
+	return au
+}
+
+// RemoveWorkExperiences removes "work_experiences" edges to WorkExperience entities.
+func (au *ApplicantUpdate) RemoveWorkExperiences(w ...*WorkExperience) *ApplicantUpdate {
+	ids := make([]int, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return au.RemoveWorkExperienceIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -787,6 +824,60 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if au.mutation.WorkExperiencesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.WorkExperiencesTable,
+			Columns: []string{applicant.WorkExperiencesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: workexperience.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedWorkExperiencesIDs(); len(nodes) > 0 && !au.mutation.WorkExperiencesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.WorkExperiencesTable,
+			Columns: []string{applicant.WorkExperiencesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: workexperience.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.WorkExperiencesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.WorkExperiencesTable,
+			Columns: []string{applicant.WorkExperiencesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: workexperience.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{applicant.Label}
@@ -1003,6 +1094,21 @@ func (auo *ApplicantUpdateOne) AddJobApplications(j ...*JobApplication) *Applica
 	return auo.AddJobApplicationIDs(ids...)
 }
 
+// AddWorkExperienceIDs adds the "work_experiences" edge to the WorkExperience entity by IDs.
+func (auo *ApplicantUpdateOne) AddWorkExperienceIDs(ids ...int) *ApplicantUpdateOne {
+	auo.mutation.AddWorkExperienceIDs(ids...)
+	return auo
+}
+
+// AddWorkExperiences adds the "work_experiences" edges to the WorkExperience entity.
+func (auo *ApplicantUpdateOne) AddWorkExperiences(w ...*WorkExperience) *ApplicantUpdateOne {
+	ids := make([]int, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return auo.AddWorkExperienceIDs(ids...)
+}
+
 // Mutation returns the ApplicantMutation object of the builder.
 func (auo *ApplicantUpdateOne) Mutation() *ApplicantMutation {
 	return auo.mutation
@@ -1096,6 +1202,27 @@ func (auo *ApplicantUpdateOne) RemoveJobApplications(j ...*JobApplication) *Appl
 		ids[i] = j[i].ID
 	}
 	return auo.RemoveJobApplicationIDs(ids...)
+}
+
+// ClearWorkExperiences clears all "work_experiences" edges to the WorkExperience entity.
+func (auo *ApplicantUpdateOne) ClearWorkExperiences() *ApplicantUpdateOne {
+	auo.mutation.ClearWorkExperiences()
+	return auo
+}
+
+// RemoveWorkExperienceIDs removes the "work_experiences" edge to WorkExperience entities by IDs.
+func (auo *ApplicantUpdateOne) RemoveWorkExperienceIDs(ids ...int) *ApplicantUpdateOne {
+	auo.mutation.RemoveWorkExperienceIDs(ids...)
+	return auo
+}
+
+// RemoveWorkExperiences removes "work_experiences" edges to WorkExperience entities.
+func (auo *ApplicantUpdateOne) RemoveWorkExperiences(w ...*WorkExperience) *ApplicantUpdateOne {
+	ids := make([]int, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return auo.RemoveWorkExperienceIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1578,6 +1705,60 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: jobapplication.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.WorkExperiencesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.WorkExperiencesTable,
+			Columns: []string{applicant.WorkExperiencesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: workexperience.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedWorkExperiencesIDs(); len(nodes) > 0 && !auo.mutation.WorkExperiencesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.WorkExperiencesTable,
+			Columns: []string{applicant.WorkExperiencesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: workexperience.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.WorkExperiencesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.WorkExperiencesTable,
+			Columns: []string{applicant.WorkExperiencesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: workexperience.FieldID,
 				},
 			},
 		}
