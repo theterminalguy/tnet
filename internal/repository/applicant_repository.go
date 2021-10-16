@@ -9,6 +9,7 @@ import (
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/randutil"
+	"github.com/10hourlabs/tentn/util/date"
 	"github.com/google/uuid"
 )
 
@@ -28,14 +29,6 @@ type ApplicantParams struct {
 	Phone                 string `json:"phone" validate:"required"`
 	CountryCode           string `json:"country_code" validate:"required,iso3166_1_alpha2"`
 	City                  string `json:"city" validate:"required"`
-}
-
-func (p ApplicantParams) ParsedStartDate() (time.Time, error) {
-	t, err := time.Parse(time.RFC3339, p.ProfessionalStartDate)
-	if err != nil {
-		return time.Now(), err
-	}
-	return t, nil
 }
 
 func NewApplicantRepository() *ApplicantRepository {
@@ -79,7 +72,7 @@ func (r *ApplicantRepository) Create(p ApplicantParams) (*ent.Applicant, error) 
 	if err != nil {
 		return nil, err
 	}
-	startDate, err := p.ParsedStartDate()
+	startDate, err := date.ToRFC3339(p.ProfessionalStartDate)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +84,7 @@ func (r *ApplicantRepository) Create(p ApplicantParams) (*ent.Applicant, error) 
 		SetPronoun(p.Pronoun).
 		SetPreferredJobTitle(p.PreferredJobTitle).
 		SetReferralCode(p.ReferralCode).
-		SetProfessionalStartDate(startDate).
+		SetProfessionalStartDate(*startDate).
 		SetEmail(p.Email).
 		SetPhone(p.Phone).
 		SetCountryCode(p.CountryCode).

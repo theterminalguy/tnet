@@ -23,7 +23,7 @@ func NewWorkExperienceHandler() *WorkExperienceHandler {
 }
 
 func (*WorkExperienceHandler) ResourceName() string {
-	return "work_experience"
+	return "applicants/work-experiences"
 }
 
 func (h *WorkExperienceHandler) ReadAll(c echo.Context) error {

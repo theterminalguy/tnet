@@ -6,7 +6,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
-	"github.com/10hourlabs/tentn/util/collections"
+	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
 )
 
@@ -69,7 +69,7 @@ func (*JobApplicationRepository) Create(p JobApplicationParams) (*ent.JobApplica
 			jobapplication.JobID(j.ID),
 			jobapplication.ApplicantID(a.ID),
 		)).All(dBContext)
-	if collections.HasAny(records) {
+	if collection.HasAny(records) {
 		return nil, errors.New("applicant already applied for this job")
 	}
 	record, err := dBConn.JobApplication.

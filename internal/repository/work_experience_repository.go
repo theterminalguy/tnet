@@ -4,13 +4,21 @@ import (
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/work_experience"
+	"github.com/10hourlabs/tentn/ent/workexperience"
+	"github.com/10hourlabs/tentn/util/date"
 	"github.com/google/uuid"
 )
 
 type WorkExperienceRepository struct{}
 
 type WorkExperienceParams struct {
+	ApplicantUUID uuid.UUID `json:"applicant_uuid" validate:"required"`
+	CompanyName   string    `json:"company_name" validate:"required"`
+	Location      string    `json:"location" validate:"required"`
+	JobTitle      string    `json:"job_title" validate:"required"`
+	Description   string    `json:"description" validate:"required"`
+	StartDate     string    `json:"start_date" validate:"datetime=2006-01-02T15:04:05Z07:00"`
+	EndDate       time.Time `json:"end_date"`
 }
 
 func NewWorkExperienceRepository() *WorkExperienceRepository {
@@ -19,7 +27,7 @@ func NewWorkExperienceRepository() *WorkExperienceRepository {
 
 func (*WorkExperienceRepository) GetAll() ([]*ent.WorkExperience, error) {
 	records, err := dBConn.WorkExperience.Query().
-		Where(work_experience.DeletedAtIsNil()).
+		Where(workexperience.DeletedAtIsNil()).
 		All(dBContext)
 	if err != nil {
 		return nil, err
@@ -29,7 +37,7 @@ func (*WorkExperienceRepository) GetAll() ([]*ent.WorkExperience, error) {
 
 func (*WorkExperienceRepository) GetByUUID(id uuid.UUID) (*ent.WorkExperience, error) {
 	record, err := dBConn.WorkExperience.Query().
-		Where(work_experience.UUIDEQ(id)).
+		Where(workexperience.UUIDEQ(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -45,9 +53,25 @@ func (*WorkExperienceRepository) Create(p WorkExperienceParams) (*ent.WorkExperi
 	if err != nil {
 		return nil, err
 	}
+	a, err := NewApplicantRepository().GetByUUID(p.ApplicantUUID)
+	if err != nil {
+		return nil, err
+	}
+	sd, err := date.ToRFC3339(p.StartDate)
+	if err != nil {
+		return nil, err
+	}
+	// TODO: fix bug with end date
+	//ed, _ := date.ToRFC3339(p.EndDate)
 	record, err := dBConn.WorkExperience.
 		Create().
-		// TODO: set other fields here
+		SetApplicantID(a.ID).
+		SetCompanyName(p.CompanyName).
+		SetLocation(p.Location).
+		SetJobTitle(p.JobTitle).
+		SetDescription(p.Description).
+		SetStartDate(*sd).
+		SetNillableEndDate(nil).
 		Save(dBContext)
 	if err != nil {
 		return nil, err
@@ -64,8 +88,18 @@ func (r *WorkExperienceRepository) Update(id uuid.UUID, p WorkExperienceParams) 
 	if err != nil {
 		return nil, err
 	}
+	// TODO, fix date
+	sd, err := date.ToRFC3339(p.StartDate)
+	if err != nil {
+		return nil, err
+	}
 	_, err = record.Update().
-		// TODO: set other fields here
+		SetCompanyName(p.CompanyName).
+		SetLocation(p.Location).
+		SetJobTitle(p.JobTitle).
+		SetDescription(p.Description).
+		SetStartDate(*sd).
+		SetNillableEndDate(nil).
 		Save(dBContext)
 	if err != nil {
 		return nil, err
