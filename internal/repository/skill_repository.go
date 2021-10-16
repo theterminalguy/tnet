@@ -15,11 +15,13 @@ type SkillParams struct {
 
 	// Applicant can specify years of experience in decimal where 1.5 equals 1 and a half year
 	YearsOfExperience float32 `json:"years_of_experience" validate:"gte=1.0"`
-	Preferred         bool    `json:"name" validate:"boolean"`
+	Preferred         bool    `json:"preferred"`
 
 	// Applicant should add details on this specific skills
 	// how they have used them in the past, things they've built or done with it
 	Note string `json:"note" validate:"required"`
+
+	Name string `json:"name" validate:"required"`
 }
 
 func NewSkillRepository() *SkillRepository {
@@ -30,6 +32,18 @@ func (*SkillRepository) GetAll() ([]*ent.Skill, error) {
 	records, err := dBConn.Skill.Query().
 		Where(skill.DeletedAtIsNil()).
 		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return records, nil
+}
+
+func (*SkillRepository) GetAllByApplicantUUID(applicantUUID uuid.UUID) ([]*ent.Skill, error) {
+	a, err := NewApplicantRepository().GetByUUID(applicantUUID)
+	if err != nil {
+		return nil, err
+	}
+	records, err := a.QuerySkills().All(dBContext)
 	if err != nil {
 		return nil, err
 	}
@@ -61,6 +75,7 @@ func (*SkillRepository) Create(p SkillParams) (*ent.Skill, error) {
 	record, err := dBConn.Skill.
 		Create().
 		SetApplicantID(a.ID).
+		SetName(p.Name).
 		SetPreferred(p.Preferred).
 		SetYearsOfExperience(p.YearsOfExperience).
 		SetNote(p.Note).
@@ -81,6 +96,7 @@ func (r *SkillRepository) Update(id uuid.UUID, p SkillParams) (*ent.Skill, error
 		return nil, err
 	}
 	_, err = record.Update().
+		SetName(p.Name).
 		SetPreferred(p.Preferred).
 		SetYearsOfExperience(p.YearsOfExperience).
 		SetNote(p.Note).
