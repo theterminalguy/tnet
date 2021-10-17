@@ -3,6 +3,8 @@ version: '3.8'
 services:
   postgres:
     image: postgres:12
+    networks:
+      - tentn
     ports:
       - 5432:5432
     volumes:
@@ -14,6 +16,8 @@ services:
     depends_on: 
       - postgres
     image: dpage/pgadmin4
+    networks:
+      - tentn
     ports:
       - 5050:80
     volumes:
@@ -21,6 +25,24 @@ services:
     env_file:
       - .env
 
+  metabase:
+    depends_on:
+      - postgres
+    image: metabase/metabase
+    networks:
+      - tentn
+    ports:
+      - 5051:3000
+    volumes:
+      - metabase:/metabase-data/metabase.db
+    env_file:
+        - .env
+
 volumes:
     postgres:
     pgadmin:
+    metabase:
+
+networks:
+  tentn:
+    driver: bridge
