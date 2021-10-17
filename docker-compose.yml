@@ -36,7 +36,22 @@ services:
     volumes:
       - metabase:/metabase-data/metabase.db
     env_file:
-        - .env
+      - .env
+
+  web:
+    depends_on:
+      - postgres
+    build:
+      context: .
+      target: build
+    networks:
+      - tentn
+    ports:
+      - 5000:5000
+    env_file:
+      - .env
+    volumes:
+      - ./:/app
 
 volumes:
     postgres:

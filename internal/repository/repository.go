@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/internal/database"
@@ -27,7 +26,7 @@ var (
 
 func init() {
 	dBContext = context.Background()
-	client, err := database.NewPostgresClient(os.Getenv("POSTGRES_DSN"))
+	client, err := database.NewPostgresClient()
 	if err != nil {
 		panic(fmt.Sprintf("Database Error %v", err))
 	}
