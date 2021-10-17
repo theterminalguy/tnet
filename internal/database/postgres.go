@@ -2,6 +2,8 @@ package database
 
 import (
 	"context"
+	"fmt"
+	"os"
 
 	"entgo.io/ent/dialect"
 	"github.com/10hourlabs/tentn/ent"
@@ -19,8 +21,16 @@ func (d *DBPostgres) Open() (*ent.Client, error) {
 	return ent.Open(dialect.Postgres, d.GetDSN())
 }
 
-func (d *DBPostgres) GetDSN() string {
-	return d.dsn
+func (*DBPostgres) GetDSN() string {
+	return fmt.Sprintf(
+		"postgres://%v:%v@%v:%v/%v?sslmode=%v",
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_HOST"),
+		os.Getenv("POSTGRES_PORT"),
+		os.Getenv("POSTGRES_DB"),
+		os.Getenv("POSTGRES_SSL_MODE"),
+	)
 }
 
 func (d *DBPostgres) RunMigration() error {
@@ -30,11 +40,8 @@ func (d *DBPostgres) RunMigration() error {
 	return nil
 }
 
-func NewPostgresClient(dsn string) (*ent.Client, error) {
-	db := &DBPostgres{
-		// TODO: move dsn to environmental variable
-		dsn: dsn,
-	}
+func NewPostgresClient() (*ent.Client, error) {
+	db := &DBPostgres{}
 	client, err := db.Open()
 	if err != nil {
 		return nil, NewConnectionError(err)

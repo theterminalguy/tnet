@@ -7,7 +7,6 @@ require (
 	github.com/go-playground/validator/v10 v10.9.0
 	github.com/google/uuid v1.3.0
 	github.com/gosimple/slug v1.10.0
-	github.com/joho/godotenv v1.4.0
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/lib/pq v1.10.3

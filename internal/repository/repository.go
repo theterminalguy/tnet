@@ -4,14 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/internal/database"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
-	_ "github.com/joho/godotenv/autoload"
 )
 
 var (
@@ -27,7 +25,7 @@ var (
 
 func init() {
 	dBContext = context.Background()
-	client, err := database.NewPostgresClient(os.Getenv("TENTN_POSTGRES_DSN"))
+	client, err := database.NewPostgresClient()
 	if err != nil {
 		panic(fmt.Sprintf("Database Error %v", err))
 	}

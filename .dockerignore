@@ -1,0 +1,11 @@
+.github
+.vscode
+.git
+
+.dockerignore
+.env*
+.gitignore
+.Dockerfile
+Makefile
+*.md 
+TODO

@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:12
+    networks:
+      - tentn
+    ports:
+      - 5432:5432
+    volumes:
+       - postgres:/var/lib/postgresql/data
+    env_file:
+      - .env
+  
+  pgadmin:
+    depends_on: 
+      - postgres
+    image: dpage/pgadmin4
+    networks:
+      - tentn
+    ports:
+      - 5050:80
+    volumes:
+       - pgadmin:/var/lib/pgadmin
+    env_file:
+      - .env
+
+  metabase:
+    depends_on:
+      - postgres
+    image: metabase/metabase
+    networks:
+      - tentn
+    ports:
+      - 5051:3000
+    volumes:
+      - metabase:/metabase-data/metabase.db
+    env_file:
+      - .env
+
+  web:
+    depends_on:
+      - postgres
+    build:
+      context: .
+      target: build
+    networks:
+      - tentn
+    ports:
+      - 5000:5000
+    env_file:
+      - .env
+    restart: unless-stopped
+
+volumes:
+    postgres:
+    pgadmin:
+    metabase:
+
+networks:
+  tentn:
+    driver: bridge

@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/10hourlabs/tentn/internal/handler"
 	"github.com/labstack/echo"
@@ -11,6 +12,10 @@ import (
 func DefineRoutes() *echo.Echo {
 	e := echo.New()
 	e.Use(middleware.Logger())
+
+	e.GET("/health", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, http.StatusText(http.StatusOK))
+	})
 	return NewV1Router().createRoutes(e)
 }
 
