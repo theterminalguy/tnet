@@ -27,7 +27,7 @@ var (
 
 func init() {
 	dBContext = context.Background()
-	client, err := database.NewPostgresClient(os.Getenv("TENTN_POSTGRES_DSN"))
+	client, err := database.NewPostgresClient(os.Getenv("POSTGRES_DSN"))
 	if err != nil {
 		panic(fmt.Sprintf("Database Error %v", err))
 	}

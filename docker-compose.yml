@@ -1,9 +1,26 @@
 version: '3.8'
 
 services:
-  web:
-    build:
-      context: .
-      target: build
+  postgres:
+    image: postgres:12
     ports:
-      - 8080:8080
+      - 5432:5432
+    volumes:
+       - postgres:/data/postgres
+    env_file:
+      - .env
+  
+  pgadmin:
+    depends_on: 
+      - postgres
+    image: dpage/pgadmin4
+    ports:
+      - 5050:80
+    volumes:
+       - pgadmin:/var/lib/pgadmin
+    env_file:
+      - .env
+
+volumes:
+    postgres:
+    pgadmin:
