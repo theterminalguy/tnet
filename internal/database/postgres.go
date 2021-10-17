@@ -23,12 +23,12 @@ func (d *DBPostgres) Open() (*ent.Client, error) {
 
 func (*DBPostgres) GetDSN() string {
 	return fmt.Sprintf(
-		"host=%v port=%v user=%v dbname=%v password=%v sslmode=%v",
+		"postgres://%v:%v@%v:%v/%v?sslmode=%v",
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
 		os.Getenv("POSTGRES_HOST"),
 		os.Getenv("POSTGRES_PORT"),
-		os.Getenv("POSTGRES_USER"),
 		os.Getenv("POSTGRES_DB"),
-		os.Getenv("POSTGRES_PASSWORD"),
 		os.Getenv("POSTGRES_SSL_MODE"),
 	)
 }

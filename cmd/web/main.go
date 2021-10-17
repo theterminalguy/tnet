@@ -9,6 +9,6 @@ import (
 
 func main() {
 	e := router.DefineRoutes()
-	port := fmt.Sprintf(":%v", osutil.Getenv("HTTP_PORT", "8080"))
-	e.Logger.Fatal(e.Start(port))
+	httpPort := fmt.Sprintf(":%v", osutil.Getenv("HTTP_PORT", "8080"))
+	e.Logger.Fatal(e.Start(httpPort))
 }
