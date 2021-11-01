@@ -22,6 +22,7 @@ type Template struct {
 	FileName string
 	Entity   string
 	Kind     string
+	PackageName string
 }
 
 func (t *Template) Exists() bool {
@@ -81,22 +82,25 @@ func (t *Template) sourceDir() string {
 	}
 }
 
-func GenerateTemplates(entityName, fileName string) {
+func GenerateTemplates(entityName, fileName, packageName string) {
 	var templates []Templater
 	templates = append(templates, &Template{
 		Entity:   entityName,
 		FileName: fileName,
 		Kind:     "service",
+		PackageName: packageName,
 	})
 	templates = append(templates, &Template{
 		Entity:   entityName,
 		FileName: fileName,
 		Kind:     "repository",
+		PackageName: packageName,
 	})
 	templates = append(templates, &Template{
 		Entity:   entityName,
 		FileName: fileName,
 		Kind:     "handler",
+		PackageName: packageName,
 	})
 	for _, t := range templates {
 		t.Generate()
@@ -110,6 +114,7 @@ func InitEntSchema(resourceName, fileName string) error {
 		return nil
 	}
 	cmd := exec.Command("go", "run", "entgo.io/ent/cmd/ent", "init", resourceName)
+	cmd.Stderr = os.Stderr
 	_, err := cmd.Output()
 	if err != nil {
 		return fmt.Errorf("An error occured initializing ent schema! %v\n", err)
@@ -125,10 +130,11 @@ func main() {
 	}
 	fileName := os.Args[1]
 	resourceName := util.TitlelizeUnderscore(fileName)
+	packageName := util.RemoveUnderscore(fileName)
 	fmt.Printf("Generating scaffold for %v...\n", resourceName)
 	if err := InitEntSchema(resourceName, fileName); err != nil {
 		fmt.Println(err)
 		os.Exit(64)
 	}
-	GenerateTemplates(resourceName, fileName)
+	GenerateTemplates(resourceName, fileName, packageName)
 }

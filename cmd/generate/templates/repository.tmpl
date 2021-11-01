@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/{{.FileName}}"
+	"github.com/10hourlabs/tentn/ent/{{.packageName}}"
 	"github.com/google/uuid"
 )
 
@@ -19,7 +19,7 @@ func New{{.Entity}}Repository() *{{.Entity}}Repository {
 
 func (*{{.Entity}}Repository) GetAll() ([]*ent.{{.Entity}}, error) {
 	records, err := dBConn.{{.Entity}}.Query().
-		Where({{.FileName}}.DeletedAtIsNil()).
+		Where({{.packageName}}.DeletedAtIsNil()).
 		All(dBContext)
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (*{{.Entity}}Repository) GetAll() ([]*ent.{{.Entity}}, error) {
 
 func (*{{.Entity}}Repository) GetByUUID(id uuid.UUID) (*ent.{{.Entity}}, error) {
 	record, err := dBConn.{{.Entity}}.Query().
-		Where({{.FileName}}.UUIDEQ(id)).
+		Where({{.packageName}}.UUIDEQ(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
