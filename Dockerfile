@@ -21,6 +21,17 @@ RUN go build -a -installsuffix cgo -o /web cmd/web/main.go
 
 CMD ["/web"]
 
+#-----------------HOT-RELOAD-----------------
+FROM deps AS hot-reload
+
+WORKDIR /app
+ENV CGO_ENABLED 0 
+ENV GOOS linux 
+COPY . .
+RUN go get github.com/githubnemo/CompileDaemon
+ENTRYPOINT [ "./hot-reload.sh" ]
+
+
 #-----------------TESTS-----------------
 FROM deps AS tests
 

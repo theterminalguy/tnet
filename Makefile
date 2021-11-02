@@ -22,3 +22,7 @@ scaffold: ## Generate a new resource scaffold
 test: ## Run all tests
 	STAGE=tests docker-compose -f docker-compose.yml build web 
 	STAGE=tests docker-compose -f docker-compose.yml up web
+
+hot-reload: ## Enables hot reload for the web service
+	STAGE=hot-reload docker-compose -f docker-compose.yml build web 
+	STAGE=hot-reload docker-compose -f docker-compose.yml up web
