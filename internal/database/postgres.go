@@ -11,17 +11,22 @@ import (
 )
 
 type DBPostgres struct {
-	dsn    string
 	client *ent.Client
 }
 
 var _ Databaser = (*DBPostgres)(nil)
 
-func (d *DBPostgres) Open() (*ent.Client, error) {
-	return ent.Open(dialect.Postgres, d.GetDSN())
-}
-
 func (*DBPostgres) GetDSN() string {
+	if os.Getenv("ENV") == "production" {
+		return fmt.Sprintf(
+			"user=%s password=%s database=%s host=%s/%s",
+			os.Getenv("CLOUDSQL_PG_USER"),
+			os.Getenv("CLOUDSQL_PG_PASSWORD"),
+			os.Getenv("CLOUDSQL_PG_DBNAME"),
+			os.Getenv("CLOUDSQL_PG_SOCKET_DIR"),
+			os.Getenv("CLOUDSQL_PG_INSTANCE"),
+		)
+	}
 	return fmt.Sprintf(
 		"postgres://%v:%v@%v:%v/%v?sslmode=%v",
 		os.Getenv("POSTGRES_USER"),
@@ -31,6 +36,10 @@ func (*DBPostgres) GetDSN() string {
 		os.Getenv("POSTGRES_DB"),
 		os.Getenv("POSTGRES_SSL_MODE"),
 	)
+}
+
+func (d *DBPostgres) Open() (*ent.Client, error) {
+	return ent.Open(dialect.Postgres, d.GetDSN())
 }
 
 func (d *DBPostgres) RunMigration() error {
