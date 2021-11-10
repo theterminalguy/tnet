@@ -61,6 +61,8 @@ const (
 	EdgeJobApplications = "job_applications"
 	// EdgeWorkExperiences holds the string denoting the work_experiences edge name in mutations.
 	EdgeWorkExperiences = "work_experiences"
+	// EdgeEducations holds the string denoting the educations edge name in mutations.
+	EdgeEducations = "educations"
 	// Table holds the table name of the applicant in the database.
 	Table = "applicants"
 	// ReferrerTable is the table that holds the referrer relation/edge.
@@ -99,6 +101,13 @@ const (
 	WorkExperiencesInverseTable = "work_experiences"
 	// WorkExperiencesColumn is the table column denoting the work_experiences relation/edge.
 	WorkExperiencesColumn = "applicant_id"
+	// EducationsTable is the table that holds the educations relation/edge.
+	EducationsTable = "educations"
+	// EducationsInverseTable is the table name for the Education entity.
+	// It exists in this package in order to avoid circular dependency with the "education" package.
+	EducationsInverseTable = "educations"
+	// EducationsColumn is the table column denoting the educations relation/edge.
+	EducationsColumn = "applicant_id"
 )
 
 // Columns holds all SQL columns for applicant fields.

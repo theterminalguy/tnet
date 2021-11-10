@@ -49,3 +49,23 @@ func validateParams(s interface{}, fields ...string) error {
 	}
 	return nil
 }
+
+func setNillableStringField(val string, cb func(v string) error) error {
+	if val != "" {
+		err := cb(val)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func setNillableJSONArrayField(vals []string, cb func(v []string) error) error {
+	if len(vals) <= 0 {
+		err := cb(vals)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}

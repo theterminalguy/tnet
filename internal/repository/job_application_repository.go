@@ -93,7 +93,7 @@ func (r *JobApplicationRepository) Update(id uuid.UUID, p JobApplicationParams) 
 	if err != nil {
 		return nil, err
 	}
-	_, err = record.Update().
+	record, err = record.Update().
 		SetNote(p.Note).
 		SetStatus(jobapplication.Status(p.Status)).
 		Save(dBContext)

@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -40,6 +41,8 @@ type WorkExperience struct {
 	StartDate time.Time `json:"start_date,omitempty"`
 	// EndDate holds the value of the "end_date" field.
 	EndDate time.Time `json:"end_date,omitempty"`
+	// PrimaryTechnologies holds the value of the "primary_technologies" field.
+	PrimaryTechnologies []string `json:"primary_technologies,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the WorkExperienceQuery when eager-loading is set.
 	Edges WorkExperienceEdges `json:"edges"`
@@ -73,6 +76,8 @@ func (*WorkExperience) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case workexperience.FieldPrimaryTechnologies:
+			values[i] = new([]byte)
 		case workexperience.FieldID, workexperience.FieldApplicantID:
 			values[i] = new(sql.NullInt64)
 		case workexperience.FieldCompanyName, workexperience.FieldLocation, workexperience.FieldJobTitle, workexperience.FieldDescription:
@@ -169,6 +174,14 @@ func (we *WorkExperience) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				we.EndDate = value.Time
 			}
+		case workexperience.FieldPrimaryTechnologies:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field primary_technologies", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &we.PrimaryTechnologies); err != nil {
+					return fmt.Errorf("unmarshal field primary_technologies: %w", err)
+				}
+			}
 		}
 	}
 	return nil
@@ -226,6 +239,8 @@ func (we *WorkExperience) String() string {
 	builder.WriteString(we.StartDate.Format(time.ANSIC))
 	builder.WriteString(", end_date=")
 	builder.WriteString(we.EndDate.Format(time.ANSIC))
+	builder.WriteString(", primary_technologies=")
+	builder.WriteString(fmt.Sprintf("%v", we.PrimaryTechnologies))
 	builder.WriteByte(')')
 	return builder.String()
 }

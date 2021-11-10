@@ -9,6 +9,9 @@ import (
 // Applicant is the predicate function for applicant builders.
 type Applicant func(*sql.Selector)
 
+// Education is the predicate function for education builders.
+type Education func(*sql.Selector)
+
 // Job is the predicate function for job builders.
 type Job func(*sql.Selector)
 

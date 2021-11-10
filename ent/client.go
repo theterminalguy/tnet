@@ -10,6 +10,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/migrate"
 
 	"github.com/10hourlabs/tentn/ent/applicant"
+	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
@@ -28,6 +29,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Applicant is the client for interacting with the Applicant builders.
 	Applicant *ApplicantClient
+	// Education is the client for interacting with the Education builders.
+	Education *EducationClient
 	// Job is the client for interacting with the Job builders.
 	Job *JobClient
 	// JobApplication is the client for interacting with the JobApplication builders.
@@ -52,6 +55,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Applicant = NewApplicantClient(c.config)
+	c.Education = NewEducationClient(c.config)
 	c.Job = NewJobClient(c.config)
 	c.JobApplication = NewJobApplicationClient(c.config)
 	c.PortfolioLink = NewPortfolioLinkClient(c.config)
@@ -91,6 +95,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:            ctx,
 		config:         cfg,
 		Applicant:      NewApplicantClient(cfg),
+		Education:      NewEducationClient(cfg),
 		Job:            NewJobClient(cfg),
 		JobApplication: NewJobApplicationClient(cfg),
 		PortfolioLink:  NewPortfolioLinkClient(cfg),
@@ -115,6 +120,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		config:         cfg,
 		Applicant:      NewApplicantClient(cfg),
+		Education:      NewEducationClient(cfg),
 		Job:            NewJobClient(cfg),
 		JobApplication: NewJobApplicationClient(cfg),
 		PortfolioLink:  NewPortfolioLinkClient(cfg),
@@ -150,6 +156,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Applicant.Use(hooks...)
+	c.Education.Use(hooks...)
 	c.Job.Use(hooks...)
 	c.JobApplication.Use(hooks...)
 	c.PortfolioLink.Use(hooks...)
@@ -338,9 +345,131 @@ func (c *ApplicantClient) QueryWorkExperiences(a *Applicant) *WorkExperienceQuer
 	return query
 }
 
+// QueryEducations queries the educations edge of a Applicant.
+func (c *ApplicantClient) QueryEducations(a *Applicant) *EducationQuery {
+	query := &EducationQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(applicant.Table, applicant.FieldID, id),
+			sqlgraph.To(education.Table, education.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, applicant.EducationsTable, applicant.EducationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ApplicantClient) Hooks() []Hook {
 	return c.hooks.Applicant
+}
+
+// EducationClient is a client for the Education schema.
+type EducationClient struct {
+	config
+}
+
+// NewEducationClient returns a client for the Education from the given config.
+func NewEducationClient(c config) *EducationClient {
+	return &EducationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `education.Hooks(f(g(h())))`.
+func (c *EducationClient) Use(hooks ...Hook) {
+	c.hooks.Education = append(c.hooks.Education, hooks...)
+}
+
+// Create returns a create builder for Education.
+func (c *EducationClient) Create() *EducationCreate {
+	mutation := newEducationMutation(c.config, OpCreate)
+	return &EducationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Education entities.
+func (c *EducationClient) CreateBulk(builders ...*EducationCreate) *EducationCreateBulk {
+	return &EducationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Education.
+func (c *EducationClient) Update() *EducationUpdate {
+	mutation := newEducationMutation(c.config, OpUpdate)
+	return &EducationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EducationClient) UpdateOne(e *Education) *EducationUpdateOne {
+	mutation := newEducationMutation(c.config, OpUpdateOne, withEducation(e))
+	return &EducationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EducationClient) UpdateOneID(id int) *EducationUpdateOne {
+	mutation := newEducationMutation(c.config, OpUpdateOne, withEducationID(id))
+	return &EducationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Education.
+func (c *EducationClient) Delete() *EducationDelete {
+	mutation := newEducationMutation(c.config, OpDelete)
+	return &EducationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *EducationClient) DeleteOne(e *Education) *EducationDeleteOne {
+	return c.DeleteOneID(e.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *EducationClient) DeleteOneID(id int) *EducationDeleteOne {
+	builder := c.Delete().Where(education.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EducationDeleteOne{builder}
+}
+
+// Query returns a query builder for Education.
+func (c *EducationClient) Query() *EducationQuery {
+	return &EducationQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Education entity by its id.
+func (c *EducationClient) Get(ctx context.Context, id int) (*Education, error) {
+	return c.Query().Where(education.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EducationClient) GetX(ctx context.Context, id int) *Education {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryApplicant queries the applicant edge of a Education.
+func (c *EducationClient) QueryApplicant(e *Education) *ApplicantQuery {
+	query := &ApplicantQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(education.Table, education.FieldID, id),
+			sqlgraph.To(applicant.Table, applicant.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, education.ApplicantTable, education.ApplicantColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EducationClient) Hooks() []Hook {
+	return c.hooks.Education
 }
 
 // JobClient is a client for the Job schema.

@@ -72,7 +72,7 @@ func (r *ApplicantRepository) Create(p ApplicantParams) (*ent.Applicant, error) 
 	if err != nil {
 		return nil, err
 	}
-	startDate, err := date.ToRFC3339(p.ProfessionalStartDate)
+	startDate, err := date.JSStringToRFC3339(p.ProfessionalStartDate)
 	if err != nil {
 		return nil, err
 	}

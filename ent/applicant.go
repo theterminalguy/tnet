@@ -72,9 +72,11 @@ type ApplicantEdges struct {
 	JobApplications []*JobApplication `json:"job_applications,omitempty"`
 	// WorkExperiences holds the value of the work_experiences edge.
 	WorkExperiences []*WorkExperience `json:"work_experiences,omitempty"`
+	// Educations holds the value of the educations edge.
+	Educations []*Education `json:"educations,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [7]bool
 }
 
 // ReferrerOrErr returns the Referrer value or an error if the edge
@@ -134,6 +136,15 @@ func (e ApplicantEdges) WorkExperiencesOrErr() ([]*WorkExperience, error) {
 		return e.WorkExperiences, nil
 	}
 	return nil, &NotLoadedError{edge: "work_experiences"}
+}
+
+// EducationsOrErr returns the Educations value or an error if the edge
+// was not loaded in eager-loading.
+func (e ApplicantEdges) EducationsOrErr() ([]*Education, error) {
+	if e.loadedTypes[6] {
+		return e.Educations, nil
+	}
+	return nil, &NotLoadedError{edge: "educations"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -313,6 +324,11 @@ func (a *Applicant) QueryJobApplications() *JobApplicationQuery {
 // QueryWorkExperiences queries the "work_experiences" edge of the Applicant entity.
 func (a *Applicant) QueryWorkExperiences() *WorkExperienceQuery {
 	return (&ApplicantClient{config: a.config}).QueryWorkExperiences(a)
+}
+
+// QueryEducations queries the "educations" edge of the Applicant entity.
+func (a *Applicant) QueryEducations() *EducationQuery {
+	return (&ApplicantClient{config: a.config}).QueryEducations(a)
 }
 
 // Update returns a builder for updating this Applicant.

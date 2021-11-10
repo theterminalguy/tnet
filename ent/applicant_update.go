@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/applicant"
+	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
@@ -244,6 +245,21 @@ func (au *ApplicantUpdate) AddWorkExperiences(w ...*WorkExperience) *ApplicantUp
 	return au.AddWorkExperienceIDs(ids...)
 }
 
+// AddEducationIDs adds the "educations" edge to the Education entity by IDs.
+func (au *ApplicantUpdate) AddEducationIDs(ids ...int) *ApplicantUpdate {
+	au.mutation.AddEducationIDs(ids...)
+	return au
+}
+
+// AddEducations adds the "educations" edges to the Education entity.
+func (au *ApplicantUpdate) AddEducations(e ...*Education) *ApplicantUpdate {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return au.AddEducationIDs(ids...)
+}
+
 // Mutation returns the ApplicantMutation object of the builder.
 func (au *ApplicantUpdate) Mutation() *ApplicantMutation {
 	return au.mutation
@@ -358,6 +374,27 @@ func (au *ApplicantUpdate) RemoveWorkExperiences(w ...*WorkExperience) *Applican
 		ids[i] = w[i].ID
 	}
 	return au.RemoveWorkExperienceIDs(ids...)
+}
+
+// ClearEducations clears all "educations" edges to the Education entity.
+func (au *ApplicantUpdate) ClearEducations() *ApplicantUpdate {
+	au.mutation.ClearEducations()
+	return au
+}
+
+// RemoveEducationIDs removes the "educations" edge to Education entities by IDs.
+func (au *ApplicantUpdate) RemoveEducationIDs(ids ...int) *ApplicantUpdate {
+	au.mutation.RemoveEducationIDs(ids...)
+	return au
+}
+
+// RemoveEducations removes "educations" edges to Education entities.
+func (au *ApplicantUpdate) RemoveEducations(e ...*Education) *ApplicantUpdate {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return au.RemoveEducationIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -878,6 +915,60 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if au.mutation.EducationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.EducationsTable,
+			Columns: []string{applicant.EducationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: education.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedEducationsIDs(); len(nodes) > 0 && !au.mutation.EducationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.EducationsTable,
+			Columns: []string{applicant.EducationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: education.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.EducationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.EducationsTable,
+			Columns: []string{applicant.EducationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: education.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{applicant.Label}
@@ -1109,6 +1200,21 @@ func (auo *ApplicantUpdateOne) AddWorkExperiences(w ...*WorkExperience) *Applica
 	return auo.AddWorkExperienceIDs(ids...)
 }
 
+// AddEducationIDs adds the "educations" edge to the Education entity by IDs.
+func (auo *ApplicantUpdateOne) AddEducationIDs(ids ...int) *ApplicantUpdateOne {
+	auo.mutation.AddEducationIDs(ids...)
+	return auo
+}
+
+// AddEducations adds the "educations" edges to the Education entity.
+func (auo *ApplicantUpdateOne) AddEducations(e ...*Education) *ApplicantUpdateOne {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return auo.AddEducationIDs(ids...)
+}
+
 // Mutation returns the ApplicantMutation object of the builder.
 func (auo *ApplicantUpdateOne) Mutation() *ApplicantMutation {
 	return auo.mutation
@@ -1223,6 +1329,27 @@ func (auo *ApplicantUpdateOne) RemoveWorkExperiences(w ...*WorkExperience) *Appl
 		ids[i] = w[i].ID
 	}
 	return auo.RemoveWorkExperienceIDs(ids...)
+}
+
+// ClearEducations clears all "educations" edges to the Education entity.
+func (auo *ApplicantUpdateOne) ClearEducations() *ApplicantUpdateOne {
+	auo.mutation.ClearEducations()
+	return auo
+}
+
+// RemoveEducationIDs removes the "educations" edge to Education entities by IDs.
+func (auo *ApplicantUpdateOne) RemoveEducationIDs(ids ...int) *ApplicantUpdateOne {
+	auo.mutation.RemoveEducationIDs(ids...)
+	return auo
+}
+
+// RemoveEducations removes "educations" edges to Education entities.
+func (auo *ApplicantUpdateOne) RemoveEducations(e ...*Education) *ApplicantUpdateOne {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return auo.RemoveEducationIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1759,6 +1886,60 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: workexperience.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.EducationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.EducationsTable,
+			Columns: []string{applicant.EducationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: education.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedEducationsIDs(); len(nodes) > 0 && !auo.mutation.EducationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.EducationsTable,
+			Columns: []string{applicant.EducationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: education.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.EducationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.EducationsTable,
+			Columns: []string{applicant.EducationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: education.FieldID,
 				},
 			},
 		}

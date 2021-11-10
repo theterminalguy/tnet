@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/10hourlabs/tentn/ent/applicant"
+	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
@@ -62,6 +63,27 @@ func init() {
 			return nil
 		}
 	}()
+	educationMixin := schema.Education{}.Mixin()
+	educationMixinFields0 := educationMixin[0].Fields()
+	_ = educationMixinFields0
+	educationMixinFields1 := educationMixin[1].Fields()
+	_ = educationMixinFields1
+	educationFields := schema.Education{}.Fields()
+	_ = educationFields
+	// educationDescUUID is the schema descriptor for uuid field.
+	educationDescUUID := educationMixinFields0[1].Descriptor()
+	// education.DefaultUUID holds the default value on creation for the uuid field.
+	education.DefaultUUID = educationDescUUID.Default.(func() uuid.UUID)
+	// educationDescCreatedAt is the schema descriptor for created_at field.
+	educationDescCreatedAt := educationMixinFields1[0].Descriptor()
+	// education.DefaultCreatedAt holds the default value on creation for the created_at field.
+	education.DefaultCreatedAt = educationDescCreatedAt.Default.(func() time.Time)
+	// educationDescUpdatedAt is the schema descriptor for updated_at field.
+	educationDescUpdatedAt := educationMixinFields1[1].Descriptor()
+	// education.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	education.DefaultUpdatedAt = educationDescUpdatedAt.Default.(func() time.Time)
+	// education.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	education.UpdateDefaultUpdatedAt = educationDescUpdatedAt.UpdateDefault.(func() time.Time)
 	jobMixin := schema.Job{}.Mixin()
 	jobMixinFields0 := jobMixin[0].Fields()
 	_ = jobMixinFields0

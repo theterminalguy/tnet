@@ -4,32 +4,32 @@ import (
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/workexperience"
+	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/10hourlabs/tentn/util/date"
 	"github.com/google/uuid"
 )
 
-type WorkExperienceRepository struct{}
+type EducationRepository struct{}
 
-type WorkExperienceParams struct {
-	ApplicantUUID       uuid.UUID `json:"applicant_uuid" validate:"required"`
-	CompanyName         string    `json:"company_name" validate:"required"`
-	Location            string    `json:"location" validate:"required"`
-	JobTitle            string    `json:"job_title" validate:"required"`
-	PrimaryTechnologies []string  `json:"primary_technologies" validate:"required"`
-	Description         string    `json:"description" validate:"required"`
-	StartDate           string    `json:"start_date" validate:"datetime=2006-01-02T15:04:05Z07:00"`
-	EndDate             string    `json:"end_date"`
+type EducationParams struct {
+	ApplicantUUID   uuid.UUID `json:"applicant_uuid" validate:"required"`
+	InstitutionName string    `json:"institution_name" validate:"required"`
+	Location        string    `json:"location" validate:"required"`
+	Degree          string    `json:"degree" validate:"required"`
+	Program         string    `json:"program" validate:"required"`
+	Overview        string    `json:"overview" validate:"required"`
+	StartDate       string    `json:"start_date" validate:"datetime=2006-01-02T15:04:05Z07:00"`
+	EndDate         string    `json:"end_date"`
 }
 
-func NewWorkExperienceRepository() *WorkExperienceRepository {
-	return &WorkExperienceRepository{}
+func NewEducationRepository() *EducationRepository {
+	return &EducationRepository{}
 }
 
-func (*WorkExperienceRepository) GetAll() ([]*ent.WorkExperience, error) {
-	records, err := dBConn.WorkExperience.Query().
-		Where(workexperience.DeletedAtIsNil()).
+func (*EducationRepository) GetAll() ([]*ent.Education, error) {
+	records, err := dBConn.Education.Query().
+		Where(education.DeletedAtIsNil()).
 		All(dBContext)
 	if err != nil {
 		return nil, err
@@ -37,9 +37,9 @@ func (*WorkExperienceRepository) GetAll() ([]*ent.WorkExperience, error) {
 	return records, nil
 }
 
-func (*WorkExperienceRepository) GetByUUID(id uuid.UUID) (*ent.WorkExperience, error) {
-	record, err := dBConn.WorkExperience.Query().
-		Where(workexperience.UUIDEQ(id)).
+func (*EducationRepository) GetByUUID(id uuid.UUID) (*ent.Education, error) {
+	record, err := dBConn.Education.Query().
+		Where(education.UUIDEQ(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (*WorkExperienceRepository) GetByUUID(id uuid.UUID) (*ent.WorkExperience, e
 	return record, nil
 }
 
-func (*WorkExperienceRepository) Create(p WorkExperienceParams) (*ent.WorkExperience, error) {
+func (*EducationRepository) Create(p EducationParams) (*ent.Education, error) {
 	err := validateParams(p)
 	if err != nil {
 		return nil, err
@@ -79,16 +79,15 @@ func (*WorkExperienceRepository) Create(p WorkExperienceParams) (*ent.WorkExperi
 			return nil, err
 		}
 	}
-	// TODO: fix bug with end date
-	//ed, _ := date.JSStringToRFC3339(p.EndDate)
-	record, err := dBConn.WorkExperience.
+
+	record, err := dBConn.Education.
 		Create().
 		SetApplicantID(a.ID).
-		SetCompanyName(p.CompanyName).
+		SetDegree(p.Degree).
+		SetInstitutionName(p.InstitutionName).
 		SetLocation(p.Location).
-		SetJobTitle(p.JobTitle).
-		SetPrimaryTechnologies(p.PrimaryTechnologies).
-		SetDescription(p.Description).
+		SetProgram(p.Program).
+		SetOverview(p.Overview).
 		SetStartDate(*sd).
 		SetNillableEndDate(ed).
 		Save(dBContext)
@@ -98,8 +97,8 @@ func (*WorkExperienceRepository) Create(p WorkExperienceParams) (*ent.WorkExperi
 	return record, err
 }
 
-func (r *WorkExperienceRepository) Update(id uuid.UUID, p WorkExperienceParams) (*ent.WorkExperience, []error) {
-	err := validateParams(p)
+func (r *EducationRepository) Update(id uuid.UUID, p EducationParams) (*ent.Education, []error) {
+	err := validateParams(p, "ApplicantUUID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -141,49 +140,49 @@ func (r *WorkExperienceRepository) Update(id uuid.UUID, p WorkExperienceParams) 
 		vldErrs = append(vldErrs, vldErr)
 	}
 
-	// Set and Validate CompanyName if provided
-	if vldErr := setNillableStringField(p.CompanyName, func(v string) error {
-		err := validateParams(p, "CompanyName")
+	// Set and Validate Degree if provided
+	if vldErr := setNillableStringField(p.Degree, func(v string) error {
+		err := validateParams(p, "Degree")
 		if err != nil {
 			return err
 		}
-		bldr.SetCompanyName(v)
+		bldr.SetDegree(v)
 		return nil
 	}); err != nil {
 		vldErrs = append(vldErrs, vldErr)
 	}
 
-	// Set and Validate Description if provided
-	if vldErr := setNillableStringField(p.Description, func(program string) error {
-		err := validateParams(p, "Description")
+	// Set and Validate Program if provided
+	if vldErr := setNillableStringField(p.Program, func(program string) error {
+		err := validateParams(p, "Program")
 		if err != nil {
 			return err
 		}
-		bldr.SetDescription(p.Description)
+		bldr.SetProgram(p.Program)
 		return nil
 	}); vldErr != nil {
 		vldErrs = append(vldErrs, vldErr)
 	}
 
-	// Set and Validate JobTitle if provided
-	if vldErr := setNillableStringField(p.JobTitle, func(v string) error {
-		err := validateParams(p, "JobTitle")
+	// Set and Validate Overview if provided
+	if vldErr := setNillableStringField(p.Overview, func(v string) error {
+		err := validateParams(p, "Overview")
 		if err != nil {
 			return err
 		}
-		bldr.SetJobTitle(v)
+		bldr.SetOverview(v)
 		return nil
 	}); vldErr != nil {
 		vldErrs = append(vldErrs, vldErr)
 	}
 
-	// Set and Validate PrimaryTechnology if provided
-	if vldErr := setNillableJSONArrayField(p.PrimaryTechnologies, func(v []string) error {
-		err := validateParams(p, "PrimaryTechnologies")
+	// Set and Validate InsitutionName if provided
+	if vldErr := setNillableStringField(p.InstitutionName, func(v string) error {
+		err := validateParams(p, "InstitutionName")
 		if err != nil {
 			return err
 		}
-		bldr.SetPrimaryTechnologies(p.PrimaryTechnologies)
+		bldr.SetInstitutionName(p.InstitutionName)
 		return nil
 	}); vldErr != nil {
 		vldErrs = append(vldErrs, vldErr)
@@ -202,7 +201,7 @@ func (r *WorkExperienceRepository) Update(id uuid.UUID, p WorkExperienceParams) 
 	return record, nil
 }
 
-func (r *WorkExperienceRepository) DeleteByUUID(id uuid.UUID) error {
+func (r *EducationRepository) DeleteByUUID(id uuid.UUID) error {
 	record, err := r.GetByUUID(id)
 	if err != nil {
 		return err

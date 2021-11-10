@@ -131,6 +131,12 @@ func (weu *WorkExperienceUpdate) ClearEndDate() *WorkExperienceUpdate {
 	return weu
 }
 
+// SetPrimaryTechnologies sets the "primary_technologies" field.
+func (weu *WorkExperienceUpdate) SetPrimaryTechnologies(s []string) *WorkExperienceUpdate {
+	weu.mutation.SetPrimaryTechnologies(s)
+	return weu
+}
+
 // SetApplicant sets the "applicant" edge to the Applicant entity.
 func (weu *WorkExperienceUpdate) SetApplicant(a *Applicant) *WorkExperienceUpdate {
 	return weu.SetApplicantID(a.ID)
@@ -303,6 +309,13 @@ func (weu *WorkExperienceUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: workexperience.FieldEndDate,
 		})
 	}
+	if value, ok := weu.mutation.PrimaryTechnologies(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: workexperience.FieldPrimaryTechnologies,
+		})
+	}
 	if weu.mutation.ApplicantCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -456,6 +469,12 @@ func (weuo *WorkExperienceUpdateOne) SetNillableEndDate(t *time.Time) *WorkExper
 // ClearEndDate clears the value of the "end_date" field.
 func (weuo *WorkExperienceUpdateOne) ClearEndDate() *WorkExperienceUpdateOne {
 	weuo.mutation.ClearEndDate()
+	return weuo
+}
+
+// SetPrimaryTechnologies sets the "primary_technologies" field.
+func (weuo *WorkExperienceUpdateOne) SetPrimaryTechnologies(s []string) *WorkExperienceUpdateOne {
+	weuo.mutation.SetPrimaryTechnologies(s)
 	return weuo
 }
 
@@ -653,6 +672,13 @@ func (weuo *WorkExperienceUpdateOne) sqlSave(ctx context.Context) (_node *WorkEx
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: workexperience.FieldEndDate,
+		})
+	}
+	if value, ok := weuo.mutation.PrimaryTechnologies(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: workexperience.FieldPrimaryTechnologies,
 		})
 	}
 	if weuo.mutation.ApplicantCleared() {

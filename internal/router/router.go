@@ -82,6 +82,7 @@ func NewV1Router() *v1Router {
 			{handler.NewPortfolioLinkHandler(), m},
 			{handler.NewSkillHandler(), m},
 			{handler.NewWorkExperienceHandler(), m},
+			{handler.NewEducationHandler(), m},
 		},
 	}
 }

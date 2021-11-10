@@ -36,6 +36,8 @@ func (WorkExperience) Fields() []ent.Field {
 		field.Time("start_date"),
 		field.Time("end_date").
 			Optional(),
+
+		field.JSON("primary_technologies", []string{}),
 	}
 }
 

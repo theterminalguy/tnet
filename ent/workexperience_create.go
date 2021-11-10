@@ -128,6 +128,12 @@ func (wec *WorkExperienceCreate) SetNillableEndDate(t *time.Time) *WorkExperienc
 	return wec
 }
 
+// SetPrimaryTechnologies sets the "primary_technologies" field.
+func (wec *WorkExperienceCreate) SetPrimaryTechnologies(s []string) *WorkExperienceCreate {
+	wec.mutation.SetPrimaryTechnologies(s)
+	return wec
+}
+
 // SetID sets the "id" field.
 func (wec *WorkExperienceCreate) SetID(i int) *WorkExperienceCreate {
 	wec.mutation.SetID(i)
@@ -250,6 +256,9 @@ func (wec *WorkExperienceCreate) check() error {
 	if _, ok := wec.mutation.StartDate(); !ok {
 		return &ValidationError{Name: "start_date", err: errors.New(`ent: missing required field "start_date"`)}
 	}
+	if _, ok := wec.mutation.PrimaryTechnologies(); !ok {
+		return &ValidationError{Name: "primary_technologies", err: errors.New(`ent: missing required field "primary_technologies"`)}
+	}
 	return nil
 }
 
@@ -362,6 +371,14 @@ func (wec *WorkExperienceCreate) createSpec() (*WorkExperience, *sqlgraph.Create
 			Column: workexperience.FieldEndDate,
 		})
 		_node.EndDate = value
+	}
+	if value, ok := wec.mutation.PrimaryTechnologies(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: workexperience.FieldPrimaryTechnologies,
+		})
+		_node.PrimaryTechnologies = value
 	}
 	if nodes := wec.mutation.ApplicantIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

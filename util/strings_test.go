@@ -1,77 +1,80 @@
 package util
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestTitlelizeUnderscore(t *testing.T) {
-	tests := []struct{
-		name string
+	tests := []struct {
+		name         string
 		resourceName string
-		want string
+		want         string
 	}{
 		{
-			name : "hello_world example",
+			name:         "hello_world example",
 			resourceName: "hello_world",
-			want: "HelloWorld",
+			want:         "HelloWorld",
 		},
 		{
-			name : "random_word example",
+			name:         "random_word example",
 			resourceName: "random_word",
-			want: "RandomWord",
+			want:         "RandomWord",
 		},
 		{
-			name : "job_applicant example",
+			name:         "job_applicant example",
 			resourceName: "job_applicant",
-			want: "JobApplicant",
+			want:         "JobApplicant",
 		},
 		{
-			name : "single word 'job' example",
+			name:         "single word 'job' example",
 			resourceName: "job",
-			want: "Job",
+			want:         "Job",
 		},
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t * testing.T) {
-			if got := TitlelizeUnderscore(tt.resourceName); got != tt.want {
-				t.Errorf("TitlelizeUnderscore(%s) = %s; want %s", tt.resourceName, got, tt.want)
-			}
+		t.Run(tt.name, func(t *testing.T) {
+			got := TitlelizeUnderscore(tt.resourceName)
+			assert.Equal(t, tt.want, got)
+
 		})
 	}
 }
 
 func TestRemoveUnderscore(t *testing.T) {
-	tests := []struct{
-		name string
+	tests := []struct {
+		name         string
 		resourceName string
-		want string
+		want         string
 	}{
 		{
-			name : "hello_world example",
+			name:         "hello_world example",
 			resourceName: "hello_world",
-			want: "helloworld",
+			want:         "helloworld",
 		},
 		{
-			name : "random_word example",
+			name:         "random_word example",
 			resourceName: "random_word",
-			want: "randomword",
+			want:         "randomword",
 		},
 		{
-			name : "job_applicant example",
+			name:         "job_applicant example",
 			resourceName: "job_applicant",
-			want: "jobapplicant",
+			want:         "jobapplicant",
 		},
 		{
-			name : "single word 'job' example",
+			name:         "single word 'job' example",
 			resourceName: "job",
-			want: "job",
+			want:         "job",
 		},
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t * testing.T) {
-			if got := RemoveUnderscore(tt.resourceName); got != tt.want {
-				t.Errorf("TitlelizeUnderscore(%s) = %s; want %s", tt.resourceName, got, tt.want)
-			}
+		t.Run(tt.name, func(t *testing.T) {
+			got := RemoveUnderscore(tt.resourceName)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

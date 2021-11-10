@@ -17,7 +17,7 @@ destroy: ## Remove all containers and images. Also, destroy all volumes
 	STAGE=app-build docker-compose -f docker-compose.yml down -v --remove-orphans --rmi all
 
 scaffold: ## Generate a new resource scaffold
-	STAGE=app-build docker-compose run web go run cmd/generate/main.go $(resource)
+	go run cmd/generate/main.go $(resource)
 
 test: ## Run all tests
 	STAGE=tests docker-compose -f docker-compose.yml build web 
@@ -26,3 +26,6 @@ test: ## Run all tests
 hot-reload: ## Enables hot reload for the web service
 	STAGE=hot-reload docker-compose -f docker-compose.yml build web 
 	STAGE=hot-reload docker-compose -f docker-compose.yml up web
+
+ent-generate: ## Generate ent Assests
+	go generate ./ent
