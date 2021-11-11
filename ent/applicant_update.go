@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/education"
+	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
@@ -260,6 +261,21 @@ func (au *ApplicantUpdate) AddEducations(e ...*Education) *ApplicantUpdate {
 	return au.AddEducationIDs(ids...)
 }
 
+// AddEmergencyContactIDs adds the "emergency_contacts" edge to the EmergencyContact entity by IDs.
+func (au *ApplicantUpdate) AddEmergencyContactIDs(ids ...int) *ApplicantUpdate {
+	au.mutation.AddEmergencyContactIDs(ids...)
+	return au
+}
+
+// AddEmergencyContacts adds the "emergency_contacts" edges to the EmergencyContact entity.
+func (au *ApplicantUpdate) AddEmergencyContacts(e ...*EmergencyContact) *ApplicantUpdate {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return au.AddEmergencyContactIDs(ids...)
+}
+
 // Mutation returns the ApplicantMutation object of the builder.
 func (au *ApplicantUpdate) Mutation() *ApplicantMutation {
 	return au.mutation
@@ -395,6 +411,27 @@ func (au *ApplicantUpdate) RemoveEducations(e ...*Education) *ApplicantUpdate {
 		ids[i] = e[i].ID
 	}
 	return au.RemoveEducationIDs(ids...)
+}
+
+// ClearEmergencyContacts clears all "emergency_contacts" edges to the EmergencyContact entity.
+func (au *ApplicantUpdate) ClearEmergencyContacts() *ApplicantUpdate {
+	au.mutation.ClearEmergencyContacts()
+	return au
+}
+
+// RemoveEmergencyContactIDs removes the "emergency_contacts" edge to EmergencyContact entities by IDs.
+func (au *ApplicantUpdate) RemoveEmergencyContactIDs(ids ...int) *ApplicantUpdate {
+	au.mutation.RemoveEmergencyContactIDs(ids...)
+	return au
+}
+
+// RemoveEmergencyContacts removes "emergency_contacts" edges to EmergencyContact entities.
+func (au *ApplicantUpdate) RemoveEmergencyContacts(e ...*EmergencyContact) *ApplicantUpdate {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return au.RemoveEmergencyContactIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -969,6 +1006,60 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if au.mutation.EmergencyContactsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.EmergencyContactsTable,
+			Columns: []string{applicant.EmergencyContactsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: emergencycontact.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedEmergencyContactsIDs(); len(nodes) > 0 && !au.mutation.EmergencyContactsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.EmergencyContactsTable,
+			Columns: []string{applicant.EmergencyContactsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: emergencycontact.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.EmergencyContactsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.EmergencyContactsTable,
+			Columns: []string{applicant.EmergencyContactsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: emergencycontact.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{applicant.Label}
@@ -1215,6 +1306,21 @@ func (auo *ApplicantUpdateOne) AddEducations(e ...*Education) *ApplicantUpdateOn
 	return auo.AddEducationIDs(ids...)
 }
 
+// AddEmergencyContactIDs adds the "emergency_contacts" edge to the EmergencyContact entity by IDs.
+func (auo *ApplicantUpdateOne) AddEmergencyContactIDs(ids ...int) *ApplicantUpdateOne {
+	auo.mutation.AddEmergencyContactIDs(ids...)
+	return auo
+}
+
+// AddEmergencyContacts adds the "emergency_contacts" edges to the EmergencyContact entity.
+func (auo *ApplicantUpdateOne) AddEmergencyContacts(e ...*EmergencyContact) *ApplicantUpdateOne {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return auo.AddEmergencyContactIDs(ids...)
+}
+
 // Mutation returns the ApplicantMutation object of the builder.
 func (auo *ApplicantUpdateOne) Mutation() *ApplicantMutation {
 	return auo.mutation
@@ -1350,6 +1456,27 @@ func (auo *ApplicantUpdateOne) RemoveEducations(e ...*Education) *ApplicantUpdat
 		ids[i] = e[i].ID
 	}
 	return auo.RemoveEducationIDs(ids...)
+}
+
+// ClearEmergencyContacts clears all "emergency_contacts" edges to the EmergencyContact entity.
+func (auo *ApplicantUpdateOne) ClearEmergencyContacts() *ApplicantUpdateOne {
+	auo.mutation.ClearEmergencyContacts()
+	return auo
+}
+
+// RemoveEmergencyContactIDs removes the "emergency_contacts" edge to EmergencyContact entities by IDs.
+func (auo *ApplicantUpdateOne) RemoveEmergencyContactIDs(ids ...int) *ApplicantUpdateOne {
+	auo.mutation.RemoveEmergencyContactIDs(ids...)
+	return auo
+}
+
+// RemoveEmergencyContacts removes "emergency_contacts" edges to EmergencyContact entities.
+func (auo *ApplicantUpdateOne) RemoveEmergencyContacts(e ...*EmergencyContact) *ApplicantUpdateOne {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return auo.RemoveEmergencyContactIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1940,6 +2067,60 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: education.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.EmergencyContactsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.EmergencyContactsTable,
+			Columns: []string{applicant.EmergencyContactsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: emergencycontact.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedEmergencyContactsIDs(); len(nodes) > 0 && !auo.mutation.EmergencyContactsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.EmergencyContactsTable,
+			Columns: []string{applicant.EmergencyContactsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: emergencycontact.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.EmergencyContactsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.EmergencyContactsTable,
+			Columns: []string{applicant.EmergencyContactsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: emergencycontact.FieldID,
 				},
 			},
 		}

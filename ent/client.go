@@ -11,6 +11,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/education"
+	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
@@ -31,6 +32,8 @@ type Client struct {
 	Applicant *ApplicantClient
 	// Education is the client for interacting with the Education builders.
 	Education *EducationClient
+	// EmergencyContact is the client for interacting with the EmergencyContact builders.
+	EmergencyContact *EmergencyContactClient
 	// Job is the client for interacting with the Job builders.
 	Job *JobClient
 	// JobApplication is the client for interacting with the JobApplication builders.
@@ -56,6 +59,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Applicant = NewApplicantClient(c.config)
 	c.Education = NewEducationClient(c.config)
+	c.EmergencyContact = NewEmergencyContactClient(c.config)
 	c.Job = NewJobClient(c.config)
 	c.JobApplication = NewJobApplicationClient(c.config)
 	c.PortfolioLink = NewPortfolioLinkClient(c.config)
@@ -92,15 +96,16 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:            ctx,
-		config:         cfg,
-		Applicant:      NewApplicantClient(cfg),
-		Education:      NewEducationClient(cfg),
-		Job:            NewJobClient(cfg),
-		JobApplication: NewJobApplicationClient(cfg),
-		PortfolioLink:  NewPortfolioLinkClient(cfg),
-		Skill:          NewSkillClient(cfg),
-		WorkExperience: NewWorkExperienceClient(cfg),
+		ctx:              ctx,
+		config:           cfg,
+		Applicant:        NewApplicantClient(cfg),
+		Education:        NewEducationClient(cfg),
+		EmergencyContact: NewEmergencyContactClient(cfg),
+		Job:              NewJobClient(cfg),
+		JobApplication:   NewJobApplicationClient(cfg),
+		PortfolioLink:    NewPortfolioLinkClient(cfg),
+		Skill:            NewSkillClient(cfg),
+		WorkExperience:   NewWorkExperienceClient(cfg),
 	}, nil
 }
 
@@ -118,14 +123,15 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:         cfg,
-		Applicant:      NewApplicantClient(cfg),
-		Education:      NewEducationClient(cfg),
-		Job:            NewJobClient(cfg),
-		JobApplication: NewJobApplicationClient(cfg),
-		PortfolioLink:  NewPortfolioLinkClient(cfg),
-		Skill:          NewSkillClient(cfg),
-		WorkExperience: NewWorkExperienceClient(cfg),
+		config:           cfg,
+		Applicant:        NewApplicantClient(cfg),
+		Education:        NewEducationClient(cfg),
+		EmergencyContact: NewEmergencyContactClient(cfg),
+		Job:              NewJobClient(cfg),
+		JobApplication:   NewJobApplicationClient(cfg),
+		PortfolioLink:    NewPortfolioLinkClient(cfg),
+		Skill:            NewSkillClient(cfg),
+		WorkExperience:   NewWorkExperienceClient(cfg),
 	}, nil
 }
 
@@ -157,6 +163,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Applicant.Use(hooks...)
 	c.Education.Use(hooks...)
+	c.EmergencyContact.Use(hooks...)
 	c.Job.Use(hooks...)
 	c.JobApplication.Use(hooks...)
 	c.PortfolioLink.Use(hooks...)
@@ -361,6 +368,22 @@ func (c *ApplicantClient) QueryEducations(a *Applicant) *EducationQuery {
 	return query
 }
 
+// QueryEmergencyContacts queries the emergency_contacts edge of a Applicant.
+func (c *ApplicantClient) QueryEmergencyContacts(a *Applicant) *EmergencyContactQuery {
+	query := &EmergencyContactQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(applicant.Table, applicant.FieldID, id),
+			sqlgraph.To(emergencycontact.Table, emergencycontact.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, applicant.EmergencyContactsTable, applicant.EmergencyContactsColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ApplicantClient) Hooks() []Hook {
 	return c.hooks.Applicant
@@ -470,6 +493,112 @@ func (c *EducationClient) QueryApplicant(e *Education) *ApplicantQuery {
 // Hooks returns the client hooks.
 func (c *EducationClient) Hooks() []Hook {
 	return c.hooks.Education
+}
+
+// EmergencyContactClient is a client for the EmergencyContact schema.
+type EmergencyContactClient struct {
+	config
+}
+
+// NewEmergencyContactClient returns a client for the EmergencyContact from the given config.
+func NewEmergencyContactClient(c config) *EmergencyContactClient {
+	return &EmergencyContactClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `emergencycontact.Hooks(f(g(h())))`.
+func (c *EmergencyContactClient) Use(hooks ...Hook) {
+	c.hooks.EmergencyContact = append(c.hooks.EmergencyContact, hooks...)
+}
+
+// Create returns a create builder for EmergencyContact.
+func (c *EmergencyContactClient) Create() *EmergencyContactCreate {
+	mutation := newEmergencyContactMutation(c.config, OpCreate)
+	return &EmergencyContactCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EmergencyContact entities.
+func (c *EmergencyContactClient) CreateBulk(builders ...*EmergencyContactCreate) *EmergencyContactCreateBulk {
+	return &EmergencyContactCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EmergencyContact.
+func (c *EmergencyContactClient) Update() *EmergencyContactUpdate {
+	mutation := newEmergencyContactMutation(c.config, OpUpdate)
+	return &EmergencyContactUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EmergencyContactClient) UpdateOne(ec *EmergencyContact) *EmergencyContactUpdateOne {
+	mutation := newEmergencyContactMutation(c.config, OpUpdateOne, withEmergencyContact(ec))
+	return &EmergencyContactUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EmergencyContactClient) UpdateOneID(id int) *EmergencyContactUpdateOne {
+	mutation := newEmergencyContactMutation(c.config, OpUpdateOne, withEmergencyContactID(id))
+	return &EmergencyContactUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EmergencyContact.
+func (c *EmergencyContactClient) Delete() *EmergencyContactDelete {
+	mutation := newEmergencyContactMutation(c.config, OpDelete)
+	return &EmergencyContactDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *EmergencyContactClient) DeleteOne(ec *EmergencyContact) *EmergencyContactDeleteOne {
+	return c.DeleteOneID(ec.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *EmergencyContactClient) DeleteOneID(id int) *EmergencyContactDeleteOne {
+	builder := c.Delete().Where(emergencycontact.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EmergencyContactDeleteOne{builder}
+}
+
+// Query returns a query builder for EmergencyContact.
+func (c *EmergencyContactClient) Query() *EmergencyContactQuery {
+	return &EmergencyContactQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a EmergencyContact entity by its id.
+func (c *EmergencyContactClient) Get(ctx context.Context, id int) (*EmergencyContact, error) {
+	return c.Query().Where(emergencycontact.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EmergencyContactClient) GetX(ctx context.Context, id int) *EmergencyContact {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryApplicant queries the applicant edge of a EmergencyContact.
+func (c *EmergencyContactClient) QueryApplicant(ec *EmergencyContact) *ApplicantQuery {
+	query := &ApplicantQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ec.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(emergencycontact.Table, emergencycontact.FieldID, id),
+			sqlgraph.To(applicant.Table, applicant.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, emergencycontact.ApplicantTable, emergencycontact.ApplicantColumn),
+		)
+		fromV = sqlgraph.Neighbors(ec.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EmergencyContactClient) Hooks() []Hook {
+	return c.hooks.EmergencyContact
 }
 
 // JobClient is a client for the Job schema.

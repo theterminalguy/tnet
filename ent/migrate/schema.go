@@ -103,6 +103,46 @@ var (
 			},
 		},
 	}
+	// EmergencyContactsColumns holds the columns for the "emergency_contacts" table.
+	EmergencyContactsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "phone_number", Type: field.TypeString},
+		{Name: "address", Type: field.TypeString},
+		{Name: "relationship", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "applicant_id", Type: field.TypeInt, Nullable: true},
+	}
+	// EmergencyContactsTable holds the schema information for the "emergency_contacts" table.
+	EmergencyContactsTable = &schema.Table{
+		Name:       "emergency_contacts",
+		Columns:    EmergencyContactsColumns,
+		PrimaryKey: []*schema.Column{EmergencyContactsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "emergency_contacts_applicants_emergency_contacts",
+				Columns:    []*schema.Column{EmergencyContactsColumns[10]},
+				RefColumns: []*schema.Column{ApplicantsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "emergencycontact_uuid",
+				Unique:  true,
+				Columns: []*schema.Column{EmergencyContactsColumns[1]},
+			},
+			{
+				Name:    "emergencycontact_applicant_id",
+				Unique:  false,
+				Columns: []*schema.Column{EmergencyContactsColumns[10]},
+			},
+		},
+	}
 	// JobsColumns holds the columns for the "jobs" table.
 	JobsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -322,6 +362,7 @@ var (
 	Tables = []*schema.Table{
 		ApplicantsTable,
 		EducationsTable,
+		EmergencyContactsTable,
 		JobsTable,
 		JobApplicationsTable,
 		PortfolioLinksTable,
@@ -333,6 +374,7 @@ var (
 func init() {
 	ApplicantsTable.ForeignKeys[0].RefTable = ApplicantsTable
 	EducationsTable.ForeignKeys[0].RefTable = ApplicantsTable
+	EmergencyContactsTable.ForeignKeys[0].RefTable = ApplicantsTable
 	JobApplicationsTable.ForeignKeys[0].RefTable = ApplicantsTable
 	JobApplicationsTable.ForeignKeys[1].RefTable = JobsTable
 	PortfolioLinksTable.ForeignKeys[0].RefTable = ApplicantsTable

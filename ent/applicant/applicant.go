@@ -63,6 +63,8 @@ const (
 	EdgeWorkExperiences = "work_experiences"
 	// EdgeEducations holds the string denoting the educations edge name in mutations.
 	EdgeEducations = "educations"
+	// EdgeEmergencyContacts holds the string denoting the emergency_contacts edge name in mutations.
+	EdgeEmergencyContacts = "emergency_contacts"
 	// Table holds the table name of the applicant in the database.
 	Table = "applicants"
 	// ReferrerTable is the table that holds the referrer relation/edge.
@@ -108,6 +110,13 @@ const (
 	EducationsInverseTable = "educations"
 	// EducationsColumn is the table column denoting the educations relation/edge.
 	EducationsColumn = "applicant_id"
+	// EmergencyContactsTable is the table that holds the emergency_contacts relation/edge.
+	EmergencyContactsTable = "emergency_contacts"
+	// EmergencyContactsInverseTable is the table name for the EmergencyContact entity.
+	// It exists in this package in order to avoid circular dependency with the "emergencycontact" package.
+	EmergencyContactsInverseTable = "emergency_contacts"
+	// EmergencyContactsColumn is the table column denoting the emergency_contacts relation/edge.
+	EmergencyContactsColumn = "applicant_id"
 )
 
 // Columns holds all SQL columns for applicant fields.

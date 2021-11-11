@@ -7,6 +7,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/education"
+	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
@@ -84,6 +85,27 @@ func init() {
 	education.DefaultUpdatedAt = educationDescUpdatedAt.Default.(func() time.Time)
 	// education.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	education.UpdateDefaultUpdatedAt = educationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	emergencycontactMixin := schema.EmergencyContact{}.Mixin()
+	emergencycontactMixinFields0 := emergencycontactMixin[0].Fields()
+	_ = emergencycontactMixinFields0
+	emergencycontactMixinFields1 := emergencycontactMixin[1].Fields()
+	_ = emergencycontactMixinFields1
+	emergencycontactFields := schema.EmergencyContact{}.Fields()
+	_ = emergencycontactFields
+	// emergencycontactDescUUID is the schema descriptor for uuid field.
+	emergencycontactDescUUID := emergencycontactMixinFields0[1].Descriptor()
+	// emergencycontact.DefaultUUID holds the default value on creation for the uuid field.
+	emergencycontact.DefaultUUID = emergencycontactDescUUID.Default.(func() uuid.UUID)
+	// emergencycontactDescCreatedAt is the schema descriptor for created_at field.
+	emergencycontactDescCreatedAt := emergencycontactMixinFields1[0].Descriptor()
+	// emergencycontact.DefaultCreatedAt holds the default value on creation for the created_at field.
+	emergencycontact.DefaultCreatedAt = emergencycontactDescCreatedAt.Default.(func() time.Time)
+	// emergencycontactDescUpdatedAt is the schema descriptor for updated_at field.
+	emergencycontactDescUpdatedAt := emergencycontactMixinFields1[1].Descriptor()
+	// emergencycontact.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	emergencycontact.DefaultUpdatedAt = emergencycontactDescUpdatedAt.Default.(func() time.Time)
+	// emergencycontact.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	emergencycontact.UpdateDefaultUpdatedAt = emergencycontactDescUpdatedAt.UpdateDefault.(func() time.Time)
 	jobMixin := schema.Job{}.Mixin()
 	jobMixinFields0 := jobMixin[0].Fields()
 	_ = jobMixinFields0

@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/education"
+	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
@@ -31,13 +32,14 @@ type ApplicantQuery struct {
 	fields     []string
 	predicates []predicate.Applicant
 	// eager-loading edges.
-	withReferrer        *ApplicantQuery
-	withReferees        *ApplicantQuery
-	withPortfoliolinks  *PortfolioLinkQuery
-	withSkills          *SkillQuery
-	withJobApplications *JobApplicationQuery
-	withWorkExperiences *WorkExperienceQuery
-	withEducations      *EducationQuery
+	withReferrer          *ApplicantQuery
+	withReferees          *ApplicantQuery
+	withPortfoliolinks    *PortfolioLinkQuery
+	withSkills            *SkillQuery
+	withJobApplications   *JobApplicationQuery
+	withWorkExperiences   *WorkExperienceQuery
+	withEducations        *EducationQuery
+	withEmergencyContacts *EmergencyContactQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -228,6 +230,28 @@ func (aq *ApplicantQuery) QueryEducations() *EducationQuery {
 	return query
 }
 
+// QueryEmergencyContacts chains the current query on the "emergency_contacts" edge.
+func (aq *ApplicantQuery) QueryEmergencyContacts() *EmergencyContactQuery {
+	query := &EmergencyContactQuery{config: aq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(applicant.Table, applicant.FieldID, selector),
+			sqlgraph.To(emergencycontact.Table, emergencycontact.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, applicant.EmergencyContactsTable, applicant.EmergencyContactsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Applicant entity from the query.
 // Returns a *NotFoundError when no Applicant was found.
 func (aq *ApplicantQuery) First(ctx context.Context) (*Applicant, error) {
@@ -404,18 +428,19 @@ func (aq *ApplicantQuery) Clone() *ApplicantQuery {
 		return nil
 	}
 	return &ApplicantQuery{
-		config:              aq.config,
-		limit:               aq.limit,
-		offset:              aq.offset,
-		order:               append([]OrderFunc{}, aq.order...),
-		predicates:          append([]predicate.Applicant{}, aq.predicates...),
-		withReferrer:        aq.withReferrer.Clone(),
-		withReferees:        aq.withReferees.Clone(),
-		withPortfoliolinks:  aq.withPortfoliolinks.Clone(),
-		withSkills:          aq.withSkills.Clone(),
-		withJobApplications: aq.withJobApplications.Clone(),
-		withWorkExperiences: aq.withWorkExperiences.Clone(),
-		withEducations:      aq.withEducations.Clone(),
+		config:                aq.config,
+		limit:                 aq.limit,
+		offset:                aq.offset,
+		order:                 append([]OrderFunc{}, aq.order...),
+		predicates:            append([]predicate.Applicant{}, aq.predicates...),
+		withReferrer:          aq.withReferrer.Clone(),
+		withReferees:          aq.withReferees.Clone(),
+		withPortfoliolinks:    aq.withPortfoliolinks.Clone(),
+		withSkills:            aq.withSkills.Clone(),
+		withJobApplications:   aq.withJobApplications.Clone(),
+		withWorkExperiences:   aq.withWorkExperiences.Clone(),
+		withEducations:        aq.withEducations.Clone(),
+		withEmergencyContacts: aq.withEmergencyContacts.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -499,6 +524,17 @@ func (aq *ApplicantQuery) WithEducations(opts ...func(*EducationQuery)) *Applica
 	return aq
 }
 
+// WithEmergencyContacts tells the query-builder to eager-load the nodes that are connected to
+// the "emergency_contacts" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *ApplicantQuery) WithEmergencyContacts(opts ...func(*EmergencyContactQuery)) *ApplicantQuery {
+	query := &EmergencyContactQuery{config: aq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withEmergencyContacts = query
+	return aq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -564,7 +600,7 @@ func (aq *ApplicantQuery) sqlAll(ctx context.Context) ([]*Applicant, error) {
 	var (
 		nodes       = []*Applicant{}
 		_spec       = aq.querySpec()
-		loadedTypes = [7]bool{
+		loadedTypes = [8]bool{
 			aq.withReferrer != nil,
 			aq.withReferees != nil,
 			aq.withPortfoliolinks != nil,
@@ -572,6 +608,7 @@ func (aq *ApplicantQuery) sqlAll(ctx context.Context) ([]*Applicant, error) {
 			aq.withJobApplications != nil,
 			aq.withWorkExperiences != nil,
 			aq.withEducations != nil,
+			aq.withEmergencyContacts != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -767,6 +804,31 @@ func (aq *ApplicantQuery) sqlAll(ctx context.Context) ([]*Applicant, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "applicant_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Educations = append(node.Edges.Educations, n)
+		}
+	}
+
+	if query := aq.withEmergencyContacts; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Applicant)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.EmergencyContacts = []*EmergencyContact{}
+		}
+		query.Where(predicate.EmergencyContact(func(s *sql.Selector) {
+			s.Where(sql.InValues(applicant.EmergencyContactsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ApplicantID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "applicant_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.EmergencyContacts = append(node.Edges.EmergencyContacts, n)
 		}
 	}
 

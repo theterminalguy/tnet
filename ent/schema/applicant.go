@@ -99,5 +99,7 @@ func (Applicant) Edges() []ent.Edge {
 		edge.To("work_experiences", WorkExperience.Type),
 
 		edge.To("educations", Education.Type),
+
+		edge.To("emergency_contacts", EmergencyContact.Type),
 	}
 }

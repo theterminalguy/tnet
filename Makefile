@@ -29,3 +29,6 @@ hot-reload: ## Enables hot reload for the web service
 
 ent-generate: ## Generate ent Assests
 	go generate ./ent
+
+go-format: ## Run go fmt ./... on all go files
+	go fmt ./...

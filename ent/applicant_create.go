@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/education"
+	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/skill"
@@ -281,6 +282,21 @@ func (ac *ApplicantCreate) AddEducations(e ...*Education) *ApplicantCreate {
 		ids[i] = e[i].ID
 	}
 	return ac.AddEducationIDs(ids...)
+}
+
+// AddEmergencyContactIDs adds the "emergency_contacts" edge to the EmergencyContact entity by IDs.
+func (ac *ApplicantCreate) AddEmergencyContactIDs(ids ...int) *ApplicantCreate {
+	ac.mutation.AddEmergencyContactIDs(ids...)
+	return ac
+}
+
+// AddEmergencyContacts adds the "emergency_contacts" edges to the EmergencyContact entity.
+func (ac *ApplicantCreate) AddEmergencyContacts(e ...*EmergencyContact) *ApplicantCreate {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return ac.AddEmergencyContactIDs(ids...)
 }
 
 // Mutation returns the ApplicantMutation object of the builder.
@@ -716,6 +732,25 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: education.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.EmergencyContactsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   applicant.EmergencyContactsTable,
+			Columns: []string{applicant.EmergencyContactsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: emergencycontact.FieldID,
 				},
 			},
 		}

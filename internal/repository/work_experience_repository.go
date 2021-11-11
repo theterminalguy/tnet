@@ -99,7 +99,7 @@ func (*WorkExperienceRepository) Create(p WorkExperienceParams) (*ent.WorkExperi
 }
 
 func (r *WorkExperienceRepository) Update(id uuid.UUID, p WorkExperienceParams) (*ent.WorkExperience, []error) {
-	err := validateParams(p)
+	err := validateParams(p, "ApplicantUUID")
 	if err != nil {
 		return nil, []error{err}
 	}
