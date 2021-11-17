@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
@@ -69,9 +70,9 @@ func (h *JobHandler) UpdateByID(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	j, err := h.JobRepository.Update(id, *params)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
+	j, vldErrs := h.JobRepository.Update(id, *params)
+	if vldErrs != nil {
+		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
 	}
 	return c.JSON(http.StatusOK, j)
 }

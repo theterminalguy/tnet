@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
@@ -67,9 +68,9 @@ func (h *PortfolioLinkHandler) UpdateByID(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	record, err := h.PortfolioLinkRepository.Update(id, *params)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
+	record, vldErrs := h.PortfolioLinkRepository.Update(id, *params)
+	if vldErrs != nil {
+		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
 	}
 	return c.JSON(http.StatusOK, record)
 }

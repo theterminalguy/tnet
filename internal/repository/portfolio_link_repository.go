@@ -5,6 +5,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
+	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
 )
 
@@ -64,22 +65,54 @@ func (*PortfolioLinkRepository) Create(p PortfolioLinkParams) (*ent.PortfolioLin
 	return record, err
 }
 
-func (r *PortfolioLinkRepository) Update(id uuid.UUID, p PortfolioLinkParams) (*ent.PortfolioLink, error) {
-	err := validateParams(p)
+func (r *PortfolioLinkRepository) Update(id uuid.UUID, p PortfolioLinkParams) (*ent.PortfolioLink, []error) {
+	err := validateParams(p, "ApplicantUUID")
 	if err != nil {
-		return nil, err
+		return nil, []error{err}
 	}
 	record, err := r.GetByUUID(id)
 	if err != nil {
-		return nil, err
+		return nil, []error{err}
 	}
-	_, err = record.Update().
-		SetURL(p.URL).
-		SetName(p.Name).
-		Save(dBContext)
+
+	var vldErrs []error
+	bldr := record.Update()
+
+	// Set and Validate URL if provided
+	if vldErr := setNillableStringField(p.URL, func(v string) error {
+		err := validateParams(p, "Address")
+		if err != nil {
+			return err
+		}
+		bldr.SetURL(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate Name if provided
+	if vldErr := setNillableStringField(p.Name, func(v string) error {
+		err := validateParams(p, "Name")
+		if err != nil {
+			return err
+		}
+		bldr.SetName(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Return all validation errors at once
+	// this prevents the client from making several round trips to the server
+	if collection.HasAny(vldErrs) {
+		return nil, vldErrs
+	}
+
+	record, err = bldr.Save(dBContext)
 	if err != nil {
-		return nil, err
+		return nil, []error{err}
 	}
+
 	return record, nil
 }
 

@@ -5,6 +5,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
 )
 
@@ -14,8 +15,8 @@ type SkillParams struct {
 	ApplicantUUID uuid.UUID `json:"applicant_uuid" validate:"required"`
 
 	// Applicant can specify years of experience in decimal where 1.5 equals 1 and a half year
-	YearsOfExperience float32 `json:"years_of_experience" validate:"gte=1.0"`
-	Preferred         bool    `json:"preferred"`
+	YearsOfExperience *float32 `json:"years_of_experience" validate:"gte=1.0"`
+	Preferred         bool     `json:"preferred"`
 
 	// Applicant should add details on this specific skills
 	// how they have used them in the past, things they've built or done with it
@@ -77,7 +78,7 @@ func (*SkillRepository) Create(p SkillParams) (*ent.Skill, error) {
 		SetApplicantID(a.ID).
 		SetName(p.Name).
 		SetPreferred(p.Preferred).
-		SetYearsOfExperience(p.YearsOfExperience).
+		SetYearsOfExperience(*p.YearsOfExperience).
 		SetNote(p.Note).
 		Save(dBContext)
 	if err != nil {
@@ -86,24 +87,78 @@ func (*SkillRepository) Create(p SkillParams) (*ent.Skill, error) {
 	return record, err
 }
 
-func (r *SkillRepository) Update(id uuid.UUID, p SkillParams) (*ent.Skill, error) {
-	err := validateParams(p)
+func (r *SkillRepository) Update(id uuid.UUID, p SkillParams) (*ent.Skill, []error) {
+	err := validateParams(p, "ApplicantUUID")
 	if err != nil {
-		return nil, err
+		return nil, []error{err}
 	}
 	record, err := r.GetByUUID(id)
 	if err != nil {
-		return nil, err
+		return nil, []error{err}
 	}
-	_, err = record.Update().
-		SetName(p.Name).
-		SetPreferred(p.Preferred).
-		SetYearsOfExperience(p.YearsOfExperience).
-		SetNote(p.Note).
-		Save(dBContext)
+
+	var vldErrs []error
+	bldr := record.Update()
+
+	// Set and Validate YearsOfExperience if provided
+	if vldErr := setNillableYearsOfExperience(p.YearsOfExperience, func(v *float32) error {
+		err := validateParams(p, "YearsOfExperience")
+		if err != nil {
+			return err
+		}
+		bldr.SetYearsOfExperience(*p.YearsOfExperience)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate Name if provided
+	if vldErr := setNillableStringField(p.Name, func(v string) error {
+		err := validateParams(p, "Name")
+		if err != nil {
+			return err
+		}
+		bldr.SetName(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate Preferred if provided
+	if vldErr := setNillableBoolField(p.Preferred, func(v bool) error {
+		err := validateParams(p, "Preferred")
+		if err != nil {
+			return err
+		}
+		bldr.SetPreferred(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate Note if provided
+	if vldErr := setNillableStringField(p.Note, func(v string) error {
+		err := validateParams(p, "Note")
+		if err != nil {
+			return err
+		}
+		bldr.SetNote(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Return all validation errors at once
+	// this prevents the client from making several round trips to the server
+	if collection.HasAny(vldErrs) {
+		return nil, vldErrs
+	}
+
+	record, err = bldr.Save(dBContext)
 	if err != nil {
-		return nil, err
+		return nil, []error{err}
 	}
+
 	return record, nil
 }
 

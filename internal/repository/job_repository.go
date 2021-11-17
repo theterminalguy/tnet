@@ -5,6 +5,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
 )
 
@@ -79,29 +80,138 @@ func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
 	return j, err
 }
 
-func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, error) {
-	err := validateParams(p)
+func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
+	err := validateParams(p, "ApplicantUUID")
 	if err != nil {
-		return nil, err
+		return nil, []error{err}
 	}
 	record, err := r.GetByUUID(id)
 	if err != nil {
-		return nil, err
+		return nil, []error{err}
 	}
-	_, err = record.Update().
-		SetHiring(p.Hiring).
-		SetTitle(p.Title).
-		SetSummary(p.Summary).
-		SetEmployment(job.Employment(p.Employment)).
-		SetCategory(job.Category(p.Category)).
-		SetThumbnail(p.Thumbnail).
-		SetWeHave(p.WeHave).
-		SetRequirements(p.Requirements).
-		SetYouHave(p.YouHave).
-		Save(dBContext)
+
+	var vldErrs []error
+	bldr := record.Update()
+
+	// Set and Validate Hiring if provided
+	if vldErr := setNillableBoolField(p.Hiring, func(v bool) error {
+		err := validateParams(p, "Hiring")
+		if err != nil {
+			return err
+		}
+		bldr.SetHiring(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate Title if provided
+	if vldErr := setNillableStringField(p.Title, func(v string) error {
+		err := validateParams(p, "Title")
+		if err != nil {
+			return err
+		}
+		bldr.SetTitle(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate Summary if provided
+	if vldErr := setNillableStringField(p.Summary, func(v string) error {
+		err := validateParams(p, "Summary")
+		if err != nil {
+			return err
+		}
+		bldr.SetSummary(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate Employment if provided
+	if vldErr := setNillableStringField(p.Employment, func(v string) error {
+		err := validateParams(p, "Employment")
+		if err != nil {
+			return err
+		}
+		bldr.SetEmployment(job.Employment(v))
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate Category if provided
+	if vldErr := setNillableStringField(p.Category, func(v string) error {
+		err := validateParams(p, "Category")
+		if err != nil {
+			return err
+		}
+		bldr.SetCategory(job.Category(v))
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate Thumbnail if provided
+	if vldErr := setNillableStringField(p.Thumbnail, func(v string) error {
+		err := validateParams(p, "Thumbnail")
+		if err != nil {
+			return err
+		}
+		bldr.SetThumbnail(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate WeHave if provided
+	if vldErr := setNillableJSONArrayField(p.WeHave, func(v []string) error {
+		err := validateParams(p, "WeHave")
+		if err != nil {
+			return err
+		}
+		bldr.SetWeHave(p.WeHave)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate Requirements if provided
+	if vldErr := setNillableJSONArrayField(p.Requirements, func(v []string) error {
+		err := validateParams(p, "Requirements")
+		if err != nil {
+			return err
+		}
+		bldr.SetRequirements(p.Requirements)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate YouHave if provided
+	if vldErr := setNillableJSONArrayField(p.YouHave, func(v []string) error {
+		err := validateParams(p, "YouHave")
+		if err != nil {
+			return err
+		}
+		bldr.SetYouHave(p.YouHave)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Return all validation errors at once
+	// this prevents the client from making several round trips to the server
+	if collection.HasAny(vldErrs) {
+		return nil, vldErrs
+	}
+
+	record, err = bldr.Save(dBContext)
 	if err != nil {
-		return nil, err
+		return nil, []error{err}
 	}
+
 	return record, nil
 }
 

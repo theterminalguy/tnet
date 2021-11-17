@@ -61,11 +61,31 @@ func setNillableStringField(val string, cb func(v string) error) error {
 }
 
 func setNillableJSONArrayField(vals []string, cb func(v []string) error) error {
-	if len(vals) <= 0 {
+	if len(vals) > 0 {
 		err := cb(vals)
 		if err != nil {
 			return err
 		}
 	}
+	return nil
+}
+
+func setNillableYearsOfExperience(val *float32, cb func(v *float32) error) error {
+	if val != nil {
+		err := cb(val)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func setNillableBoolField(val bool, cb func(v bool) error) error {
+
+	err := cb(val)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

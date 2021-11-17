@@ -9,6 +9,7 @@ import (
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/randutil"
+	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/10hourlabs/tentn/util/date"
 	"github.com/google/uuid"
 )
@@ -107,23 +108,135 @@ func (r *ApplicantRepository) Create(p ApplicantParams) (*ent.Applicant, error) 
 	return a, err
 }
 
-func (r *ApplicantRepository) Update(id uuid.UUID, p ApplicantParams) (*ent.Applicant, error) {
-	err := validateParams(p, "Email", "Phone", "CountryCode", "City")
+func (r *ApplicantRepository) Update(id uuid.UUID, p ApplicantParams) (*ent.Applicant, []error) {
+	err := validateParams(p, "ApplicantUUID")
 	if err != nil {
-		return nil, err
+		return nil, []error{err}
 	}
 	record, err := r.GetByUUID(id)
 	if err != nil {
-		return nil, err
+		return nil, []error{err}
 	}
-	_, err = record.Update().
-		SetEmail(p.Email).
-		SetPhone(p.Phone).
-		SetCountryCode(p.CountryCode).
-		SetCity(p.City).
-		Save(dBContext)
+	var vldErrs []error
+	bldr := record.Update()
+
+	// Set and Validate FirstName if provided
+	if vldErr := setNillableStringField(p.FirstName, func(v string) error {
+		err := validateParams(p, "FirsName")
+		if err != nil {
+			return err
+		}
+		bldr.SetFirstName(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate LastName if provided
+	if vldErr := setNillableStringField(p.LastName, func(v string) error {
+		err := validateParams(p, "LastName")
+		if err != nil {
+			return err
+		}
+		bldr.SetLastName(v)
+		return nil
+	}); err != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate PreferredName if provided
+	if vldErr := setNillableStringField(p.PreferredName, func(program string) error {
+		err := validateParams(p, "PreferredName")
+		if err != nil {
+			return err
+		}
+		bldr.SetPreferredName(p.PreferredName)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate Pronoun if provided
+	if vldErr := setNillableStringField(p.Pronoun, func(v string) error {
+		err := validateParams(p, "Pronoun")
+		if err != nil {
+			return err
+		}
+		bldr.SetPronoun(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate PreferredJobTitle if provided
+	if vldErr := setNillableStringField(p.PreferredJobTitle, func(v string) error {
+		err := validateParams(p, "PreferredJobTitle")
+		if err != nil {
+			return err
+		}
+		bldr.SetPreferredJobTitle(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate Email if provided
+	if vldErr := setNillableStringField(p.Email, func(v string) error {
+		err := validateParams(p, "Email")
+		if err != nil {
+			return err
+		}
+		bldr.SetEmail(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate Phone if provided
+	if vldErr := setNillableStringField(p.Phone, func(v string) error {
+		err := validateParams(p, "Phone")
+		if err != nil {
+			return err
+		}
+		bldr.SetPhone(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate Phone if provided
+	if vldErr := setNillableStringField(p.CountryCode, func(v string) error {
+		err := validateParams(p, "CountryCode")
+		if err != nil {
+			return err
+		}
+		bldr.SetCountryCode(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate City if provided
+	if vldErr := setNillableStringField(p.City, func(v string) error {
+		err := validateParams(p, "City")
+		if err != nil {
+			return err
+		}
+		bldr.SetCity(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Return all validation errors at once
+	// this prevents the client from making several round trips to the server
+	if collection.HasAny(vldErrs) {
+		return nil, vldErrs
+	}
+
+	record, err = bldr.Save(dBContext)
 	if err != nil {
-		return nil, err
+		return nil, []error{err}
 	}
 	return record, nil
 }
