@@ -122,10 +122,10 @@ func DeletedAt(v time.Time) predicate.Education {
 	})
 }
 
-// ApplicantID applies equality check predicate on the "applicant_id" field. It's identical to ApplicantIDEQ.
-func ApplicantID(v int) predicate.Education {
+// TalentID applies equality check predicate on the "talent_id" field. It's identical to TalentIDEQ.
+func TalentID(v int) predicate.Education {
 	return predicate.Education(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldApplicantID), v))
+		s.Where(sql.EQ(s.C(FieldTalentID), v))
 	})
 }
 
@@ -496,22 +496,22 @@ func DeletedAtNotNil() predicate.Education {
 	})
 }
 
-// ApplicantIDEQ applies the EQ predicate on the "applicant_id" field.
-func ApplicantIDEQ(v int) predicate.Education {
+// TalentIDEQ applies the EQ predicate on the "talent_id" field.
+func TalentIDEQ(v int) predicate.Education {
 	return predicate.Education(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldApplicantID), v))
+		s.Where(sql.EQ(s.C(FieldTalentID), v))
 	})
 }
 
-// ApplicantIDNEQ applies the NEQ predicate on the "applicant_id" field.
-func ApplicantIDNEQ(v int) predicate.Education {
+// TalentIDNEQ applies the NEQ predicate on the "talent_id" field.
+func TalentIDNEQ(v int) predicate.Education {
 	return predicate.Education(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldApplicantID), v))
+		s.Where(sql.NEQ(s.C(FieldTalentID), v))
 	})
 }
 
-// ApplicantIDIn applies the In predicate on the "applicant_id" field.
-func ApplicantIDIn(vs ...int) predicate.Education {
+// TalentIDIn applies the In predicate on the "talent_id" field.
+func TalentIDIn(vs ...int) predicate.Education {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -523,12 +523,12 @@ func ApplicantIDIn(vs ...int) predicate.Education {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldApplicantID), v...))
+		s.Where(sql.In(s.C(FieldTalentID), v...))
 	})
 }
 
-// ApplicantIDNotIn applies the NotIn predicate on the "applicant_id" field.
-func ApplicantIDNotIn(vs ...int) predicate.Education {
+// TalentIDNotIn applies the NotIn predicate on the "talent_id" field.
+func TalentIDNotIn(vs ...int) predicate.Education {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -540,21 +540,21 @@ func ApplicantIDNotIn(vs ...int) predicate.Education {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldApplicantID), v...))
+		s.Where(sql.NotIn(s.C(FieldTalentID), v...))
 	})
 }
 
-// ApplicantIDIsNil applies the IsNil predicate on the "applicant_id" field.
-func ApplicantIDIsNil() predicate.Education {
+// TalentIDIsNil applies the IsNil predicate on the "talent_id" field.
+func TalentIDIsNil() predicate.Education {
 	return predicate.Education(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldApplicantID)))
+		s.Where(sql.IsNull(s.C(FieldTalentID)))
 	})
 }
 
-// ApplicantIDNotNil applies the NotNil predicate on the "applicant_id" field.
-func ApplicantIDNotNil() predicate.Education {
+// TalentIDNotNil applies the NotNil predicate on the "talent_id" field.
+func TalentIDNotNil() predicate.Education {
 	return predicate.Education(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldApplicantID)))
+		s.Where(sql.NotNull(s.C(FieldTalentID)))
 	})
 }
 
@@ -1279,25 +1279,25 @@ func EndDateNotNil() predicate.Education {
 	})
 }
 
-// HasApplicant applies the HasEdge predicate on the "applicant" edge.
-func HasApplicant() predicate.Education {
+// HasTalent applies the HasEdge predicate on the "talent" edge.
+func HasTalent() predicate.Education {
 	return predicate.Education(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ApplicantTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ApplicantTable, ApplicantColumn),
+			sqlgraph.To(TalentTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, TalentTable, TalentColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasApplicantWith applies the HasEdge predicate on the "applicant" edge with a given conditions (other predicates).
-func HasApplicantWith(preds ...predicate.Applicant) predicate.Education {
+// HasTalentWith applies the HasEdge predicate on the "talent" edge with a given conditions (other predicates).
+func HasTalentWith(preds ...predicate.Talent) predicate.Education {
 	return predicate.Education(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ApplicantInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ApplicantTable, ApplicantColumn),
+			sqlgraph.To(TalentInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, TalentTable, TalentColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

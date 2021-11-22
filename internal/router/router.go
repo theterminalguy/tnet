@@ -77,13 +77,13 @@ func NewV1Router() *v1Router {
 		namespace: "v1",
 		handlers: []RouteHandler{
 			{handler.NewJobHandler(), m},
-			{handler.NewApplicantHandler(), m},
-			{handler.NewJobApplicationHandler(), m},
+			{handler.NewJobTalentHandler(), m},
 			{handler.NewPortfolioLinkHandler(), m},
 			{handler.NewSkillHandler(), m},
 			{handler.NewWorkExperienceHandler(), m},
 			{handler.NewEducationHandler(), m},
 			{handler.NewEmergencyContactHandler(), m},
+			{handler.NewTalentHandler(), m},
 		},
 	}
 }

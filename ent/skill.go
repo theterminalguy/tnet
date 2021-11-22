@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
 )
 
@@ -26,8 +26,8 @@ type Skill struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
-	// ApplicantID holds the value of the "applicant_id" field.
-	ApplicantID int `json:"-"`
+	// TalentID holds the value of the "talent_id" field.
+	TalentID int `json:"-"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// YearsOfExperience holds the value of the "years_of_experience" field.
@@ -43,25 +43,25 @@ type Skill struct {
 
 // SkillEdges holds the relations/edges for other nodes in the graph.
 type SkillEdges struct {
-	// Applicant holds the value of the applicant edge.
-	Applicant *Applicant `json:"applicant,omitempty"`
+	// Talent holds the value of the talent edge.
+	Talent *Talent `json:"talent,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// ApplicantOrErr returns the Applicant value or an error if the edge
+// TalentOrErr returns the Talent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e SkillEdges) ApplicantOrErr() (*Applicant, error) {
+func (e SkillEdges) TalentOrErr() (*Talent, error) {
 	if e.loadedTypes[0] {
-		if e.Applicant == nil {
-			// The edge applicant was loaded in eager-loading,
+		if e.Talent == nil {
+			// The edge talent was loaded in eager-loading,
 			// but was not found.
-			return nil, &NotFoundError{label: applicant.Label}
+			return nil, &NotFoundError{label: talent.Label}
 		}
-		return e.Applicant, nil
+		return e.Talent, nil
 	}
-	return nil, &NotLoadedError{edge: "applicant"}
+	return nil, &NotLoadedError{edge: "talent"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -73,7 +73,7 @@ func (*Skill) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case skill.FieldYearsOfExperience:
 			values[i] = new(sql.NullFloat64)
-		case skill.FieldID, skill.FieldApplicantID:
+		case skill.FieldID, skill.FieldTalentID:
 			values[i] = new(sql.NullInt64)
 		case skill.FieldName, skill.FieldNote:
 			values[i] = new(sql.NullString)
@@ -127,11 +127,11 @@ func (s *Skill) assignValues(columns []string, values []interface{}) error {
 				s.DeletedAt = new(time.Time)
 				*s.DeletedAt = value.Time
 			}
-		case skill.FieldApplicantID:
+		case skill.FieldTalentID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field applicant_id", values[i])
+				return fmt.Errorf("unexpected type %T for field talent_id", values[i])
 			} else if value.Valid {
-				s.ApplicantID = int(value.Int64)
+				s.TalentID = int(value.Int64)
 			}
 		case skill.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -162,9 +162,9 @@ func (s *Skill) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryApplicant queries the "applicant" edge of the Skill entity.
-func (s *Skill) QueryApplicant() *ApplicantQuery {
-	return (&SkillClient{config: s.config}).QueryApplicant(s)
+// QueryTalent queries the "talent" edge of the Skill entity.
+func (s *Skill) QueryTalent() *TalentQuery {
+	return (&SkillClient{config: s.config}).QueryTalent(s)
 }
 
 // Update returns a builder for updating this Skill.
@@ -200,8 +200,8 @@ func (s *Skill) String() string {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	builder.WriteString(", applicant_id=")
-	builder.WriteString(fmt.Sprintf("%v", s.ApplicantID))
+	builder.WriteString(", talent_id=")
+	builder.WriteString(fmt.Sprintf("%v", s.TalentID))
 	builder.WriteString(", name=")
 	builder.WriteString(s.Name)
 	builder.WriteString(", years_of_experience=")

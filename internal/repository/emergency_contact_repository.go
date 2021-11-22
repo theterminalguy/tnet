@@ -12,12 +12,12 @@ import (
 type EmergencyContactRepository struct{}
 
 type EmergencyContactParams struct {
-	ApplicantUUID uuid.UUID `json:"applicant_uuid" validate:"required"`
-	Name          string    `json:"name" validate:"required"`
-	PhoneNumber   string    `json:"phone_number" validate:"required"`
-	Address       string    `json:"address" validate:"required"`
-	Relationship  string    `json:"relationship" validate:"required"`
-	Email         string    `json:"email" validate:"required,email"`
+	TalentUUID   uuid.UUID `json:"talent_uuid" validate:"required"`
+	Name         string    `json:"name" validate:"required"`
+	PhoneNumber  string    `json:"phone_number" validate:"required"`
+	Address      string    `json:"address" validate:"required"`
+	Relationship string    `json:"relationship" validate:"required"`
+	Email        string    `json:"email" validate:"required,email"`
 }
 
 func NewEmergencyContactRepository() *EmergencyContactRepository {
@@ -53,14 +53,14 @@ func (*EmergencyContactRepository) Create(p EmergencyContactParams) (*ent.Emerge
 		return nil, err
 	}
 
-	a, err := NewApplicantRepository().GetByUUID(p.ApplicantUUID)
+	a, err := NewTalentRepository().GetByUUID(p.TalentUUID)
 	if err != nil {
 		return nil, err
 	}
 
 	record, err := dBConn.EmergencyContact.
 		Create().
-		SetApplicantID(a.ID).
+		SetTalentID(a.ID).
 		SetAddress(p.Address).
 		SetEmail(p.Email).
 		SetName(p.Name).
@@ -74,7 +74,7 @@ func (*EmergencyContactRepository) Create(p EmergencyContactParams) (*ent.Emerge
 }
 
 func (r *EmergencyContactRepository) Update(id uuid.UUID, p EmergencyContactParams) (*ent.EmergencyContact, []error) {
-	err := validateParams(p, "ApplicantUUID")
+	err := validateParams(p, "TalentUUID")
 	if err != nil {
 		return nil, []error{err}
 	}

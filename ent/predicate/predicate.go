@@ -6,9 +6,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// Applicant is the predicate function for applicant builders.
-type Applicant func(*sql.Selector)
-
 // Education is the predicate function for education builders.
 type Education func(*sql.Selector)
 
@@ -18,14 +15,17 @@ type EmergencyContact func(*sql.Selector)
 // Job is the predicate function for job builders.
 type Job func(*sql.Selector)
 
-// JobApplication is the predicate function for jobapplication builders.
-type JobApplication func(*sql.Selector)
+// JobTalent is the predicate function for jobtalent builders.
+type JobTalent func(*sql.Selector)
 
 // PortfolioLink is the predicate function for portfoliolink builders.
 type PortfolioLink func(*sql.Selector)
 
 // Skill is the predicate function for skill builders.
 type Skill func(*sql.Selector)
+
+// Talent is the predicate function for talent builders.
+type Talent func(*sql.Selector)
 
 // WorkExperience is the predicate function for workexperience builders.
 type WorkExperience func(*sql.Selector)

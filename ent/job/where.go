@@ -1147,25 +1147,25 @@ func ThumbnailContainsFold(v string) predicate.Job {
 	})
 }
 
-// HasApplications applies the HasEdge predicate on the "applications" edge.
-func HasApplications() predicate.Job {
+// HasJobTalents applies the HasEdge predicate on the "job_talents" edge.
+func HasJobTalents() predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ApplicationsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ApplicationsTable, ApplicationsColumn),
+			sqlgraph.To(JobTalentsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, JobTalentsTable, JobTalentsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasApplicationsWith applies the HasEdge predicate on the "applications" edge with a given conditions (other predicates).
-func HasApplicationsWith(preds ...predicate.JobApplication) predicate.Job {
+// HasJobTalentsWith applies the HasEdge predicate on the "job_talents" edge with a given conditions (other predicates).
+func HasJobTalentsWith(preds ...predicate.JobTalent) predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ApplicationsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ApplicationsTable, ApplicationsColumn),
+			sqlgraph.To(JobTalentsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, JobTalentsTable, JobTalentsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

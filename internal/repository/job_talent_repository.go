@@ -5,32 +5,32 @@ import (
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/jobtalent"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
 )
 
-type JobApplicationRepository struct{}
+type JobTalentRepository struct{}
 
-type JobApplicationParams struct {
+type JobTalentParams struct {
 	JobUUID        uuid.UUID `json:"job_uuid" validate:"required"`
-	ApplicantUUID  uuid.UUID `json:"applicant_uuid" validate:"required"`
+	TalentUUID     uuid.UUID `json:"talent_uuid" validate:"required"`
 	ReferralSource string    `json:"referral_source"`
 
 	// The Note field is only used internal by 10HL admins/recruiters
 	// this is used to keep track of useful notes related to a candidate
-	// application for a specific job
+	// Talent for a specific job
 	Note   string `json:"note"`
 	Status string `json:"status"`
 }
 
-func NewJobApplicationRepository() *JobApplicationRepository {
-	return &JobApplicationRepository{}
+func NewJobTalentRepository() *JobTalentRepository {
+	return &JobTalentRepository{}
 }
 
-func (*JobApplicationRepository) GetAll() ([]*ent.JobApplication, error) {
-	records, err := dBConn.JobApplication.Query().
-		Where(jobapplication.DeletedAtIsNil()).
+func (*JobTalentRepository) GetAll() ([]*ent.JobTalent, error) {
+	records, err := dBConn.JobTalent.Query().
+		Where(jobtalent.DeletedAtIsNil()).
 		All(dBContext)
 	if err != nil {
 		return nil, err
@@ -38,9 +38,9 @@ func (*JobApplicationRepository) GetAll() ([]*ent.JobApplication, error) {
 	return records, nil
 }
 
-func (*JobApplicationRepository) GetByUUID(id uuid.UUID) (*ent.JobApplication, error) {
-	record, err := dBConn.JobApplication.Query().
-		Where(jobapplication.UUIDEQ(id)).
+func (*JobTalentRepository) GetByUUID(id uuid.UUID) (*ent.JobTalent, error) {
+	record, err := dBConn.JobTalent.Query().
+		Where(jobtalent.UUIDEQ(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -51,12 +51,12 @@ func (*JobApplicationRepository) GetByUUID(id uuid.UUID) (*ent.JobApplication, e
 	return record, nil
 }
 
-func (*JobApplicationRepository) Create(p JobApplicationParams) (*ent.JobApplication, error) {
+func (*JobTalentRepository) Create(p JobTalentParams) (*ent.JobTalent, error) {
 	err := validateParams(p)
 	if err != nil {
 		return nil, err
 	}
-	a, err := NewApplicantRepository().GetByUUID(p.ApplicantUUID)
+	a, err := NewTalentRepository().GetByUUID(p.TalentUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -64,17 +64,17 @@ func (*JobApplicationRepository) Create(p JobApplicationParams) (*ent.JobApplica
 	if err != nil {
 		return nil, err
 	}
-	records, err := dBConn.JobApplication.Query().Where(
-		jobapplication.And(
-			jobapplication.JobID(j.ID),
-			jobapplication.ApplicantID(a.ID),
+	records, err := dBConn.JobTalent.Query().Where(
+		jobtalent.And(
+			jobtalent.JobID(j.ID),
+			jobtalent.TalentID(a.ID),
 		)).All(dBContext)
 	if collection.HasAny(records) {
-		return nil, errors.New("applicant already applied for this job")
+		return nil, errors.New("Talent already applied for this job")
 	}
-	record, err := dBConn.JobApplication.
+	record, err := dBConn.JobTalent.
 		Create().
-		SetApplicantID(a.ID).
+		SetTalentID(a.ID).
 		SetJobID(j.ID).
 		SetReferralSource(p.ReferralSource).
 		Save(dBContext)
@@ -84,8 +84,8 @@ func (*JobApplicationRepository) Create(p JobApplicationParams) (*ent.JobApplica
 	return record, err
 }
 
-func (r *JobApplicationRepository) Update(id uuid.UUID, p JobApplicationParams) (*ent.JobApplication, []error) {
-	err := validateParams(p, "ApplicantUUID")
+func (r *JobTalentRepository) Update(id uuid.UUID, p JobTalentParams) (*ent.JobTalent, []error) {
+	err := validateParams(p, "TalentUUID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -115,7 +115,7 @@ func (r *JobApplicationRepository) Update(id uuid.UUID, p JobApplicationParams) 
 		if err != nil {
 			return err
 		}
-		bldr.SetStatus(jobapplication.Status(v))
+		bldr.SetStatus(jobtalent.Status(v))
 		return nil
 	}); vldErr != nil {
 		vldErrs = append(vldErrs, vldErr)
@@ -132,7 +132,7 @@ func (r *JobApplicationRepository) Update(id uuid.UUID, p JobApplicationParams) 
 	return record, nil
 }
 
-func (r *JobApplicationRepository) DeleteByUUID(id uuid.UUID) error {
+func (r *JobTalentRepository) DeleteByUUID(id uuid.UUID) error {
 	record, err := r.GetByUUID(id)
 	if err != nil {
 		return err

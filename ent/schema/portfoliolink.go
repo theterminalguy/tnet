@@ -28,7 +28,7 @@ func (PortfolioLink) Fields() []ent.Field {
 
 		field.String(oneword.Name),
 
-		field.Int(oneword.ApplicantID).
+		field.Int(oneword.TalentID).
 			Optional().
 			StructTag(`json:"-"`),
 	}
@@ -37,16 +37,16 @@ func (PortfolioLink) Fields() []ent.Field {
 // Indexes for the PortfolioLink
 func (PortfolioLink) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields(oneword.ApplicantID),
+		index.Fields(oneword.TalentID),
 	}
 }
 
 // Edges of the PortfolioLink.
 func (PortfolioLink) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From(oneword.Applicant, Applicant.Type).
+		edge.From(oneword.Talent, Talent.Type).
 			Ref(oneword.PortfolioLinks).
 			Unique().
-			Field(oneword.ApplicantID),
+			Field(oneword.TalentID),
 	}
 }

@@ -25,19 +25,19 @@ const (
 	FieldURL = "url"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldApplicantID holds the string denoting the applicant_id field in the database.
-	FieldApplicantID = "applicant_id"
-	// EdgeApplicant holds the string denoting the applicant edge name in mutations.
-	EdgeApplicant = "applicant"
+	// FieldTalentID holds the string denoting the talent_id field in the database.
+	FieldTalentID = "talent_id"
+	// EdgeTalent holds the string denoting the talent edge name in mutations.
+	EdgeTalent = "talent"
 	// Table holds the table name of the portfoliolink in the database.
 	Table = "portfolio_links"
-	// ApplicantTable is the table that holds the applicant relation/edge.
-	ApplicantTable = "portfolio_links"
-	// ApplicantInverseTable is the table name for the Applicant entity.
-	// It exists in this package in order to avoid circular dependency with the "applicant" package.
-	ApplicantInverseTable = "applicants"
-	// ApplicantColumn is the table column denoting the applicant relation/edge.
-	ApplicantColumn = "applicant_id"
+	// TalentTable is the table that holds the talent relation/edge.
+	TalentTable = "portfolio_links"
+	// TalentInverseTable is the table name for the Talent entity.
+	// It exists in this package in order to avoid circular dependency with the "talent" package.
+	TalentInverseTable = "talents"
+	// TalentColumn is the table column denoting the talent relation/edge.
+	TalentColumn = "talent_id"
 )
 
 // Columns holds all SQL columns for portfoliolink fields.
@@ -49,7 +49,7 @@ var Columns = []string{
 	FieldDeletedAt,
 	FieldURL,
 	FieldName,
-	FieldApplicantID,
+	FieldTalentID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

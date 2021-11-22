@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/talent"
 )
 
 // PortfolioLinkQuery is the builder for querying PortfolioLink entities.
@@ -26,7 +26,7 @@ type PortfolioLinkQuery struct {
 	fields     []string
 	predicates []predicate.PortfolioLink
 	// eager-loading edges.
-	withApplicant *ApplicantQuery
+	withTalent *TalentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,9 +63,9 @@ func (plq *PortfolioLinkQuery) Order(o ...OrderFunc) *PortfolioLinkQuery {
 	return plq
 }
 
-// QueryApplicant chains the current query on the "applicant" edge.
-func (plq *PortfolioLinkQuery) QueryApplicant() *ApplicantQuery {
-	query := &ApplicantQuery{config: plq.config}
+// QueryTalent chains the current query on the "talent" edge.
+func (plq *PortfolioLinkQuery) QueryTalent() *TalentQuery {
+	query := &TalentQuery{config: plq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := plq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -76,8 +76,8 @@ func (plq *PortfolioLinkQuery) QueryApplicant() *ApplicantQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(portfoliolink.Table, portfoliolink.FieldID, selector),
-			sqlgraph.To(applicant.Table, applicant.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, portfoliolink.ApplicantTable, portfoliolink.ApplicantColumn),
+			sqlgraph.To(talent.Table, talent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, portfoliolink.TalentTable, portfoliolink.TalentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(plq.driver.Dialect(), step)
 		return fromU, nil
@@ -261,26 +261,26 @@ func (plq *PortfolioLinkQuery) Clone() *PortfolioLinkQuery {
 		return nil
 	}
 	return &PortfolioLinkQuery{
-		config:        plq.config,
-		limit:         plq.limit,
-		offset:        plq.offset,
-		order:         append([]OrderFunc{}, plq.order...),
-		predicates:    append([]predicate.PortfolioLink{}, plq.predicates...),
-		withApplicant: plq.withApplicant.Clone(),
+		config:     plq.config,
+		limit:      plq.limit,
+		offset:     plq.offset,
+		order:      append([]OrderFunc{}, plq.order...),
+		predicates: append([]predicate.PortfolioLink{}, plq.predicates...),
+		withTalent: plq.withTalent.Clone(),
 		// clone intermediate query.
 		sql:  plq.sql.Clone(),
 		path: plq.path,
 	}
 }
 
-// WithApplicant tells the query-builder to eager-load the nodes that are connected to
-// the "applicant" edge. The optional arguments are used to configure the query builder of the edge.
-func (plq *PortfolioLinkQuery) WithApplicant(opts ...func(*ApplicantQuery)) *PortfolioLinkQuery {
-	query := &ApplicantQuery{config: plq.config}
+// WithTalent tells the query-builder to eager-load the nodes that are connected to
+// the "talent" edge. The optional arguments are used to configure the query builder of the edge.
+func (plq *PortfolioLinkQuery) WithTalent(opts ...func(*TalentQuery)) *PortfolioLinkQuery {
+	query := &TalentQuery{config: plq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	plq.withApplicant = query
+	plq.withTalent = query
 	return plq
 }
 
@@ -350,7 +350,7 @@ func (plq *PortfolioLinkQuery) sqlAll(ctx context.Context) ([]*PortfolioLink, er
 		nodes       = []*PortfolioLink{}
 		_spec       = plq.querySpec()
 		loadedTypes = [1]bool{
-			plq.withApplicant != nil,
+			plq.withTalent != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -373,17 +373,17 @@ func (plq *PortfolioLinkQuery) sqlAll(ctx context.Context) ([]*PortfolioLink, er
 		return nodes, nil
 	}
 
-	if query := plq.withApplicant; query != nil {
+	if query := plq.withTalent; query != nil {
 		ids := make([]int, 0, len(nodes))
 		nodeids := make(map[int][]*PortfolioLink)
 		for i := range nodes {
-			fk := nodes[i].ApplicantID
+			fk := nodes[i].TalentID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
 			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		query.Where(applicant.IDIn(ids...))
+		query.Where(talent.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
@@ -391,10 +391,10 @@ func (plq *PortfolioLinkQuery) sqlAll(ctx context.Context) ([]*PortfolioLink, er
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "applicant_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "talent_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.Applicant = n
+				nodes[i].Edges.Talent = n
 			}
 		}
 	}

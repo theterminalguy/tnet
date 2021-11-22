@@ -15,10 +15,10 @@ func (Education) Mixin() []ent.Mixin {
 		UUIDMixin{},
 		TimeStampMixin{},
 		BelongsToMixin{
-			ParentName: "applicant",
-			ParentType: Applicant.Type,
+			ParentName: "talent",
+			ParentType: Talent.Type,
 			Ref:        "educations",
-			ForeignKey: "applicant_id",
+			ForeignKey: "talent_id",
 		},
 	}
 }

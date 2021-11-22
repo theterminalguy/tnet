@@ -11,76 +11,76 @@ import (
 	"github.com/labstack/echo"
 )
 
-type ApplicantHandler struct {
-	ApplicantService    *service.ApplicantService
-	ApplicantRepository *repo.ApplicantRepository
+type TalentHandler struct {
+	TalentService    *service.TalentService
+	TalentRepository *repo.TalentRepository
 }
 
-func NewApplicantHandler() *ApplicantHandler {
-	return &ApplicantHandler{
-		ApplicantService:    service.NewApplicantService(),
-		ApplicantRepository: repo.NewApplicantRepository(),
+func NewTalentHandler() *TalentHandler {
+	return &TalentHandler{
+		TalentService:    service.NewTalentService(),
+		TalentRepository: repo.NewTalentRepository(),
 	}
 }
 
-func (*ApplicantHandler) ResourceName() string {
-	return oneword.Applicants
+func (*TalentHandler) ResourceName() string {
+	return oneword.Talents
 }
 
-func (h *ApplicantHandler) ReadAll(c echo.Context) error {
-	a, err := h.ApplicantRepository.GetAll()
+func (h *TalentHandler) ReadAll(c echo.Context) error {
+	a, err := h.TalentRepository.GetAll()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	return c.JSON(http.StatusOK, a)
 }
 
-func (h *ApplicantHandler) ReadByID(c echo.Context) error {
+func (h *TalentHandler) ReadByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	a, err := h.ApplicantRepository.GetByUUID(id)
+	a, err := h.TalentRepository.GetByUUID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
 	return c.JSON(http.StatusOK, a)
 }
 
-func (h *ApplicantHandler) CreateOne(c echo.Context) error {
-	params := new(repo.ApplicantParams)
+func (h *TalentHandler) CreateOne(c echo.Context) error {
+	params := new(repo.TalentParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	a, err := h.ApplicantRepository.Create(*params)
+	a, err := h.TalentRepository.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	return c.JSON(http.StatusCreated, a)
 }
 
-func (h *ApplicantHandler) UpdateByID(c echo.Context) error {
+func (h *TalentHandler) UpdateByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	params := new(repo.ApplicantParams)
+	params := new(repo.TalentParams)
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	a, vldErrs := h.ApplicantRepository.Update(id, *params)
-	if err != nil {
+	a, vldErrs := h.TalentRepository.Update(id, *params)
+	if vldErrs != nil {
 		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
 	}
 	return c.JSON(http.StatusOK, a)
 }
 
-func (h *ApplicantHandler) DeleteOne(c echo.Context) error {
+func (h *TalentHandler) DeleteOne(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.ApplicantRepository.DeleteByUUID(id)
+	err = h.TalentRepository.DeleteByUUID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

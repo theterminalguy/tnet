@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/talent"
 )
 
 // EducationQuery is the builder for querying Education entities.
@@ -26,7 +26,7 @@ type EducationQuery struct {
 	fields     []string
 	predicates []predicate.Education
 	// eager-loading edges.
-	withApplicant *ApplicantQuery
+	withTalent *TalentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,9 +63,9 @@ func (eq *EducationQuery) Order(o ...OrderFunc) *EducationQuery {
 	return eq
 }
 
-// QueryApplicant chains the current query on the "applicant" edge.
-func (eq *EducationQuery) QueryApplicant() *ApplicantQuery {
-	query := &ApplicantQuery{config: eq.config}
+// QueryTalent chains the current query on the "talent" edge.
+func (eq *EducationQuery) QueryTalent() *TalentQuery {
+	query := &TalentQuery{config: eq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -76,8 +76,8 @@ func (eq *EducationQuery) QueryApplicant() *ApplicantQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(education.Table, education.FieldID, selector),
-			sqlgraph.To(applicant.Table, applicant.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, education.ApplicantTable, education.ApplicantColumn),
+			sqlgraph.To(talent.Table, talent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, education.TalentTable, education.TalentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -261,26 +261,26 @@ func (eq *EducationQuery) Clone() *EducationQuery {
 		return nil
 	}
 	return &EducationQuery{
-		config:        eq.config,
-		limit:         eq.limit,
-		offset:        eq.offset,
-		order:         append([]OrderFunc{}, eq.order...),
-		predicates:    append([]predicate.Education{}, eq.predicates...),
-		withApplicant: eq.withApplicant.Clone(),
+		config:     eq.config,
+		limit:      eq.limit,
+		offset:     eq.offset,
+		order:      append([]OrderFunc{}, eq.order...),
+		predicates: append([]predicate.Education{}, eq.predicates...),
+		withTalent: eq.withTalent.Clone(),
 		// clone intermediate query.
 		sql:  eq.sql.Clone(),
 		path: eq.path,
 	}
 }
 
-// WithApplicant tells the query-builder to eager-load the nodes that are connected to
-// the "applicant" edge. The optional arguments are used to configure the query builder of the edge.
-func (eq *EducationQuery) WithApplicant(opts ...func(*ApplicantQuery)) *EducationQuery {
-	query := &ApplicantQuery{config: eq.config}
+// WithTalent tells the query-builder to eager-load the nodes that are connected to
+// the "talent" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EducationQuery) WithTalent(opts ...func(*TalentQuery)) *EducationQuery {
+	query := &TalentQuery{config: eq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	eq.withApplicant = query
+	eq.withTalent = query
 	return eq
 }
 
@@ -350,7 +350,7 @@ func (eq *EducationQuery) sqlAll(ctx context.Context) ([]*Education, error) {
 		nodes       = []*Education{}
 		_spec       = eq.querySpec()
 		loadedTypes = [1]bool{
-			eq.withApplicant != nil,
+			eq.withTalent != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -373,17 +373,17 @@ func (eq *EducationQuery) sqlAll(ctx context.Context) ([]*Education, error) {
 		return nodes, nil
 	}
 
-	if query := eq.withApplicant; query != nil {
+	if query := eq.withTalent; query != nil {
 		ids := make([]int, 0, len(nodes))
 		nodeids := make(map[int][]*Education)
 		for i := range nodes {
-			fk := nodes[i].ApplicantID
+			fk := nodes[i].TalentID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
 			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		query.Where(applicant.IDIn(ids...))
+		query.Where(talent.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
@@ -391,10 +391,10 @@ func (eq *EducationQuery) sqlAll(ctx context.Context) ([]*Education, error) {
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "applicant_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "talent_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.Applicant = n
+				nodes[i].Edges.Talent = n
 			}
 		}
 	}

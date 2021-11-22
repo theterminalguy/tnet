@@ -12,13 +12,13 @@ import (
 type SkillRepository struct{}
 
 type SkillParams struct {
-	ApplicantUUID uuid.UUID `json:"applicant_uuid" validate:"required"`
+	TalentUUID uuid.UUID `json:"talent_uuid" validate:"required"`
 
-	// Applicant can specify years of experience in decimal where 1.5 equals 1 and a half year
+	// Talent can specify years of experience in decimal where 1.5 equals 1 and a half year
 	YearsOfExperience *float32 `json:"years_of_experience" validate:"gte=1.0"`
 	Preferred         bool     `json:"preferred"`
 
-	// Applicant should add details on this specific skills
+	// Talent should add details on this specific skills
 	// how they have used them in the past, things they've built or done with it
 	Note string `json:"note" validate:"required"`
 
@@ -39,8 +39,8 @@ func (*SkillRepository) GetAll() ([]*ent.Skill, error) {
 	return records, nil
 }
 
-func (*SkillRepository) GetAllByApplicantUUID(applicantUUID uuid.UUID) ([]*ent.Skill, error) {
-	a, err := NewApplicantRepository().GetByUUID(applicantUUID)
+func (*SkillRepository) GetAllByTalentUUID(TalentUUID uuid.UUID) ([]*ent.Skill, error) {
+	a, err := NewTalentRepository().GetByUUID(TalentUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -69,13 +69,13 @@ func (*SkillRepository) Create(p SkillParams) (*ent.Skill, error) {
 	if err != nil {
 		return nil, err
 	}
-	a, err := NewApplicantRepository().GetByUUID(p.ApplicantUUID)
+	a, err := NewTalentRepository().GetByUUID(p.TalentUUID)
 	if err != nil {
 		return nil, err
 	}
 	record, err := dBConn.Skill.
 		Create().
-		SetApplicantID(a.ID).
+		SetTalentID(a.ID).
 		SetName(p.Name).
 		SetPreferred(p.Preferred).
 		SetYearsOfExperience(*p.YearsOfExperience).
@@ -88,7 +88,7 @@ func (*SkillRepository) Create(p SkillParams) (*ent.Skill, error) {
 }
 
 func (r *SkillRepository) Update(id uuid.UUID, p SkillParams) (*ent.Skill, []error) {
-	err := validateParams(p, "ApplicantUUID")
+	err := validateParams(p, "TalentUUID")
 	if err != nil {
 		return nil, []error{err}
 	}

@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/10hourlabs/tentn/ent/talent"
 )
 
 // SkillQuery is the builder for querying Skill entities.
@@ -26,7 +26,7 @@ type SkillQuery struct {
 	fields     []string
 	predicates []predicate.Skill
 	// eager-loading edges.
-	withApplicant *ApplicantQuery
+	withTalent *TalentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,9 +63,9 @@ func (sq *SkillQuery) Order(o ...OrderFunc) *SkillQuery {
 	return sq
 }
 
-// QueryApplicant chains the current query on the "applicant" edge.
-func (sq *SkillQuery) QueryApplicant() *ApplicantQuery {
-	query := &ApplicantQuery{config: sq.config}
+// QueryTalent chains the current query on the "talent" edge.
+func (sq *SkillQuery) QueryTalent() *TalentQuery {
+	query := &TalentQuery{config: sq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -76,8 +76,8 @@ func (sq *SkillQuery) QueryApplicant() *ApplicantQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(skill.Table, skill.FieldID, selector),
-			sqlgraph.To(applicant.Table, applicant.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, skill.ApplicantTable, skill.ApplicantColumn),
+			sqlgraph.To(talent.Table, talent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, skill.TalentTable, skill.TalentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -261,26 +261,26 @@ func (sq *SkillQuery) Clone() *SkillQuery {
 		return nil
 	}
 	return &SkillQuery{
-		config:        sq.config,
-		limit:         sq.limit,
-		offset:        sq.offset,
-		order:         append([]OrderFunc{}, sq.order...),
-		predicates:    append([]predicate.Skill{}, sq.predicates...),
-		withApplicant: sq.withApplicant.Clone(),
+		config:     sq.config,
+		limit:      sq.limit,
+		offset:     sq.offset,
+		order:      append([]OrderFunc{}, sq.order...),
+		predicates: append([]predicate.Skill{}, sq.predicates...),
+		withTalent: sq.withTalent.Clone(),
 		// clone intermediate query.
 		sql:  sq.sql.Clone(),
 		path: sq.path,
 	}
 }
 
-// WithApplicant tells the query-builder to eager-load the nodes that are connected to
-// the "applicant" edge. The optional arguments are used to configure the query builder of the edge.
-func (sq *SkillQuery) WithApplicant(opts ...func(*ApplicantQuery)) *SkillQuery {
-	query := &ApplicantQuery{config: sq.config}
+// WithTalent tells the query-builder to eager-load the nodes that are connected to
+// the "talent" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *SkillQuery) WithTalent(opts ...func(*TalentQuery)) *SkillQuery {
+	query := &TalentQuery{config: sq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	sq.withApplicant = query
+	sq.withTalent = query
 	return sq
 }
 
@@ -350,7 +350,7 @@ func (sq *SkillQuery) sqlAll(ctx context.Context) ([]*Skill, error) {
 		nodes       = []*Skill{}
 		_spec       = sq.querySpec()
 		loadedTypes = [1]bool{
-			sq.withApplicant != nil,
+			sq.withTalent != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -373,17 +373,17 @@ func (sq *SkillQuery) sqlAll(ctx context.Context) ([]*Skill, error) {
 		return nodes, nil
 	}
 
-	if query := sq.withApplicant; query != nil {
+	if query := sq.withTalent; query != nil {
 		ids := make([]int, 0, len(nodes))
 		nodeids := make(map[int][]*Skill)
 		for i := range nodes {
-			fk := nodes[i].ApplicantID
+			fk := nodes[i].TalentID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
 			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		query.Where(applicant.IDIn(ids...))
+		query.Where(talent.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
@@ -391,10 +391,10 @@ func (sq *SkillQuery) sqlAll(ctx context.Context) ([]*Skill, error) {
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "applicant_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "talent_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.Applicant = n
+				nodes[i].Edges.Talent = n
 			}
 		}
 	}

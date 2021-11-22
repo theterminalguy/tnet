@@ -13,7 +13,7 @@ import (
 type WorkExperienceRepository struct{}
 
 type WorkExperienceParams struct {
-	ApplicantUUID       uuid.UUID `json:"applicant_uuid" validate:"required"`
+	TalentUUID          uuid.UUID `json:"talent_uuid" validate:"required"`
 	CompanyName         string    `json:"company_name" validate:"required"`
 	Location            string    `json:"location" validate:"required"`
 	JobTitle            string    `json:"job_title" validate:"required"`
@@ -59,7 +59,7 @@ func (*WorkExperienceRepository) Create(p WorkExperienceParams) (*ent.WorkExperi
 	var sd *time.Time
 	var ed *time.Time
 
-	a, err := NewApplicantRepository().GetByUUID(p.ApplicantUUID)
+	a, err := NewTalentRepository().GetByUUID(p.TalentUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func (*WorkExperienceRepository) Create(p WorkExperienceParams) (*ent.WorkExperi
 	//ed, _ := date.JSStringToRFC3339(p.EndDate)
 	record, err := dBConn.WorkExperience.
 		Create().
-		SetApplicantID(a.ID).
+		SetTalentID(a.ID).
 		SetCompanyName(p.CompanyName).
 		SetLocation(p.Location).
 		SetJobTitle(p.JobTitle).
@@ -99,7 +99,7 @@ func (*WorkExperienceRepository) Create(p WorkExperienceParams) (*ent.WorkExperi
 }
 
 func (r *WorkExperienceRepository) Update(id uuid.UUID, p WorkExperienceParams) (*ent.WorkExperience, []error) {
-	err := validateParams(p, "ApplicantUUID")
+	err := validateParams(p, "TalentUUID")
 	if err != nil {
 		return nil, []error{err}
 	}

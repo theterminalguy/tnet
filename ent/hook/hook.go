@@ -9,19 +9,6 @@ import (
 	"github.com/10hourlabs/tentn/ent"
 )
 
-// The ApplicantFunc type is an adapter to allow the use of ordinary
-// function as Applicant mutator.
-type ApplicantFunc func(context.Context, *ent.ApplicantMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f ApplicantFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.ApplicantMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ApplicantMutation", m)
-	}
-	return f(ctx, mv)
-}
-
 // The EducationFunc type is an adapter to allow the use of ordinary
 // function as Education mutator.
 type EducationFunc func(context.Context, *ent.EducationMutation) (ent.Value, error)
@@ -61,15 +48,15 @@ func (f JobFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) 
 	return f(ctx, mv)
 }
 
-// The JobApplicationFunc type is an adapter to allow the use of ordinary
-// function as JobApplication mutator.
-type JobApplicationFunc func(context.Context, *ent.JobApplicationMutation) (ent.Value, error)
+// The JobTalentFunc type is an adapter to allow the use of ordinary
+// function as JobTalent mutator.
+type JobTalentFunc func(context.Context, *ent.JobTalentMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f JobApplicationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.JobApplicationMutation)
+func (f JobTalentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.JobTalentMutation)
 	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.JobApplicationMutation", m)
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.JobTalentMutation", m)
 	}
 	return f(ctx, mv)
 }
@@ -96,6 +83,19 @@ func (f SkillFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	mv, ok := m.(*ent.SkillMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SkillMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The TalentFunc type is an adapter to allow the use of ordinary
+// function as Talent mutator.
+type TalentFunc func(context.Context, *ent.TalentMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TalentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.TalentMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TalentMutation", m)
 	}
 	return f(ctx, mv)
 }

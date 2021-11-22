@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/talent"
 )
 
 // EmergencyContactQuery is the builder for querying EmergencyContact entities.
@@ -26,7 +26,7 @@ type EmergencyContactQuery struct {
 	fields     []string
 	predicates []predicate.EmergencyContact
 	// eager-loading edges.
-	withApplicant *ApplicantQuery
+	withTalent *TalentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,9 +63,9 @@ func (ecq *EmergencyContactQuery) Order(o ...OrderFunc) *EmergencyContactQuery {
 	return ecq
 }
 
-// QueryApplicant chains the current query on the "applicant" edge.
-func (ecq *EmergencyContactQuery) QueryApplicant() *ApplicantQuery {
-	query := &ApplicantQuery{config: ecq.config}
+// QueryTalent chains the current query on the "talent" edge.
+func (ecq *EmergencyContactQuery) QueryTalent() *TalentQuery {
+	query := &TalentQuery{config: ecq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ecq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -76,8 +76,8 @@ func (ecq *EmergencyContactQuery) QueryApplicant() *ApplicantQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(emergencycontact.Table, emergencycontact.FieldID, selector),
-			sqlgraph.To(applicant.Table, applicant.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, emergencycontact.ApplicantTable, emergencycontact.ApplicantColumn),
+			sqlgraph.To(talent.Table, talent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, emergencycontact.TalentTable, emergencycontact.TalentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ecq.driver.Dialect(), step)
 		return fromU, nil
@@ -261,26 +261,26 @@ func (ecq *EmergencyContactQuery) Clone() *EmergencyContactQuery {
 		return nil
 	}
 	return &EmergencyContactQuery{
-		config:        ecq.config,
-		limit:         ecq.limit,
-		offset:        ecq.offset,
-		order:         append([]OrderFunc{}, ecq.order...),
-		predicates:    append([]predicate.EmergencyContact{}, ecq.predicates...),
-		withApplicant: ecq.withApplicant.Clone(),
+		config:     ecq.config,
+		limit:      ecq.limit,
+		offset:     ecq.offset,
+		order:      append([]OrderFunc{}, ecq.order...),
+		predicates: append([]predicate.EmergencyContact{}, ecq.predicates...),
+		withTalent: ecq.withTalent.Clone(),
 		// clone intermediate query.
 		sql:  ecq.sql.Clone(),
 		path: ecq.path,
 	}
 }
 
-// WithApplicant tells the query-builder to eager-load the nodes that are connected to
-// the "applicant" edge. The optional arguments are used to configure the query builder of the edge.
-func (ecq *EmergencyContactQuery) WithApplicant(opts ...func(*ApplicantQuery)) *EmergencyContactQuery {
-	query := &ApplicantQuery{config: ecq.config}
+// WithTalent tells the query-builder to eager-load the nodes that are connected to
+// the "talent" edge. The optional arguments are used to configure the query builder of the edge.
+func (ecq *EmergencyContactQuery) WithTalent(opts ...func(*TalentQuery)) *EmergencyContactQuery {
+	query := &TalentQuery{config: ecq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	ecq.withApplicant = query
+	ecq.withTalent = query
 	return ecq
 }
 
@@ -350,7 +350,7 @@ func (ecq *EmergencyContactQuery) sqlAll(ctx context.Context) ([]*EmergencyConta
 		nodes       = []*EmergencyContact{}
 		_spec       = ecq.querySpec()
 		loadedTypes = [1]bool{
-			ecq.withApplicant != nil,
+			ecq.withTalent != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -373,17 +373,17 @@ func (ecq *EmergencyContactQuery) sqlAll(ctx context.Context) ([]*EmergencyConta
 		return nodes, nil
 	}
 
-	if query := ecq.withApplicant; query != nil {
+	if query := ecq.withTalent; query != nil {
 		ids := make([]int, 0, len(nodes))
 		nodeids := make(map[int][]*EmergencyContact)
 		for i := range nodes {
-			fk := nodes[i].ApplicantID
+			fk := nodes[i].TalentID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
 			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		query.Where(applicant.IDIn(ids...))
+		query.Where(talent.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
@@ -391,10 +391,10 @@ func (ecq *EmergencyContactQuery) sqlAll(ctx context.Context) ([]*EmergencyConta
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "applicant_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "talent_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.Applicant = n
+				nodes[i].Edges.Talent = n
 			}
 		}
 	}

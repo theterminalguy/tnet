@@ -10,8 +10,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
 )
 
@@ -70,16 +70,16 @@ func (sc *SkillCreate) SetNillableDeletedAt(t *time.Time) *SkillCreate {
 	return sc
 }
 
-// SetApplicantID sets the "applicant_id" field.
-func (sc *SkillCreate) SetApplicantID(i int) *SkillCreate {
-	sc.mutation.SetApplicantID(i)
+// SetTalentID sets the "talent_id" field.
+func (sc *SkillCreate) SetTalentID(i int) *SkillCreate {
+	sc.mutation.SetTalentID(i)
 	return sc
 }
 
-// SetNillableApplicantID sets the "applicant_id" field if the given value is not nil.
-func (sc *SkillCreate) SetNillableApplicantID(i *int) *SkillCreate {
+// SetNillableTalentID sets the "talent_id" field if the given value is not nil.
+func (sc *SkillCreate) SetNillableTalentID(i *int) *SkillCreate {
 	if i != nil {
-		sc.SetApplicantID(*i)
+		sc.SetTalentID(*i)
 	}
 	return sc
 }
@@ -122,9 +122,9 @@ func (sc *SkillCreate) SetID(i int) *SkillCreate {
 	return sc
 }
 
-// SetApplicant sets the "applicant" edge to the Applicant entity.
-func (sc *SkillCreate) SetApplicant(a *Applicant) *SkillCreate {
-	return sc.SetApplicantID(a.ID)
+// SetTalent sets the "talent" edge to the Talent entity.
+func (sc *SkillCreate) SetTalent(t *Talent) *SkillCreate {
+	return sc.SetTalentID(t.ID)
 }
 
 // Mutation returns the SkillMutation object of the builder.
@@ -341,24 +341,24 @@ func (sc *SkillCreate) createSpec() (*Skill, *sqlgraph.CreateSpec) {
 		})
 		_node.Note = value
 	}
-	if nodes := sc.mutation.ApplicantIDs(); len(nodes) > 0 {
+	if nodes := sc.mutation.TalentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   skill.ApplicantTable,
-			Columns: []string{skill.ApplicantColumn},
+			Table:   skill.TalentTable,
+			Columns: []string{skill.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ApplicantID = nodes[0]
+		_node.TalentID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

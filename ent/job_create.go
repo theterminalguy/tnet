@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/jobtalent"
 	"github.com/google/uuid"
 )
 
@@ -158,19 +158,19 @@ func (jc *JobCreate) SetID(i int) *JobCreate {
 	return jc
 }
 
-// AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
-func (jc *JobCreate) AddApplicationIDs(ids ...int) *JobCreate {
-	jc.mutation.AddApplicationIDs(ids...)
+// AddJobTalentIDs adds the "job_talents" edge to the JobTalent entity by IDs.
+func (jc *JobCreate) AddJobTalentIDs(ids ...int) *JobCreate {
+	jc.mutation.AddJobTalentIDs(ids...)
 	return jc
 }
 
-// AddApplications adds the "applications" edges to the JobApplication entity.
-func (jc *JobCreate) AddApplications(j ...*JobApplication) *JobCreate {
+// AddJobTalents adds the "job_talents" edges to the JobTalent entity.
+func (jc *JobCreate) AddJobTalents(j ...*JobTalent) *JobCreate {
 	ids := make([]int, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
-	return jc.AddApplicationIDs(ids...)
+	return jc.AddJobTalentIDs(ids...)
 }
 
 // Mutation returns the JobMutation object of the builder.
@@ -473,17 +473,17 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 		})
 		_node.YouHave = value
 	}
-	if nodes := jc.mutation.ApplicationsIDs(); len(nodes) > 0 {
+	if nodes := jc.mutation.JobTalentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   job.ApplicationsTable,
-			Columns: []string{job.ApplicationsColumn},
+			Table:   job.JobTalentsTable,
+			Columns: []string{job.JobTalentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: jobapplication.FieldID,
+					Column: jobtalent.FieldID,
 				},
 			},
 		}

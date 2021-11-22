@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/applicant"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/workexperience"
 	"github.com/google/uuid"
 )
@@ -70,16 +70,16 @@ func (wec *WorkExperienceCreate) SetNillableDeletedAt(t *time.Time) *WorkExperie
 	return wec
 }
 
-// SetApplicantID sets the "applicant_id" field.
-func (wec *WorkExperienceCreate) SetApplicantID(i int) *WorkExperienceCreate {
-	wec.mutation.SetApplicantID(i)
+// SetTalentID sets the "talent_id" field.
+func (wec *WorkExperienceCreate) SetTalentID(i int) *WorkExperienceCreate {
+	wec.mutation.SetTalentID(i)
 	return wec
 }
 
-// SetNillableApplicantID sets the "applicant_id" field if the given value is not nil.
-func (wec *WorkExperienceCreate) SetNillableApplicantID(i *int) *WorkExperienceCreate {
+// SetNillableTalentID sets the "talent_id" field if the given value is not nil.
+func (wec *WorkExperienceCreate) SetNillableTalentID(i *int) *WorkExperienceCreate {
 	if i != nil {
-		wec.SetApplicantID(*i)
+		wec.SetTalentID(*i)
 	}
 	return wec
 }
@@ -140,9 +140,9 @@ func (wec *WorkExperienceCreate) SetID(i int) *WorkExperienceCreate {
 	return wec
 }
 
-// SetApplicant sets the "applicant" edge to the Applicant entity.
-func (wec *WorkExperienceCreate) SetApplicant(a *Applicant) *WorkExperienceCreate {
-	return wec.SetApplicantID(a.ID)
+// SetTalent sets the "talent" edge to the Talent entity.
+func (wec *WorkExperienceCreate) SetTalent(t *Talent) *WorkExperienceCreate {
+	return wec.SetTalentID(t.ID)
 }
 
 // Mutation returns the WorkExperienceMutation object of the builder.
@@ -380,24 +380,24 @@ func (wec *WorkExperienceCreate) createSpec() (*WorkExperience, *sqlgraph.Create
 		})
 		_node.PrimaryTechnologies = value
 	}
-	if nodes := wec.mutation.ApplicantIDs(); len(nodes) > 0 {
+	if nodes := wec.mutation.TalentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   workexperience.ApplicantTable,
-			Columns: []string{workexperience.ApplicantColumn},
+			Table:   workexperience.TalentTable,
+			Columns: []string{workexperience.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ApplicantID = nodes[0]
+		_node.TalentID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

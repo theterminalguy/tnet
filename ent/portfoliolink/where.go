@@ -136,10 +136,10 @@ func Name(v string) predicate.PortfolioLink {
 	})
 }
 
-// ApplicantID applies equality check predicate on the "applicant_id" field. It's identical to ApplicantIDEQ.
-func ApplicantID(v int) predicate.PortfolioLink {
+// TalentID applies equality check predicate on the "talent_id" field. It's identical to TalentIDEQ.
+func TalentID(v int) predicate.PortfolioLink {
 	return predicate.PortfolioLink(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldApplicantID), v))
+		s.Where(sql.EQ(s.C(FieldTalentID), v))
 	})
 }
 
@@ -683,22 +683,22 @@ func NameContainsFold(v string) predicate.PortfolioLink {
 	})
 }
 
-// ApplicantIDEQ applies the EQ predicate on the "applicant_id" field.
-func ApplicantIDEQ(v int) predicate.PortfolioLink {
+// TalentIDEQ applies the EQ predicate on the "talent_id" field.
+func TalentIDEQ(v int) predicate.PortfolioLink {
 	return predicate.PortfolioLink(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldApplicantID), v))
+		s.Where(sql.EQ(s.C(FieldTalentID), v))
 	})
 }
 
-// ApplicantIDNEQ applies the NEQ predicate on the "applicant_id" field.
-func ApplicantIDNEQ(v int) predicate.PortfolioLink {
+// TalentIDNEQ applies the NEQ predicate on the "talent_id" field.
+func TalentIDNEQ(v int) predicate.PortfolioLink {
 	return predicate.PortfolioLink(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldApplicantID), v))
+		s.Where(sql.NEQ(s.C(FieldTalentID), v))
 	})
 }
 
-// ApplicantIDIn applies the In predicate on the "applicant_id" field.
-func ApplicantIDIn(vs ...int) predicate.PortfolioLink {
+// TalentIDIn applies the In predicate on the "talent_id" field.
+func TalentIDIn(vs ...int) predicate.PortfolioLink {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -710,12 +710,12 @@ func ApplicantIDIn(vs ...int) predicate.PortfolioLink {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldApplicantID), v...))
+		s.Where(sql.In(s.C(FieldTalentID), v...))
 	})
 }
 
-// ApplicantIDNotIn applies the NotIn predicate on the "applicant_id" field.
-func ApplicantIDNotIn(vs ...int) predicate.PortfolioLink {
+// TalentIDNotIn applies the NotIn predicate on the "talent_id" field.
+func TalentIDNotIn(vs ...int) predicate.PortfolioLink {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -727,43 +727,43 @@ func ApplicantIDNotIn(vs ...int) predicate.PortfolioLink {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldApplicantID), v...))
+		s.Where(sql.NotIn(s.C(FieldTalentID), v...))
 	})
 }
 
-// ApplicantIDIsNil applies the IsNil predicate on the "applicant_id" field.
-func ApplicantIDIsNil() predicate.PortfolioLink {
+// TalentIDIsNil applies the IsNil predicate on the "talent_id" field.
+func TalentIDIsNil() predicate.PortfolioLink {
 	return predicate.PortfolioLink(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldApplicantID)))
+		s.Where(sql.IsNull(s.C(FieldTalentID)))
 	})
 }
 
-// ApplicantIDNotNil applies the NotNil predicate on the "applicant_id" field.
-func ApplicantIDNotNil() predicate.PortfolioLink {
+// TalentIDNotNil applies the NotNil predicate on the "talent_id" field.
+func TalentIDNotNil() predicate.PortfolioLink {
 	return predicate.PortfolioLink(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldApplicantID)))
+		s.Where(sql.NotNull(s.C(FieldTalentID)))
 	})
 }
 
-// HasApplicant applies the HasEdge predicate on the "applicant" edge.
-func HasApplicant() predicate.PortfolioLink {
+// HasTalent applies the HasEdge predicate on the "talent" edge.
+func HasTalent() predicate.PortfolioLink {
 	return predicate.PortfolioLink(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ApplicantTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ApplicantTable, ApplicantColumn),
+			sqlgraph.To(TalentTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, TalentTable, TalentColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasApplicantWith applies the HasEdge predicate on the "applicant" edge with a given conditions (other predicates).
-func HasApplicantWith(preds ...predicate.Applicant) predicate.PortfolioLink {
+// HasTalentWith applies the HasEdge predicate on the "talent" edge with a given conditions (other predicates).
+func HasTalentWith(preds ...predicate.Talent) predicate.PortfolioLink {
 	return predicate.PortfolioLink(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ApplicantInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ApplicantTable, ApplicantColumn),
+			sqlgraph.To(TalentInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, TalentTable, TalentColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

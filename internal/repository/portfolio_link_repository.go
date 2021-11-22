@@ -12,9 +12,9 @@ import (
 type PortfolioLinkRepository struct{}
 
 type PortfolioLinkParams struct {
-	URL           string    `json:"url" validate:"required,url"`
-	ApplicantUUID uuid.UUID `json:"applicant_uuid"`
-	Name          string    `json:"name"`
+	URL        string    `json:"url" validate:"required,url"`
+	TalentUUID uuid.UUID `json:"talent_uuid"`
+	Name       string    `json:"name"`
 }
 
 func NewPortfolioLinkRepository() *PortfolioLinkRepository {
@@ -49,13 +49,13 @@ func (*PortfolioLinkRepository) Create(p PortfolioLinkParams) (*ent.PortfolioLin
 	if err != nil {
 		return nil, err
 	}
-	a, err := NewApplicantRepository().GetByUUID(p.ApplicantUUID)
+	a, err := NewTalentRepository().GetByUUID(p.TalentUUID)
 	if err != nil {
 		return nil, err
 	}
 	record, err := dBConn.PortfolioLink.
 		Create().
-		SetApplicantID(a.ID).
+		SetTalentID(a.ID).
 		SetURL(p.URL).
 		SetName(p.Name).
 		Save(dBContext)
@@ -66,7 +66,7 @@ func (*PortfolioLinkRepository) Create(p PortfolioLinkParams) (*ent.PortfolioLin
 }
 
 func (r *PortfolioLinkRepository) Update(id uuid.UUID, p PortfolioLinkParams) (*ent.PortfolioLink, []error) {
-	err := validateParams(p, "ApplicantUUID")
+	err := validateParams(p, "TalentUUID")
 	if err != nil {
 		return nil, []error{err}
 	}

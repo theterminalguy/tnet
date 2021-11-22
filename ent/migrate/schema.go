@@ -8,59 +8,6 @@ import (
 )
 
 var (
-	// ApplicantsColumns holds the columns for the "applicants" table.
-	ApplicantsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "uuid", Type: field.TypeUUID, Unique: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "first_name", Type: field.TypeString},
-		{Name: "last_name", Type: field.TypeString},
-		{Name: "preferred_name", Type: field.TypeString},
-		{Name: "pronoun", Type: field.TypeString},
-		{Name: "preferred_job_title", Type: field.TypeString},
-		{Name: "referral_code", Type: field.TypeString, Nullable: true, Default: "NULL"},
-		{Name: "tentn_code", Type: field.TypeString, Unique: true},
-		{Name: "professional_start_date", Type: field.TypeTime},
-		{Name: "email", Type: field.TypeString, Unique: true},
-		{Name: "phone", Type: field.TypeString, Unique: true},
-		{Name: "country_code", Type: field.TypeString, Size: 2},
-		{Name: "city", Type: field.TypeString},
-		{Name: "joined_tentn_at", Type: field.TypeTime, Nullable: true},
-		{Name: "referrer_id", Type: field.TypeInt, Nullable: true},
-	}
-	// ApplicantsTable holds the schema information for the "applicants" table.
-	ApplicantsTable = &schema.Table{
-		Name:       "applicants",
-		Columns:    ApplicantsColumns,
-		PrimaryKey: []*schema.Column{ApplicantsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "applicants_applicants_referees",
-				Columns:    []*schema.Column{ApplicantsColumns[18]},
-				RefColumns: []*schema.Column{ApplicantsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "applicant_uuid",
-				Unique:  true,
-				Columns: []*schema.Column{ApplicantsColumns[1]},
-			},
-			{
-				Name:    "applicant_referral_code_referrer_id",
-				Unique:  false,
-				Columns: []*schema.Column{ApplicantsColumns[10], ApplicantsColumns[18]},
-			},
-			{
-				Name:    "applicant_tentn_code_email_phone",
-				Unique:  true,
-				Columns: []*schema.Column{ApplicantsColumns[11], ApplicantsColumns[13], ApplicantsColumns[14]},
-			},
-		},
-	}
 	// EducationsColumns holds the columns for the "educations" table.
 	EducationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -75,7 +22,7 @@ var (
 		{Name: "overview", Type: field.TypeString, Size: 2147483647},
 		{Name: "start_date", Type: field.TypeTime},
 		{Name: "end_date", Type: field.TypeTime, Nullable: true},
-		{Name: "applicant_id", Type: field.TypeInt, Nullable: true},
+		{Name: "talent_id", Type: field.TypeInt, Nullable: true},
 	}
 	// EducationsTable holds the schema information for the "educations" table.
 	EducationsTable = &schema.Table{
@@ -84,9 +31,9 @@ var (
 		PrimaryKey: []*schema.Column{EducationsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "educations_applicants_educations",
+				Symbol:     "educations_talents_educations",
 				Columns:    []*schema.Column{EducationsColumns[12]},
-				RefColumns: []*schema.Column{ApplicantsColumns[0]},
+				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -97,7 +44,7 @@ var (
 				Columns: []*schema.Column{EducationsColumns[1]},
 			},
 			{
-				Name:    "education_applicant_id",
+				Name:    "education_talent_id",
 				Unique:  false,
 				Columns: []*schema.Column{EducationsColumns[12]},
 			},
@@ -115,7 +62,7 @@ var (
 		{Name: "address", Type: field.TypeString},
 		{Name: "relationship", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString, Unique: true},
-		{Name: "applicant_id", Type: field.TypeInt, Nullable: true},
+		{Name: "talent_id", Type: field.TypeInt, Nullable: true},
 	}
 	// EmergencyContactsTable holds the schema information for the "emergency_contacts" table.
 	EmergencyContactsTable = &schema.Table{
@@ -124,9 +71,9 @@ var (
 		PrimaryKey: []*schema.Column{EmergencyContactsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "emergency_contacts_applicants_emergency_contacts",
+				Symbol:     "emergency_contacts_talents_emergency_contacts",
 				Columns:    []*schema.Column{EmergencyContactsColumns[10]},
-				RefColumns: []*schema.Column{ApplicantsColumns[0]},
+				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -137,7 +84,7 @@ var (
 				Columns: []*schema.Column{EmergencyContactsColumns[1]},
 			},
 			{
-				Name:    "emergencycontact_applicant_id",
+				Name:    "emergencycontact_talent_id",
 				Unique:  false,
 				Columns: []*schema.Column{EmergencyContactsColumns[10]},
 			},
@@ -185,8 +132,8 @@ var (
 			},
 		},
 	}
-	// JobApplicationsColumns holds the columns for the "job_applications" table.
-	JobApplicationsColumns = []*schema.Column{
+	// JobTalentsColumns holds the columns for the "job_talents" table.
+	JobTalentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "uuid", Type: field.TypeUUID, Unique: true},
 		{Name: "created_at", Type: field.TypeTime},
@@ -195,43 +142,43 @@ var (
 		{Name: "referral_source", Type: field.TypeString},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"screening", "shortlisted", "interviewing", "hired", "rejected"}, Default: "screening"},
 		{Name: "note", Type: field.TypeString, Nullable: true, Size: 2147483647},
-		{Name: "applicant_id", Type: field.TypeInt, Nullable: true},
 		{Name: "job_id", Type: field.TypeInt, Nullable: true},
+		{Name: "talent_id", Type: field.TypeInt, Nullable: true},
 	}
-	// JobApplicationsTable holds the schema information for the "job_applications" table.
-	JobApplicationsTable = &schema.Table{
-		Name:       "job_applications",
-		Columns:    JobApplicationsColumns,
-		PrimaryKey: []*schema.Column{JobApplicationsColumns[0]},
+	// JobTalentsTable holds the schema information for the "job_talents" table.
+	JobTalentsTable = &schema.Table{
+		Name:       "job_talents",
+		Columns:    JobTalentsColumns,
+		PrimaryKey: []*schema.Column{JobTalentsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "job_applications_applicants_job_applications",
-				Columns:    []*schema.Column{JobApplicationsColumns[8]},
-				RefColumns: []*schema.Column{ApplicantsColumns[0]},
+				Symbol:     "job_talents_jobs_job_talents",
+				Columns:    []*schema.Column{JobTalentsColumns[8]},
+				RefColumns: []*schema.Column{JobsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "job_applications_jobs_applications",
-				Columns:    []*schema.Column{JobApplicationsColumns[9]},
-				RefColumns: []*schema.Column{JobsColumns[0]},
+				Symbol:     "job_talents_talents_job_talents",
+				Columns:    []*schema.Column{JobTalentsColumns[9]},
+				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "jobapplication_uuid",
+				Name:    "jobtalent_uuid",
 				Unique:  true,
-				Columns: []*schema.Column{JobApplicationsColumns[1]},
+				Columns: []*schema.Column{JobTalentsColumns[1]},
 			},
 			{
-				Name:    "jobapplication_applicant_id",
+				Name:    "jobtalent_talent_id",
 				Unique:  false,
-				Columns: []*schema.Column{JobApplicationsColumns[8]},
+				Columns: []*schema.Column{JobTalentsColumns[9]},
 			},
 			{
-				Name:    "jobapplication_job_id",
+				Name:    "jobtalent_job_id",
 				Unique:  false,
-				Columns: []*schema.Column{JobApplicationsColumns[9]},
+				Columns: []*schema.Column{JobTalentsColumns[8]},
 			},
 		},
 	}
@@ -244,7 +191,7 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "url", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
-		{Name: "applicant_id", Type: field.TypeInt, Nullable: true},
+		{Name: "talent_id", Type: field.TypeInt, Nullable: true},
 	}
 	// PortfolioLinksTable holds the schema information for the "portfolio_links" table.
 	PortfolioLinksTable = &schema.Table{
@@ -253,9 +200,9 @@ var (
 		PrimaryKey: []*schema.Column{PortfolioLinksColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "portfolio_links_applicants_portfoliolinks",
+				Symbol:     "portfolio_links_talents_portfoliolinks",
 				Columns:    []*schema.Column{PortfolioLinksColumns[7]},
-				RefColumns: []*schema.Column{ApplicantsColumns[0]},
+				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -266,7 +213,7 @@ var (
 				Columns: []*schema.Column{PortfolioLinksColumns[1]},
 			},
 			{
-				Name:    "portfoliolink_applicant_id",
+				Name:    "portfoliolink_talent_id",
 				Unique:  false,
 				Columns: []*schema.Column{PortfolioLinksColumns[7]},
 			},
@@ -283,7 +230,7 @@ var (
 		{Name: "years_of_experience", Type: field.TypeFloat32},
 		{Name: "preferred", Type: field.TypeBool, Default: false},
 		{Name: "note", Type: field.TypeString, Size: 2147483647},
-		{Name: "applicant_id", Type: field.TypeInt, Nullable: true},
+		{Name: "talent_id", Type: field.TypeInt, Nullable: true},
 	}
 	// SkillsTable holds the schema information for the "skills" table.
 	SkillsTable = &schema.Table{
@@ -292,9 +239,9 @@ var (
 		PrimaryKey: []*schema.Column{SkillsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "skills_applicants_skills",
+				Symbol:     "skills_talents_skills",
 				Columns:    []*schema.Column{SkillsColumns[9]},
-				RefColumns: []*schema.Column{ApplicantsColumns[0]},
+				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -305,7 +252,7 @@ var (
 				Columns: []*schema.Column{SkillsColumns[1]},
 			},
 			{
-				Name:    "skill_applicant_id",
+				Name:    "skill_talent_id",
 				Unique:  false,
 				Columns: []*schema.Column{SkillsColumns[9]},
 			},
@@ -313,6 +260,59 @@ var (
 				Name:    "skill_name",
 				Unique:  false,
 				Columns: []*schema.Column{SkillsColumns[5]},
+			},
+		},
+	}
+	// TalentsColumns holds the columns for the "talents" table.
+	TalentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "first_name", Type: field.TypeString},
+		{Name: "last_name", Type: field.TypeString},
+		{Name: "preferred_name", Type: field.TypeString},
+		{Name: "pronoun", Type: field.TypeString},
+		{Name: "preferred_job_title", Type: field.TypeString},
+		{Name: "referral_code", Type: field.TypeString, Nullable: true, Default: "NULL"},
+		{Name: "tentn_code", Type: field.TypeString, Unique: true},
+		{Name: "professional_start_date", Type: field.TypeTime},
+		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "phone", Type: field.TypeString, Unique: true},
+		{Name: "country_code", Type: field.TypeString, Size: 2},
+		{Name: "city", Type: field.TypeString},
+		{Name: "joined_tentn_at", Type: field.TypeTime, Nullable: true},
+		{Name: "referrer_id", Type: field.TypeInt, Nullable: true},
+	}
+	// TalentsTable holds the schema information for the "talents" table.
+	TalentsTable = &schema.Table{
+		Name:       "talents",
+		Columns:    TalentsColumns,
+		PrimaryKey: []*schema.Column{TalentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "talents_talents_referees",
+				Columns:    []*schema.Column{TalentsColumns[18]},
+				RefColumns: []*schema.Column{TalentsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "talent_uuid",
+				Unique:  true,
+				Columns: []*schema.Column{TalentsColumns[1]},
+			},
+			{
+				Name:    "talent_referral_code_referrer_id",
+				Unique:  false,
+				Columns: []*schema.Column{TalentsColumns[10], TalentsColumns[18]},
+			},
+			{
+				Name:    "talent_tentn_code_email_phone",
+				Unique:  true,
+				Columns: []*schema.Column{TalentsColumns[11], TalentsColumns[13], TalentsColumns[14]},
 			},
 		},
 	}
@@ -330,7 +330,7 @@ var (
 		{Name: "start_date", Type: field.TypeTime},
 		{Name: "end_date", Type: field.TypeTime, Nullable: true},
 		{Name: "primary_technologies", Type: field.TypeJSON},
-		{Name: "applicant_id", Type: field.TypeInt, Nullable: true},
+		{Name: "talent_id", Type: field.TypeInt, Nullable: true},
 	}
 	// WorkExperiencesTable holds the schema information for the "work_experiences" table.
 	WorkExperiencesTable = &schema.Table{
@@ -339,9 +339,9 @@ var (
 		PrimaryKey: []*schema.Column{WorkExperiencesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "work_experiences_applicants_work_experiences",
+				Symbol:     "work_experiences_talents_work_experiences",
 				Columns:    []*schema.Column{WorkExperiencesColumns[12]},
-				RefColumns: []*schema.Column{ApplicantsColumns[0]},
+				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -352,7 +352,7 @@ var (
 				Columns: []*schema.Column{WorkExperiencesColumns[1]},
 			},
 			{
-				Name:    "workexperience_applicant_id",
+				Name:    "workexperience_talent_id",
 				Unique:  false,
 				Columns: []*schema.Column{WorkExperiencesColumns[12]},
 			},
@@ -360,24 +360,24 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		ApplicantsTable,
 		EducationsTable,
 		EmergencyContactsTable,
 		JobsTable,
-		JobApplicationsTable,
+		JobTalentsTable,
 		PortfolioLinksTable,
 		SkillsTable,
+		TalentsTable,
 		WorkExperiencesTable,
 	}
 )
 
 func init() {
-	ApplicantsTable.ForeignKeys[0].RefTable = ApplicantsTable
-	EducationsTable.ForeignKeys[0].RefTable = ApplicantsTable
-	EmergencyContactsTable.ForeignKeys[0].RefTable = ApplicantsTable
-	JobApplicationsTable.ForeignKeys[0].RefTable = ApplicantsTable
-	JobApplicationsTable.ForeignKeys[1].RefTable = JobsTable
-	PortfolioLinksTable.ForeignKeys[0].RefTable = ApplicantsTable
-	SkillsTable.ForeignKeys[0].RefTable = ApplicantsTable
-	WorkExperiencesTable.ForeignKeys[0].RefTable = ApplicantsTable
+	EducationsTable.ForeignKeys[0].RefTable = TalentsTable
+	EmergencyContactsTable.ForeignKeys[0].RefTable = TalentsTable
+	JobTalentsTable.ForeignKeys[0].RefTable = JobsTable
+	JobTalentsTable.ForeignKeys[1].RefTable = TalentsTable
+	PortfolioLinksTable.ForeignKeys[0].RefTable = TalentsTable
+	SkillsTable.ForeignKeys[0].RefTable = TalentsTable
+	TalentsTable.ForeignKeys[0].RefTable = TalentsTable
+	WorkExperiencesTable.ForeignKeys[0].RefTable = TalentsTable
 }

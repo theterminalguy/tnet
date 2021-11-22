@@ -10,463 +10,463 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
-	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/jobtalent"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/workexperience"
 	"github.com/google/uuid"
 )
 
-// ApplicantUpdate is the builder for updating Applicant entities.
-type ApplicantUpdate struct {
+// TalentUpdate is the builder for updating Talent entities.
+type TalentUpdate struct {
 	config
 	hooks    []Hook
-	mutation *ApplicantMutation
+	mutation *TalentMutation
 }
 
-// Where appends a list predicates to the ApplicantUpdate builder.
-func (au *ApplicantUpdate) Where(ps ...predicate.Applicant) *ApplicantUpdate {
-	au.mutation.Where(ps...)
-	return au
+// Where appends a list predicates to the TalentUpdate builder.
+func (tu *TalentUpdate) Where(ps ...predicate.Talent) *TalentUpdate {
+	tu.mutation.Where(ps...)
+	return tu
 }
 
 // SetUUID sets the "uuid" field.
-func (au *ApplicantUpdate) SetUUID(u uuid.UUID) *ApplicantUpdate {
-	au.mutation.SetUUID(u)
-	return au
+func (tu *TalentUpdate) SetUUID(u uuid.UUID) *TalentUpdate {
+	tu.mutation.SetUUID(u)
+	return tu
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (au *ApplicantUpdate) SetUpdatedAt(t time.Time) *ApplicantUpdate {
-	au.mutation.SetUpdatedAt(t)
-	return au
+func (tu *TalentUpdate) SetUpdatedAt(t time.Time) *TalentUpdate {
+	tu.mutation.SetUpdatedAt(t)
+	return tu
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (au *ApplicantUpdate) SetDeletedAt(t time.Time) *ApplicantUpdate {
-	au.mutation.SetDeletedAt(t)
-	return au
+func (tu *TalentUpdate) SetDeletedAt(t time.Time) *TalentUpdate {
+	tu.mutation.SetDeletedAt(t)
+	return tu
 }
 
 // SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (au *ApplicantUpdate) SetNillableDeletedAt(t *time.Time) *ApplicantUpdate {
+func (tu *TalentUpdate) SetNillableDeletedAt(t *time.Time) *TalentUpdate {
 	if t != nil {
-		au.SetDeletedAt(*t)
+		tu.SetDeletedAt(*t)
 	}
-	return au
+	return tu
 }
 
 // ClearDeletedAt clears the value of the "deleted_at" field.
-func (au *ApplicantUpdate) ClearDeletedAt() *ApplicantUpdate {
-	au.mutation.ClearDeletedAt()
-	return au
+func (tu *TalentUpdate) ClearDeletedAt() *TalentUpdate {
+	tu.mutation.ClearDeletedAt()
+	return tu
 }
 
 // SetFirstName sets the "first_name" field.
-func (au *ApplicantUpdate) SetFirstName(s string) *ApplicantUpdate {
-	au.mutation.SetFirstName(s)
-	return au
+func (tu *TalentUpdate) SetFirstName(s string) *TalentUpdate {
+	tu.mutation.SetFirstName(s)
+	return tu
 }
 
 // SetLastName sets the "last_name" field.
-func (au *ApplicantUpdate) SetLastName(s string) *ApplicantUpdate {
-	au.mutation.SetLastName(s)
-	return au
+func (tu *TalentUpdate) SetLastName(s string) *TalentUpdate {
+	tu.mutation.SetLastName(s)
+	return tu
 }
 
 // SetPreferredName sets the "preferred_name" field.
-func (au *ApplicantUpdate) SetPreferredName(s string) *ApplicantUpdate {
-	au.mutation.SetPreferredName(s)
-	return au
+func (tu *TalentUpdate) SetPreferredName(s string) *TalentUpdate {
+	tu.mutation.SetPreferredName(s)
+	return tu
 }
 
 // SetPronoun sets the "pronoun" field.
-func (au *ApplicantUpdate) SetPronoun(s string) *ApplicantUpdate {
-	au.mutation.SetPronoun(s)
-	return au
+func (tu *TalentUpdate) SetPronoun(s string) *TalentUpdate {
+	tu.mutation.SetPronoun(s)
+	return tu
 }
 
 // SetPreferredJobTitle sets the "preferred_job_title" field.
-func (au *ApplicantUpdate) SetPreferredJobTitle(s string) *ApplicantUpdate {
-	au.mutation.SetPreferredJobTitle(s)
-	return au
+func (tu *TalentUpdate) SetPreferredJobTitle(s string) *TalentUpdate {
+	tu.mutation.SetPreferredJobTitle(s)
+	return tu
 }
 
 // SetReferrerID sets the "referrer_id" field.
-func (au *ApplicantUpdate) SetReferrerID(i int) *ApplicantUpdate {
-	au.mutation.SetReferrerID(i)
-	return au
+func (tu *TalentUpdate) SetReferrerID(i int) *TalentUpdate {
+	tu.mutation.SetReferrerID(i)
+	return tu
 }
 
 // SetNillableReferrerID sets the "referrer_id" field if the given value is not nil.
-func (au *ApplicantUpdate) SetNillableReferrerID(i *int) *ApplicantUpdate {
+func (tu *TalentUpdate) SetNillableReferrerID(i *int) *TalentUpdate {
 	if i != nil {
-		au.SetReferrerID(*i)
+		tu.SetReferrerID(*i)
 	}
-	return au
+	return tu
 }
 
 // ClearReferrerID clears the value of the "referrer_id" field.
-func (au *ApplicantUpdate) ClearReferrerID() *ApplicantUpdate {
-	au.mutation.ClearReferrerID()
-	return au
+func (tu *TalentUpdate) ClearReferrerID() *TalentUpdate {
+	tu.mutation.ClearReferrerID()
+	return tu
 }
 
 // SetProfessionalStartDate sets the "professional_start_date" field.
-func (au *ApplicantUpdate) SetProfessionalStartDate(t time.Time) *ApplicantUpdate {
-	au.mutation.SetProfessionalStartDate(t)
-	return au
+func (tu *TalentUpdate) SetProfessionalStartDate(t time.Time) *TalentUpdate {
+	tu.mutation.SetProfessionalStartDate(t)
+	return tu
 }
 
 // SetEmail sets the "email" field.
-func (au *ApplicantUpdate) SetEmail(s string) *ApplicantUpdate {
-	au.mutation.SetEmail(s)
-	return au
+func (tu *TalentUpdate) SetEmail(s string) *TalentUpdate {
+	tu.mutation.SetEmail(s)
+	return tu
 }
 
 // SetPhone sets the "phone" field.
-func (au *ApplicantUpdate) SetPhone(s string) *ApplicantUpdate {
-	au.mutation.SetPhone(s)
-	return au
+func (tu *TalentUpdate) SetPhone(s string) *TalentUpdate {
+	tu.mutation.SetPhone(s)
+	return tu
 }
 
 // SetCountryCode sets the "country_code" field.
-func (au *ApplicantUpdate) SetCountryCode(s string) *ApplicantUpdate {
-	au.mutation.SetCountryCode(s)
-	return au
+func (tu *TalentUpdate) SetCountryCode(s string) *TalentUpdate {
+	tu.mutation.SetCountryCode(s)
+	return tu
 }
 
 // SetCity sets the "city" field.
-func (au *ApplicantUpdate) SetCity(s string) *ApplicantUpdate {
-	au.mutation.SetCity(s)
-	return au
+func (tu *TalentUpdate) SetCity(s string) *TalentUpdate {
+	tu.mutation.SetCity(s)
+	return tu
 }
 
 // SetJoinedTentnAt sets the "joined_tentn_at" field.
-func (au *ApplicantUpdate) SetJoinedTentnAt(t time.Time) *ApplicantUpdate {
-	au.mutation.SetJoinedTentnAt(t)
-	return au
+func (tu *TalentUpdate) SetJoinedTentnAt(t time.Time) *TalentUpdate {
+	tu.mutation.SetJoinedTentnAt(t)
+	return tu
 }
 
 // SetNillableJoinedTentnAt sets the "joined_tentn_at" field if the given value is not nil.
-func (au *ApplicantUpdate) SetNillableJoinedTentnAt(t *time.Time) *ApplicantUpdate {
+func (tu *TalentUpdate) SetNillableJoinedTentnAt(t *time.Time) *TalentUpdate {
 	if t != nil {
-		au.SetJoinedTentnAt(*t)
+		tu.SetJoinedTentnAt(*t)
 	}
-	return au
+	return tu
 }
 
 // ClearJoinedTentnAt clears the value of the "joined_tentn_at" field.
-func (au *ApplicantUpdate) ClearJoinedTentnAt() *ApplicantUpdate {
-	au.mutation.ClearJoinedTentnAt()
-	return au
+func (tu *TalentUpdate) ClearJoinedTentnAt() *TalentUpdate {
+	tu.mutation.ClearJoinedTentnAt()
+	return tu
 }
 
-// SetReferrer sets the "referrer" edge to the Applicant entity.
-func (au *ApplicantUpdate) SetReferrer(a *Applicant) *ApplicantUpdate {
-	return au.SetReferrerID(a.ID)
+// SetReferrer sets the "referrer" edge to the Talent entity.
+func (tu *TalentUpdate) SetReferrer(t *Talent) *TalentUpdate {
+	return tu.SetReferrerID(t.ID)
 }
 
-// AddRefereeIDs adds the "referees" edge to the Applicant entity by IDs.
-func (au *ApplicantUpdate) AddRefereeIDs(ids ...int) *ApplicantUpdate {
-	au.mutation.AddRefereeIDs(ids...)
-	return au
+// AddRefereeIDs adds the "referees" edge to the Talent entity by IDs.
+func (tu *TalentUpdate) AddRefereeIDs(ids ...int) *TalentUpdate {
+	tu.mutation.AddRefereeIDs(ids...)
+	return tu
 }
 
-// AddReferees adds the "referees" edges to the Applicant entity.
-func (au *ApplicantUpdate) AddReferees(a ...*Applicant) *ApplicantUpdate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// AddReferees adds the "referees" edges to the Talent entity.
+func (tu *TalentUpdate) AddReferees(t ...*Talent) *TalentUpdate {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
 	}
-	return au.AddRefereeIDs(ids...)
+	return tu.AddRefereeIDs(ids...)
 }
 
 // AddPortfoliolinkIDs adds the "portfoliolinks" edge to the PortfolioLink entity by IDs.
-func (au *ApplicantUpdate) AddPortfoliolinkIDs(ids ...int) *ApplicantUpdate {
-	au.mutation.AddPortfoliolinkIDs(ids...)
-	return au
+func (tu *TalentUpdate) AddPortfoliolinkIDs(ids ...int) *TalentUpdate {
+	tu.mutation.AddPortfoliolinkIDs(ids...)
+	return tu
 }
 
 // AddPortfoliolinks adds the "portfoliolinks" edges to the PortfolioLink entity.
-func (au *ApplicantUpdate) AddPortfoliolinks(p ...*PortfolioLink) *ApplicantUpdate {
+func (tu *TalentUpdate) AddPortfoliolinks(p ...*PortfolioLink) *TalentUpdate {
 	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return au.AddPortfoliolinkIDs(ids...)
+	return tu.AddPortfoliolinkIDs(ids...)
 }
 
 // AddSkillIDs adds the "skills" edge to the Skill entity by IDs.
-func (au *ApplicantUpdate) AddSkillIDs(ids ...int) *ApplicantUpdate {
-	au.mutation.AddSkillIDs(ids...)
-	return au
+func (tu *TalentUpdate) AddSkillIDs(ids ...int) *TalentUpdate {
+	tu.mutation.AddSkillIDs(ids...)
+	return tu
 }
 
 // AddSkills adds the "skills" edges to the Skill entity.
-func (au *ApplicantUpdate) AddSkills(s ...*Skill) *ApplicantUpdate {
+func (tu *TalentUpdate) AddSkills(s ...*Skill) *TalentUpdate {
 	ids := make([]int, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return au.AddSkillIDs(ids...)
+	return tu.AddSkillIDs(ids...)
 }
 
-// AddJobApplicationIDs adds the "job_applications" edge to the JobApplication entity by IDs.
-func (au *ApplicantUpdate) AddJobApplicationIDs(ids ...int) *ApplicantUpdate {
-	au.mutation.AddJobApplicationIDs(ids...)
-	return au
+// AddJobTalentIDs adds the "job_talents" edge to the JobTalent entity by IDs.
+func (tu *TalentUpdate) AddJobTalentIDs(ids ...int) *TalentUpdate {
+	tu.mutation.AddJobTalentIDs(ids...)
+	return tu
 }
 
-// AddJobApplications adds the "job_applications" edges to the JobApplication entity.
-func (au *ApplicantUpdate) AddJobApplications(j ...*JobApplication) *ApplicantUpdate {
+// AddJobTalents adds the "job_talents" edges to the JobTalent entity.
+func (tu *TalentUpdate) AddJobTalents(j ...*JobTalent) *TalentUpdate {
 	ids := make([]int, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
-	return au.AddJobApplicationIDs(ids...)
+	return tu.AddJobTalentIDs(ids...)
 }
 
 // AddWorkExperienceIDs adds the "work_experiences" edge to the WorkExperience entity by IDs.
-func (au *ApplicantUpdate) AddWorkExperienceIDs(ids ...int) *ApplicantUpdate {
-	au.mutation.AddWorkExperienceIDs(ids...)
-	return au
+func (tu *TalentUpdate) AddWorkExperienceIDs(ids ...int) *TalentUpdate {
+	tu.mutation.AddWorkExperienceIDs(ids...)
+	return tu
 }
 
 // AddWorkExperiences adds the "work_experiences" edges to the WorkExperience entity.
-func (au *ApplicantUpdate) AddWorkExperiences(w ...*WorkExperience) *ApplicantUpdate {
+func (tu *TalentUpdate) AddWorkExperiences(w ...*WorkExperience) *TalentUpdate {
 	ids := make([]int, len(w))
 	for i := range w {
 		ids[i] = w[i].ID
 	}
-	return au.AddWorkExperienceIDs(ids...)
+	return tu.AddWorkExperienceIDs(ids...)
 }
 
 // AddEducationIDs adds the "educations" edge to the Education entity by IDs.
-func (au *ApplicantUpdate) AddEducationIDs(ids ...int) *ApplicantUpdate {
-	au.mutation.AddEducationIDs(ids...)
-	return au
+func (tu *TalentUpdate) AddEducationIDs(ids ...int) *TalentUpdate {
+	tu.mutation.AddEducationIDs(ids...)
+	return tu
 }
 
 // AddEducations adds the "educations" edges to the Education entity.
-func (au *ApplicantUpdate) AddEducations(e ...*Education) *ApplicantUpdate {
+func (tu *TalentUpdate) AddEducations(e ...*Education) *TalentUpdate {
 	ids := make([]int, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
-	return au.AddEducationIDs(ids...)
+	return tu.AddEducationIDs(ids...)
 }
 
 // AddEmergencyContactIDs adds the "emergency_contacts" edge to the EmergencyContact entity by IDs.
-func (au *ApplicantUpdate) AddEmergencyContactIDs(ids ...int) *ApplicantUpdate {
-	au.mutation.AddEmergencyContactIDs(ids...)
-	return au
+func (tu *TalentUpdate) AddEmergencyContactIDs(ids ...int) *TalentUpdate {
+	tu.mutation.AddEmergencyContactIDs(ids...)
+	return tu
 }
 
 // AddEmergencyContacts adds the "emergency_contacts" edges to the EmergencyContact entity.
-func (au *ApplicantUpdate) AddEmergencyContacts(e ...*EmergencyContact) *ApplicantUpdate {
+func (tu *TalentUpdate) AddEmergencyContacts(e ...*EmergencyContact) *TalentUpdate {
 	ids := make([]int, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
-	return au.AddEmergencyContactIDs(ids...)
+	return tu.AddEmergencyContactIDs(ids...)
 }
 
-// Mutation returns the ApplicantMutation object of the builder.
-func (au *ApplicantUpdate) Mutation() *ApplicantMutation {
-	return au.mutation
+// Mutation returns the TalentMutation object of the builder.
+func (tu *TalentUpdate) Mutation() *TalentMutation {
+	return tu.mutation
 }
 
-// ClearReferrer clears the "referrer" edge to the Applicant entity.
-func (au *ApplicantUpdate) ClearReferrer() *ApplicantUpdate {
-	au.mutation.ClearReferrer()
-	return au
+// ClearReferrer clears the "referrer" edge to the Talent entity.
+func (tu *TalentUpdate) ClearReferrer() *TalentUpdate {
+	tu.mutation.ClearReferrer()
+	return tu
 }
 
-// ClearReferees clears all "referees" edges to the Applicant entity.
-func (au *ApplicantUpdate) ClearReferees() *ApplicantUpdate {
-	au.mutation.ClearReferees()
-	return au
+// ClearReferees clears all "referees" edges to the Talent entity.
+func (tu *TalentUpdate) ClearReferees() *TalentUpdate {
+	tu.mutation.ClearReferees()
+	return tu
 }
 
-// RemoveRefereeIDs removes the "referees" edge to Applicant entities by IDs.
-func (au *ApplicantUpdate) RemoveRefereeIDs(ids ...int) *ApplicantUpdate {
-	au.mutation.RemoveRefereeIDs(ids...)
-	return au
+// RemoveRefereeIDs removes the "referees" edge to Talent entities by IDs.
+func (tu *TalentUpdate) RemoveRefereeIDs(ids ...int) *TalentUpdate {
+	tu.mutation.RemoveRefereeIDs(ids...)
+	return tu
 }
 
-// RemoveReferees removes "referees" edges to Applicant entities.
-func (au *ApplicantUpdate) RemoveReferees(a ...*Applicant) *ApplicantUpdate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// RemoveReferees removes "referees" edges to Talent entities.
+func (tu *TalentUpdate) RemoveReferees(t ...*Talent) *TalentUpdate {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
 	}
-	return au.RemoveRefereeIDs(ids...)
+	return tu.RemoveRefereeIDs(ids...)
 }
 
 // ClearPortfoliolinks clears all "portfoliolinks" edges to the PortfolioLink entity.
-func (au *ApplicantUpdate) ClearPortfoliolinks() *ApplicantUpdate {
-	au.mutation.ClearPortfoliolinks()
-	return au
+func (tu *TalentUpdate) ClearPortfoliolinks() *TalentUpdate {
+	tu.mutation.ClearPortfoliolinks()
+	return tu
 }
 
 // RemovePortfoliolinkIDs removes the "portfoliolinks" edge to PortfolioLink entities by IDs.
-func (au *ApplicantUpdate) RemovePortfoliolinkIDs(ids ...int) *ApplicantUpdate {
-	au.mutation.RemovePortfoliolinkIDs(ids...)
-	return au
+func (tu *TalentUpdate) RemovePortfoliolinkIDs(ids ...int) *TalentUpdate {
+	tu.mutation.RemovePortfoliolinkIDs(ids...)
+	return tu
 }
 
 // RemovePortfoliolinks removes "portfoliolinks" edges to PortfolioLink entities.
-func (au *ApplicantUpdate) RemovePortfoliolinks(p ...*PortfolioLink) *ApplicantUpdate {
+func (tu *TalentUpdate) RemovePortfoliolinks(p ...*PortfolioLink) *TalentUpdate {
 	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return au.RemovePortfoliolinkIDs(ids...)
+	return tu.RemovePortfoliolinkIDs(ids...)
 }
 
 // ClearSkills clears all "skills" edges to the Skill entity.
-func (au *ApplicantUpdate) ClearSkills() *ApplicantUpdate {
-	au.mutation.ClearSkills()
-	return au
+func (tu *TalentUpdate) ClearSkills() *TalentUpdate {
+	tu.mutation.ClearSkills()
+	return tu
 }
 
 // RemoveSkillIDs removes the "skills" edge to Skill entities by IDs.
-func (au *ApplicantUpdate) RemoveSkillIDs(ids ...int) *ApplicantUpdate {
-	au.mutation.RemoveSkillIDs(ids...)
-	return au
+func (tu *TalentUpdate) RemoveSkillIDs(ids ...int) *TalentUpdate {
+	tu.mutation.RemoveSkillIDs(ids...)
+	return tu
 }
 
 // RemoveSkills removes "skills" edges to Skill entities.
-func (au *ApplicantUpdate) RemoveSkills(s ...*Skill) *ApplicantUpdate {
+func (tu *TalentUpdate) RemoveSkills(s ...*Skill) *TalentUpdate {
 	ids := make([]int, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return au.RemoveSkillIDs(ids...)
+	return tu.RemoveSkillIDs(ids...)
 }
 
-// ClearJobApplications clears all "job_applications" edges to the JobApplication entity.
-func (au *ApplicantUpdate) ClearJobApplications() *ApplicantUpdate {
-	au.mutation.ClearJobApplications()
-	return au
+// ClearJobTalents clears all "job_talents" edges to the JobTalent entity.
+func (tu *TalentUpdate) ClearJobTalents() *TalentUpdate {
+	tu.mutation.ClearJobTalents()
+	return tu
 }
 
-// RemoveJobApplicationIDs removes the "job_applications" edge to JobApplication entities by IDs.
-func (au *ApplicantUpdate) RemoveJobApplicationIDs(ids ...int) *ApplicantUpdate {
-	au.mutation.RemoveJobApplicationIDs(ids...)
-	return au
+// RemoveJobTalentIDs removes the "job_talents" edge to JobTalent entities by IDs.
+func (tu *TalentUpdate) RemoveJobTalentIDs(ids ...int) *TalentUpdate {
+	tu.mutation.RemoveJobTalentIDs(ids...)
+	return tu
 }
 
-// RemoveJobApplications removes "job_applications" edges to JobApplication entities.
-func (au *ApplicantUpdate) RemoveJobApplications(j ...*JobApplication) *ApplicantUpdate {
+// RemoveJobTalents removes "job_talents" edges to JobTalent entities.
+func (tu *TalentUpdate) RemoveJobTalents(j ...*JobTalent) *TalentUpdate {
 	ids := make([]int, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
-	return au.RemoveJobApplicationIDs(ids...)
+	return tu.RemoveJobTalentIDs(ids...)
 }
 
 // ClearWorkExperiences clears all "work_experiences" edges to the WorkExperience entity.
-func (au *ApplicantUpdate) ClearWorkExperiences() *ApplicantUpdate {
-	au.mutation.ClearWorkExperiences()
-	return au
+func (tu *TalentUpdate) ClearWorkExperiences() *TalentUpdate {
+	tu.mutation.ClearWorkExperiences()
+	return tu
 }
 
 // RemoveWorkExperienceIDs removes the "work_experiences" edge to WorkExperience entities by IDs.
-func (au *ApplicantUpdate) RemoveWorkExperienceIDs(ids ...int) *ApplicantUpdate {
-	au.mutation.RemoveWorkExperienceIDs(ids...)
-	return au
+func (tu *TalentUpdate) RemoveWorkExperienceIDs(ids ...int) *TalentUpdate {
+	tu.mutation.RemoveWorkExperienceIDs(ids...)
+	return tu
 }
 
 // RemoveWorkExperiences removes "work_experiences" edges to WorkExperience entities.
-func (au *ApplicantUpdate) RemoveWorkExperiences(w ...*WorkExperience) *ApplicantUpdate {
+func (tu *TalentUpdate) RemoveWorkExperiences(w ...*WorkExperience) *TalentUpdate {
 	ids := make([]int, len(w))
 	for i := range w {
 		ids[i] = w[i].ID
 	}
-	return au.RemoveWorkExperienceIDs(ids...)
+	return tu.RemoveWorkExperienceIDs(ids...)
 }
 
 // ClearEducations clears all "educations" edges to the Education entity.
-func (au *ApplicantUpdate) ClearEducations() *ApplicantUpdate {
-	au.mutation.ClearEducations()
-	return au
+func (tu *TalentUpdate) ClearEducations() *TalentUpdate {
+	tu.mutation.ClearEducations()
+	return tu
 }
 
 // RemoveEducationIDs removes the "educations" edge to Education entities by IDs.
-func (au *ApplicantUpdate) RemoveEducationIDs(ids ...int) *ApplicantUpdate {
-	au.mutation.RemoveEducationIDs(ids...)
-	return au
+func (tu *TalentUpdate) RemoveEducationIDs(ids ...int) *TalentUpdate {
+	tu.mutation.RemoveEducationIDs(ids...)
+	return tu
 }
 
 // RemoveEducations removes "educations" edges to Education entities.
-func (au *ApplicantUpdate) RemoveEducations(e ...*Education) *ApplicantUpdate {
+func (tu *TalentUpdate) RemoveEducations(e ...*Education) *TalentUpdate {
 	ids := make([]int, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
-	return au.RemoveEducationIDs(ids...)
+	return tu.RemoveEducationIDs(ids...)
 }
 
 // ClearEmergencyContacts clears all "emergency_contacts" edges to the EmergencyContact entity.
-func (au *ApplicantUpdate) ClearEmergencyContacts() *ApplicantUpdate {
-	au.mutation.ClearEmergencyContacts()
-	return au
+func (tu *TalentUpdate) ClearEmergencyContacts() *TalentUpdate {
+	tu.mutation.ClearEmergencyContacts()
+	return tu
 }
 
 // RemoveEmergencyContactIDs removes the "emergency_contacts" edge to EmergencyContact entities by IDs.
-func (au *ApplicantUpdate) RemoveEmergencyContactIDs(ids ...int) *ApplicantUpdate {
-	au.mutation.RemoveEmergencyContactIDs(ids...)
-	return au
+func (tu *TalentUpdate) RemoveEmergencyContactIDs(ids ...int) *TalentUpdate {
+	tu.mutation.RemoveEmergencyContactIDs(ids...)
+	return tu
 }
 
 // RemoveEmergencyContacts removes "emergency_contacts" edges to EmergencyContact entities.
-func (au *ApplicantUpdate) RemoveEmergencyContacts(e ...*EmergencyContact) *ApplicantUpdate {
+func (tu *TalentUpdate) RemoveEmergencyContacts(e ...*EmergencyContact) *TalentUpdate {
 	ids := make([]int, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
-	return au.RemoveEmergencyContactIDs(ids...)
+	return tu.RemoveEmergencyContactIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (au *ApplicantUpdate) Save(ctx context.Context) (int, error) {
+func (tu *TalentUpdate) Save(ctx context.Context) (int, error) {
 	var (
 		err      error
 		affected int
 	)
-	au.defaults()
-	if len(au.hooks) == 0 {
-		if err = au.check(); err != nil {
+	tu.defaults()
+	if len(tu.hooks) == 0 {
+		if err = tu.check(); err != nil {
 			return 0, err
 		}
-		affected, err = au.sqlSave(ctx)
+		affected, err = tu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ApplicantMutation)
+			mutation, ok := m.(*TalentMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
 			}
-			if err = au.check(); err != nil {
+			if err = tu.check(); err != nil {
 				return 0, err
 			}
-			au.mutation = mutation
-			affected, err = au.sqlSave(ctx)
+			tu.mutation = mutation
+			affected, err = tu.sqlSave(ctx)
 			mutation.done = true
 			return affected, err
 		})
-		for i := len(au.hooks) - 1; i >= 0; i-- {
-			if au.hooks[i] == nil {
+		for i := len(tu.hooks) - 1; i >= 0; i-- {
+			if tu.hooks[i] == nil {
 				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
 			}
-			mut = au.hooks[i](mut)
+			mut = tu.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, au.mutation); err != nil {
+		if _, err := mut.Mutate(ctx, tu.mutation); err != nil {
 			return 0, err
 		}
 	}
@@ -474,8 +474,8 @@ func (au *ApplicantUpdate) Save(ctx context.Context) (int, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (au *ApplicantUpdate) SaveX(ctx context.Context) int {
-	affected, err := au.Save(ctx)
+func (tu *TalentUpdate) SaveX(ctx context.Context) int {
+	affected, err := tu.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -483,197 +483,197 @@ func (au *ApplicantUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (au *ApplicantUpdate) Exec(ctx context.Context) error {
-	_, err := au.Save(ctx)
+func (tu *TalentUpdate) Exec(ctx context.Context) error {
+	_, err := tu.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (au *ApplicantUpdate) ExecX(ctx context.Context) {
-	if err := au.Exec(ctx); err != nil {
+func (tu *TalentUpdate) ExecX(ctx context.Context) {
+	if err := tu.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (au *ApplicantUpdate) defaults() {
-	if _, ok := au.mutation.UpdatedAt(); !ok {
-		v := applicant.UpdateDefaultUpdatedAt()
-		au.mutation.SetUpdatedAt(v)
+func (tu *TalentUpdate) defaults() {
+	if _, ok := tu.mutation.UpdatedAt(); !ok {
+		v := talent.UpdateDefaultUpdatedAt()
+		tu.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (au *ApplicantUpdate) check() error {
-	if v, ok := au.mutation.CountryCode(); ok {
-		if err := applicant.CountryCodeValidator(v); err != nil {
+func (tu *TalentUpdate) check() error {
+	if v, ok := tu.mutation.CountryCode(); ok {
+		if err := talent.CountryCodeValidator(v); err != nil {
 			return &ValidationError{Name: "country_code", err: fmt.Errorf("ent: validator failed for field \"country_code\": %w", err)}
 		}
 	}
 	return nil
 }
 
-func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
+func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
-			Table:   applicant.Table,
-			Columns: applicant.Columns,
+			Table:   talent.Table,
+			Columns: talent.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeInt,
-				Column: applicant.FieldID,
+				Column: talent.FieldID,
 			},
 		},
 	}
-	if ps := au.mutation.predicates; len(ps) > 0 {
+	if ps := tu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := au.mutation.UUID(); ok {
+	if value, ok := tu.mutation.UUID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
 			Value:  value,
-			Column: applicant.FieldUUID,
+			Column: talent.FieldUUID,
 		})
 	}
-	if value, ok := au.mutation.UpdatedAt(); ok {
+	if value, ok := tu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: applicant.FieldUpdatedAt,
+			Column: talent.FieldUpdatedAt,
 		})
 	}
-	if value, ok := au.mutation.DeletedAt(); ok {
+	if value, ok := tu.mutation.DeletedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: applicant.FieldDeletedAt,
+			Column: talent.FieldDeletedAt,
 		})
 	}
-	if au.mutation.DeletedAtCleared() {
+	if tu.mutation.DeletedAtCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
-			Column: applicant.FieldDeletedAt,
+			Column: talent.FieldDeletedAt,
 		})
 	}
-	if value, ok := au.mutation.FirstName(); ok {
+	if value, ok := tu.mutation.FirstName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldFirstName,
+			Column: talent.FieldFirstName,
 		})
 	}
-	if value, ok := au.mutation.LastName(); ok {
+	if value, ok := tu.mutation.LastName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldLastName,
+			Column: talent.FieldLastName,
 		})
 	}
-	if value, ok := au.mutation.PreferredName(); ok {
+	if value, ok := tu.mutation.PreferredName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldPreferredName,
+			Column: talent.FieldPreferredName,
 		})
 	}
-	if value, ok := au.mutation.Pronoun(); ok {
+	if value, ok := tu.mutation.Pronoun(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldPronoun,
+			Column: talent.FieldPronoun,
 		})
 	}
-	if value, ok := au.mutation.PreferredJobTitle(); ok {
+	if value, ok := tu.mutation.PreferredJobTitle(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldPreferredJobTitle,
+			Column: talent.FieldPreferredJobTitle,
 		})
 	}
-	if au.mutation.ReferralCodeCleared() {
+	if tu.mutation.ReferralCodeCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
-			Column: applicant.FieldReferralCode,
+			Column: talent.FieldReferralCode,
 		})
 	}
-	if value, ok := au.mutation.ProfessionalStartDate(); ok {
+	if value, ok := tu.mutation.ProfessionalStartDate(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: applicant.FieldProfessionalStartDate,
+			Column: talent.FieldProfessionalStartDate,
 		})
 	}
-	if value, ok := au.mutation.Email(); ok {
+	if value, ok := tu.mutation.Email(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldEmail,
+			Column: talent.FieldEmail,
 		})
 	}
-	if value, ok := au.mutation.Phone(); ok {
+	if value, ok := tu.mutation.Phone(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldPhone,
+			Column: talent.FieldPhone,
 		})
 	}
-	if value, ok := au.mutation.CountryCode(); ok {
+	if value, ok := tu.mutation.CountryCode(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldCountryCode,
+			Column: talent.FieldCountryCode,
 		})
 	}
-	if value, ok := au.mutation.City(); ok {
+	if value, ok := tu.mutation.City(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldCity,
+			Column: talent.FieldCity,
 		})
 	}
-	if value, ok := au.mutation.JoinedTentnAt(); ok {
+	if value, ok := tu.mutation.JoinedTentnAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: applicant.FieldJoinedTentnAt,
+			Column: talent.FieldJoinedTentnAt,
 		})
 	}
-	if au.mutation.JoinedTentnAtCleared() {
+	if tu.mutation.JoinedTentnAtCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
-			Column: applicant.FieldJoinedTentnAt,
+			Column: talent.FieldJoinedTentnAt,
 		})
 	}
-	if au.mutation.ReferrerCleared() {
+	if tu.mutation.ReferrerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   applicant.ReferrerTable,
-			Columns: []string{applicant.ReferrerColumn},
+			Table:   talent.ReferrerTable,
+			Columns: []string{talent.ReferrerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.ReferrerIDs(); len(nodes) > 0 {
+	if nodes := tu.mutation.ReferrerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   applicant.ReferrerTable,
-			Columns: []string{applicant.ReferrerColumn},
+			Table:   talent.ReferrerTable,
+			Columns: []string{talent.ReferrerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
@@ -682,33 +682,33 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.RefereesCleared() {
+	if tu.mutation.RefereesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.RefereesTable,
-			Columns: []string{applicant.RefereesColumn},
+			Table:   talent.RefereesTable,
+			Columns: []string{talent.RefereesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.RemovedRefereesIDs(); len(nodes) > 0 && !au.mutation.RefereesCleared() {
+	if nodes := tu.mutation.RemovedRefereesIDs(); len(nodes) > 0 && !tu.mutation.RefereesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.RefereesTable,
-			Columns: []string{applicant.RefereesColumn},
+			Table:   talent.RefereesTable,
+			Columns: []string{talent.RefereesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
@@ -717,17 +717,17 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.RefereesIDs(); len(nodes) > 0 {
+	if nodes := tu.mutation.RefereesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.RefereesTable,
-			Columns: []string{applicant.RefereesColumn},
+			Table:   talent.RefereesTable,
+			Columns: []string{talent.RefereesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
@@ -736,12 +736,12 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.PortfoliolinksCleared() {
+	if tu.mutation.PortfoliolinksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.PortfoliolinksTable,
-			Columns: []string{applicant.PortfoliolinksColumn},
+			Table:   talent.PortfoliolinksTable,
+			Columns: []string{talent.PortfoliolinksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -752,31 +752,12 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.RemovedPortfoliolinksIDs(); len(nodes) > 0 && !au.mutation.PortfoliolinksCleared() {
+	if nodes := tu.mutation.RemovedPortfoliolinksIDs(); len(nodes) > 0 && !tu.mutation.PortfoliolinksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.PortfoliolinksTable,
-			Columns: []string{applicant.PortfoliolinksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: portfoliolink.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.PortfoliolinksIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   applicant.PortfoliolinksTable,
-			Columns: []string{applicant.PortfoliolinksColumn},
+			Table:   talent.PortfoliolinksTable,
+			Columns: []string{talent.PortfoliolinksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -788,14 +769,33 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if au.mutation.SkillsCleared() {
+	if nodes := tu.mutation.PortfoliolinksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.SkillsTable,
-			Columns: []string{applicant.SkillsColumn},
+			Table:   talent.PortfoliolinksTable,
+			Columns: []string{talent.PortfoliolinksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: portfoliolink.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tu.mutation.SkillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   talent.SkillsTable,
+			Columns: []string{talent.SkillsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -806,12 +806,12 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.RemovedSkillsIDs(); len(nodes) > 0 && !au.mutation.SkillsCleared() {
+	if nodes := tu.mutation.RemovedSkillsIDs(); len(nodes) > 0 && !tu.mutation.SkillsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.SkillsTable,
-			Columns: []string{applicant.SkillsColumn},
+			Table:   talent.SkillsTable,
+			Columns: []string{talent.SkillsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -825,12 +825,12 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.SkillsIDs(); len(nodes) > 0 {
+	if nodes := tu.mutation.SkillsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.SkillsTable,
-			Columns: []string{applicant.SkillsColumn},
+			Table:   talent.SkillsTable,
+			Columns: []string{talent.SkillsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -844,33 +844,33 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.JobApplicationsCleared() {
+	if tu.mutation.JobTalentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.JobApplicationsTable,
-			Columns: []string{applicant.JobApplicationsColumn},
+			Table:   talent.JobTalentsTable,
+			Columns: []string{talent.JobTalentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: jobapplication.FieldID,
+					Column: jobtalent.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.RemovedJobApplicationsIDs(); len(nodes) > 0 && !au.mutation.JobApplicationsCleared() {
+	if nodes := tu.mutation.RemovedJobTalentsIDs(); len(nodes) > 0 && !tu.mutation.JobTalentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.JobApplicationsTable,
-			Columns: []string{applicant.JobApplicationsColumn},
+			Table:   talent.JobTalentsTable,
+			Columns: []string{talent.JobTalentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: jobapplication.FieldID,
+					Column: jobtalent.FieldID,
 				},
 			},
 		}
@@ -879,17 +879,17 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.JobApplicationsIDs(); len(nodes) > 0 {
+	if nodes := tu.mutation.JobTalentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.JobApplicationsTable,
-			Columns: []string{applicant.JobApplicationsColumn},
+			Table:   talent.JobTalentsTable,
+			Columns: []string{talent.JobTalentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: jobapplication.FieldID,
+					Column: jobtalent.FieldID,
 				},
 			},
 		}
@@ -898,12 +898,12 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.WorkExperiencesCleared() {
+	if tu.mutation.WorkExperiencesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.WorkExperiencesTable,
-			Columns: []string{applicant.WorkExperiencesColumn},
+			Table:   talent.WorkExperiencesTable,
+			Columns: []string{talent.WorkExperiencesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -914,31 +914,12 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.RemovedWorkExperiencesIDs(); len(nodes) > 0 && !au.mutation.WorkExperiencesCleared() {
+	if nodes := tu.mutation.RemovedWorkExperiencesIDs(); len(nodes) > 0 && !tu.mutation.WorkExperiencesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.WorkExperiencesTable,
-			Columns: []string{applicant.WorkExperiencesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: workexperience.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.WorkExperiencesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   applicant.WorkExperiencesTable,
-			Columns: []string{applicant.WorkExperiencesColumn},
+			Table:   talent.WorkExperiencesTable,
+			Columns: []string{talent.WorkExperiencesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -950,14 +931,33 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if au.mutation.EducationsCleared() {
+	if nodes := tu.mutation.WorkExperiencesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.EducationsTable,
-			Columns: []string{applicant.EducationsColumn},
+			Table:   talent.WorkExperiencesTable,
+			Columns: []string{talent.WorkExperiencesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: workexperience.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tu.mutation.EducationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   talent.EducationsTable,
+			Columns: []string{talent.EducationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -968,12 +968,12 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.RemovedEducationsIDs(); len(nodes) > 0 && !au.mutation.EducationsCleared() {
+	if nodes := tu.mutation.RemovedEducationsIDs(); len(nodes) > 0 && !tu.mutation.EducationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.EducationsTable,
-			Columns: []string{applicant.EducationsColumn},
+			Table:   talent.EducationsTable,
+			Columns: []string{talent.EducationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -987,12 +987,12 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.EducationsIDs(); len(nodes) > 0 {
+	if nodes := tu.mutation.EducationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.EducationsTable,
-			Columns: []string{applicant.EducationsColumn},
+			Table:   talent.EducationsTable,
+			Columns: []string{talent.EducationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1006,12 +1006,12 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.EmergencyContactsCleared() {
+	if tu.mutation.EmergencyContactsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.EmergencyContactsTable,
-			Columns: []string{applicant.EmergencyContactsColumn},
+			Table:   talent.EmergencyContactsTable,
+			Columns: []string{talent.EmergencyContactsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1022,12 +1022,12 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.RemovedEmergencyContactsIDs(); len(nodes) > 0 && !au.mutation.EmergencyContactsCleared() {
+	if nodes := tu.mutation.RemovedEmergencyContactsIDs(); len(nodes) > 0 && !tu.mutation.EmergencyContactsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.EmergencyContactsTable,
-			Columns: []string{applicant.EmergencyContactsColumn},
+			Table:   talent.EmergencyContactsTable,
+			Columns: []string{talent.EmergencyContactsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1041,12 +1041,12 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.EmergencyContactsIDs(); len(nodes) > 0 {
+	if nodes := tu.mutation.EmergencyContactsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.EmergencyContactsTable,
-			Columns: []string{applicant.EmergencyContactsColumn},
+			Table:   talent.EmergencyContactsTable,
+			Columns: []string{talent.EmergencyContactsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1060,9 +1060,9 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
+	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
-			err = &NotFoundError{applicant.Label}
+			err = &NotFoundError{talent.Label}
 		} else if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{err.Error(), err}
 		}
@@ -1071,454 +1071,454 @@ func (au *ApplicantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	return n, nil
 }
 
-// ApplicantUpdateOne is the builder for updating a single Applicant entity.
-type ApplicantUpdateOne struct {
+// TalentUpdateOne is the builder for updating a single Talent entity.
+type TalentUpdateOne struct {
 	config
 	fields   []string
 	hooks    []Hook
-	mutation *ApplicantMutation
+	mutation *TalentMutation
 }
 
 // SetUUID sets the "uuid" field.
-func (auo *ApplicantUpdateOne) SetUUID(u uuid.UUID) *ApplicantUpdateOne {
-	auo.mutation.SetUUID(u)
-	return auo
+func (tuo *TalentUpdateOne) SetUUID(u uuid.UUID) *TalentUpdateOne {
+	tuo.mutation.SetUUID(u)
+	return tuo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (auo *ApplicantUpdateOne) SetUpdatedAt(t time.Time) *ApplicantUpdateOne {
-	auo.mutation.SetUpdatedAt(t)
-	return auo
+func (tuo *TalentUpdateOne) SetUpdatedAt(t time.Time) *TalentUpdateOne {
+	tuo.mutation.SetUpdatedAt(t)
+	return tuo
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (auo *ApplicantUpdateOne) SetDeletedAt(t time.Time) *ApplicantUpdateOne {
-	auo.mutation.SetDeletedAt(t)
-	return auo
+func (tuo *TalentUpdateOne) SetDeletedAt(t time.Time) *TalentUpdateOne {
+	tuo.mutation.SetDeletedAt(t)
+	return tuo
 }
 
 // SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (auo *ApplicantUpdateOne) SetNillableDeletedAt(t *time.Time) *ApplicantUpdateOne {
+func (tuo *TalentUpdateOne) SetNillableDeletedAt(t *time.Time) *TalentUpdateOne {
 	if t != nil {
-		auo.SetDeletedAt(*t)
+		tuo.SetDeletedAt(*t)
 	}
-	return auo
+	return tuo
 }
 
 // ClearDeletedAt clears the value of the "deleted_at" field.
-func (auo *ApplicantUpdateOne) ClearDeletedAt() *ApplicantUpdateOne {
-	auo.mutation.ClearDeletedAt()
-	return auo
+func (tuo *TalentUpdateOne) ClearDeletedAt() *TalentUpdateOne {
+	tuo.mutation.ClearDeletedAt()
+	return tuo
 }
 
 // SetFirstName sets the "first_name" field.
-func (auo *ApplicantUpdateOne) SetFirstName(s string) *ApplicantUpdateOne {
-	auo.mutation.SetFirstName(s)
-	return auo
+func (tuo *TalentUpdateOne) SetFirstName(s string) *TalentUpdateOne {
+	tuo.mutation.SetFirstName(s)
+	return tuo
 }
 
 // SetLastName sets the "last_name" field.
-func (auo *ApplicantUpdateOne) SetLastName(s string) *ApplicantUpdateOne {
-	auo.mutation.SetLastName(s)
-	return auo
+func (tuo *TalentUpdateOne) SetLastName(s string) *TalentUpdateOne {
+	tuo.mutation.SetLastName(s)
+	return tuo
 }
 
 // SetPreferredName sets the "preferred_name" field.
-func (auo *ApplicantUpdateOne) SetPreferredName(s string) *ApplicantUpdateOne {
-	auo.mutation.SetPreferredName(s)
-	return auo
+func (tuo *TalentUpdateOne) SetPreferredName(s string) *TalentUpdateOne {
+	tuo.mutation.SetPreferredName(s)
+	return tuo
 }
 
 // SetPronoun sets the "pronoun" field.
-func (auo *ApplicantUpdateOne) SetPronoun(s string) *ApplicantUpdateOne {
-	auo.mutation.SetPronoun(s)
-	return auo
+func (tuo *TalentUpdateOne) SetPronoun(s string) *TalentUpdateOne {
+	tuo.mutation.SetPronoun(s)
+	return tuo
 }
 
 // SetPreferredJobTitle sets the "preferred_job_title" field.
-func (auo *ApplicantUpdateOne) SetPreferredJobTitle(s string) *ApplicantUpdateOne {
-	auo.mutation.SetPreferredJobTitle(s)
-	return auo
+func (tuo *TalentUpdateOne) SetPreferredJobTitle(s string) *TalentUpdateOne {
+	tuo.mutation.SetPreferredJobTitle(s)
+	return tuo
 }
 
 // SetReferrerID sets the "referrer_id" field.
-func (auo *ApplicantUpdateOne) SetReferrerID(i int) *ApplicantUpdateOne {
-	auo.mutation.SetReferrerID(i)
-	return auo
+func (tuo *TalentUpdateOne) SetReferrerID(i int) *TalentUpdateOne {
+	tuo.mutation.SetReferrerID(i)
+	return tuo
 }
 
 // SetNillableReferrerID sets the "referrer_id" field if the given value is not nil.
-func (auo *ApplicantUpdateOne) SetNillableReferrerID(i *int) *ApplicantUpdateOne {
+func (tuo *TalentUpdateOne) SetNillableReferrerID(i *int) *TalentUpdateOne {
 	if i != nil {
-		auo.SetReferrerID(*i)
+		tuo.SetReferrerID(*i)
 	}
-	return auo
+	return tuo
 }
 
 // ClearReferrerID clears the value of the "referrer_id" field.
-func (auo *ApplicantUpdateOne) ClearReferrerID() *ApplicantUpdateOne {
-	auo.mutation.ClearReferrerID()
-	return auo
+func (tuo *TalentUpdateOne) ClearReferrerID() *TalentUpdateOne {
+	tuo.mutation.ClearReferrerID()
+	return tuo
 }
 
 // SetProfessionalStartDate sets the "professional_start_date" field.
-func (auo *ApplicantUpdateOne) SetProfessionalStartDate(t time.Time) *ApplicantUpdateOne {
-	auo.mutation.SetProfessionalStartDate(t)
-	return auo
+func (tuo *TalentUpdateOne) SetProfessionalStartDate(t time.Time) *TalentUpdateOne {
+	tuo.mutation.SetProfessionalStartDate(t)
+	return tuo
 }
 
 // SetEmail sets the "email" field.
-func (auo *ApplicantUpdateOne) SetEmail(s string) *ApplicantUpdateOne {
-	auo.mutation.SetEmail(s)
-	return auo
+func (tuo *TalentUpdateOne) SetEmail(s string) *TalentUpdateOne {
+	tuo.mutation.SetEmail(s)
+	return tuo
 }
 
 // SetPhone sets the "phone" field.
-func (auo *ApplicantUpdateOne) SetPhone(s string) *ApplicantUpdateOne {
-	auo.mutation.SetPhone(s)
-	return auo
+func (tuo *TalentUpdateOne) SetPhone(s string) *TalentUpdateOne {
+	tuo.mutation.SetPhone(s)
+	return tuo
 }
 
 // SetCountryCode sets the "country_code" field.
-func (auo *ApplicantUpdateOne) SetCountryCode(s string) *ApplicantUpdateOne {
-	auo.mutation.SetCountryCode(s)
-	return auo
+func (tuo *TalentUpdateOne) SetCountryCode(s string) *TalentUpdateOne {
+	tuo.mutation.SetCountryCode(s)
+	return tuo
 }
 
 // SetCity sets the "city" field.
-func (auo *ApplicantUpdateOne) SetCity(s string) *ApplicantUpdateOne {
-	auo.mutation.SetCity(s)
-	return auo
+func (tuo *TalentUpdateOne) SetCity(s string) *TalentUpdateOne {
+	tuo.mutation.SetCity(s)
+	return tuo
 }
 
 // SetJoinedTentnAt sets the "joined_tentn_at" field.
-func (auo *ApplicantUpdateOne) SetJoinedTentnAt(t time.Time) *ApplicantUpdateOne {
-	auo.mutation.SetJoinedTentnAt(t)
-	return auo
+func (tuo *TalentUpdateOne) SetJoinedTentnAt(t time.Time) *TalentUpdateOne {
+	tuo.mutation.SetJoinedTentnAt(t)
+	return tuo
 }
 
 // SetNillableJoinedTentnAt sets the "joined_tentn_at" field if the given value is not nil.
-func (auo *ApplicantUpdateOne) SetNillableJoinedTentnAt(t *time.Time) *ApplicantUpdateOne {
+func (tuo *TalentUpdateOne) SetNillableJoinedTentnAt(t *time.Time) *TalentUpdateOne {
 	if t != nil {
-		auo.SetJoinedTentnAt(*t)
+		tuo.SetJoinedTentnAt(*t)
 	}
-	return auo
+	return tuo
 }
 
 // ClearJoinedTentnAt clears the value of the "joined_tentn_at" field.
-func (auo *ApplicantUpdateOne) ClearJoinedTentnAt() *ApplicantUpdateOne {
-	auo.mutation.ClearJoinedTentnAt()
-	return auo
+func (tuo *TalentUpdateOne) ClearJoinedTentnAt() *TalentUpdateOne {
+	tuo.mutation.ClearJoinedTentnAt()
+	return tuo
 }
 
-// SetReferrer sets the "referrer" edge to the Applicant entity.
-func (auo *ApplicantUpdateOne) SetReferrer(a *Applicant) *ApplicantUpdateOne {
-	return auo.SetReferrerID(a.ID)
+// SetReferrer sets the "referrer" edge to the Talent entity.
+func (tuo *TalentUpdateOne) SetReferrer(t *Talent) *TalentUpdateOne {
+	return tuo.SetReferrerID(t.ID)
 }
 
-// AddRefereeIDs adds the "referees" edge to the Applicant entity by IDs.
-func (auo *ApplicantUpdateOne) AddRefereeIDs(ids ...int) *ApplicantUpdateOne {
-	auo.mutation.AddRefereeIDs(ids...)
-	return auo
+// AddRefereeIDs adds the "referees" edge to the Talent entity by IDs.
+func (tuo *TalentUpdateOne) AddRefereeIDs(ids ...int) *TalentUpdateOne {
+	tuo.mutation.AddRefereeIDs(ids...)
+	return tuo
 }
 
-// AddReferees adds the "referees" edges to the Applicant entity.
-func (auo *ApplicantUpdateOne) AddReferees(a ...*Applicant) *ApplicantUpdateOne {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// AddReferees adds the "referees" edges to the Talent entity.
+func (tuo *TalentUpdateOne) AddReferees(t ...*Talent) *TalentUpdateOne {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
 	}
-	return auo.AddRefereeIDs(ids...)
+	return tuo.AddRefereeIDs(ids...)
 }
 
 // AddPortfoliolinkIDs adds the "portfoliolinks" edge to the PortfolioLink entity by IDs.
-func (auo *ApplicantUpdateOne) AddPortfoliolinkIDs(ids ...int) *ApplicantUpdateOne {
-	auo.mutation.AddPortfoliolinkIDs(ids...)
-	return auo
+func (tuo *TalentUpdateOne) AddPortfoliolinkIDs(ids ...int) *TalentUpdateOne {
+	tuo.mutation.AddPortfoliolinkIDs(ids...)
+	return tuo
 }
 
 // AddPortfoliolinks adds the "portfoliolinks" edges to the PortfolioLink entity.
-func (auo *ApplicantUpdateOne) AddPortfoliolinks(p ...*PortfolioLink) *ApplicantUpdateOne {
+func (tuo *TalentUpdateOne) AddPortfoliolinks(p ...*PortfolioLink) *TalentUpdateOne {
 	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return auo.AddPortfoliolinkIDs(ids...)
+	return tuo.AddPortfoliolinkIDs(ids...)
 }
 
 // AddSkillIDs adds the "skills" edge to the Skill entity by IDs.
-func (auo *ApplicantUpdateOne) AddSkillIDs(ids ...int) *ApplicantUpdateOne {
-	auo.mutation.AddSkillIDs(ids...)
-	return auo
+func (tuo *TalentUpdateOne) AddSkillIDs(ids ...int) *TalentUpdateOne {
+	tuo.mutation.AddSkillIDs(ids...)
+	return tuo
 }
 
 // AddSkills adds the "skills" edges to the Skill entity.
-func (auo *ApplicantUpdateOne) AddSkills(s ...*Skill) *ApplicantUpdateOne {
+func (tuo *TalentUpdateOne) AddSkills(s ...*Skill) *TalentUpdateOne {
 	ids := make([]int, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return auo.AddSkillIDs(ids...)
+	return tuo.AddSkillIDs(ids...)
 }
 
-// AddJobApplicationIDs adds the "job_applications" edge to the JobApplication entity by IDs.
-func (auo *ApplicantUpdateOne) AddJobApplicationIDs(ids ...int) *ApplicantUpdateOne {
-	auo.mutation.AddJobApplicationIDs(ids...)
-	return auo
+// AddJobTalentIDs adds the "job_talents" edge to the JobTalent entity by IDs.
+func (tuo *TalentUpdateOne) AddJobTalentIDs(ids ...int) *TalentUpdateOne {
+	tuo.mutation.AddJobTalentIDs(ids...)
+	return tuo
 }
 
-// AddJobApplications adds the "job_applications" edges to the JobApplication entity.
-func (auo *ApplicantUpdateOne) AddJobApplications(j ...*JobApplication) *ApplicantUpdateOne {
+// AddJobTalents adds the "job_talents" edges to the JobTalent entity.
+func (tuo *TalentUpdateOne) AddJobTalents(j ...*JobTalent) *TalentUpdateOne {
 	ids := make([]int, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
-	return auo.AddJobApplicationIDs(ids...)
+	return tuo.AddJobTalentIDs(ids...)
 }
 
 // AddWorkExperienceIDs adds the "work_experiences" edge to the WorkExperience entity by IDs.
-func (auo *ApplicantUpdateOne) AddWorkExperienceIDs(ids ...int) *ApplicantUpdateOne {
-	auo.mutation.AddWorkExperienceIDs(ids...)
-	return auo
+func (tuo *TalentUpdateOne) AddWorkExperienceIDs(ids ...int) *TalentUpdateOne {
+	tuo.mutation.AddWorkExperienceIDs(ids...)
+	return tuo
 }
 
 // AddWorkExperiences adds the "work_experiences" edges to the WorkExperience entity.
-func (auo *ApplicantUpdateOne) AddWorkExperiences(w ...*WorkExperience) *ApplicantUpdateOne {
+func (tuo *TalentUpdateOne) AddWorkExperiences(w ...*WorkExperience) *TalentUpdateOne {
 	ids := make([]int, len(w))
 	for i := range w {
 		ids[i] = w[i].ID
 	}
-	return auo.AddWorkExperienceIDs(ids...)
+	return tuo.AddWorkExperienceIDs(ids...)
 }
 
 // AddEducationIDs adds the "educations" edge to the Education entity by IDs.
-func (auo *ApplicantUpdateOne) AddEducationIDs(ids ...int) *ApplicantUpdateOne {
-	auo.mutation.AddEducationIDs(ids...)
-	return auo
+func (tuo *TalentUpdateOne) AddEducationIDs(ids ...int) *TalentUpdateOne {
+	tuo.mutation.AddEducationIDs(ids...)
+	return tuo
 }
 
 // AddEducations adds the "educations" edges to the Education entity.
-func (auo *ApplicantUpdateOne) AddEducations(e ...*Education) *ApplicantUpdateOne {
+func (tuo *TalentUpdateOne) AddEducations(e ...*Education) *TalentUpdateOne {
 	ids := make([]int, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
-	return auo.AddEducationIDs(ids...)
+	return tuo.AddEducationIDs(ids...)
 }
 
 // AddEmergencyContactIDs adds the "emergency_contacts" edge to the EmergencyContact entity by IDs.
-func (auo *ApplicantUpdateOne) AddEmergencyContactIDs(ids ...int) *ApplicantUpdateOne {
-	auo.mutation.AddEmergencyContactIDs(ids...)
-	return auo
+func (tuo *TalentUpdateOne) AddEmergencyContactIDs(ids ...int) *TalentUpdateOne {
+	tuo.mutation.AddEmergencyContactIDs(ids...)
+	return tuo
 }
 
 // AddEmergencyContacts adds the "emergency_contacts" edges to the EmergencyContact entity.
-func (auo *ApplicantUpdateOne) AddEmergencyContacts(e ...*EmergencyContact) *ApplicantUpdateOne {
+func (tuo *TalentUpdateOne) AddEmergencyContacts(e ...*EmergencyContact) *TalentUpdateOne {
 	ids := make([]int, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
-	return auo.AddEmergencyContactIDs(ids...)
+	return tuo.AddEmergencyContactIDs(ids...)
 }
 
-// Mutation returns the ApplicantMutation object of the builder.
-func (auo *ApplicantUpdateOne) Mutation() *ApplicantMutation {
-	return auo.mutation
+// Mutation returns the TalentMutation object of the builder.
+func (tuo *TalentUpdateOne) Mutation() *TalentMutation {
+	return tuo.mutation
 }
 
-// ClearReferrer clears the "referrer" edge to the Applicant entity.
-func (auo *ApplicantUpdateOne) ClearReferrer() *ApplicantUpdateOne {
-	auo.mutation.ClearReferrer()
-	return auo
+// ClearReferrer clears the "referrer" edge to the Talent entity.
+func (tuo *TalentUpdateOne) ClearReferrer() *TalentUpdateOne {
+	tuo.mutation.ClearReferrer()
+	return tuo
 }
 
-// ClearReferees clears all "referees" edges to the Applicant entity.
-func (auo *ApplicantUpdateOne) ClearReferees() *ApplicantUpdateOne {
-	auo.mutation.ClearReferees()
-	return auo
+// ClearReferees clears all "referees" edges to the Talent entity.
+func (tuo *TalentUpdateOne) ClearReferees() *TalentUpdateOne {
+	tuo.mutation.ClearReferees()
+	return tuo
 }
 
-// RemoveRefereeIDs removes the "referees" edge to Applicant entities by IDs.
-func (auo *ApplicantUpdateOne) RemoveRefereeIDs(ids ...int) *ApplicantUpdateOne {
-	auo.mutation.RemoveRefereeIDs(ids...)
-	return auo
+// RemoveRefereeIDs removes the "referees" edge to Talent entities by IDs.
+func (tuo *TalentUpdateOne) RemoveRefereeIDs(ids ...int) *TalentUpdateOne {
+	tuo.mutation.RemoveRefereeIDs(ids...)
+	return tuo
 }
 
-// RemoveReferees removes "referees" edges to Applicant entities.
-func (auo *ApplicantUpdateOne) RemoveReferees(a ...*Applicant) *ApplicantUpdateOne {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// RemoveReferees removes "referees" edges to Talent entities.
+func (tuo *TalentUpdateOne) RemoveReferees(t ...*Talent) *TalentUpdateOne {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
 	}
-	return auo.RemoveRefereeIDs(ids...)
+	return tuo.RemoveRefereeIDs(ids...)
 }
 
 // ClearPortfoliolinks clears all "portfoliolinks" edges to the PortfolioLink entity.
-func (auo *ApplicantUpdateOne) ClearPortfoliolinks() *ApplicantUpdateOne {
-	auo.mutation.ClearPortfoliolinks()
-	return auo
+func (tuo *TalentUpdateOne) ClearPortfoliolinks() *TalentUpdateOne {
+	tuo.mutation.ClearPortfoliolinks()
+	return tuo
 }
 
 // RemovePortfoliolinkIDs removes the "portfoliolinks" edge to PortfolioLink entities by IDs.
-func (auo *ApplicantUpdateOne) RemovePortfoliolinkIDs(ids ...int) *ApplicantUpdateOne {
-	auo.mutation.RemovePortfoliolinkIDs(ids...)
-	return auo
+func (tuo *TalentUpdateOne) RemovePortfoliolinkIDs(ids ...int) *TalentUpdateOne {
+	tuo.mutation.RemovePortfoliolinkIDs(ids...)
+	return tuo
 }
 
 // RemovePortfoliolinks removes "portfoliolinks" edges to PortfolioLink entities.
-func (auo *ApplicantUpdateOne) RemovePortfoliolinks(p ...*PortfolioLink) *ApplicantUpdateOne {
+func (tuo *TalentUpdateOne) RemovePortfoliolinks(p ...*PortfolioLink) *TalentUpdateOne {
 	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return auo.RemovePortfoliolinkIDs(ids...)
+	return tuo.RemovePortfoliolinkIDs(ids...)
 }
 
 // ClearSkills clears all "skills" edges to the Skill entity.
-func (auo *ApplicantUpdateOne) ClearSkills() *ApplicantUpdateOne {
-	auo.mutation.ClearSkills()
-	return auo
+func (tuo *TalentUpdateOne) ClearSkills() *TalentUpdateOne {
+	tuo.mutation.ClearSkills()
+	return tuo
 }
 
 // RemoveSkillIDs removes the "skills" edge to Skill entities by IDs.
-func (auo *ApplicantUpdateOne) RemoveSkillIDs(ids ...int) *ApplicantUpdateOne {
-	auo.mutation.RemoveSkillIDs(ids...)
-	return auo
+func (tuo *TalentUpdateOne) RemoveSkillIDs(ids ...int) *TalentUpdateOne {
+	tuo.mutation.RemoveSkillIDs(ids...)
+	return tuo
 }
 
 // RemoveSkills removes "skills" edges to Skill entities.
-func (auo *ApplicantUpdateOne) RemoveSkills(s ...*Skill) *ApplicantUpdateOne {
+func (tuo *TalentUpdateOne) RemoveSkills(s ...*Skill) *TalentUpdateOne {
 	ids := make([]int, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return auo.RemoveSkillIDs(ids...)
+	return tuo.RemoveSkillIDs(ids...)
 }
 
-// ClearJobApplications clears all "job_applications" edges to the JobApplication entity.
-func (auo *ApplicantUpdateOne) ClearJobApplications() *ApplicantUpdateOne {
-	auo.mutation.ClearJobApplications()
-	return auo
+// ClearJobTalents clears all "job_talents" edges to the JobTalent entity.
+func (tuo *TalentUpdateOne) ClearJobTalents() *TalentUpdateOne {
+	tuo.mutation.ClearJobTalents()
+	return tuo
 }
 
-// RemoveJobApplicationIDs removes the "job_applications" edge to JobApplication entities by IDs.
-func (auo *ApplicantUpdateOne) RemoveJobApplicationIDs(ids ...int) *ApplicantUpdateOne {
-	auo.mutation.RemoveJobApplicationIDs(ids...)
-	return auo
+// RemoveJobTalentIDs removes the "job_talents" edge to JobTalent entities by IDs.
+func (tuo *TalentUpdateOne) RemoveJobTalentIDs(ids ...int) *TalentUpdateOne {
+	tuo.mutation.RemoveJobTalentIDs(ids...)
+	return tuo
 }
 
-// RemoveJobApplications removes "job_applications" edges to JobApplication entities.
-func (auo *ApplicantUpdateOne) RemoveJobApplications(j ...*JobApplication) *ApplicantUpdateOne {
+// RemoveJobTalents removes "job_talents" edges to JobTalent entities.
+func (tuo *TalentUpdateOne) RemoveJobTalents(j ...*JobTalent) *TalentUpdateOne {
 	ids := make([]int, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
-	return auo.RemoveJobApplicationIDs(ids...)
+	return tuo.RemoveJobTalentIDs(ids...)
 }
 
 // ClearWorkExperiences clears all "work_experiences" edges to the WorkExperience entity.
-func (auo *ApplicantUpdateOne) ClearWorkExperiences() *ApplicantUpdateOne {
-	auo.mutation.ClearWorkExperiences()
-	return auo
+func (tuo *TalentUpdateOne) ClearWorkExperiences() *TalentUpdateOne {
+	tuo.mutation.ClearWorkExperiences()
+	return tuo
 }
 
 // RemoveWorkExperienceIDs removes the "work_experiences" edge to WorkExperience entities by IDs.
-func (auo *ApplicantUpdateOne) RemoveWorkExperienceIDs(ids ...int) *ApplicantUpdateOne {
-	auo.mutation.RemoveWorkExperienceIDs(ids...)
-	return auo
+func (tuo *TalentUpdateOne) RemoveWorkExperienceIDs(ids ...int) *TalentUpdateOne {
+	tuo.mutation.RemoveWorkExperienceIDs(ids...)
+	return tuo
 }
 
 // RemoveWorkExperiences removes "work_experiences" edges to WorkExperience entities.
-func (auo *ApplicantUpdateOne) RemoveWorkExperiences(w ...*WorkExperience) *ApplicantUpdateOne {
+func (tuo *TalentUpdateOne) RemoveWorkExperiences(w ...*WorkExperience) *TalentUpdateOne {
 	ids := make([]int, len(w))
 	for i := range w {
 		ids[i] = w[i].ID
 	}
-	return auo.RemoveWorkExperienceIDs(ids...)
+	return tuo.RemoveWorkExperienceIDs(ids...)
 }
 
 // ClearEducations clears all "educations" edges to the Education entity.
-func (auo *ApplicantUpdateOne) ClearEducations() *ApplicantUpdateOne {
-	auo.mutation.ClearEducations()
-	return auo
+func (tuo *TalentUpdateOne) ClearEducations() *TalentUpdateOne {
+	tuo.mutation.ClearEducations()
+	return tuo
 }
 
 // RemoveEducationIDs removes the "educations" edge to Education entities by IDs.
-func (auo *ApplicantUpdateOne) RemoveEducationIDs(ids ...int) *ApplicantUpdateOne {
-	auo.mutation.RemoveEducationIDs(ids...)
-	return auo
+func (tuo *TalentUpdateOne) RemoveEducationIDs(ids ...int) *TalentUpdateOne {
+	tuo.mutation.RemoveEducationIDs(ids...)
+	return tuo
 }
 
 // RemoveEducations removes "educations" edges to Education entities.
-func (auo *ApplicantUpdateOne) RemoveEducations(e ...*Education) *ApplicantUpdateOne {
+func (tuo *TalentUpdateOne) RemoveEducations(e ...*Education) *TalentUpdateOne {
 	ids := make([]int, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
-	return auo.RemoveEducationIDs(ids...)
+	return tuo.RemoveEducationIDs(ids...)
 }
 
 // ClearEmergencyContacts clears all "emergency_contacts" edges to the EmergencyContact entity.
-func (auo *ApplicantUpdateOne) ClearEmergencyContacts() *ApplicantUpdateOne {
-	auo.mutation.ClearEmergencyContacts()
-	return auo
+func (tuo *TalentUpdateOne) ClearEmergencyContacts() *TalentUpdateOne {
+	tuo.mutation.ClearEmergencyContacts()
+	return tuo
 }
 
 // RemoveEmergencyContactIDs removes the "emergency_contacts" edge to EmergencyContact entities by IDs.
-func (auo *ApplicantUpdateOne) RemoveEmergencyContactIDs(ids ...int) *ApplicantUpdateOne {
-	auo.mutation.RemoveEmergencyContactIDs(ids...)
-	return auo
+func (tuo *TalentUpdateOne) RemoveEmergencyContactIDs(ids ...int) *TalentUpdateOne {
+	tuo.mutation.RemoveEmergencyContactIDs(ids...)
+	return tuo
 }
 
 // RemoveEmergencyContacts removes "emergency_contacts" edges to EmergencyContact entities.
-func (auo *ApplicantUpdateOne) RemoveEmergencyContacts(e ...*EmergencyContact) *ApplicantUpdateOne {
+func (tuo *TalentUpdateOne) RemoveEmergencyContacts(e ...*EmergencyContact) *TalentUpdateOne {
 	ids := make([]int, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
-	return auo.RemoveEmergencyContactIDs(ids...)
+	return tuo.RemoveEmergencyContactIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (auo *ApplicantUpdateOne) Select(field string, fields ...string) *ApplicantUpdateOne {
-	auo.fields = append([]string{field}, fields...)
-	return auo
+func (tuo *TalentUpdateOne) Select(field string, fields ...string) *TalentUpdateOne {
+	tuo.fields = append([]string{field}, fields...)
+	return tuo
 }
 
-// Save executes the query and returns the updated Applicant entity.
-func (auo *ApplicantUpdateOne) Save(ctx context.Context) (*Applicant, error) {
+// Save executes the query and returns the updated Talent entity.
+func (tuo *TalentUpdateOne) Save(ctx context.Context) (*Talent, error) {
 	var (
 		err  error
-		node *Applicant
+		node *Talent
 	)
-	auo.defaults()
-	if len(auo.hooks) == 0 {
-		if err = auo.check(); err != nil {
+	tuo.defaults()
+	if len(tuo.hooks) == 0 {
+		if err = tuo.check(); err != nil {
 			return nil, err
 		}
-		node, err = auo.sqlSave(ctx)
+		node, err = tuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ApplicantMutation)
+			mutation, ok := m.(*TalentMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
 			}
-			if err = auo.check(); err != nil {
+			if err = tuo.check(); err != nil {
 				return nil, err
 			}
-			auo.mutation = mutation
-			node, err = auo.sqlSave(ctx)
+			tuo.mutation = mutation
+			node, err = tuo.sqlSave(ctx)
 			mutation.done = true
 			return node, err
 		})
-		for i := len(auo.hooks) - 1; i >= 0; i-- {
-			if auo.hooks[i] == nil {
+		for i := len(tuo.hooks) - 1; i >= 0; i-- {
+			if tuo.hooks[i] == nil {
 				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
 			}
-			mut = auo.hooks[i](mut)
+			mut = tuo.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, auo.mutation); err != nil {
+		if _, err := mut.Mutate(ctx, tuo.mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -1526,8 +1526,8 @@ func (auo *ApplicantUpdateOne) Save(ctx context.Context) (*Applicant, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (auo *ApplicantUpdateOne) SaveX(ctx context.Context) *Applicant {
-	node, err := auo.Save(ctx)
+func (tuo *TalentUpdateOne) SaveX(ctx context.Context) *Talent {
+	node, err := tuo.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -1535,214 +1535,214 @@ func (auo *ApplicantUpdateOne) SaveX(ctx context.Context) *Applicant {
 }
 
 // Exec executes the query on the entity.
-func (auo *ApplicantUpdateOne) Exec(ctx context.Context) error {
-	_, err := auo.Save(ctx)
+func (tuo *TalentUpdateOne) Exec(ctx context.Context) error {
+	_, err := tuo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (auo *ApplicantUpdateOne) ExecX(ctx context.Context) {
-	if err := auo.Exec(ctx); err != nil {
+func (tuo *TalentUpdateOne) ExecX(ctx context.Context) {
+	if err := tuo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (auo *ApplicantUpdateOne) defaults() {
-	if _, ok := auo.mutation.UpdatedAt(); !ok {
-		v := applicant.UpdateDefaultUpdatedAt()
-		auo.mutation.SetUpdatedAt(v)
+func (tuo *TalentUpdateOne) defaults() {
+	if _, ok := tuo.mutation.UpdatedAt(); !ok {
+		v := talent.UpdateDefaultUpdatedAt()
+		tuo.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (auo *ApplicantUpdateOne) check() error {
-	if v, ok := auo.mutation.CountryCode(); ok {
-		if err := applicant.CountryCodeValidator(v); err != nil {
+func (tuo *TalentUpdateOne) check() error {
+	if v, ok := tuo.mutation.CountryCode(); ok {
+		if err := talent.CountryCodeValidator(v); err != nil {
 			return &ValidationError{Name: "country_code", err: fmt.Errorf("ent: validator failed for field \"country_code\": %w", err)}
 		}
 	}
 	return nil
 }
 
-func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, err error) {
+func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
-			Table:   applicant.Table,
-			Columns: applicant.Columns,
+			Table:   talent.Table,
+			Columns: talent.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeInt,
-				Column: applicant.FieldID,
+				Column: talent.FieldID,
 			},
 		},
 	}
-	id, ok := auo.mutation.ID()
+	id, ok := tuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Applicant.ID for update")}
+		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Talent.ID for update")}
 	}
 	_spec.Node.ID.Value = id
-	if fields := auo.fields; len(fields) > 0 {
+	if fields := tuo.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, applicant.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, talent.FieldID)
 		for _, f := range fields {
-			if !applicant.ValidColumn(f) {
+			if !talent.ValidColumn(f) {
 				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 			}
-			if f != applicant.FieldID {
+			if f != talent.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)
 			}
 		}
 	}
-	if ps := auo.mutation.predicates; len(ps) > 0 {
+	if ps := tuo.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := auo.mutation.UUID(); ok {
+	if value, ok := tuo.mutation.UUID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
 			Value:  value,
-			Column: applicant.FieldUUID,
+			Column: talent.FieldUUID,
 		})
 	}
-	if value, ok := auo.mutation.UpdatedAt(); ok {
+	if value, ok := tuo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: applicant.FieldUpdatedAt,
+			Column: talent.FieldUpdatedAt,
 		})
 	}
-	if value, ok := auo.mutation.DeletedAt(); ok {
+	if value, ok := tuo.mutation.DeletedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: applicant.FieldDeletedAt,
+			Column: talent.FieldDeletedAt,
 		})
 	}
-	if auo.mutation.DeletedAtCleared() {
+	if tuo.mutation.DeletedAtCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
-			Column: applicant.FieldDeletedAt,
+			Column: talent.FieldDeletedAt,
 		})
 	}
-	if value, ok := auo.mutation.FirstName(); ok {
+	if value, ok := tuo.mutation.FirstName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldFirstName,
+			Column: talent.FieldFirstName,
 		})
 	}
-	if value, ok := auo.mutation.LastName(); ok {
+	if value, ok := tuo.mutation.LastName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldLastName,
+			Column: talent.FieldLastName,
 		})
 	}
-	if value, ok := auo.mutation.PreferredName(); ok {
+	if value, ok := tuo.mutation.PreferredName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldPreferredName,
+			Column: talent.FieldPreferredName,
 		})
 	}
-	if value, ok := auo.mutation.Pronoun(); ok {
+	if value, ok := tuo.mutation.Pronoun(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldPronoun,
+			Column: talent.FieldPronoun,
 		})
 	}
-	if value, ok := auo.mutation.PreferredJobTitle(); ok {
+	if value, ok := tuo.mutation.PreferredJobTitle(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldPreferredJobTitle,
+			Column: talent.FieldPreferredJobTitle,
 		})
 	}
-	if auo.mutation.ReferralCodeCleared() {
+	if tuo.mutation.ReferralCodeCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
-			Column: applicant.FieldReferralCode,
+			Column: talent.FieldReferralCode,
 		})
 	}
-	if value, ok := auo.mutation.ProfessionalStartDate(); ok {
+	if value, ok := tuo.mutation.ProfessionalStartDate(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: applicant.FieldProfessionalStartDate,
+			Column: talent.FieldProfessionalStartDate,
 		})
 	}
-	if value, ok := auo.mutation.Email(); ok {
+	if value, ok := tuo.mutation.Email(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldEmail,
+			Column: talent.FieldEmail,
 		})
 	}
-	if value, ok := auo.mutation.Phone(); ok {
+	if value, ok := tuo.mutation.Phone(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldPhone,
+			Column: talent.FieldPhone,
 		})
 	}
-	if value, ok := auo.mutation.CountryCode(); ok {
+	if value, ok := tuo.mutation.CountryCode(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldCountryCode,
+			Column: talent.FieldCountryCode,
 		})
 	}
-	if value, ok := auo.mutation.City(); ok {
+	if value, ok := tuo.mutation.City(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldCity,
+			Column: talent.FieldCity,
 		})
 	}
-	if value, ok := auo.mutation.JoinedTentnAt(); ok {
+	if value, ok := tuo.mutation.JoinedTentnAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: applicant.FieldJoinedTentnAt,
+			Column: talent.FieldJoinedTentnAt,
 		})
 	}
-	if auo.mutation.JoinedTentnAtCleared() {
+	if tuo.mutation.JoinedTentnAtCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
-			Column: applicant.FieldJoinedTentnAt,
+			Column: talent.FieldJoinedTentnAt,
 		})
 	}
-	if auo.mutation.ReferrerCleared() {
+	if tuo.mutation.ReferrerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   applicant.ReferrerTable,
-			Columns: []string{applicant.ReferrerColumn},
+			Table:   talent.ReferrerTable,
+			Columns: []string{talent.ReferrerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.ReferrerIDs(); len(nodes) > 0 {
+	if nodes := tuo.mutation.ReferrerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   applicant.ReferrerTable,
-			Columns: []string{applicant.ReferrerColumn},
+			Table:   talent.ReferrerTable,
+			Columns: []string{talent.ReferrerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
@@ -1751,33 +1751,33 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if auo.mutation.RefereesCleared() {
+	if tuo.mutation.RefereesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.RefereesTable,
-			Columns: []string{applicant.RefereesColumn},
+			Table:   talent.RefereesTable,
+			Columns: []string{talent.RefereesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.RemovedRefereesIDs(); len(nodes) > 0 && !auo.mutation.RefereesCleared() {
+	if nodes := tuo.mutation.RemovedRefereesIDs(); len(nodes) > 0 && !tuo.mutation.RefereesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.RefereesTable,
-			Columns: []string{applicant.RefereesColumn},
+			Table:   talent.RefereesTable,
+			Columns: []string{talent.RefereesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
@@ -1786,17 +1786,17 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.RefereesIDs(); len(nodes) > 0 {
+	if nodes := tuo.mutation.RefereesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.RefereesTable,
-			Columns: []string{applicant.RefereesColumn},
+			Table:   talent.RefereesTable,
+			Columns: []string{talent.RefereesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
@@ -1805,12 +1805,12 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if auo.mutation.PortfoliolinksCleared() {
+	if tuo.mutation.PortfoliolinksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.PortfoliolinksTable,
-			Columns: []string{applicant.PortfoliolinksColumn},
+			Table:   talent.PortfoliolinksTable,
+			Columns: []string{talent.PortfoliolinksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1821,31 +1821,12 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.RemovedPortfoliolinksIDs(); len(nodes) > 0 && !auo.mutation.PortfoliolinksCleared() {
+	if nodes := tuo.mutation.RemovedPortfoliolinksIDs(); len(nodes) > 0 && !tuo.mutation.PortfoliolinksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.PortfoliolinksTable,
-			Columns: []string{applicant.PortfoliolinksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: portfoliolink.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.PortfoliolinksIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   applicant.PortfoliolinksTable,
-			Columns: []string{applicant.PortfoliolinksColumn},
+			Table:   talent.PortfoliolinksTable,
+			Columns: []string{talent.PortfoliolinksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1857,14 +1838,33 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if auo.mutation.SkillsCleared() {
+	if nodes := tuo.mutation.PortfoliolinksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.SkillsTable,
-			Columns: []string{applicant.SkillsColumn},
+			Table:   talent.PortfoliolinksTable,
+			Columns: []string{talent.PortfoliolinksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: portfoliolink.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.SkillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   talent.SkillsTable,
+			Columns: []string{talent.SkillsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1875,12 +1875,12 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.RemovedSkillsIDs(); len(nodes) > 0 && !auo.mutation.SkillsCleared() {
+	if nodes := tuo.mutation.RemovedSkillsIDs(); len(nodes) > 0 && !tuo.mutation.SkillsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.SkillsTable,
-			Columns: []string{applicant.SkillsColumn},
+			Table:   talent.SkillsTable,
+			Columns: []string{talent.SkillsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1894,12 +1894,12 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.SkillsIDs(); len(nodes) > 0 {
+	if nodes := tuo.mutation.SkillsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.SkillsTable,
-			Columns: []string{applicant.SkillsColumn},
+			Table:   talent.SkillsTable,
+			Columns: []string{talent.SkillsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1913,33 +1913,33 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if auo.mutation.JobApplicationsCleared() {
+	if tuo.mutation.JobTalentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.JobApplicationsTable,
-			Columns: []string{applicant.JobApplicationsColumn},
+			Table:   talent.JobTalentsTable,
+			Columns: []string{talent.JobTalentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: jobapplication.FieldID,
+					Column: jobtalent.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.RemovedJobApplicationsIDs(); len(nodes) > 0 && !auo.mutation.JobApplicationsCleared() {
+	if nodes := tuo.mutation.RemovedJobTalentsIDs(); len(nodes) > 0 && !tuo.mutation.JobTalentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.JobApplicationsTable,
-			Columns: []string{applicant.JobApplicationsColumn},
+			Table:   talent.JobTalentsTable,
+			Columns: []string{talent.JobTalentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: jobapplication.FieldID,
+					Column: jobtalent.FieldID,
 				},
 			},
 		}
@@ -1948,17 +1948,17 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.JobApplicationsIDs(); len(nodes) > 0 {
+	if nodes := tuo.mutation.JobTalentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.JobApplicationsTable,
-			Columns: []string{applicant.JobApplicationsColumn},
+			Table:   talent.JobTalentsTable,
+			Columns: []string{talent.JobTalentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: jobapplication.FieldID,
+					Column: jobtalent.FieldID,
 				},
 			},
 		}
@@ -1967,12 +1967,12 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if auo.mutation.WorkExperiencesCleared() {
+	if tuo.mutation.WorkExperiencesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.WorkExperiencesTable,
-			Columns: []string{applicant.WorkExperiencesColumn},
+			Table:   talent.WorkExperiencesTable,
+			Columns: []string{talent.WorkExperiencesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1983,31 +1983,12 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.RemovedWorkExperiencesIDs(); len(nodes) > 0 && !auo.mutation.WorkExperiencesCleared() {
+	if nodes := tuo.mutation.RemovedWorkExperiencesIDs(); len(nodes) > 0 && !tuo.mutation.WorkExperiencesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.WorkExperiencesTable,
-			Columns: []string{applicant.WorkExperiencesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: workexperience.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.WorkExperiencesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   applicant.WorkExperiencesTable,
-			Columns: []string{applicant.WorkExperiencesColumn},
+			Table:   talent.WorkExperiencesTable,
+			Columns: []string{talent.WorkExperiencesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -2019,14 +2000,33 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if auo.mutation.EducationsCleared() {
+	if nodes := tuo.mutation.WorkExperiencesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.EducationsTable,
-			Columns: []string{applicant.EducationsColumn},
+			Table:   talent.WorkExperiencesTable,
+			Columns: []string{talent.WorkExperiencesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: workexperience.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.EducationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   talent.EducationsTable,
+			Columns: []string{talent.EducationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -2037,12 +2037,12 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.RemovedEducationsIDs(); len(nodes) > 0 && !auo.mutation.EducationsCleared() {
+	if nodes := tuo.mutation.RemovedEducationsIDs(); len(nodes) > 0 && !tuo.mutation.EducationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.EducationsTable,
-			Columns: []string{applicant.EducationsColumn},
+			Table:   talent.EducationsTable,
+			Columns: []string{talent.EducationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -2056,12 +2056,12 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.EducationsIDs(); len(nodes) > 0 {
+	if nodes := tuo.mutation.EducationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.EducationsTable,
-			Columns: []string{applicant.EducationsColumn},
+			Table:   talent.EducationsTable,
+			Columns: []string{talent.EducationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -2075,12 +2075,12 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if auo.mutation.EmergencyContactsCleared() {
+	if tuo.mutation.EmergencyContactsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.EmergencyContactsTable,
-			Columns: []string{applicant.EmergencyContactsColumn},
+			Table:   talent.EmergencyContactsTable,
+			Columns: []string{talent.EmergencyContactsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -2091,12 +2091,12 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.RemovedEmergencyContactsIDs(); len(nodes) > 0 && !auo.mutation.EmergencyContactsCleared() {
+	if nodes := tuo.mutation.RemovedEmergencyContactsIDs(); len(nodes) > 0 && !tuo.mutation.EmergencyContactsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.EmergencyContactsTable,
-			Columns: []string{applicant.EmergencyContactsColumn},
+			Table:   talent.EmergencyContactsTable,
+			Columns: []string{talent.EmergencyContactsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -2110,12 +2110,12 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.EmergencyContactsIDs(); len(nodes) > 0 {
+	if nodes := tuo.mutation.EmergencyContactsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.EmergencyContactsTable,
-			Columns: []string{applicant.EmergencyContactsColumn},
+			Table:   talent.EmergencyContactsTable,
+			Columns: []string{talent.EmergencyContactsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -2129,12 +2129,12 @@ func (auo *ApplicantUpdateOne) sqlSave(ctx context.Context) (_node *Applicant, e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Applicant{config: auo.config}
+	_node = &Talent{config: tuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, auo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, tuo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
-			err = &NotFoundError{applicant.Label}
+			err = &NotFoundError{talent.Label}
 		} else if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{err.Error(), err}
 		}

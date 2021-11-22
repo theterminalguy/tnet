@@ -8,12 +8,12 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/applicant"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
 )
 
-// Applicant is the model entity for the Applicant schema.
-type Applicant struct {
+// Talent is the model entity for the Talent schema.
+type Talent struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"-"`
@@ -54,22 +54,22 @@ type Applicant struct {
 	// JoinedTentnAt holds the value of the "joined_tentn_at" field.
 	JoinedTentnAt *time.Time `json:"joined_tentn_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the ApplicantQuery when eager-loading is set.
-	Edges ApplicantEdges `json:"edges"`
+	// The values are being populated by the TalentQuery when eager-loading is set.
+	Edges TalentEdges `json:"edges"`
 }
 
-// ApplicantEdges holds the relations/edges for other nodes in the graph.
-type ApplicantEdges struct {
+// TalentEdges holds the relations/edges for other nodes in the graph.
+type TalentEdges struct {
 	// Referrer holds the value of the referrer edge.
-	Referrer *Applicant `json:"referrer,omitempty"`
+	Referrer *Talent `json:"referrer,omitempty"`
 	// Referees holds the value of the referees edge.
-	Referees []*Applicant `json:"referees,omitempty"`
+	Referees []*Talent `json:"referees,omitempty"`
 	// Portfoliolinks holds the value of the portfoliolinks edge.
 	Portfoliolinks []*PortfolioLink `json:"portfoliolinks,omitempty"`
 	// Skills holds the value of the skills edge.
 	Skills []*Skill `json:"skills,omitempty"`
-	// JobApplications holds the value of the job_applications edge.
-	JobApplications []*JobApplication `json:"job_applications,omitempty"`
+	// JobTalents holds the value of the job_talents edge.
+	JobTalents []*JobTalent `json:"job_talents,omitempty"`
 	// WorkExperiences holds the value of the work_experiences edge.
 	WorkExperiences []*WorkExperience `json:"work_experiences,omitempty"`
 	// Educations holds the value of the educations edge.
@@ -83,12 +83,12 @@ type ApplicantEdges struct {
 
 // ReferrerOrErr returns the Referrer value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e ApplicantEdges) ReferrerOrErr() (*Applicant, error) {
+func (e TalentEdges) ReferrerOrErr() (*Talent, error) {
 	if e.loadedTypes[0] {
 		if e.Referrer == nil {
 			// The edge referrer was loaded in eager-loading,
 			// but was not found.
-			return nil, &NotFoundError{label: applicant.Label}
+			return nil, &NotFoundError{label: talent.Label}
 		}
 		return e.Referrer, nil
 	}
@@ -97,7 +97,7 @@ func (e ApplicantEdges) ReferrerOrErr() (*Applicant, error) {
 
 // RefereesOrErr returns the Referees value or an error if the edge
 // was not loaded in eager-loading.
-func (e ApplicantEdges) RefereesOrErr() ([]*Applicant, error) {
+func (e TalentEdges) RefereesOrErr() ([]*Talent, error) {
 	if e.loadedTypes[1] {
 		return e.Referees, nil
 	}
@@ -106,7 +106,7 @@ func (e ApplicantEdges) RefereesOrErr() ([]*Applicant, error) {
 
 // PortfoliolinksOrErr returns the Portfoliolinks value or an error if the edge
 // was not loaded in eager-loading.
-func (e ApplicantEdges) PortfoliolinksOrErr() ([]*PortfolioLink, error) {
+func (e TalentEdges) PortfoliolinksOrErr() ([]*PortfolioLink, error) {
 	if e.loadedTypes[2] {
 		return e.Portfoliolinks, nil
 	}
@@ -115,25 +115,25 @@ func (e ApplicantEdges) PortfoliolinksOrErr() ([]*PortfolioLink, error) {
 
 // SkillsOrErr returns the Skills value or an error if the edge
 // was not loaded in eager-loading.
-func (e ApplicantEdges) SkillsOrErr() ([]*Skill, error) {
+func (e TalentEdges) SkillsOrErr() ([]*Skill, error) {
 	if e.loadedTypes[3] {
 		return e.Skills, nil
 	}
 	return nil, &NotLoadedError{edge: "skills"}
 }
 
-// JobApplicationsOrErr returns the JobApplications value or an error if the edge
+// JobTalentsOrErr returns the JobTalents value or an error if the edge
 // was not loaded in eager-loading.
-func (e ApplicantEdges) JobApplicationsOrErr() ([]*JobApplication, error) {
+func (e TalentEdges) JobTalentsOrErr() ([]*JobTalent, error) {
 	if e.loadedTypes[4] {
-		return e.JobApplications, nil
+		return e.JobTalents, nil
 	}
-	return nil, &NotLoadedError{edge: "job_applications"}
+	return nil, &NotLoadedError{edge: "job_talents"}
 }
 
 // WorkExperiencesOrErr returns the WorkExperiences value or an error if the edge
 // was not loaded in eager-loading.
-func (e ApplicantEdges) WorkExperiencesOrErr() ([]*WorkExperience, error) {
+func (e TalentEdges) WorkExperiencesOrErr() ([]*WorkExperience, error) {
 	if e.loadedTypes[5] {
 		return e.WorkExperiences, nil
 	}
@@ -142,7 +142,7 @@ func (e ApplicantEdges) WorkExperiencesOrErr() ([]*WorkExperience, error) {
 
 // EducationsOrErr returns the Educations value or an error if the edge
 // was not loaded in eager-loading.
-func (e ApplicantEdges) EducationsOrErr() ([]*Education, error) {
+func (e TalentEdges) EducationsOrErr() ([]*Education, error) {
 	if e.loadedTypes[6] {
 		return e.Educations, nil
 	}
@@ -151,7 +151,7 @@ func (e ApplicantEdges) EducationsOrErr() ([]*Education, error) {
 
 // EmergencyContactsOrErr returns the EmergencyContacts value or an error if the edge
 // was not loaded in eager-loading.
-func (e ApplicantEdges) EmergencyContactsOrErr() ([]*EmergencyContact, error) {
+func (e TalentEdges) EmergencyContactsOrErr() ([]*EmergencyContact, error) {
 	if e.loadedTypes[7] {
 		return e.EmergencyContacts, nil
 	}
@@ -159,254 +159,254 @@ func (e ApplicantEdges) EmergencyContactsOrErr() ([]*EmergencyContact, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Applicant) scanValues(columns []string) ([]interface{}, error) {
+func (*Talent) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case applicant.FieldID, applicant.FieldReferrerID:
+		case talent.FieldID, talent.FieldReferrerID:
 			values[i] = new(sql.NullInt64)
-		case applicant.FieldFirstName, applicant.FieldLastName, applicant.FieldPreferredName, applicant.FieldPronoun, applicant.FieldPreferredJobTitle, applicant.FieldReferralCode, applicant.FieldTentnCode, applicant.FieldEmail, applicant.FieldPhone, applicant.FieldCountryCode, applicant.FieldCity:
+		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldReferralCode, talent.FieldTentnCode, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity:
 			values[i] = new(sql.NullString)
-		case applicant.FieldCreatedAt, applicant.FieldUpdatedAt, applicant.FieldDeletedAt, applicant.FieldProfessionalStartDate, applicant.FieldJoinedTentnAt:
+		case talent.FieldCreatedAt, talent.FieldUpdatedAt, talent.FieldDeletedAt, talent.FieldProfessionalStartDate, talent.FieldJoinedTentnAt:
 			values[i] = new(sql.NullTime)
-		case applicant.FieldUUID:
+		case talent.FieldUUID:
 			values[i] = new(uuid.UUID)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Applicant", columns[i])
+			return nil, fmt.Errorf("unexpected column %q for type Talent", columns[i])
 		}
 	}
 	return values, nil
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Applicant fields.
-func (a *Applicant) assignValues(columns []string, values []interface{}) error {
+// to the Talent fields.
+func (t *Talent) assignValues(columns []string, values []interface{}) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case applicant.FieldID:
+		case talent.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			a.ID = int(value.Int64)
-		case applicant.FieldUUID:
+			t.ID = int(value.Int64)
+		case talent.FieldUUID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field uuid", values[i])
 			} else if value != nil {
-				a.UUID = *value
+				t.UUID = *value
 			}
-		case applicant.FieldCreatedAt:
+		case talent.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				a.CreatedAt = value.Time
+				t.CreatedAt = value.Time
 			}
-		case applicant.FieldUpdatedAt:
+		case talent.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				a.UpdatedAt = value.Time
+				t.UpdatedAt = value.Time
 			}
-		case applicant.FieldDeletedAt:
+		case talent.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				a.DeletedAt = new(time.Time)
-				*a.DeletedAt = value.Time
+				t.DeletedAt = new(time.Time)
+				*t.DeletedAt = value.Time
 			}
-		case applicant.FieldFirstName:
+		case talent.FieldFirstName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field first_name", values[i])
 			} else if value.Valid {
-				a.FirstName = value.String
+				t.FirstName = value.String
 			}
-		case applicant.FieldLastName:
+		case talent.FieldLastName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field last_name", values[i])
 			} else if value.Valid {
-				a.LastName = value.String
+				t.LastName = value.String
 			}
-		case applicant.FieldPreferredName:
+		case talent.FieldPreferredName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field preferred_name", values[i])
 			} else if value.Valid {
-				a.PreferredName = value.String
+				t.PreferredName = value.String
 			}
-		case applicant.FieldPronoun:
+		case talent.FieldPronoun:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field pronoun", values[i])
 			} else if value.Valid {
-				a.Pronoun = value.String
+				t.Pronoun = value.String
 			}
-		case applicant.FieldPreferredJobTitle:
+		case talent.FieldPreferredJobTitle:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field preferred_job_title", values[i])
 			} else if value.Valid {
-				a.PreferredJobTitle = value.String
+				t.PreferredJobTitle = value.String
 			}
-		case applicant.FieldReferrerID:
+		case talent.FieldReferrerID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field referrer_id", values[i])
 			} else if value.Valid {
-				a.ReferrerID = int(value.Int64)
+				t.ReferrerID = int(value.Int64)
 			}
-		case applicant.FieldReferralCode:
+		case talent.FieldReferralCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field referral_code", values[i])
 			} else if value.Valid {
-				a.ReferralCode = value.String
+				t.ReferralCode = value.String
 			}
-		case applicant.FieldTentnCode:
+		case talent.FieldTentnCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field tentn_code", values[i])
 			} else if value.Valid {
-				a.TentnCode = value.String
+				t.TentnCode = value.String
 			}
-		case applicant.FieldProfessionalStartDate:
+		case talent.FieldProfessionalStartDate:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field professional_start_date", values[i])
 			} else if value.Valid {
-				a.ProfessionalStartDate = value.Time
+				t.ProfessionalStartDate = value.Time
 			}
-		case applicant.FieldEmail:
+		case talent.FieldEmail:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field email", values[i])
 			} else if value.Valid {
-				a.Email = value.String
+				t.Email = value.String
 			}
-		case applicant.FieldPhone:
+		case talent.FieldPhone:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field phone", values[i])
 			} else if value.Valid {
-				a.Phone = value.String
+				t.Phone = value.String
 			}
-		case applicant.FieldCountryCode:
+		case talent.FieldCountryCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field country_code", values[i])
 			} else if value.Valid {
-				a.CountryCode = value.String
+				t.CountryCode = value.String
 			}
-		case applicant.FieldCity:
+		case talent.FieldCity:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field city", values[i])
 			} else if value.Valid {
-				a.City = value.String
+				t.City = value.String
 			}
-		case applicant.FieldJoinedTentnAt:
+		case talent.FieldJoinedTentnAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field joined_tentn_at", values[i])
 			} else if value.Valid {
-				a.JoinedTentnAt = new(time.Time)
-				*a.JoinedTentnAt = value.Time
+				t.JoinedTentnAt = new(time.Time)
+				*t.JoinedTentnAt = value.Time
 			}
 		}
 	}
 	return nil
 }
 
-// QueryReferrer queries the "referrer" edge of the Applicant entity.
-func (a *Applicant) QueryReferrer() *ApplicantQuery {
-	return (&ApplicantClient{config: a.config}).QueryReferrer(a)
+// QueryReferrer queries the "referrer" edge of the Talent entity.
+func (t *Talent) QueryReferrer() *TalentQuery {
+	return (&TalentClient{config: t.config}).QueryReferrer(t)
 }
 
-// QueryReferees queries the "referees" edge of the Applicant entity.
-func (a *Applicant) QueryReferees() *ApplicantQuery {
-	return (&ApplicantClient{config: a.config}).QueryReferees(a)
+// QueryReferees queries the "referees" edge of the Talent entity.
+func (t *Talent) QueryReferees() *TalentQuery {
+	return (&TalentClient{config: t.config}).QueryReferees(t)
 }
 
-// QueryPortfoliolinks queries the "portfoliolinks" edge of the Applicant entity.
-func (a *Applicant) QueryPortfoliolinks() *PortfolioLinkQuery {
-	return (&ApplicantClient{config: a.config}).QueryPortfoliolinks(a)
+// QueryPortfoliolinks queries the "portfoliolinks" edge of the Talent entity.
+func (t *Talent) QueryPortfoliolinks() *PortfolioLinkQuery {
+	return (&TalentClient{config: t.config}).QueryPortfoliolinks(t)
 }
 
-// QuerySkills queries the "skills" edge of the Applicant entity.
-func (a *Applicant) QuerySkills() *SkillQuery {
-	return (&ApplicantClient{config: a.config}).QuerySkills(a)
+// QuerySkills queries the "skills" edge of the Talent entity.
+func (t *Talent) QuerySkills() *SkillQuery {
+	return (&TalentClient{config: t.config}).QuerySkills(t)
 }
 
-// QueryJobApplications queries the "job_applications" edge of the Applicant entity.
-func (a *Applicant) QueryJobApplications() *JobApplicationQuery {
-	return (&ApplicantClient{config: a.config}).QueryJobApplications(a)
+// QueryJobTalents queries the "job_talents" edge of the Talent entity.
+func (t *Talent) QueryJobTalents() *JobTalentQuery {
+	return (&TalentClient{config: t.config}).QueryJobTalents(t)
 }
 
-// QueryWorkExperiences queries the "work_experiences" edge of the Applicant entity.
-func (a *Applicant) QueryWorkExperiences() *WorkExperienceQuery {
-	return (&ApplicantClient{config: a.config}).QueryWorkExperiences(a)
+// QueryWorkExperiences queries the "work_experiences" edge of the Talent entity.
+func (t *Talent) QueryWorkExperiences() *WorkExperienceQuery {
+	return (&TalentClient{config: t.config}).QueryWorkExperiences(t)
 }
 
-// QueryEducations queries the "educations" edge of the Applicant entity.
-func (a *Applicant) QueryEducations() *EducationQuery {
-	return (&ApplicantClient{config: a.config}).QueryEducations(a)
+// QueryEducations queries the "educations" edge of the Talent entity.
+func (t *Talent) QueryEducations() *EducationQuery {
+	return (&TalentClient{config: t.config}).QueryEducations(t)
 }
 
-// QueryEmergencyContacts queries the "emergency_contacts" edge of the Applicant entity.
-func (a *Applicant) QueryEmergencyContacts() *EmergencyContactQuery {
-	return (&ApplicantClient{config: a.config}).QueryEmergencyContacts(a)
+// QueryEmergencyContacts queries the "emergency_contacts" edge of the Talent entity.
+func (t *Talent) QueryEmergencyContacts() *EmergencyContactQuery {
+	return (&TalentClient{config: t.config}).QueryEmergencyContacts(t)
 }
 
-// Update returns a builder for updating this Applicant.
-// Note that you need to call Applicant.Unwrap() before calling this method if this Applicant
+// Update returns a builder for updating this Talent.
+// Note that you need to call Talent.Unwrap() before calling this method if this Talent
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (a *Applicant) Update() *ApplicantUpdateOne {
-	return (&ApplicantClient{config: a.config}).UpdateOne(a)
+func (t *Talent) Update() *TalentUpdateOne {
+	return (&TalentClient{config: t.config}).UpdateOne(t)
 }
 
-// Unwrap unwraps the Applicant entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the Talent entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (a *Applicant) Unwrap() *Applicant {
-	tx, ok := a.config.driver.(*txDriver)
+func (t *Talent) Unwrap() *Talent {
+	tx, ok := t.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Applicant is not a transactional entity")
+		panic("ent: Talent is not a transactional entity")
 	}
-	a.config.driver = tx.drv
-	return a
+	t.config.driver = tx.drv
+	return t
 }
 
 // String implements the fmt.Stringer.
-func (a *Applicant) String() string {
+func (t *Talent) String() string {
 	var builder strings.Builder
-	builder.WriteString("Applicant(")
-	builder.WriteString(fmt.Sprintf("id=%v", a.ID))
+	builder.WriteString("Talent(")
+	builder.WriteString(fmt.Sprintf("id=%v", t.ID))
 	builder.WriteString(", uuid=")
-	builder.WriteString(fmt.Sprintf("%v", a.UUID))
+	builder.WriteString(fmt.Sprintf("%v", t.UUID))
 	builder.WriteString(", created_at=")
-	builder.WriteString(a.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(t.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
-	builder.WriteString(a.UpdatedAt.Format(time.ANSIC))
-	if v := a.DeletedAt; v != nil {
+	builder.WriteString(t.UpdatedAt.Format(time.ANSIC))
+	if v := t.DeletedAt; v != nil {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", first_name=")
-	builder.WriteString(a.FirstName)
+	builder.WriteString(t.FirstName)
 	builder.WriteString(", last_name=")
-	builder.WriteString(a.LastName)
+	builder.WriteString(t.LastName)
 	builder.WriteString(", preferred_name=")
-	builder.WriteString(a.PreferredName)
+	builder.WriteString(t.PreferredName)
 	builder.WriteString(", pronoun=")
-	builder.WriteString(a.Pronoun)
+	builder.WriteString(t.Pronoun)
 	builder.WriteString(", preferred_job_title=")
-	builder.WriteString(a.PreferredJobTitle)
+	builder.WriteString(t.PreferredJobTitle)
 	builder.WriteString(", referrer_id=")
-	builder.WriteString(fmt.Sprintf("%v", a.ReferrerID))
+	builder.WriteString(fmt.Sprintf("%v", t.ReferrerID))
 	builder.WriteString(", referral_code=")
-	builder.WriteString(a.ReferralCode)
+	builder.WriteString(t.ReferralCode)
 	builder.WriteString(", tentn_code=")
-	builder.WriteString(a.TentnCode)
+	builder.WriteString(t.TentnCode)
 	builder.WriteString(", professional_start_date=")
-	builder.WriteString(a.ProfessionalStartDate.Format(time.ANSIC))
+	builder.WriteString(t.ProfessionalStartDate.Format(time.ANSIC))
 	builder.WriteString(", email=")
-	builder.WriteString(a.Email)
+	builder.WriteString(t.Email)
 	builder.WriteString(", phone=")
-	builder.WriteString(a.Phone)
+	builder.WriteString(t.Phone)
 	builder.WriteString(", country_code=")
-	builder.WriteString(a.CountryCode)
+	builder.WriteString(t.CountryCode)
 	builder.WriteString(", city=")
-	builder.WriteString(a.City)
-	if v := a.JoinedTentnAt; v != nil {
+	builder.WriteString(t.City)
+	if v := t.JoinedTentnAt; v != nil {
 		builder.WriteString(", joined_tentn_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
@@ -414,11 +414,11 @@ func (a *Applicant) String() string {
 	return builder.String()
 }
 
-// Applicants is a parsable slice of Applicant.
-type Applicants []*Applicant
+// Talents is a parsable slice of Talent.
+type Talents []*Talent
 
-func (a Applicants) config(cfg config) {
-	for _i := range a {
-		a[_i].config = cfg
+func (t Talents) config(cfg config) {
+	for _i := range t {
+		t[_i].config = cfg
 	}
 }

@@ -16,10 +16,10 @@ func (EmergencyContact) Mixin() []ent.Mixin {
 		UUIDMixin{},
 		TimeStampMixin{},
 		BelongsToMixin{
-			ParentName: "applicant",
-			ParentType: Applicant.Type,
+			ParentName: "talent",
+			ParentType: Talent.Type,
 			Ref:        "emergency_contacts",
-			ForeignKey: "applicant_id",
+			ForeignKey: "talent_id",
 		},
 	}
 }

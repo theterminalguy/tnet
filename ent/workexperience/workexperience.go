@@ -21,8 +21,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldApplicantID holds the string denoting the applicant_id field in the database.
-	FieldApplicantID = "applicant_id"
+	// FieldTalentID holds the string denoting the talent_id field in the database.
+	FieldTalentID = "talent_id"
 	// FieldCompanyName holds the string denoting the company_name field in the database.
 	FieldCompanyName = "company_name"
 	// FieldLocation holds the string denoting the location field in the database.
@@ -37,17 +37,17 @@ const (
 	FieldEndDate = "end_date"
 	// FieldPrimaryTechnologies holds the string denoting the primary_technologies field in the database.
 	FieldPrimaryTechnologies = "primary_technologies"
-	// EdgeApplicant holds the string denoting the applicant edge name in mutations.
-	EdgeApplicant = "applicant"
+	// EdgeTalent holds the string denoting the talent edge name in mutations.
+	EdgeTalent = "talent"
 	// Table holds the table name of the workexperience in the database.
 	Table = "work_experiences"
-	// ApplicantTable is the table that holds the applicant relation/edge.
-	ApplicantTable = "work_experiences"
-	// ApplicantInverseTable is the table name for the Applicant entity.
-	// It exists in this package in order to avoid circular dependency with the "applicant" package.
-	ApplicantInverseTable = "applicants"
-	// ApplicantColumn is the table column denoting the applicant relation/edge.
-	ApplicantColumn = "applicant_id"
+	// TalentTable is the table that holds the talent relation/edge.
+	TalentTable = "work_experiences"
+	// TalentInverseTable is the table name for the Talent entity.
+	// It exists in this package in order to avoid circular dependency with the "talent" package.
+	TalentInverseTable = "talents"
+	// TalentColumn is the table column denoting the talent relation/edge.
+	TalentColumn = "talent_id"
 )
 
 // Columns holds all SQL columns for workexperience fields.
@@ -57,7 +57,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldApplicantID,
+	FieldTalentID,
 	FieldCompanyName,
 	FieldLocation,
 	FieldJobTitle,

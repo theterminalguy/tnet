@@ -13,7 +13,7 @@ import (
 type EducationRepository struct{}
 
 type EducationParams struct {
-	ApplicantUUID   uuid.UUID `json:"applicant_uuid" validate:"required"`
+	TalentUUID      uuid.UUID `json:"talent_uuid" validate:"required"`
 	InstitutionName string    `json:"institution_name" validate:"required"`
 	Location        string    `json:"location" validate:"required"`
 	Degree          string    `json:"degree" validate:"required"`
@@ -59,7 +59,7 @@ func (*EducationRepository) Create(p EducationParams) (*ent.Education, error) {
 	var sd *time.Time
 	var ed *time.Time
 
-	a, err := NewApplicantRepository().GetByUUID(p.ApplicantUUID)
+	a, err := NewTalentRepository().GetByUUID(p.TalentUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (*EducationRepository) Create(p EducationParams) (*ent.Education, error) {
 
 	record, err := dBConn.Education.
 		Create().
-		SetApplicantID(a.ID).
+		SetTalentID(a.ID).
 		SetDegree(p.Degree).
 		SetInstitutionName(p.InstitutionName).
 		SetLocation(p.Location).
@@ -98,7 +98,7 @@ func (*EducationRepository) Create(p EducationParams) (*ent.Education, error) {
 }
 
 func (r *EducationRepository) Update(id uuid.UUID, p EducationParams) (*ent.Education, []error) {
-	err := validateParams(p, "ApplicantUUID")
+	err := validateParams(p, "TalentUUID")
 	if err != nil {
 		return nil, []error{err}
 	}

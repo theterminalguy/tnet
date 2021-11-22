@@ -55,20 +55,20 @@ type Job struct {
 
 // JobEdges holds the relations/edges for other nodes in the graph.
 type JobEdges struct {
-	// Applications holds the value of the applications edge.
-	Applications []*JobApplication `json:"applications,omitempty"`
+	// JobTalents holds the value of the job_talents edge.
+	JobTalents []*JobTalent `json:"job_talents,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// ApplicationsOrErr returns the Applications value or an error if the edge
+// JobTalentsOrErr returns the JobTalents value or an error if the edge
 // was not loaded in eager-loading.
-func (e JobEdges) ApplicationsOrErr() ([]*JobApplication, error) {
+func (e JobEdges) JobTalentsOrErr() ([]*JobTalent, error) {
 	if e.loadedTypes[0] {
-		return e.Applications, nil
+		return e.JobTalents, nil
 	}
-	return nil, &NotLoadedError{edge: "applications"}
+	return nil, &NotLoadedError{edge: "job_talents"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -211,9 +211,9 @@ func (j *Job) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryApplications queries the "applications" edge of the Job entity.
-func (j *Job) QueryApplications() *JobApplicationQuery {
-	return (&JobClient{config: j.config}).QueryApplications(j)
+// QueryJobTalents queries the "job_talents" edge of the Job entity.
+func (j *Job) QueryJobTalents() *JobTalentQuery {
+	return (&JobClient{config: j.config}).QueryJobTalents(j)
 }
 
 // Update returns a builder for updating this Job.

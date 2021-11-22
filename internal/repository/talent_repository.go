@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/applicant"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/randutil"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/10hourlabs/tentn/util/date"
@@ -16,9 +16,9 @@ import (
 
 var invalidReferralCodeError error = errors.New("invalid referral code")
 
-type ApplicantRepository struct{}
+type TalentRepository struct{}
 
-type ApplicantParams struct {
+type TalentParams struct {
 	FirstName             string `json:"first_name" validate:"required"`
 	LastName              string `json:"last_name" validate:"required"`
 	PreferredName         string `json:"preferred_name" validate:"required"`
@@ -32,23 +32,23 @@ type ApplicantParams struct {
 	City                  string `json:"city" validate:"required"`
 }
 
-func NewApplicantRepository() *ApplicantRepository {
-	return &ApplicantRepository{}
+func NewTalentRepository() *TalentRepository {
+	return &TalentRepository{}
 }
 
-func (*ApplicantRepository) GetAll() ([]*ent.Applicant, error) {
-	applicants, err := dBConn.Applicant.Query().
-		Where(applicant.DeletedAtIsNil()).
+func (*TalentRepository) GetAll() ([]*ent.Talent, error) {
+	Talents, err := dBConn.Talent.Query().
+		Where(talent.DeletedAtIsNil()).
 		All(dBContext)
 	if err != nil {
 		return nil, err
 	}
-	return applicants, nil
+	return Talents, nil
 }
 
-func (*ApplicantRepository) GetByUUID(id uuid.UUID) (*ent.Applicant, error) {
-	a, err := dBConn.Applicant.Query().
-		Where(applicant.UUIDEQ(id)).
+func (*TalentRepository) GetByUUID(id uuid.UUID) (*ent.Talent, error) {
+	a, err := dBConn.Talent.Query().
+		Where(talent.UUIDEQ(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -58,7 +58,7 @@ func (*ApplicantRepository) GetByUUID(id uuid.UUID) (*ent.Applicant, error) {
 	// ```
 	// 		peeps, _ := a.QueryReferees().All(dBContext)
 	// 		log.Println("Peeps", peeps)
-	// 		a.Edges = ent.ApplicantEdges{
+	// 		a.Edges = ent.TalentEdges{
 	// 			Referees: peeps,
 	// 		}
 	// ```
@@ -68,7 +68,7 @@ func (*ApplicantRepository) GetByUUID(id uuid.UUID) (*ent.Applicant, error) {
 	return a, nil
 }
 
-func (r *ApplicantRepository) Create(p ApplicantParams) (*ent.Applicant, error) {
+func (r *TalentRepository) Create(p TalentParams) (*ent.Talent, error) {
 	err := validateParams(p)
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ func (r *ApplicantRepository) Create(p ApplicantParams) (*ent.Applicant, error) 
 	if err != nil {
 		return nil, err
 	}
-	q := dBConn.Applicant.
+	q := dBConn.Talent.
 		Create().
 		SetFirstName(p.FirstName).
 		SetLastName(p.LastName).
@@ -92,8 +92,8 @@ func (r *ApplicantRepository) Create(p ApplicantParams) (*ent.Applicant, error) 
 		SetTentnCode(r.genTenTNCode(p)).
 		SetCity(p.City)
 	if len(p.ReferralCode) > 1 {
-		ref, err := dBConn.Applicant.Query().
-			Where(applicant.TentnCodeEQ(p.ReferralCode)).
+		ref, err := dBConn.Talent.Query().
+			Where(talent.TentnCodeEQ(p.ReferralCode)).
 			Only(dBContext)
 		if err != nil {
 			return nil, invalidReferralCodeError
@@ -108,8 +108,8 @@ func (r *ApplicantRepository) Create(p ApplicantParams) (*ent.Applicant, error) 
 	return a, err
 }
 
-func (r *ApplicantRepository) Update(id uuid.UUID, p ApplicantParams) (*ent.Applicant, []error) {
-	err := validateParams(p, "ApplicantUUID")
+func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*ent.Talent, []error) {
+	err := validateParams(p, "TalentUUID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -241,7 +241,7 @@ func (r *ApplicantRepository) Update(id uuid.UUID, p ApplicantParams) (*ent.Appl
 	return record, nil
 }
 
-func (r *ApplicantRepository) DeleteByUUID(id uuid.UUID) error {
+func (r *TalentRepository) DeleteByUUID(id uuid.UUID) error {
 	record, err := r.GetByUUID(id)
 	if err != nil {
 		return err
@@ -255,15 +255,15 @@ func (r *ApplicantRepository) DeleteByUUID(id uuid.UUID) error {
 	return nil
 }
 
-func (r *ApplicantRepository) genTenTNCode(p ApplicantParams) string {
+func (r *TalentRepository) genTenTNCode(p TalentParams) string {
 	attempts := 0
 	for {
 		if attempts == 4 {
 			break
 		}
 		code := fmt.Sprintf("%v%v", p.PreferredName, randutil.String(5))
-		a, err := dBConn.Applicant.Query().
-			Where(applicant.TentnCode(code)).
+		a, err := dBConn.Talent.Query().
+			Where(talent.TentnCode(code)).
 			Only(dBContext)
 		if a == nil {
 			return code

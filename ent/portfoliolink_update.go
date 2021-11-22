@@ -10,9 +10,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
 )
 
@@ -73,29 +73,29 @@ func (plu *PortfolioLinkUpdate) SetName(s string) *PortfolioLinkUpdate {
 	return plu
 }
 
-// SetApplicantID sets the "applicant_id" field.
-func (plu *PortfolioLinkUpdate) SetApplicantID(i int) *PortfolioLinkUpdate {
-	plu.mutation.SetApplicantID(i)
+// SetTalentID sets the "talent_id" field.
+func (plu *PortfolioLinkUpdate) SetTalentID(i int) *PortfolioLinkUpdate {
+	plu.mutation.SetTalentID(i)
 	return plu
 }
 
-// SetNillableApplicantID sets the "applicant_id" field if the given value is not nil.
-func (plu *PortfolioLinkUpdate) SetNillableApplicantID(i *int) *PortfolioLinkUpdate {
+// SetNillableTalentID sets the "talent_id" field if the given value is not nil.
+func (plu *PortfolioLinkUpdate) SetNillableTalentID(i *int) *PortfolioLinkUpdate {
 	if i != nil {
-		plu.SetApplicantID(*i)
+		plu.SetTalentID(*i)
 	}
 	return plu
 }
 
-// ClearApplicantID clears the value of the "applicant_id" field.
-func (plu *PortfolioLinkUpdate) ClearApplicantID() *PortfolioLinkUpdate {
-	plu.mutation.ClearApplicantID()
+// ClearTalentID clears the value of the "talent_id" field.
+func (plu *PortfolioLinkUpdate) ClearTalentID() *PortfolioLinkUpdate {
+	plu.mutation.ClearTalentID()
 	return plu
 }
 
-// SetApplicant sets the "applicant" edge to the Applicant entity.
-func (plu *PortfolioLinkUpdate) SetApplicant(a *Applicant) *PortfolioLinkUpdate {
-	return plu.SetApplicantID(a.ID)
+// SetTalent sets the "talent" edge to the Talent entity.
+func (plu *PortfolioLinkUpdate) SetTalent(t *Talent) *PortfolioLinkUpdate {
+	return plu.SetTalentID(t.ID)
 }
 
 // Mutation returns the PortfolioLinkMutation object of the builder.
@@ -103,9 +103,9 @@ func (plu *PortfolioLinkUpdate) Mutation() *PortfolioLinkMutation {
 	return plu.mutation
 }
 
-// ClearApplicant clears the "applicant" edge to the Applicant entity.
-func (plu *PortfolioLinkUpdate) ClearApplicant() *PortfolioLinkUpdate {
-	plu.mutation.ClearApplicant()
+// ClearTalent clears the "talent" edge to the Talent entity.
+func (plu *PortfolioLinkUpdate) ClearTalent() *PortfolioLinkUpdate {
+	plu.mutation.ClearTalent()
 	return plu
 }
 
@@ -231,33 +231,33 @@ func (plu *PortfolioLinkUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Column: portfoliolink.FieldName,
 		})
 	}
-	if plu.mutation.ApplicantCleared() {
+	if plu.mutation.TalentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   portfoliolink.ApplicantTable,
-			Columns: []string{portfoliolink.ApplicantColumn},
+			Table:   portfoliolink.TalentTable,
+			Columns: []string{portfoliolink.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := plu.mutation.ApplicantIDs(); len(nodes) > 0 {
+	if nodes := plu.mutation.TalentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   portfoliolink.ApplicantTable,
-			Columns: []string{portfoliolink.ApplicantColumn},
+			Table:   portfoliolink.TalentTable,
+			Columns: []string{portfoliolink.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
@@ -329,29 +329,29 @@ func (pluo *PortfolioLinkUpdateOne) SetName(s string) *PortfolioLinkUpdateOne {
 	return pluo
 }
 
-// SetApplicantID sets the "applicant_id" field.
-func (pluo *PortfolioLinkUpdateOne) SetApplicantID(i int) *PortfolioLinkUpdateOne {
-	pluo.mutation.SetApplicantID(i)
+// SetTalentID sets the "talent_id" field.
+func (pluo *PortfolioLinkUpdateOne) SetTalentID(i int) *PortfolioLinkUpdateOne {
+	pluo.mutation.SetTalentID(i)
 	return pluo
 }
 
-// SetNillableApplicantID sets the "applicant_id" field if the given value is not nil.
-func (pluo *PortfolioLinkUpdateOne) SetNillableApplicantID(i *int) *PortfolioLinkUpdateOne {
+// SetNillableTalentID sets the "talent_id" field if the given value is not nil.
+func (pluo *PortfolioLinkUpdateOne) SetNillableTalentID(i *int) *PortfolioLinkUpdateOne {
 	if i != nil {
-		pluo.SetApplicantID(*i)
+		pluo.SetTalentID(*i)
 	}
 	return pluo
 }
 
-// ClearApplicantID clears the value of the "applicant_id" field.
-func (pluo *PortfolioLinkUpdateOne) ClearApplicantID() *PortfolioLinkUpdateOne {
-	pluo.mutation.ClearApplicantID()
+// ClearTalentID clears the value of the "talent_id" field.
+func (pluo *PortfolioLinkUpdateOne) ClearTalentID() *PortfolioLinkUpdateOne {
+	pluo.mutation.ClearTalentID()
 	return pluo
 }
 
-// SetApplicant sets the "applicant" edge to the Applicant entity.
-func (pluo *PortfolioLinkUpdateOne) SetApplicant(a *Applicant) *PortfolioLinkUpdateOne {
-	return pluo.SetApplicantID(a.ID)
+// SetTalent sets the "talent" edge to the Talent entity.
+func (pluo *PortfolioLinkUpdateOne) SetTalent(t *Talent) *PortfolioLinkUpdateOne {
+	return pluo.SetTalentID(t.ID)
 }
 
 // Mutation returns the PortfolioLinkMutation object of the builder.
@@ -359,9 +359,9 @@ func (pluo *PortfolioLinkUpdateOne) Mutation() *PortfolioLinkMutation {
 	return pluo.mutation
 }
 
-// ClearApplicant clears the "applicant" edge to the Applicant entity.
-func (pluo *PortfolioLinkUpdateOne) ClearApplicant() *PortfolioLinkUpdateOne {
-	pluo.mutation.ClearApplicant()
+// ClearTalent clears the "talent" edge to the Talent entity.
+func (pluo *PortfolioLinkUpdateOne) ClearTalent() *PortfolioLinkUpdateOne {
+	pluo.mutation.ClearTalent()
 	return pluo
 }
 
@@ -511,33 +511,33 @@ func (pluo *PortfolioLinkUpdateOne) sqlSave(ctx context.Context) (_node *Portfol
 			Column: portfoliolink.FieldName,
 		})
 	}
-	if pluo.mutation.ApplicantCleared() {
+	if pluo.mutation.TalentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   portfoliolink.ApplicantTable,
-			Columns: []string{portfoliolink.ApplicantColumn},
+			Table:   portfoliolink.TalentTable,
+			Columns: []string{portfoliolink.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pluo.mutation.ApplicantIDs(); len(nodes) > 0 {
+	if nodes := pluo.mutation.TalentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   portfoliolink.ApplicantTable,
-			Columns: []string{portfoliolink.ApplicantColumn},
+			Table:   portfoliolink.TalentTable,
+			Columns: []string{portfoliolink.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}

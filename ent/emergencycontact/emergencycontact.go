@@ -21,8 +21,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldApplicantID holds the string denoting the applicant_id field in the database.
-	FieldApplicantID = "applicant_id"
+	// FieldTalentID holds the string denoting the talent_id field in the database.
+	FieldTalentID = "talent_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldPhoneNumber holds the string denoting the phone_number field in the database.
@@ -33,17 +33,17 @@ const (
 	FieldRelationship = "relationship"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
-	// EdgeApplicant holds the string denoting the applicant edge name in mutations.
-	EdgeApplicant = "applicant"
+	// EdgeTalent holds the string denoting the talent edge name in mutations.
+	EdgeTalent = "talent"
 	// Table holds the table name of the emergencycontact in the database.
 	Table = "emergency_contacts"
-	// ApplicantTable is the table that holds the applicant relation/edge.
-	ApplicantTable = "emergency_contacts"
-	// ApplicantInverseTable is the table name for the Applicant entity.
-	// It exists in this package in order to avoid circular dependency with the "applicant" package.
-	ApplicantInverseTable = "applicants"
-	// ApplicantColumn is the table column denoting the applicant relation/edge.
-	ApplicantColumn = "applicant_id"
+	// TalentTable is the table that holds the talent relation/edge.
+	TalentTable = "emergency_contacts"
+	// TalentInverseTable is the table name for the Talent entity.
+	// It exists in this package in order to avoid circular dependency with the "talent" package.
+	TalentInverseTable = "talents"
+	// TalentColumn is the table column denoting the talent relation/edge.
+	TalentColumn = "talent_id"
 )
 
 // Columns holds all SQL columns for emergencycontact fields.
@@ -53,7 +53,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldApplicantID,
+	FieldTalentID,
 	FieldName,
 	FieldPhoneNumber,
 	FieldAddress,

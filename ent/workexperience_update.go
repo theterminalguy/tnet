@@ -10,8 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/workexperience"
 	"github.com/google/uuid"
 )
@@ -61,23 +61,23 @@ func (weu *WorkExperienceUpdate) ClearDeletedAt() *WorkExperienceUpdate {
 	return weu
 }
 
-// SetApplicantID sets the "applicant_id" field.
-func (weu *WorkExperienceUpdate) SetApplicantID(i int) *WorkExperienceUpdate {
-	weu.mutation.SetApplicantID(i)
+// SetTalentID sets the "talent_id" field.
+func (weu *WorkExperienceUpdate) SetTalentID(i int) *WorkExperienceUpdate {
+	weu.mutation.SetTalentID(i)
 	return weu
 }
 
-// SetNillableApplicantID sets the "applicant_id" field if the given value is not nil.
-func (weu *WorkExperienceUpdate) SetNillableApplicantID(i *int) *WorkExperienceUpdate {
+// SetNillableTalentID sets the "talent_id" field if the given value is not nil.
+func (weu *WorkExperienceUpdate) SetNillableTalentID(i *int) *WorkExperienceUpdate {
 	if i != nil {
-		weu.SetApplicantID(*i)
+		weu.SetTalentID(*i)
 	}
 	return weu
 }
 
-// ClearApplicantID clears the value of the "applicant_id" field.
-func (weu *WorkExperienceUpdate) ClearApplicantID() *WorkExperienceUpdate {
-	weu.mutation.ClearApplicantID()
+// ClearTalentID clears the value of the "talent_id" field.
+func (weu *WorkExperienceUpdate) ClearTalentID() *WorkExperienceUpdate {
+	weu.mutation.ClearTalentID()
 	return weu
 }
 
@@ -137,9 +137,9 @@ func (weu *WorkExperienceUpdate) SetPrimaryTechnologies(s []string) *WorkExperie
 	return weu
 }
 
-// SetApplicant sets the "applicant" edge to the Applicant entity.
-func (weu *WorkExperienceUpdate) SetApplicant(a *Applicant) *WorkExperienceUpdate {
-	return weu.SetApplicantID(a.ID)
+// SetTalent sets the "talent" edge to the Talent entity.
+func (weu *WorkExperienceUpdate) SetTalent(t *Talent) *WorkExperienceUpdate {
+	return weu.SetTalentID(t.ID)
 }
 
 // Mutation returns the WorkExperienceMutation object of the builder.
@@ -147,9 +147,9 @@ func (weu *WorkExperienceUpdate) Mutation() *WorkExperienceMutation {
 	return weu.mutation
 }
 
-// ClearApplicant clears the "applicant" edge to the Applicant entity.
-func (weu *WorkExperienceUpdate) ClearApplicant() *WorkExperienceUpdate {
-	weu.mutation.ClearApplicant()
+// ClearTalent clears the "talent" edge to the Talent entity.
+func (weu *WorkExperienceUpdate) ClearTalent() *WorkExperienceUpdate {
+	weu.mutation.ClearTalent()
 	return weu
 }
 
@@ -316,33 +316,33 @@ func (weu *WorkExperienceUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: workexperience.FieldPrimaryTechnologies,
 		})
 	}
-	if weu.mutation.ApplicantCleared() {
+	if weu.mutation.TalentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   workexperience.ApplicantTable,
-			Columns: []string{workexperience.ApplicantColumn},
+			Table:   workexperience.TalentTable,
+			Columns: []string{workexperience.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := weu.mutation.ApplicantIDs(); len(nodes) > 0 {
+	if nodes := weu.mutation.TalentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   workexperience.ApplicantTable,
-			Columns: []string{workexperience.ApplicantColumn},
+			Table:   workexperience.TalentTable,
+			Columns: []string{workexperience.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
@@ -402,23 +402,23 @@ func (weuo *WorkExperienceUpdateOne) ClearDeletedAt() *WorkExperienceUpdateOne {
 	return weuo
 }
 
-// SetApplicantID sets the "applicant_id" field.
-func (weuo *WorkExperienceUpdateOne) SetApplicantID(i int) *WorkExperienceUpdateOne {
-	weuo.mutation.SetApplicantID(i)
+// SetTalentID sets the "talent_id" field.
+func (weuo *WorkExperienceUpdateOne) SetTalentID(i int) *WorkExperienceUpdateOne {
+	weuo.mutation.SetTalentID(i)
 	return weuo
 }
 
-// SetNillableApplicantID sets the "applicant_id" field if the given value is not nil.
-func (weuo *WorkExperienceUpdateOne) SetNillableApplicantID(i *int) *WorkExperienceUpdateOne {
+// SetNillableTalentID sets the "talent_id" field if the given value is not nil.
+func (weuo *WorkExperienceUpdateOne) SetNillableTalentID(i *int) *WorkExperienceUpdateOne {
 	if i != nil {
-		weuo.SetApplicantID(*i)
+		weuo.SetTalentID(*i)
 	}
 	return weuo
 }
 
-// ClearApplicantID clears the value of the "applicant_id" field.
-func (weuo *WorkExperienceUpdateOne) ClearApplicantID() *WorkExperienceUpdateOne {
-	weuo.mutation.ClearApplicantID()
+// ClearTalentID clears the value of the "talent_id" field.
+func (weuo *WorkExperienceUpdateOne) ClearTalentID() *WorkExperienceUpdateOne {
+	weuo.mutation.ClearTalentID()
 	return weuo
 }
 
@@ -478,9 +478,9 @@ func (weuo *WorkExperienceUpdateOne) SetPrimaryTechnologies(s []string) *WorkExp
 	return weuo
 }
 
-// SetApplicant sets the "applicant" edge to the Applicant entity.
-func (weuo *WorkExperienceUpdateOne) SetApplicant(a *Applicant) *WorkExperienceUpdateOne {
-	return weuo.SetApplicantID(a.ID)
+// SetTalent sets the "talent" edge to the Talent entity.
+func (weuo *WorkExperienceUpdateOne) SetTalent(t *Talent) *WorkExperienceUpdateOne {
+	return weuo.SetTalentID(t.ID)
 }
 
 // Mutation returns the WorkExperienceMutation object of the builder.
@@ -488,9 +488,9 @@ func (weuo *WorkExperienceUpdateOne) Mutation() *WorkExperienceMutation {
 	return weuo.mutation
 }
 
-// ClearApplicant clears the "applicant" edge to the Applicant entity.
-func (weuo *WorkExperienceUpdateOne) ClearApplicant() *WorkExperienceUpdateOne {
-	weuo.mutation.ClearApplicant()
+// ClearTalent clears the "talent" edge to the Talent entity.
+func (weuo *WorkExperienceUpdateOne) ClearTalent() *WorkExperienceUpdateOne {
+	weuo.mutation.ClearTalent()
 	return weuo
 }
 
@@ -681,33 +681,33 @@ func (weuo *WorkExperienceUpdateOne) sqlSave(ctx context.Context) (_node *WorkEx
 			Column: workexperience.FieldPrimaryTechnologies,
 		})
 	}
-	if weuo.mutation.ApplicantCleared() {
+	if weuo.mutation.TalentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   workexperience.ApplicantTable,
-			Columns: []string{workexperience.ApplicantColumn},
+			Table:   workexperience.TalentTable,
+			Columns: []string{workexperience.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := weuo.mutation.ApplicantIDs(); len(nodes) > 0 {
+	if nodes := weuo.mutation.TalentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   workexperience.ApplicantTable,
-			Columns: []string{workexperience.ApplicantColumn},
+			Table:   workexperience.TalentTable,
+			Columns: []string{workexperience.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}

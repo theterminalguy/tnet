@@ -10,8 +10,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
 )
 
@@ -70,16 +70,16 @@ func (ecc *EmergencyContactCreate) SetNillableDeletedAt(t *time.Time) *Emergency
 	return ecc
 }
 
-// SetApplicantID sets the "applicant_id" field.
-func (ecc *EmergencyContactCreate) SetApplicantID(i int) *EmergencyContactCreate {
-	ecc.mutation.SetApplicantID(i)
+// SetTalentID sets the "talent_id" field.
+func (ecc *EmergencyContactCreate) SetTalentID(i int) *EmergencyContactCreate {
+	ecc.mutation.SetTalentID(i)
 	return ecc
 }
 
-// SetNillableApplicantID sets the "applicant_id" field if the given value is not nil.
-func (ecc *EmergencyContactCreate) SetNillableApplicantID(i *int) *EmergencyContactCreate {
+// SetNillableTalentID sets the "talent_id" field if the given value is not nil.
+func (ecc *EmergencyContactCreate) SetNillableTalentID(i *int) *EmergencyContactCreate {
 	if i != nil {
-		ecc.SetApplicantID(*i)
+		ecc.SetTalentID(*i)
 	}
 	return ecc
 }
@@ -120,9 +120,9 @@ func (ecc *EmergencyContactCreate) SetID(i int) *EmergencyContactCreate {
 	return ecc
 }
 
-// SetApplicant sets the "applicant" edge to the Applicant entity.
-func (ecc *EmergencyContactCreate) SetApplicant(a *Applicant) *EmergencyContactCreate {
-	return ecc.SetApplicantID(a.ID)
+// SetTalent sets the "talent" edge to the Talent entity.
+func (ecc *EmergencyContactCreate) SetTalent(t *Talent) *EmergencyContactCreate {
+	return ecc.SetTalentID(t.ID)
 }
 
 // Mutation returns the EmergencyContactMutation object of the builder.
@@ -341,24 +341,24 @@ func (ecc *EmergencyContactCreate) createSpec() (*EmergencyContact, *sqlgraph.Cr
 		})
 		_node.Email = value
 	}
-	if nodes := ecc.mutation.ApplicantIDs(); len(nodes) > 0 {
+	if nodes := ecc.mutation.TalentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   emergencycontact.ApplicantTable,
-			Columns: []string{emergencycontact.ApplicantColumn},
+			Table:   emergencycontact.TalentTable,
+			Columns: []string{emergencycontact.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ApplicantID = nodes[0]
+		_node.TalentID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

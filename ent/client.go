@@ -9,13 +9,13 @@ import (
 
 	"github.com/10hourlabs/tentn/ent/migrate"
 
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/jobtalent"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/workexperience"
 
 	"entgo.io/ent/dialect"
@@ -28,20 +28,20 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// Applicant is the client for interacting with the Applicant builders.
-	Applicant *ApplicantClient
 	// Education is the client for interacting with the Education builders.
 	Education *EducationClient
 	// EmergencyContact is the client for interacting with the EmergencyContact builders.
 	EmergencyContact *EmergencyContactClient
 	// Job is the client for interacting with the Job builders.
 	Job *JobClient
-	// JobApplication is the client for interacting with the JobApplication builders.
-	JobApplication *JobApplicationClient
+	// JobTalent is the client for interacting with the JobTalent builders.
+	JobTalent *JobTalentClient
 	// PortfolioLink is the client for interacting with the PortfolioLink builders.
 	PortfolioLink *PortfolioLinkClient
 	// Skill is the client for interacting with the Skill builders.
 	Skill *SkillClient
+	// Talent is the client for interacting with the Talent builders.
+	Talent *TalentClient
 	// WorkExperience is the client for interacting with the WorkExperience builders.
 	WorkExperience *WorkExperienceClient
 }
@@ -57,13 +57,13 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.Applicant = NewApplicantClient(c.config)
 	c.Education = NewEducationClient(c.config)
 	c.EmergencyContact = NewEmergencyContactClient(c.config)
 	c.Job = NewJobClient(c.config)
-	c.JobApplication = NewJobApplicationClient(c.config)
+	c.JobTalent = NewJobTalentClient(c.config)
 	c.PortfolioLink = NewPortfolioLinkClient(c.config)
 	c.Skill = NewSkillClient(c.config)
+	c.Talent = NewTalentClient(c.config)
 	c.WorkExperience = NewWorkExperienceClient(c.config)
 }
 
@@ -98,13 +98,13 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:              ctx,
 		config:           cfg,
-		Applicant:        NewApplicantClient(cfg),
 		Education:        NewEducationClient(cfg),
 		EmergencyContact: NewEmergencyContactClient(cfg),
 		Job:              NewJobClient(cfg),
-		JobApplication:   NewJobApplicationClient(cfg),
+		JobTalent:        NewJobTalentClient(cfg),
 		PortfolioLink:    NewPortfolioLinkClient(cfg),
 		Skill:            NewSkillClient(cfg),
+		Talent:           NewTalentClient(cfg),
 		WorkExperience:   NewWorkExperienceClient(cfg),
 	}, nil
 }
@@ -124,13 +124,13 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
 		config:           cfg,
-		Applicant:        NewApplicantClient(cfg),
 		Education:        NewEducationClient(cfg),
 		EmergencyContact: NewEmergencyContactClient(cfg),
 		Job:              NewJobClient(cfg),
-		JobApplication:   NewJobApplicationClient(cfg),
+		JobTalent:        NewJobTalentClient(cfg),
 		PortfolioLink:    NewPortfolioLinkClient(cfg),
 		Skill:            NewSkillClient(cfg),
+		Talent:           NewTalentClient(cfg),
 		WorkExperience:   NewWorkExperienceClient(cfg),
 	}, nil
 }
@@ -138,7 +138,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Applicant.
+//		Education.
 //		Query().
 //		Count(ctx)
 //
@@ -161,232 +161,14 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Applicant.Use(hooks...)
 	c.Education.Use(hooks...)
 	c.EmergencyContact.Use(hooks...)
 	c.Job.Use(hooks...)
-	c.JobApplication.Use(hooks...)
+	c.JobTalent.Use(hooks...)
 	c.PortfolioLink.Use(hooks...)
 	c.Skill.Use(hooks...)
+	c.Talent.Use(hooks...)
 	c.WorkExperience.Use(hooks...)
-}
-
-// ApplicantClient is a client for the Applicant schema.
-type ApplicantClient struct {
-	config
-}
-
-// NewApplicantClient returns a client for the Applicant from the given config.
-func NewApplicantClient(c config) *ApplicantClient {
-	return &ApplicantClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `applicant.Hooks(f(g(h())))`.
-func (c *ApplicantClient) Use(hooks ...Hook) {
-	c.hooks.Applicant = append(c.hooks.Applicant, hooks...)
-}
-
-// Create returns a create builder for Applicant.
-func (c *ApplicantClient) Create() *ApplicantCreate {
-	mutation := newApplicantMutation(c.config, OpCreate)
-	return &ApplicantCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Applicant entities.
-func (c *ApplicantClient) CreateBulk(builders ...*ApplicantCreate) *ApplicantCreateBulk {
-	return &ApplicantCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Applicant.
-func (c *ApplicantClient) Update() *ApplicantUpdate {
-	mutation := newApplicantMutation(c.config, OpUpdate)
-	return &ApplicantUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *ApplicantClient) UpdateOne(a *Applicant) *ApplicantUpdateOne {
-	mutation := newApplicantMutation(c.config, OpUpdateOne, withApplicant(a))
-	return &ApplicantUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *ApplicantClient) UpdateOneID(id int) *ApplicantUpdateOne {
-	mutation := newApplicantMutation(c.config, OpUpdateOne, withApplicantID(id))
-	return &ApplicantUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Applicant.
-func (c *ApplicantClient) Delete() *ApplicantDelete {
-	mutation := newApplicantMutation(c.config, OpDelete)
-	return &ApplicantDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a delete builder for the given entity.
-func (c *ApplicantClient) DeleteOne(a *Applicant) *ApplicantDeleteOne {
-	return c.DeleteOneID(a.ID)
-}
-
-// DeleteOneID returns a delete builder for the given id.
-func (c *ApplicantClient) DeleteOneID(id int) *ApplicantDeleteOne {
-	builder := c.Delete().Where(applicant.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &ApplicantDeleteOne{builder}
-}
-
-// Query returns a query builder for Applicant.
-func (c *ApplicantClient) Query() *ApplicantQuery {
-	return &ApplicantQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a Applicant entity by its id.
-func (c *ApplicantClient) Get(ctx context.Context, id int) (*Applicant, error) {
-	return c.Query().Where(applicant.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *ApplicantClient) GetX(ctx context.Context, id int) *Applicant {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryReferrer queries the referrer edge of a Applicant.
-func (c *ApplicantClient) QueryReferrer(a *Applicant) *ApplicantQuery {
-	query := &ApplicantQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(applicant.Table, applicant.FieldID, id),
-			sqlgraph.To(applicant.Table, applicant.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, applicant.ReferrerTable, applicant.ReferrerColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryReferees queries the referees edge of a Applicant.
-func (c *ApplicantClient) QueryReferees(a *Applicant) *ApplicantQuery {
-	query := &ApplicantQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(applicant.Table, applicant.FieldID, id),
-			sqlgraph.To(applicant.Table, applicant.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, applicant.RefereesTable, applicant.RefereesColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryPortfoliolinks queries the portfoliolinks edge of a Applicant.
-func (c *ApplicantClient) QueryPortfoliolinks(a *Applicant) *PortfolioLinkQuery {
-	query := &PortfolioLinkQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(applicant.Table, applicant.FieldID, id),
-			sqlgraph.To(portfoliolink.Table, portfoliolink.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, applicant.PortfoliolinksTable, applicant.PortfoliolinksColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QuerySkills queries the skills edge of a Applicant.
-func (c *ApplicantClient) QuerySkills(a *Applicant) *SkillQuery {
-	query := &SkillQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(applicant.Table, applicant.FieldID, id),
-			sqlgraph.To(skill.Table, skill.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, applicant.SkillsTable, applicant.SkillsColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryJobApplications queries the job_applications edge of a Applicant.
-func (c *ApplicantClient) QueryJobApplications(a *Applicant) *JobApplicationQuery {
-	query := &JobApplicationQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(applicant.Table, applicant.FieldID, id),
-			sqlgraph.To(jobapplication.Table, jobapplication.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, applicant.JobApplicationsTable, applicant.JobApplicationsColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryWorkExperiences queries the work_experiences edge of a Applicant.
-func (c *ApplicantClient) QueryWorkExperiences(a *Applicant) *WorkExperienceQuery {
-	query := &WorkExperienceQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(applicant.Table, applicant.FieldID, id),
-			sqlgraph.To(workexperience.Table, workexperience.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, applicant.WorkExperiencesTable, applicant.WorkExperiencesColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryEducations queries the educations edge of a Applicant.
-func (c *ApplicantClient) QueryEducations(a *Applicant) *EducationQuery {
-	query := &EducationQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(applicant.Table, applicant.FieldID, id),
-			sqlgraph.To(education.Table, education.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, applicant.EducationsTable, applicant.EducationsColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryEmergencyContacts queries the emergency_contacts edge of a Applicant.
-func (c *ApplicantClient) QueryEmergencyContacts(a *Applicant) *EmergencyContactQuery {
-	query := &EmergencyContactQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(applicant.Table, applicant.FieldID, id),
-			sqlgraph.To(emergencycontact.Table, emergencycontact.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, applicant.EmergencyContactsTable, applicant.EmergencyContactsColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *ApplicantClient) Hooks() []Hook {
-	return c.hooks.Applicant
 }
 
 // EducationClient is a client for the Education schema.
@@ -474,15 +256,15 @@ func (c *EducationClient) GetX(ctx context.Context, id int) *Education {
 	return obj
 }
 
-// QueryApplicant queries the applicant edge of a Education.
-func (c *EducationClient) QueryApplicant(e *Education) *ApplicantQuery {
-	query := &ApplicantQuery{config: c.config}
+// QueryTalent queries the talent edge of a Education.
+func (c *EducationClient) QueryTalent(e *Education) *TalentQuery {
+	query := &TalentQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(education.Table, education.FieldID, id),
-			sqlgraph.To(applicant.Table, applicant.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, education.ApplicantTable, education.ApplicantColumn),
+			sqlgraph.To(talent.Table, talent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, education.TalentTable, education.TalentColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil
@@ -580,15 +362,15 @@ func (c *EmergencyContactClient) GetX(ctx context.Context, id int) *EmergencyCon
 	return obj
 }
 
-// QueryApplicant queries the applicant edge of a EmergencyContact.
-func (c *EmergencyContactClient) QueryApplicant(ec *EmergencyContact) *ApplicantQuery {
-	query := &ApplicantQuery{config: c.config}
+// QueryTalent queries the talent edge of a EmergencyContact.
+func (c *EmergencyContactClient) QueryTalent(ec *EmergencyContact) *TalentQuery {
+	query := &TalentQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := ec.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(emergencycontact.Table, emergencycontact.FieldID, id),
-			sqlgraph.To(applicant.Table, applicant.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, emergencycontact.ApplicantTable, emergencycontact.ApplicantColumn),
+			sqlgraph.To(talent.Table, talent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, emergencycontact.TalentTable, emergencycontact.TalentColumn),
 		)
 		fromV = sqlgraph.Neighbors(ec.driver.Dialect(), step)
 		return fromV, nil
@@ -686,15 +468,15 @@ func (c *JobClient) GetX(ctx context.Context, id int) *Job {
 	return obj
 }
 
-// QueryApplications queries the applications edge of a Job.
-func (c *JobClient) QueryApplications(j *Job) *JobApplicationQuery {
-	query := &JobApplicationQuery{config: c.config}
+// QueryJobTalents queries the job_talents edge of a Job.
+func (c *JobClient) QueryJobTalents(j *Job) *JobTalentQuery {
+	query := &JobTalentQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := j.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(job.Table, job.FieldID, id),
-			sqlgraph.To(jobapplication.Table, jobapplication.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, job.ApplicationsTable, job.ApplicationsColumn),
+			sqlgraph.To(jobtalent.Table, jobtalent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, job.JobTalentsTable, job.JobTalentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(j.driver.Dialect(), step)
 		return fromV, nil
@@ -707,84 +489,84 @@ func (c *JobClient) Hooks() []Hook {
 	return c.hooks.Job
 }
 
-// JobApplicationClient is a client for the JobApplication schema.
-type JobApplicationClient struct {
+// JobTalentClient is a client for the JobTalent schema.
+type JobTalentClient struct {
 	config
 }
 
-// NewJobApplicationClient returns a client for the JobApplication from the given config.
-func NewJobApplicationClient(c config) *JobApplicationClient {
-	return &JobApplicationClient{config: c}
+// NewJobTalentClient returns a client for the JobTalent from the given config.
+func NewJobTalentClient(c config) *JobTalentClient {
+	return &JobTalentClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `jobapplication.Hooks(f(g(h())))`.
-func (c *JobApplicationClient) Use(hooks ...Hook) {
-	c.hooks.JobApplication = append(c.hooks.JobApplication, hooks...)
+// A call to `Use(f, g, h)` equals to `jobtalent.Hooks(f(g(h())))`.
+func (c *JobTalentClient) Use(hooks ...Hook) {
+	c.hooks.JobTalent = append(c.hooks.JobTalent, hooks...)
 }
 
-// Create returns a create builder for JobApplication.
-func (c *JobApplicationClient) Create() *JobApplicationCreate {
-	mutation := newJobApplicationMutation(c.config, OpCreate)
-	return &JobApplicationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a create builder for JobTalent.
+func (c *JobTalentClient) Create() *JobTalentCreate {
+	mutation := newJobTalentMutation(c.config, OpCreate)
+	return &JobTalentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of JobApplication entities.
-func (c *JobApplicationClient) CreateBulk(builders ...*JobApplicationCreate) *JobApplicationCreateBulk {
-	return &JobApplicationCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of JobTalent entities.
+func (c *JobTalentClient) CreateBulk(builders ...*JobTalentCreate) *JobTalentCreateBulk {
+	return &JobTalentCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for JobApplication.
-func (c *JobApplicationClient) Update() *JobApplicationUpdate {
-	mutation := newJobApplicationMutation(c.config, OpUpdate)
-	return &JobApplicationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for JobTalent.
+func (c *JobTalentClient) Update() *JobTalentUpdate {
+	mutation := newJobTalentMutation(c.config, OpUpdate)
+	return &JobTalentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *JobApplicationClient) UpdateOne(ja *JobApplication) *JobApplicationUpdateOne {
-	mutation := newJobApplicationMutation(c.config, OpUpdateOne, withJobApplication(ja))
-	return &JobApplicationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *JobTalentClient) UpdateOne(jt *JobTalent) *JobTalentUpdateOne {
+	mutation := newJobTalentMutation(c.config, OpUpdateOne, withJobTalent(jt))
+	return &JobTalentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *JobApplicationClient) UpdateOneID(id int) *JobApplicationUpdateOne {
-	mutation := newJobApplicationMutation(c.config, OpUpdateOne, withJobApplicationID(id))
-	return &JobApplicationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *JobTalentClient) UpdateOneID(id int) *JobTalentUpdateOne {
+	mutation := newJobTalentMutation(c.config, OpUpdateOne, withJobTalentID(id))
+	return &JobTalentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for JobApplication.
-func (c *JobApplicationClient) Delete() *JobApplicationDelete {
-	mutation := newJobApplicationMutation(c.config, OpDelete)
-	return &JobApplicationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for JobTalent.
+func (c *JobTalentClient) Delete() *JobTalentDelete {
+	mutation := newJobTalentMutation(c.config, OpDelete)
+	return &JobTalentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a delete builder for the given entity.
-func (c *JobApplicationClient) DeleteOne(ja *JobApplication) *JobApplicationDeleteOne {
-	return c.DeleteOneID(ja.ID)
+func (c *JobTalentClient) DeleteOne(jt *JobTalent) *JobTalentDeleteOne {
+	return c.DeleteOneID(jt.ID)
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *JobApplicationClient) DeleteOneID(id int) *JobApplicationDeleteOne {
-	builder := c.Delete().Where(jobapplication.ID(id))
+func (c *JobTalentClient) DeleteOneID(id int) *JobTalentDeleteOne {
+	builder := c.Delete().Where(jobtalent.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &JobApplicationDeleteOne{builder}
+	return &JobTalentDeleteOne{builder}
 }
 
-// Query returns a query builder for JobApplication.
-func (c *JobApplicationClient) Query() *JobApplicationQuery {
-	return &JobApplicationQuery{
+// Query returns a query builder for JobTalent.
+func (c *JobTalentClient) Query() *JobTalentQuery {
+	return &JobTalentQuery{
 		config: c.config,
 	}
 }
 
-// Get returns a JobApplication entity by its id.
-func (c *JobApplicationClient) Get(ctx context.Context, id int) (*JobApplication, error) {
-	return c.Query().Where(jobapplication.ID(id)).Only(ctx)
+// Get returns a JobTalent entity by its id.
+func (c *JobTalentClient) Get(ctx context.Context, id int) (*JobTalent, error) {
+	return c.Query().Where(jobtalent.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *JobApplicationClient) GetX(ctx context.Context, id int) *JobApplication {
+func (c *JobTalentClient) GetX(ctx context.Context, id int) *JobTalent {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -792,41 +574,41 @@ func (c *JobApplicationClient) GetX(ctx context.Context, id int) *JobApplication
 	return obj
 }
 
-// QueryApplicant queries the applicant edge of a JobApplication.
-func (c *JobApplicationClient) QueryApplicant(ja *JobApplication) *ApplicantQuery {
-	query := &ApplicantQuery{config: c.config}
+// QueryTalent queries the talent edge of a JobTalent.
+func (c *JobTalentClient) QueryTalent(jt *JobTalent) *TalentQuery {
+	query := &TalentQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := ja.ID
+		id := jt.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(jobapplication.Table, jobapplication.FieldID, id),
-			sqlgraph.To(applicant.Table, applicant.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, jobapplication.ApplicantTable, jobapplication.ApplicantColumn),
+			sqlgraph.From(jobtalent.Table, jobtalent.FieldID, id),
+			sqlgraph.To(talent.Table, talent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, jobtalent.TalentTable, jobtalent.TalentColumn),
 		)
-		fromV = sqlgraph.Neighbors(ja.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(jt.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
-// QueryJob queries the job edge of a JobApplication.
-func (c *JobApplicationClient) QueryJob(ja *JobApplication) *JobQuery {
+// QueryJob queries the job edge of a JobTalent.
+func (c *JobTalentClient) QueryJob(jt *JobTalent) *JobQuery {
 	query := &JobQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := ja.ID
+		id := jt.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(jobapplication.Table, jobapplication.FieldID, id),
+			sqlgraph.From(jobtalent.Table, jobtalent.FieldID, id),
 			sqlgraph.To(job.Table, job.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, jobapplication.JobTable, jobapplication.JobColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, jobtalent.JobTable, jobtalent.JobColumn),
 		)
-		fromV = sqlgraph.Neighbors(ja.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(jt.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // Hooks returns the client hooks.
-func (c *JobApplicationClient) Hooks() []Hook {
-	return c.hooks.JobApplication
+func (c *JobTalentClient) Hooks() []Hook {
+	return c.hooks.JobTalent
 }
 
 // PortfolioLinkClient is a client for the PortfolioLink schema.
@@ -914,15 +696,15 @@ func (c *PortfolioLinkClient) GetX(ctx context.Context, id int) *PortfolioLink {
 	return obj
 }
 
-// QueryApplicant queries the applicant edge of a PortfolioLink.
-func (c *PortfolioLinkClient) QueryApplicant(pl *PortfolioLink) *ApplicantQuery {
-	query := &ApplicantQuery{config: c.config}
+// QueryTalent queries the talent edge of a PortfolioLink.
+func (c *PortfolioLinkClient) QueryTalent(pl *PortfolioLink) *TalentQuery {
+	query := &TalentQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := pl.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(portfoliolink.Table, portfoliolink.FieldID, id),
-			sqlgraph.To(applicant.Table, applicant.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, portfoliolink.ApplicantTable, portfoliolink.ApplicantColumn),
+			sqlgraph.To(talent.Table, talent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, portfoliolink.TalentTable, portfoliolink.TalentColumn),
 		)
 		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
 		return fromV, nil
@@ -1020,15 +802,15 @@ func (c *SkillClient) GetX(ctx context.Context, id int) *Skill {
 	return obj
 }
 
-// QueryApplicant queries the applicant edge of a Skill.
-func (c *SkillClient) QueryApplicant(s *Skill) *ApplicantQuery {
-	query := &ApplicantQuery{config: c.config}
+// QueryTalent queries the talent edge of a Skill.
+func (c *SkillClient) QueryTalent(s *Skill) *TalentQuery {
+	query := &TalentQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(skill.Table, skill.FieldID, id),
-			sqlgraph.To(applicant.Table, applicant.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, skill.ApplicantTable, skill.ApplicantColumn),
+			sqlgraph.To(talent.Table, talent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, skill.TalentTable, skill.TalentColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil
@@ -1039,6 +821,224 @@ func (c *SkillClient) QueryApplicant(s *Skill) *ApplicantQuery {
 // Hooks returns the client hooks.
 func (c *SkillClient) Hooks() []Hook {
 	return c.hooks.Skill
+}
+
+// TalentClient is a client for the Talent schema.
+type TalentClient struct {
+	config
+}
+
+// NewTalentClient returns a client for the Talent from the given config.
+func NewTalentClient(c config) *TalentClient {
+	return &TalentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `talent.Hooks(f(g(h())))`.
+func (c *TalentClient) Use(hooks ...Hook) {
+	c.hooks.Talent = append(c.hooks.Talent, hooks...)
+}
+
+// Create returns a create builder for Talent.
+func (c *TalentClient) Create() *TalentCreate {
+	mutation := newTalentMutation(c.config, OpCreate)
+	return &TalentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Talent entities.
+func (c *TalentClient) CreateBulk(builders ...*TalentCreate) *TalentCreateBulk {
+	return &TalentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Talent.
+func (c *TalentClient) Update() *TalentUpdate {
+	mutation := newTalentMutation(c.config, OpUpdate)
+	return &TalentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TalentClient) UpdateOne(t *Talent) *TalentUpdateOne {
+	mutation := newTalentMutation(c.config, OpUpdateOne, withTalent(t))
+	return &TalentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TalentClient) UpdateOneID(id int) *TalentUpdateOne {
+	mutation := newTalentMutation(c.config, OpUpdateOne, withTalentID(id))
+	return &TalentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Talent.
+func (c *TalentClient) Delete() *TalentDelete {
+	mutation := newTalentMutation(c.config, OpDelete)
+	return &TalentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TalentClient) DeleteOne(t *Talent) *TalentDeleteOne {
+	return c.DeleteOneID(t.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TalentClient) DeleteOneID(id int) *TalentDeleteOne {
+	builder := c.Delete().Where(talent.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TalentDeleteOne{builder}
+}
+
+// Query returns a query builder for Talent.
+func (c *TalentClient) Query() *TalentQuery {
+	return &TalentQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Talent entity by its id.
+func (c *TalentClient) Get(ctx context.Context, id int) (*Talent, error) {
+	return c.Query().Where(talent.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TalentClient) GetX(ctx context.Context, id int) *Talent {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryReferrer queries the referrer edge of a Talent.
+func (c *TalentClient) QueryReferrer(t *Talent) *TalentQuery {
+	query := &TalentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(talent.Table, talent.FieldID, id),
+			sqlgraph.To(talent.Table, talent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, talent.ReferrerTable, talent.ReferrerColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryReferees queries the referees edge of a Talent.
+func (c *TalentClient) QueryReferees(t *Talent) *TalentQuery {
+	query := &TalentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(talent.Table, talent.FieldID, id),
+			sqlgraph.To(talent.Table, talent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, talent.RefereesTable, talent.RefereesColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPortfoliolinks queries the portfoliolinks edge of a Talent.
+func (c *TalentClient) QueryPortfoliolinks(t *Talent) *PortfolioLinkQuery {
+	query := &PortfolioLinkQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(talent.Table, talent.FieldID, id),
+			sqlgraph.To(portfoliolink.Table, portfoliolink.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, talent.PortfoliolinksTable, talent.PortfoliolinksColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySkills queries the skills edge of a Talent.
+func (c *TalentClient) QuerySkills(t *Talent) *SkillQuery {
+	query := &SkillQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(talent.Table, talent.FieldID, id),
+			sqlgraph.To(skill.Table, skill.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, talent.SkillsTable, talent.SkillsColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryJobTalents queries the job_talents edge of a Talent.
+func (c *TalentClient) QueryJobTalents(t *Talent) *JobTalentQuery {
+	query := &JobTalentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(talent.Table, talent.FieldID, id),
+			sqlgraph.To(jobtalent.Table, jobtalent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, talent.JobTalentsTable, talent.JobTalentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryWorkExperiences queries the work_experiences edge of a Talent.
+func (c *TalentClient) QueryWorkExperiences(t *Talent) *WorkExperienceQuery {
+	query := &WorkExperienceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(talent.Table, talent.FieldID, id),
+			sqlgraph.To(workexperience.Table, workexperience.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, talent.WorkExperiencesTable, talent.WorkExperiencesColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEducations queries the educations edge of a Talent.
+func (c *TalentClient) QueryEducations(t *Talent) *EducationQuery {
+	query := &EducationQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(talent.Table, talent.FieldID, id),
+			sqlgraph.To(education.Table, education.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, talent.EducationsTable, talent.EducationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEmergencyContacts queries the emergency_contacts edge of a Talent.
+func (c *TalentClient) QueryEmergencyContacts(t *Talent) *EmergencyContactQuery {
+	query := &EmergencyContactQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(talent.Table, talent.FieldID, id),
+			sqlgraph.To(emergencycontact.Table, emergencycontact.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, talent.EmergencyContactsTable, talent.EmergencyContactsColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TalentClient) Hooks() []Hook {
+	return c.hooks.Talent
 }
 
 // WorkExperienceClient is a client for the WorkExperience schema.
@@ -1126,15 +1126,15 @@ func (c *WorkExperienceClient) GetX(ctx context.Context, id int) *WorkExperience
 	return obj
 }
 
-// QueryApplicant queries the applicant edge of a WorkExperience.
-func (c *WorkExperienceClient) QueryApplicant(we *WorkExperience) *ApplicantQuery {
-	query := &ApplicantQuery{config: c.config}
+// QueryTalent queries the talent edge of a WorkExperience.
+func (c *WorkExperienceClient) QueryTalent(we *WorkExperience) *TalentQuery {
+	query := &TalentQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := we.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(workexperience.Table, workexperience.FieldID, id),
-			sqlgraph.To(applicant.Table, applicant.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, workexperience.ApplicantTable, workexperience.ApplicantColumn),
+			sqlgraph.To(talent.Table, talent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, workexperience.TalentTable, workexperience.TalentColumn),
 		)
 		fromV = sqlgraph.Neighbors(we.driver.Dialect(), step)
 		return fromV, nil

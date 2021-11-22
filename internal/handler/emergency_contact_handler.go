@@ -24,7 +24,7 @@ func NewEmergencyContactHandler() *EmergencyContactHandler {
 }
 
 func (*EmergencyContactHandler) ResourceName() string {
-	return "applicants/emergency-contacts"
+	return "talents/emergency-contacts"
 }
 
 func (h *EmergencyContactHandler) ReadAll(c echo.Context) error {

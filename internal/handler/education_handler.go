@@ -24,7 +24,7 @@ func NewEducationHandler() *EducationHandler {
 }
 
 func (*EducationHandler) ResourceName() string {
-	return "applicants/educations"
+	return "talents/educations"
 }
 
 func (h *EducationHandler) ReadAll(c echo.Context) error {

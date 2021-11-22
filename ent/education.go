@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/education"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
 )
 
@@ -26,8 +26,8 @@ type Education struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
-	// ApplicantID holds the value of the "applicant_id" field.
-	ApplicantID int `json:"-"`
+	// TalentID holds the value of the "talent_id" field.
+	TalentID int `json:"-"`
 	// InstitutionName holds the value of the "institution_name" field.
 	InstitutionName string `json:"institution_name,omitempty"`
 	// Location holds the value of the "location" field.
@@ -49,25 +49,25 @@ type Education struct {
 
 // EducationEdges holds the relations/edges for other nodes in the graph.
 type EducationEdges struct {
-	// Applicant holds the value of the applicant edge.
-	Applicant *Applicant `json:"applicant,omitempty"`
+	// Talent holds the value of the talent edge.
+	Talent *Talent `json:"talent,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// ApplicantOrErr returns the Applicant value or an error if the edge
+// TalentOrErr returns the Talent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e EducationEdges) ApplicantOrErr() (*Applicant, error) {
+func (e EducationEdges) TalentOrErr() (*Talent, error) {
 	if e.loadedTypes[0] {
-		if e.Applicant == nil {
-			// The edge applicant was loaded in eager-loading,
+		if e.Talent == nil {
+			// The edge talent was loaded in eager-loading,
 			// but was not found.
-			return nil, &NotFoundError{label: applicant.Label}
+			return nil, &NotFoundError{label: talent.Label}
 		}
-		return e.Applicant, nil
+		return e.Talent, nil
 	}
-	return nil, &NotLoadedError{edge: "applicant"}
+	return nil, &NotLoadedError{edge: "talent"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -75,7 +75,7 @@ func (*Education) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case education.FieldID, education.FieldApplicantID:
+		case education.FieldID, education.FieldTalentID:
 			values[i] = new(sql.NullInt64)
 		case education.FieldInstitutionName, education.FieldLocation, education.FieldDegree, education.FieldProgram, education.FieldOverview:
 			values[i] = new(sql.NullString)
@@ -129,11 +129,11 @@ func (e *Education) assignValues(columns []string, values []interface{}) error {
 				e.DeletedAt = new(time.Time)
 				*e.DeletedAt = value.Time
 			}
-		case education.FieldApplicantID:
+		case education.FieldTalentID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field applicant_id", values[i])
+				return fmt.Errorf("unexpected type %T for field talent_id", values[i])
 			} else if value.Valid {
-				e.ApplicantID = int(value.Int64)
+				e.TalentID = int(value.Int64)
 			}
 		case education.FieldInstitutionName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -182,9 +182,9 @@ func (e *Education) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryApplicant queries the "applicant" edge of the Education entity.
-func (e *Education) QueryApplicant() *ApplicantQuery {
-	return (&EducationClient{config: e.config}).QueryApplicant(e)
+// QueryTalent queries the "talent" edge of the Education entity.
+func (e *Education) QueryTalent() *TalentQuery {
+	return (&EducationClient{config: e.config}).QueryTalent(e)
 }
 
 // Update returns a builder for updating this Education.
@@ -220,8 +220,8 @@ func (e *Education) String() string {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	builder.WriteString(", applicant_id=")
-	builder.WriteString(fmt.Sprintf("%v", e.ApplicantID))
+	builder.WriteString(", talent_id=")
+	builder.WriteString(fmt.Sprintf("%v", e.TalentID))
 	builder.WriteString(", institution_name=")
 	builder.WriteString(e.InstitutionName)
 	builder.WriteString(", location=")

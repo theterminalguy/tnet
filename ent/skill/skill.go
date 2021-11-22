@@ -21,8 +21,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldApplicantID holds the string denoting the applicant_id field in the database.
-	FieldApplicantID = "applicant_id"
+	// FieldTalentID holds the string denoting the talent_id field in the database.
+	FieldTalentID = "talent_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldYearsOfExperience holds the string denoting the years_of_experience field in the database.
@@ -31,17 +31,17 @@ const (
 	FieldPreferred = "preferred"
 	// FieldNote holds the string denoting the note field in the database.
 	FieldNote = "note"
-	// EdgeApplicant holds the string denoting the applicant edge name in mutations.
-	EdgeApplicant = "applicant"
+	// EdgeTalent holds the string denoting the talent edge name in mutations.
+	EdgeTalent = "talent"
 	// Table holds the table name of the skill in the database.
 	Table = "skills"
-	// ApplicantTable is the table that holds the applicant relation/edge.
-	ApplicantTable = "skills"
-	// ApplicantInverseTable is the table name for the Applicant entity.
-	// It exists in this package in order to avoid circular dependency with the "applicant" package.
-	ApplicantInverseTable = "applicants"
-	// ApplicantColumn is the table column denoting the applicant relation/edge.
-	ApplicantColumn = "applicant_id"
+	// TalentTable is the table that holds the talent relation/edge.
+	TalentTable = "skills"
+	// TalentInverseTable is the table name for the Talent entity.
+	// It exists in this package in order to avoid circular dependency with the "talent" package.
+	TalentInverseTable = "talents"
+	// TalentColumn is the table column denoting the talent relation/edge.
+	TalentColumn = "talent_id"
 )
 
 // Columns holds all SQL columns for skill fields.
@@ -51,7 +51,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldApplicantID,
+	FieldTalentID,
 	FieldName,
 	FieldYearsOfExperience,
 	FieldPreferred,

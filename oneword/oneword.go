@@ -44,16 +44,17 @@ const (
 	Skills          string = "skills"
 	Referrer        string = "referrer"
 	Referees        string = "referees"
-	Applicant       string = "applicant"
-	Applicants      string = "applicants"
 	Applications    string = "applications"
 	JobApplications string = "job_applications"
+	JobTalents      string = "job_talents"
 	PortfolioLinks  string = "portfoliolinks"
+	Talent          string = "talent"
+	Talents         string = "talents"
 
 	// Foreign Keys
-	JobID       string = "job_id"
-	ReferrerID  string = "referrer_id"
-	ApplicantID string = "applicant_id"
+	JobID      string = "job_id"
+	ReferrerID string = "referrer_id"
+	TalentID   string = "talent_id"
 
 	// Default field values
 	NULL        string = "NULL"

@@ -10,9 +10,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
 )
 
@@ -61,23 +61,23 @@ func (ecu *EmergencyContactUpdate) ClearDeletedAt() *EmergencyContactUpdate {
 	return ecu
 }
 
-// SetApplicantID sets the "applicant_id" field.
-func (ecu *EmergencyContactUpdate) SetApplicantID(i int) *EmergencyContactUpdate {
-	ecu.mutation.SetApplicantID(i)
+// SetTalentID sets the "talent_id" field.
+func (ecu *EmergencyContactUpdate) SetTalentID(i int) *EmergencyContactUpdate {
+	ecu.mutation.SetTalentID(i)
 	return ecu
 }
 
-// SetNillableApplicantID sets the "applicant_id" field if the given value is not nil.
-func (ecu *EmergencyContactUpdate) SetNillableApplicantID(i *int) *EmergencyContactUpdate {
+// SetNillableTalentID sets the "talent_id" field if the given value is not nil.
+func (ecu *EmergencyContactUpdate) SetNillableTalentID(i *int) *EmergencyContactUpdate {
 	if i != nil {
-		ecu.SetApplicantID(*i)
+		ecu.SetTalentID(*i)
 	}
 	return ecu
 }
 
-// ClearApplicantID clears the value of the "applicant_id" field.
-func (ecu *EmergencyContactUpdate) ClearApplicantID() *EmergencyContactUpdate {
-	ecu.mutation.ClearApplicantID()
+// ClearTalentID clears the value of the "talent_id" field.
+func (ecu *EmergencyContactUpdate) ClearTalentID() *EmergencyContactUpdate {
+	ecu.mutation.ClearTalentID()
 	return ecu
 }
 
@@ -111,9 +111,9 @@ func (ecu *EmergencyContactUpdate) SetEmail(s string) *EmergencyContactUpdate {
 	return ecu
 }
 
-// SetApplicant sets the "applicant" edge to the Applicant entity.
-func (ecu *EmergencyContactUpdate) SetApplicant(a *Applicant) *EmergencyContactUpdate {
-	return ecu.SetApplicantID(a.ID)
+// SetTalent sets the "talent" edge to the Talent entity.
+func (ecu *EmergencyContactUpdate) SetTalent(t *Talent) *EmergencyContactUpdate {
+	return ecu.SetTalentID(t.ID)
 }
 
 // Mutation returns the EmergencyContactMutation object of the builder.
@@ -121,9 +121,9 @@ func (ecu *EmergencyContactUpdate) Mutation() *EmergencyContactMutation {
 	return ecu.mutation
 }
 
-// ClearApplicant clears the "applicant" edge to the Applicant entity.
-func (ecu *EmergencyContactUpdate) ClearApplicant() *EmergencyContactUpdate {
-	ecu.mutation.ClearApplicant()
+// ClearTalent clears the "talent" edge to the Talent entity.
+func (ecu *EmergencyContactUpdate) ClearTalent() *EmergencyContactUpdate {
+	ecu.mutation.ClearTalent()
 	return ecu
 }
 
@@ -270,33 +270,33 @@ func (ecu *EmergencyContactUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Column: emergencycontact.FieldEmail,
 		})
 	}
-	if ecu.mutation.ApplicantCleared() {
+	if ecu.mutation.TalentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   emergencycontact.ApplicantTable,
-			Columns: []string{emergencycontact.ApplicantColumn},
+			Table:   emergencycontact.TalentTable,
+			Columns: []string{emergencycontact.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ecu.mutation.ApplicantIDs(); len(nodes) > 0 {
+	if nodes := ecu.mutation.TalentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   emergencycontact.ApplicantTable,
-			Columns: []string{emergencycontact.ApplicantColumn},
+			Table:   emergencycontact.TalentTable,
+			Columns: []string{emergencycontact.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
@@ -356,23 +356,23 @@ func (ecuo *EmergencyContactUpdateOne) ClearDeletedAt() *EmergencyContactUpdateO
 	return ecuo
 }
 
-// SetApplicantID sets the "applicant_id" field.
-func (ecuo *EmergencyContactUpdateOne) SetApplicantID(i int) *EmergencyContactUpdateOne {
-	ecuo.mutation.SetApplicantID(i)
+// SetTalentID sets the "talent_id" field.
+func (ecuo *EmergencyContactUpdateOne) SetTalentID(i int) *EmergencyContactUpdateOne {
+	ecuo.mutation.SetTalentID(i)
 	return ecuo
 }
 
-// SetNillableApplicantID sets the "applicant_id" field if the given value is not nil.
-func (ecuo *EmergencyContactUpdateOne) SetNillableApplicantID(i *int) *EmergencyContactUpdateOne {
+// SetNillableTalentID sets the "talent_id" field if the given value is not nil.
+func (ecuo *EmergencyContactUpdateOne) SetNillableTalentID(i *int) *EmergencyContactUpdateOne {
 	if i != nil {
-		ecuo.SetApplicantID(*i)
+		ecuo.SetTalentID(*i)
 	}
 	return ecuo
 }
 
-// ClearApplicantID clears the value of the "applicant_id" field.
-func (ecuo *EmergencyContactUpdateOne) ClearApplicantID() *EmergencyContactUpdateOne {
-	ecuo.mutation.ClearApplicantID()
+// ClearTalentID clears the value of the "talent_id" field.
+func (ecuo *EmergencyContactUpdateOne) ClearTalentID() *EmergencyContactUpdateOne {
+	ecuo.mutation.ClearTalentID()
 	return ecuo
 }
 
@@ -406,9 +406,9 @@ func (ecuo *EmergencyContactUpdateOne) SetEmail(s string) *EmergencyContactUpdat
 	return ecuo
 }
 
-// SetApplicant sets the "applicant" edge to the Applicant entity.
-func (ecuo *EmergencyContactUpdateOne) SetApplicant(a *Applicant) *EmergencyContactUpdateOne {
-	return ecuo.SetApplicantID(a.ID)
+// SetTalent sets the "talent" edge to the Talent entity.
+func (ecuo *EmergencyContactUpdateOne) SetTalent(t *Talent) *EmergencyContactUpdateOne {
+	return ecuo.SetTalentID(t.ID)
 }
 
 // Mutation returns the EmergencyContactMutation object of the builder.
@@ -416,9 +416,9 @@ func (ecuo *EmergencyContactUpdateOne) Mutation() *EmergencyContactMutation {
 	return ecuo.mutation
 }
 
-// ClearApplicant clears the "applicant" edge to the Applicant entity.
-func (ecuo *EmergencyContactUpdateOne) ClearApplicant() *EmergencyContactUpdateOne {
-	ecuo.mutation.ClearApplicant()
+// ClearTalent clears the "talent" edge to the Talent entity.
+func (ecuo *EmergencyContactUpdateOne) ClearTalent() *EmergencyContactUpdateOne {
+	ecuo.mutation.ClearTalent()
 	return ecuo
 }
 
@@ -589,33 +589,33 @@ func (ecuo *EmergencyContactUpdateOne) sqlSave(ctx context.Context) (_node *Emer
 			Column: emergencycontact.FieldEmail,
 		})
 	}
-	if ecuo.mutation.ApplicantCleared() {
+	if ecuo.mutation.TalentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   emergencycontact.ApplicantTable,
-			Columns: []string{emergencycontact.ApplicantColumn},
+			Table:   emergencycontact.TalentTable,
+			Columns: []string{emergencycontact.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ecuo.mutation.ApplicantIDs(); len(nodes) > 0 {
+	if nodes := ecuo.mutation.TalentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   emergencycontact.ApplicantTable,
-			Columns: []string{emergencycontact.ApplicantColumn},
+			Table:   emergencycontact.TalentTable,
+			Columns: []string{emergencycontact.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}

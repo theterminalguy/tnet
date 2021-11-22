@@ -24,7 +24,7 @@ func NewPortfolioLinkHandler() *PortfolioLinkHandler {
 }
 
 func (*PortfolioLinkHandler) ResourceName() string {
-	return "applicants/portfolio-links"
+	return "talents/portfolio-links"
 }
 
 func (h *PortfolioLinkHandler) ReadAll(c echo.Context) error {

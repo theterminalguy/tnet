@@ -12,20 +12,20 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
-	// Applicant is the client for interacting with the Applicant builders.
-	Applicant *ApplicantClient
 	// Education is the client for interacting with the Education builders.
 	Education *EducationClient
 	// EmergencyContact is the client for interacting with the EmergencyContact builders.
 	EmergencyContact *EmergencyContactClient
 	// Job is the client for interacting with the Job builders.
 	Job *JobClient
-	// JobApplication is the client for interacting with the JobApplication builders.
-	JobApplication *JobApplicationClient
+	// JobTalent is the client for interacting with the JobTalent builders.
+	JobTalent *JobTalentClient
 	// PortfolioLink is the client for interacting with the PortfolioLink builders.
 	PortfolioLink *PortfolioLinkClient
 	// Skill is the client for interacting with the Skill builders.
 	Skill *SkillClient
+	// Talent is the client for interacting with the Talent builders.
+	Talent *TalentClient
 	// WorkExperience is the client for interacting with the WorkExperience builders.
 	WorkExperience *WorkExperienceClient
 
@@ -163,13 +163,13 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
-	tx.Applicant = NewApplicantClient(tx.config)
 	tx.Education = NewEducationClient(tx.config)
 	tx.EmergencyContact = NewEmergencyContactClient(tx.config)
 	tx.Job = NewJobClient(tx.config)
-	tx.JobApplication = NewJobApplicationClient(tx.config)
+	tx.JobTalent = NewJobTalentClient(tx.config)
 	tx.PortfolioLink = NewPortfolioLinkClient(tx.config)
 	tx.Skill = NewSkillClient(tx.config)
+	tx.Talent = NewTalentClient(tx.config)
 	tx.WorkExperience = NewWorkExperienceClient(tx.config)
 }
 
@@ -180,7 +180,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Applicant.QueryXXX(), the query will be executed
+// applies a query, for example: Education.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

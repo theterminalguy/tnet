@@ -10,336 +10,336 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
-	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/jobtalent"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/workexperience"
 	"github.com/google/uuid"
 )
 
-// ApplicantCreate is the builder for creating a Applicant entity.
-type ApplicantCreate struct {
+// TalentCreate is the builder for creating a Talent entity.
+type TalentCreate struct {
 	config
-	mutation *ApplicantMutation
+	mutation *TalentMutation
 	hooks    []Hook
 }
 
 // SetUUID sets the "uuid" field.
-func (ac *ApplicantCreate) SetUUID(u uuid.UUID) *ApplicantCreate {
-	ac.mutation.SetUUID(u)
-	return ac
+func (tc *TalentCreate) SetUUID(u uuid.UUID) *TalentCreate {
+	tc.mutation.SetUUID(u)
+	return tc
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (ac *ApplicantCreate) SetCreatedAt(t time.Time) *ApplicantCreate {
-	ac.mutation.SetCreatedAt(t)
-	return ac
+func (tc *TalentCreate) SetCreatedAt(t time.Time) *TalentCreate {
+	tc.mutation.SetCreatedAt(t)
+	return tc
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (ac *ApplicantCreate) SetNillableCreatedAt(t *time.Time) *ApplicantCreate {
+func (tc *TalentCreate) SetNillableCreatedAt(t *time.Time) *TalentCreate {
 	if t != nil {
-		ac.SetCreatedAt(*t)
+		tc.SetCreatedAt(*t)
 	}
-	return ac
+	return tc
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (ac *ApplicantCreate) SetUpdatedAt(t time.Time) *ApplicantCreate {
-	ac.mutation.SetUpdatedAt(t)
-	return ac
+func (tc *TalentCreate) SetUpdatedAt(t time.Time) *TalentCreate {
+	tc.mutation.SetUpdatedAt(t)
+	return tc
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (ac *ApplicantCreate) SetNillableUpdatedAt(t *time.Time) *ApplicantCreate {
+func (tc *TalentCreate) SetNillableUpdatedAt(t *time.Time) *TalentCreate {
 	if t != nil {
-		ac.SetUpdatedAt(*t)
+		tc.SetUpdatedAt(*t)
 	}
-	return ac
+	return tc
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (ac *ApplicantCreate) SetDeletedAt(t time.Time) *ApplicantCreate {
-	ac.mutation.SetDeletedAt(t)
-	return ac
+func (tc *TalentCreate) SetDeletedAt(t time.Time) *TalentCreate {
+	tc.mutation.SetDeletedAt(t)
+	return tc
 }
 
 // SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (ac *ApplicantCreate) SetNillableDeletedAt(t *time.Time) *ApplicantCreate {
+func (tc *TalentCreate) SetNillableDeletedAt(t *time.Time) *TalentCreate {
 	if t != nil {
-		ac.SetDeletedAt(*t)
+		tc.SetDeletedAt(*t)
 	}
-	return ac
+	return tc
 }
 
 // SetFirstName sets the "first_name" field.
-func (ac *ApplicantCreate) SetFirstName(s string) *ApplicantCreate {
-	ac.mutation.SetFirstName(s)
-	return ac
+func (tc *TalentCreate) SetFirstName(s string) *TalentCreate {
+	tc.mutation.SetFirstName(s)
+	return tc
 }
 
 // SetLastName sets the "last_name" field.
-func (ac *ApplicantCreate) SetLastName(s string) *ApplicantCreate {
-	ac.mutation.SetLastName(s)
-	return ac
+func (tc *TalentCreate) SetLastName(s string) *TalentCreate {
+	tc.mutation.SetLastName(s)
+	return tc
 }
 
 // SetPreferredName sets the "preferred_name" field.
-func (ac *ApplicantCreate) SetPreferredName(s string) *ApplicantCreate {
-	ac.mutation.SetPreferredName(s)
-	return ac
+func (tc *TalentCreate) SetPreferredName(s string) *TalentCreate {
+	tc.mutation.SetPreferredName(s)
+	return tc
 }
 
 // SetPronoun sets the "pronoun" field.
-func (ac *ApplicantCreate) SetPronoun(s string) *ApplicantCreate {
-	ac.mutation.SetPronoun(s)
-	return ac
+func (tc *TalentCreate) SetPronoun(s string) *TalentCreate {
+	tc.mutation.SetPronoun(s)
+	return tc
 }
 
 // SetPreferredJobTitle sets the "preferred_job_title" field.
-func (ac *ApplicantCreate) SetPreferredJobTitle(s string) *ApplicantCreate {
-	ac.mutation.SetPreferredJobTitle(s)
-	return ac
+func (tc *TalentCreate) SetPreferredJobTitle(s string) *TalentCreate {
+	tc.mutation.SetPreferredJobTitle(s)
+	return tc
 }
 
 // SetReferrerID sets the "referrer_id" field.
-func (ac *ApplicantCreate) SetReferrerID(i int) *ApplicantCreate {
-	ac.mutation.SetReferrerID(i)
-	return ac
+func (tc *TalentCreate) SetReferrerID(i int) *TalentCreate {
+	tc.mutation.SetReferrerID(i)
+	return tc
 }
 
 // SetNillableReferrerID sets the "referrer_id" field if the given value is not nil.
-func (ac *ApplicantCreate) SetNillableReferrerID(i *int) *ApplicantCreate {
+func (tc *TalentCreate) SetNillableReferrerID(i *int) *TalentCreate {
 	if i != nil {
-		ac.SetReferrerID(*i)
+		tc.SetReferrerID(*i)
 	}
-	return ac
+	return tc
 }
 
 // SetReferralCode sets the "referral_code" field.
-func (ac *ApplicantCreate) SetReferralCode(s string) *ApplicantCreate {
-	ac.mutation.SetReferralCode(s)
-	return ac
+func (tc *TalentCreate) SetReferralCode(s string) *TalentCreate {
+	tc.mutation.SetReferralCode(s)
+	return tc
 }
 
 // SetNillableReferralCode sets the "referral_code" field if the given value is not nil.
-func (ac *ApplicantCreate) SetNillableReferralCode(s *string) *ApplicantCreate {
+func (tc *TalentCreate) SetNillableReferralCode(s *string) *TalentCreate {
 	if s != nil {
-		ac.SetReferralCode(*s)
+		tc.SetReferralCode(*s)
 	}
-	return ac
+	return tc
 }
 
 // SetTentnCode sets the "tentn_code" field.
-func (ac *ApplicantCreate) SetTentnCode(s string) *ApplicantCreate {
-	ac.mutation.SetTentnCode(s)
-	return ac
+func (tc *TalentCreate) SetTentnCode(s string) *TalentCreate {
+	tc.mutation.SetTentnCode(s)
+	return tc
 }
 
 // SetProfessionalStartDate sets the "professional_start_date" field.
-func (ac *ApplicantCreate) SetProfessionalStartDate(t time.Time) *ApplicantCreate {
-	ac.mutation.SetProfessionalStartDate(t)
-	return ac
+func (tc *TalentCreate) SetProfessionalStartDate(t time.Time) *TalentCreate {
+	tc.mutation.SetProfessionalStartDate(t)
+	return tc
 }
 
 // SetEmail sets the "email" field.
-func (ac *ApplicantCreate) SetEmail(s string) *ApplicantCreate {
-	ac.mutation.SetEmail(s)
-	return ac
+func (tc *TalentCreate) SetEmail(s string) *TalentCreate {
+	tc.mutation.SetEmail(s)
+	return tc
 }
 
 // SetPhone sets the "phone" field.
-func (ac *ApplicantCreate) SetPhone(s string) *ApplicantCreate {
-	ac.mutation.SetPhone(s)
-	return ac
+func (tc *TalentCreate) SetPhone(s string) *TalentCreate {
+	tc.mutation.SetPhone(s)
+	return tc
 }
 
 // SetCountryCode sets the "country_code" field.
-func (ac *ApplicantCreate) SetCountryCode(s string) *ApplicantCreate {
-	ac.mutation.SetCountryCode(s)
-	return ac
+func (tc *TalentCreate) SetCountryCode(s string) *TalentCreate {
+	tc.mutation.SetCountryCode(s)
+	return tc
 }
 
 // SetCity sets the "city" field.
-func (ac *ApplicantCreate) SetCity(s string) *ApplicantCreate {
-	ac.mutation.SetCity(s)
-	return ac
+func (tc *TalentCreate) SetCity(s string) *TalentCreate {
+	tc.mutation.SetCity(s)
+	return tc
 }
 
 // SetJoinedTentnAt sets the "joined_tentn_at" field.
-func (ac *ApplicantCreate) SetJoinedTentnAt(t time.Time) *ApplicantCreate {
-	ac.mutation.SetJoinedTentnAt(t)
-	return ac
+func (tc *TalentCreate) SetJoinedTentnAt(t time.Time) *TalentCreate {
+	tc.mutation.SetJoinedTentnAt(t)
+	return tc
 }
 
 // SetNillableJoinedTentnAt sets the "joined_tentn_at" field if the given value is not nil.
-func (ac *ApplicantCreate) SetNillableJoinedTentnAt(t *time.Time) *ApplicantCreate {
+func (tc *TalentCreate) SetNillableJoinedTentnAt(t *time.Time) *TalentCreate {
 	if t != nil {
-		ac.SetJoinedTentnAt(*t)
+		tc.SetJoinedTentnAt(*t)
 	}
-	return ac
+	return tc
 }
 
 // SetID sets the "id" field.
-func (ac *ApplicantCreate) SetID(i int) *ApplicantCreate {
-	ac.mutation.SetID(i)
-	return ac
+func (tc *TalentCreate) SetID(i int) *TalentCreate {
+	tc.mutation.SetID(i)
+	return tc
 }
 
-// SetReferrer sets the "referrer" edge to the Applicant entity.
-func (ac *ApplicantCreate) SetReferrer(a *Applicant) *ApplicantCreate {
-	return ac.SetReferrerID(a.ID)
+// SetReferrer sets the "referrer" edge to the Talent entity.
+func (tc *TalentCreate) SetReferrer(t *Talent) *TalentCreate {
+	return tc.SetReferrerID(t.ID)
 }
 
-// AddRefereeIDs adds the "referees" edge to the Applicant entity by IDs.
-func (ac *ApplicantCreate) AddRefereeIDs(ids ...int) *ApplicantCreate {
-	ac.mutation.AddRefereeIDs(ids...)
-	return ac
+// AddRefereeIDs adds the "referees" edge to the Talent entity by IDs.
+func (tc *TalentCreate) AddRefereeIDs(ids ...int) *TalentCreate {
+	tc.mutation.AddRefereeIDs(ids...)
+	return tc
 }
 
-// AddReferees adds the "referees" edges to the Applicant entity.
-func (ac *ApplicantCreate) AddReferees(a ...*Applicant) *ApplicantCreate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// AddReferees adds the "referees" edges to the Talent entity.
+func (tc *TalentCreate) AddReferees(t ...*Talent) *TalentCreate {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
 	}
-	return ac.AddRefereeIDs(ids...)
+	return tc.AddRefereeIDs(ids...)
 }
 
 // AddPortfoliolinkIDs adds the "portfoliolinks" edge to the PortfolioLink entity by IDs.
-func (ac *ApplicantCreate) AddPortfoliolinkIDs(ids ...int) *ApplicantCreate {
-	ac.mutation.AddPortfoliolinkIDs(ids...)
-	return ac
+func (tc *TalentCreate) AddPortfoliolinkIDs(ids ...int) *TalentCreate {
+	tc.mutation.AddPortfoliolinkIDs(ids...)
+	return tc
 }
 
 // AddPortfoliolinks adds the "portfoliolinks" edges to the PortfolioLink entity.
-func (ac *ApplicantCreate) AddPortfoliolinks(p ...*PortfolioLink) *ApplicantCreate {
+func (tc *TalentCreate) AddPortfoliolinks(p ...*PortfolioLink) *TalentCreate {
 	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return ac.AddPortfoliolinkIDs(ids...)
+	return tc.AddPortfoliolinkIDs(ids...)
 }
 
 // AddSkillIDs adds the "skills" edge to the Skill entity by IDs.
-func (ac *ApplicantCreate) AddSkillIDs(ids ...int) *ApplicantCreate {
-	ac.mutation.AddSkillIDs(ids...)
-	return ac
+func (tc *TalentCreate) AddSkillIDs(ids ...int) *TalentCreate {
+	tc.mutation.AddSkillIDs(ids...)
+	return tc
 }
 
 // AddSkills adds the "skills" edges to the Skill entity.
-func (ac *ApplicantCreate) AddSkills(s ...*Skill) *ApplicantCreate {
+func (tc *TalentCreate) AddSkills(s ...*Skill) *TalentCreate {
 	ids := make([]int, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return ac.AddSkillIDs(ids...)
+	return tc.AddSkillIDs(ids...)
 }
 
-// AddJobApplicationIDs adds the "job_applications" edge to the JobApplication entity by IDs.
-func (ac *ApplicantCreate) AddJobApplicationIDs(ids ...int) *ApplicantCreate {
-	ac.mutation.AddJobApplicationIDs(ids...)
-	return ac
+// AddJobTalentIDs adds the "job_talents" edge to the JobTalent entity by IDs.
+func (tc *TalentCreate) AddJobTalentIDs(ids ...int) *TalentCreate {
+	tc.mutation.AddJobTalentIDs(ids...)
+	return tc
 }
 
-// AddJobApplications adds the "job_applications" edges to the JobApplication entity.
-func (ac *ApplicantCreate) AddJobApplications(j ...*JobApplication) *ApplicantCreate {
+// AddJobTalents adds the "job_talents" edges to the JobTalent entity.
+func (tc *TalentCreate) AddJobTalents(j ...*JobTalent) *TalentCreate {
 	ids := make([]int, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
-	return ac.AddJobApplicationIDs(ids...)
+	return tc.AddJobTalentIDs(ids...)
 }
 
 // AddWorkExperienceIDs adds the "work_experiences" edge to the WorkExperience entity by IDs.
-func (ac *ApplicantCreate) AddWorkExperienceIDs(ids ...int) *ApplicantCreate {
-	ac.mutation.AddWorkExperienceIDs(ids...)
-	return ac
+func (tc *TalentCreate) AddWorkExperienceIDs(ids ...int) *TalentCreate {
+	tc.mutation.AddWorkExperienceIDs(ids...)
+	return tc
 }
 
 // AddWorkExperiences adds the "work_experiences" edges to the WorkExperience entity.
-func (ac *ApplicantCreate) AddWorkExperiences(w ...*WorkExperience) *ApplicantCreate {
+func (tc *TalentCreate) AddWorkExperiences(w ...*WorkExperience) *TalentCreate {
 	ids := make([]int, len(w))
 	for i := range w {
 		ids[i] = w[i].ID
 	}
-	return ac.AddWorkExperienceIDs(ids...)
+	return tc.AddWorkExperienceIDs(ids...)
 }
 
 // AddEducationIDs adds the "educations" edge to the Education entity by IDs.
-func (ac *ApplicantCreate) AddEducationIDs(ids ...int) *ApplicantCreate {
-	ac.mutation.AddEducationIDs(ids...)
-	return ac
+func (tc *TalentCreate) AddEducationIDs(ids ...int) *TalentCreate {
+	tc.mutation.AddEducationIDs(ids...)
+	return tc
 }
 
 // AddEducations adds the "educations" edges to the Education entity.
-func (ac *ApplicantCreate) AddEducations(e ...*Education) *ApplicantCreate {
+func (tc *TalentCreate) AddEducations(e ...*Education) *TalentCreate {
 	ids := make([]int, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
-	return ac.AddEducationIDs(ids...)
+	return tc.AddEducationIDs(ids...)
 }
 
 // AddEmergencyContactIDs adds the "emergency_contacts" edge to the EmergencyContact entity by IDs.
-func (ac *ApplicantCreate) AddEmergencyContactIDs(ids ...int) *ApplicantCreate {
-	ac.mutation.AddEmergencyContactIDs(ids...)
-	return ac
+func (tc *TalentCreate) AddEmergencyContactIDs(ids ...int) *TalentCreate {
+	tc.mutation.AddEmergencyContactIDs(ids...)
+	return tc
 }
 
 // AddEmergencyContacts adds the "emergency_contacts" edges to the EmergencyContact entity.
-func (ac *ApplicantCreate) AddEmergencyContacts(e ...*EmergencyContact) *ApplicantCreate {
+func (tc *TalentCreate) AddEmergencyContacts(e ...*EmergencyContact) *TalentCreate {
 	ids := make([]int, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
-	return ac.AddEmergencyContactIDs(ids...)
+	return tc.AddEmergencyContactIDs(ids...)
 }
 
-// Mutation returns the ApplicantMutation object of the builder.
-func (ac *ApplicantCreate) Mutation() *ApplicantMutation {
-	return ac.mutation
+// Mutation returns the TalentMutation object of the builder.
+func (tc *TalentCreate) Mutation() *TalentMutation {
+	return tc.mutation
 }
 
-// Save creates the Applicant in the database.
-func (ac *ApplicantCreate) Save(ctx context.Context) (*Applicant, error) {
+// Save creates the Talent in the database.
+func (tc *TalentCreate) Save(ctx context.Context) (*Talent, error) {
 	var (
 		err  error
-		node *Applicant
+		node *Talent
 	)
-	ac.defaults()
-	if len(ac.hooks) == 0 {
-		if err = ac.check(); err != nil {
+	tc.defaults()
+	if len(tc.hooks) == 0 {
+		if err = tc.check(); err != nil {
 			return nil, err
 		}
-		node, err = ac.sqlSave(ctx)
+		node, err = tc.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ApplicantMutation)
+			mutation, ok := m.(*TalentMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
 			}
-			if err = ac.check(); err != nil {
+			if err = tc.check(); err != nil {
 				return nil, err
 			}
-			ac.mutation = mutation
-			if node, err = ac.sqlSave(ctx); err != nil {
+			tc.mutation = mutation
+			if node, err = tc.sqlSave(ctx); err != nil {
 				return nil, err
 			}
 			mutation.id = &node.ID
 			mutation.done = true
 			return node, err
 		})
-		for i := len(ac.hooks) - 1; i >= 0; i-- {
-			if ac.hooks[i] == nil {
+		for i := len(tc.hooks) - 1; i >= 0; i-- {
+			if tc.hooks[i] == nil {
 				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
 			}
-			mut = ac.hooks[i](mut)
+			mut = tc.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, ac.mutation); err != nil {
+		if _, err := mut.Mutate(ctx, tc.mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -347,8 +347,8 @@ func (ac *ApplicantCreate) Save(ctx context.Context) (*Applicant, error) {
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (ac *ApplicantCreate) SaveX(ctx context.Context) *Applicant {
-	v, err := ac.Save(ctx)
+func (tc *TalentCreate) SaveX(ctx context.Context) *Talent {
+	v, err := tc.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -356,93 +356,93 @@ func (ac *ApplicantCreate) SaveX(ctx context.Context) *Applicant {
 }
 
 // Exec executes the query.
-func (ac *ApplicantCreate) Exec(ctx context.Context) error {
-	_, err := ac.Save(ctx)
+func (tc *TalentCreate) Exec(ctx context.Context) error {
+	_, err := tc.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ac *ApplicantCreate) ExecX(ctx context.Context) {
-	if err := ac.Exec(ctx); err != nil {
+func (tc *TalentCreate) ExecX(ctx context.Context) {
+	if err := tc.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (ac *ApplicantCreate) defaults() {
-	if _, ok := ac.mutation.UUID(); !ok {
-		v := applicant.DefaultUUID()
-		ac.mutation.SetUUID(v)
+func (tc *TalentCreate) defaults() {
+	if _, ok := tc.mutation.UUID(); !ok {
+		v := talent.DefaultUUID()
+		tc.mutation.SetUUID(v)
 	}
-	if _, ok := ac.mutation.CreatedAt(); !ok {
-		v := applicant.DefaultCreatedAt()
-		ac.mutation.SetCreatedAt(v)
+	if _, ok := tc.mutation.CreatedAt(); !ok {
+		v := talent.DefaultCreatedAt()
+		tc.mutation.SetCreatedAt(v)
 	}
-	if _, ok := ac.mutation.UpdatedAt(); !ok {
-		v := applicant.DefaultUpdatedAt()
-		ac.mutation.SetUpdatedAt(v)
+	if _, ok := tc.mutation.UpdatedAt(); !ok {
+		v := talent.DefaultUpdatedAt()
+		tc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := ac.mutation.ReferralCode(); !ok {
-		v := applicant.DefaultReferralCode
-		ac.mutation.SetReferralCode(v)
+	if _, ok := tc.mutation.ReferralCode(); !ok {
+		v := talent.DefaultReferralCode
+		tc.mutation.SetReferralCode(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ac *ApplicantCreate) check() error {
-	if _, ok := ac.mutation.UUID(); !ok {
+func (tc *TalentCreate) check() error {
+	if _, ok := tc.mutation.UUID(); !ok {
 		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "uuid"`)}
 	}
-	if _, ok := ac.mutation.CreatedAt(); !ok {
+	if _, ok := tc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
-	if _, ok := ac.mutation.UpdatedAt(); !ok {
+	if _, ok := tc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
 	}
-	if _, ok := ac.mutation.FirstName(); !ok {
+	if _, ok := tc.mutation.FirstName(); !ok {
 		return &ValidationError{Name: "first_name", err: errors.New(`ent: missing required field "first_name"`)}
 	}
-	if _, ok := ac.mutation.LastName(); !ok {
+	if _, ok := tc.mutation.LastName(); !ok {
 		return &ValidationError{Name: "last_name", err: errors.New(`ent: missing required field "last_name"`)}
 	}
-	if _, ok := ac.mutation.PreferredName(); !ok {
+	if _, ok := tc.mutation.PreferredName(); !ok {
 		return &ValidationError{Name: "preferred_name", err: errors.New(`ent: missing required field "preferred_name"`)}
 	}
-	if _, ok := ac.mutation.Pronoun(); !ok {
+	if _, ok := tc.mutation.Pronoun(); !ok {
 		return &ValidationError{Name: "pronoun", err: errors.New(`ent: missing required field "pronoun"`)}
 	}
-	if _, ok := ac.mutation.PreferredJobTitle(); !ok {
+	if _, ok := tc.mutation.PreferredJobTitle(); !ok {
 		return &ValidationError{Name: "preferred_job_title", err: errors.New(`ent: missing required field "preferred_job_title"`)}
 	}
-	if _, ok := ac.mutation.TentnCode(); !ok {
+	if _, ok := tc.mutation.TentnCode(); !ok {
 		return &ValidationError{Name: "tentn_code", err: errors.New(`ent: missing required field "tentn_code"`)}
 	}
-	if _, ok := ac.mutation.ProfessionalStartDate(); !ok {
+	if _, ok := tc.mutation.ProfessionalStartDate(); !ok {
 		return &ValidationError{Name: "professional_start_date", err: errors.New(`ent: missing required field "professional_start_date"`)}
 	}
-	if _, ok := ac.mutation.Email(); !ok {
+	if _, ok := tc.mutation.Email(); !ok {
 		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "email"`)}
 	}
-	if _, ok := ac.mutation.Phone(); !ok {
+	if _, ok := tc.mutation.Phone(); !ok {
 		return &ValidationError{Name: "phone", err: errors.New(`ent: missing required field "phone"`)}
 	}
-	if _, ok := ac.mutation.CountryCode(); !ok {
+	if _, ok := tc.mutation.CountryCode(); !ok {
 		return &ValidationError{Name: "country_code", err: errors.New(`ent: missing required field "country_code"`)}
 	}
-	if v, ok := ac.mutation.CountryCode(); ok {
-		if err := applicant.CountryCodeValidator(v); err != nil {
+	if v, ok := tc.mutation.CountryCode(); ok {
+		if err := talent.CountryCodeValidator(v); err != nil {
 			return &ValidationError{Name: "country_code", err: fmt.Errorf(`ent: validator failed for field "country_code": %w`, err)}
 		}
 	}
-	if _, ok := ac.mutation.City(); !ok {
+	if _, ok := tc.mutation.City(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required field "city"`)}
 	}
 	return nil
 }
 
-func (ac *ApplicantCreate) sqlSave(ctx context.Context) (*Applicant, error) {
-	_node, _spec := ac.createSpec()
-	if err := sqlgraph.CreateNode(ctx, ac.driver, _spec); err != nil {
+func (tc *TalentCreate) sqlSave(ctx context.Context) (*Talent, error) {
+	_node, _spec := tc.createSpec()
+	if err := sqlgraph.CreateNode(ctx, tc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{err.Error(), err}
 		}
@@ -455,168 +455,168 @@ func (ac *ApplicantCreate) sqlSave(ctx context.Context) (*Applicant, error) {
 	return _node, nil
 }
 
-func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
+func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Applicant{config: ac.config}
+		_node = &Talent{config: tc.config}
 		_spec = &sqlgraph.CreateSpec{
-			Table: applicant.Table,
+			Table: talent.Table,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeInt,
-				Column: applicant.FieldID,
+				Column: talent.FieldID,
 			},
 		}
 	)
-	if id, ok := ac.mutation.ID(); ok {
+	if id, ok := tc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
-	if value, ok := ac.mutation.UUID(); ok {
+	if value, ok := tc.mutation.UUID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
 			Value:  value,
-			Column: applicant.FieldUUID,
+			Column: talent.FieldUUID,
 		})
 		_node.UUID = value
 	}
-	if value, ok := ac.mutation.CreatedAt(); ok {
+	if value, ok := tc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: applicant.FieldCreatedAt,
+			Column: talent.FieldCreatedAt,
 		})
 		_node.CreatedAt = value
 	}
-	if value, ok := ac.mutation.UpdatedAt(); ok {
+	if value, ok := tc.mutation.UpdatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: applicant.FieldUpdatedAt,
+			Column: talent.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
 	}
-	if value, ok := ac.mutation.DeletedAt(); ok {
+	if value, ok := tc.mutation.DeletedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: applicant.FieldDeletedAt,
+			Column: talent.FieldDeletedAt,
 		})
 		_node.DeletedAt = &value
 	}
-	if value, ok := ac.mutation.FirstName(); ok {
+	if value, ok := tc.mutation.FirstName(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldFirstName,
+			Column: talent.FieldFirstName,
 		})
 		_node.FirstName = value
 	}
-	if value, ok := ac.mutation.LastName(); ok {
+	if value, ok := tc.mutation.LastName(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldLastName,
+			Column: talent.FieldLastName,
 		})
 		_node.LastName = value
 	}
-	if value, ok := ac.mutation.PreferredName(); ok {
+	if value, ok := tc.mutation.PreferredName(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldPreferredName,
+			Column: talent.FieldPreferredName,
 		})
 		_node.PreferredName = value
 	}
-	if value, ok := ac.mutation.Pronoun(); ok {
+	if value, ok := tc.mutation.Pronoun(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldPronoun,
+			Column: talent.FieldPronoun,
 		})
 		_node.Pronoun = value
 	}
-	if value, ok := ac.mutation.PreferredJobTitle(); ok {
+	if value, ok := tc.mutation.PreferredJobTitle(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldPreferredJobTitle,
+			Column: talent.FieldPreferredJobTitle,
 		})
 		_node.PreferredJobTitle = value
 	}
-	if value, ok := ac.mutation.ReferralCode(); ok {
+	if value, ok := tc.mutation.ReferralCode(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldReferralCode,
+			Column: talent.FieldReferralCode,
 		})
 		_node.ReferralCode = value
 	}
-	if value, ok := ac.mutation.TentnCode(); ok {
+	if value, ok := tc.mutation.TentnCode(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldTentnCode,
+			Column: talent.FieldTentnCode,
 		})
 		_node.TentnCode = value
 	}
-	if value, ok := ac.mutation.ProfessionalStartDate(); ok {
+	if value, ok := tc.mutation.ProfessionalStartDate(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: applicant.FieldProfessionalStartDate,
+			Column: talent.FieldProfessionalStartDate,
 		})
 		_node.ProfessionalStartDate = value
 	}
-	if value, ok := ac.mutation.Email(); ok {
+	if value, ok := tc.mutation.Email(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldEmail,
+			Column: talent.FieldEmail,
 		})
 		_node.Email = value
 	}
-	if value, ok := ac.mutation.Phone(); ok {
+	if value, ok := tc.mutation.Phone(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldPhone,
+			Column: talent.FieldPhone,
 		})
 		_node.Phone = value
 	}
-	if value, ok := ac.mutation.CountryCode(); ok {
+	if value, ok := tc.mutation.CountryCode(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldCountryCode,
+			Column: talent.FieldCountryCode,
 		})
 		_node.CountryCode = value
 	}
-	if value, ok := ac.mutation.City(); ok {
+	if value, ok := tc.mutation.City(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: applicant.FieldCity,
+			Column: talent.FieldCity,
 		})
 		_node.City = value
 	}
-	if value, ok := ac.mutation.JoinedTentnAt(); ok {
+	if value, ok := tc.mutation.JoinedTentnAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: applicant.FieldJoinedTentnAt,
+			Column: talent.FieldJoinedTentnAt,
 		})
 		_node.JoinedTentnAt = &value
 	}
-	if nodes := ac.mutation.ReferrerIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.ReferrerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   applicant.ReferrerTable,
-			Columns: []string{applicant.ReferrerColumn},
+			Table:   talent.ReferrerTable,
+			Columns: []string{talent.ReferrerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
@@ -626,17 +626,17 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 		_node.ReferrerID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.RefereesIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.RefereesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.RefereesTable,
-			Columns: []string{applicant.RefereesColumn},
+			Table:   talent.RefereesTable,
+			Columns: []string{talent.RefereesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
@@ -645,12 +645,12 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.PortfoliolinksIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.PortfoliolinksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.PortfoliolinksTable,
-			Columns: []string{applicant.PortfoliolinksColumn},
+			Table:   talent.PortfoliolinksTable,
+			Columns: []string{talent.PortfoliolinksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -664,12 +664,12 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.SkillsIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.SkillsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.SkillsTable,
-			Columns: []string{applicant.SkillsColumn},
+			Table:   talent.SkillsTable,
+			Columns: []string{talent.SkillsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -683,17 +683,17 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.JobApplicationsIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.JobTalentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.JobApplicationsTable,
-			Columns: []string{applicant.JobApplicationsColumn},
+			Table:   talent.JobTalentsTable,
+			Columns: []string{talent.JobTalentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: jobapplication.FieldID,
+					Column: jobtalent.FieldID,
 				},
 			},
 		}
@@ -702,12 +702,12 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.WorkExperiencesIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.WorkExperiencesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.WorkExperiencesTable,
-			Columns: []string{applicant.WorkExperiencesColumn},
+			Table:   talent.WorkExperiencesTable,
+			Columns: []string{talent.WorkExperiencesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -721,12 +721,12 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.EducationsIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.EducationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.EducationsTable,
-			Columns: []string{applicant.EducationsColumn},
+			Table:   talent.EducationsTable,
+			Columns: []string{talent.EducationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -740,12 +740,12 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.EmergencyContactsIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.EmergencyContactsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   applicant.EmergencyContactsTable,
-			Columns: []string{applicant.EmergencyContactsColumn},
+			Table:   talent.EmergencyContactsTable,
+			Columns: []string{talent.EmergencyContactsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -762,23 +762,23 @@ func (ac *ApplicantCreate) createSpec() (*Applicant, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
-// ApplicantCreateBulk is the builder for creating many Applicant entities in bulk.
-type ApplicantCreateBulk struct {
+// TalentCreateBulk is the builder for creating many Talent entities in bulk.
+type TalentCreateBulk struct {
 	config
-	builders []*ApplicantCreate
+	builders []*TalentCreate
 }
 
-// Save creates the Applicant entities in the database.
-func (acb *ApplicantCreateBulk) Save(ctx context.Context) ([]*Applicant, error) {
-	specs := make([]*sqlgraph.CreateSpec, len(acb.builders))
-	nodes := make([]*Applicant, len(acb.builders))
-	mutators := make([]Mutator, len(acb.builders))
-	for i := range acb.builders {
+// Save creates the Talent entities in the database.
+func (tcb *TalentCreateBulk) Save(ctx context.Context) ([]*Talent, error) {
+	specs := make([]*sqlgraph.CreateSpec, len(tcb.builders))
+	nodes := make([]*Talent, len(tcb.builders))
+	mutators := make([]Mutator, len(tcb.builders))
+	for i := range tcb.builders {
 		func(i int, root context.Context) {
-			builder := acb.builders[i]
+			builder := tcb.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-				mutation, ok := m.(*ApplicantMutation)
+				mutation, ok := m.(*TalentMutation)
 				if !ok {
 					return nil, fmt.Errorf("unexpected mutation type %T", m)
 				}
@@ -789,11 +789,11 @@ func (acb *ApplicantCreateBulk) Save(ctx context.Context) ([]*Applicant, error) 
 				nodes[i], specs[i] = builder.createSpec()
 				var err error
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, acb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, tcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, acb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, tcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{err.Error(), err}
 						}
@@ -817,7 +817,7 @@ func (acb *ApplicantCreateBulk) Save(ctx context.Context) ([]*Applicant, error) 
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, acb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, tcb.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -825,8 +825,8 @@ func (acb *ApplicantCreateBulk) Save(ctx context.Context) ([]*Applicant, error) 
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (acb *ApplicantCreateBulk) SaveX(ctx context.Context) []*Applicant {
-	v, err := acb.Save(ctx)
+func (tcb *TalentCreateBulk) SaveX(ctx context.Context) []*Talent {
+	v, err := tcb.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -834,14 +834,14 @@ func (acb *ApplicantCreateBulk) SaveX(ctx context.Context) []*Applicant {
 }
 
 // Exec executes the query.
-func (acb *ApplicantCreateBulk) Exec(ctx context.Context) error {
-	_, err := acb.Save(ctx)
+func (tcb *TalentCreateBulk) Exec(ctx context.Context) error {
+	_, err := tcb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (acb *ApplicantCreateBulk) ExecX(ctx context.Context) {
-	if err := acb.Exec(ctx); err != nil {
+func (tcb *TalentCreateBulk) ExecX(ctx context.Context) {
+	if err := tcb.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

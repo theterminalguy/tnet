@@ -18,10 +18,10 @@ func (Skill) Mixin() []ent.Mixin {
 		UUIDMixin{},
 		TimeStampMixin{},
 		BelongsToMixin{
-			ParentName: oneword.Applicant,
-			ParentType: Applicant.Type,
+			ParentName: oneword.Talent,
+			ParentType: Talent.Type,
 			Ref:        oneword.Skills,
-			ForeignKey: oneword.ApplicantID,
+			ForeignKey: oneword.TalentID,
 		},
 	}
 }

@@ -10,9 +10,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
 )
 
@@ -61,23 +61,23 @@ func (eu *EducationUpdate) ClearDeletedAt() *EducationUpdate {
 	return eu
 }
 
-// SetApplicantID sets the "applicant_id" field.
-func (eu *EducationUpdate) SetApplicantID(i int) *EducationUpdate {
-	eu.mutation.SetApplicantID(i)
+// SetTalentID sets the "talent_id" field.
+func (eu *EducationUpdate) SetTalentID(i int) *EducationUpdate {
+	eu.mutation.SetTalentID(i)
 	return eu
 }
 
-// SetNillableApplicantID sets the "applicant_id" field if the given value is not nil.
-func (eu *EducationUpdate) SetNillableApplicantID(i *int) *EducationUpdate {
+// SetNillableTalentID sets the "talent_id" field if the given value is not nil.
+func (eu *EducationUpdate) SetNillableTalentID(i *int) *EducationUpdate {
 	if i != nil {
-		eu.SetApplicantID(*i)
+		eu.SetTalentID(*i)
 	}
 	return eu
 }
 
-// ClearApplicantID clears the value of the "applicant_id" field.
-func (eu *EducationUpdate) ClearApplicantID() *EducationUpdate {
-	eu.mutation.ClearApplicantID()
+// ClearTalentID clears the value of the "talent_id" field.
+func (eu *EducationUpdate) ClearTalentID() *EducationUpdate {
+	eu.mutation.ClearTalentID()
 	return eu
 }
 
@@ -137,9 +137,9 @@ func (eu *EducationUpdate) ClearEndDate() *EducationUpdate {
 	return eu
 }
 
-// SetApplicant sets the "applicant" edge to the Applicant entity.
-func (eu *EducationUpdate) SetApplicant(a *Applicant) *EducationUpdate {
-	return eu.SetApplicantID(a.ID)
+// SetTalent sets the "talent" edge to the Talent entity.
+func (eu *EducationUpdate) SetTalent(t *Talent) *EducationUpdate {
+	return eu.SetTalentID(t.ID)
 }
 
 // Mutation returns the EducationMutation object of the builder.
@@ -147,9 +147,9 @@ func (eu *EducationUpdate) Mutation() *EducationMutation {
 	return eu.mutation
 }
 
-// ClearApplicant clears the "applicant" edge to the Applicant entity.
-func (eu *EducationUpdate) ClearApplicant() *EducationUpdate {
-	eu.mutation.ClearApplicant()
+// ClearTalent clears the "talent" edge to the Talent entity.
+func (eu *EducationUpdate) ClearTalent() *EducationUpdate {
+	eu.mutation.ClearTalent()
 	return eu
 }
 
@@ -316,33 +316,33 @@ func (eu *EducationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: education.FieldEndDate,
 		})
 	}
-	if eu.mutation.ApplicantCleared() {
+	if eu.mutation.TalentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   education.ApplicantTable,
-			Columns: []string{education.ApplicantColumn},
+			Table:   education.TalentTable,
+			Columns: []string{education.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := eu.mutation.ApplicantIDs(); len(nodes) > 0 {
+	if nodes := eu.mutation.TalentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   education.ApplicantTable,
-			Columns: []string{education.ApplicantColumn},
+			Table:   education.TalentTable,
+			Columns: []string{education.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
@@ -402,23 +402,23 @@ func (euo *EducationUpdateOne) ClearDeletedAt() *EducationUpdateOne {
 	return euo
 }
 
-// SetApplicantID sets the "applicant_id" field.
-func (euo *EducationUpdateOne) SetApplicantID(i int) *EducationUpdateOne {
-	euo.mutation.SetApplicantID(i)
+// SetTalentID sets the "talent_id" field.
+func (euo *EducationUpdateOne) SetTalentID(i int) *EducationUpdateOne {
+	euo.mutation.SetTalentID(i)
 	return euo
 }
 
-// SetNillableApplicantID sets the "applicant_id" field if the given value is not nil.
-func (euo *EducationUpdateOne) SetNillableApplicantID(i *int) *EducationUpdateOne {
+// SetNillableTalentID sets the "talent_id" field if the given value is not nil.
+func (euo *EducationUpdateOne) SetNillableTalentID(i *int) *EducationUpdateOne {
 	if i != nil {
-		euo.SetApplicantID(*i)
+		euo.SetTalentID(*i)
 	}
 	return euo
 }
 
-// ClearApplicantID clears the value of the "applicant_id" field.
-func (euo *EducationUpdateOne) ClearApplicantID() *EducationUpdateOne {
-	euo.mutation.ClearApplicantID()
+// ClearTalentID clears the value of the "talent_id" field.
+func (euo *EducationUpdateOne) ClearTalentID() *EducationUpdateOne {
+	euo.mutation.ClearTalentID()
 	return euo
 }
 
@@ -478,9 +478,9 @@ func (euo *EducationUpdateOne) ClearEndDate() *EducationUpdateOne {
 	return euo
 }
 
-// SetApplicant sets the "applicant" edge to the Applicant entity.
-func (euo *EducationUpdateOne) SetApplicant(a *Applicant) *EducationUpdateOne {
-	return euo.SetApplicantID(a.ID)
+// SetTalent sets the "talent" edge to the Talent entity.
+func (euo *EducationUpdateOne) SetTalent(t *Talent) *EducationUpdateOne {
+	return euo.SetTalentID(t.ID)
 }
 
 // Mutation returns the EducationMutation object of the builder.
@@ -488,9 +488,9 @@ func (euo *EducationUpdateOne) Mutation() *EducationMutation {
 	return euo.mutation
 }
 
-// ClearApplicant clears the "applicant" edge to the Applicant entity.
-func (euo *EducationUpdateOne) ClearApplicant() *EducationUpdateOne {
-	euo.mutation.ClearApplicant()
+// ClearTalent clears the "talent" edge to the Talent entity.
+func (euo *EducationUpdateOne) ClearTalent() *EducationUpdateOne {
+	euo.mutation.ClearTalent()
 	return euo
 }
 
@@ -681,33 +681,33 @@ func (euo *EducationUpdateOne) sqlSave(ctx context.Context) (_node *Education, e
 			Column: education.FieldEndDate,
 		})
 	}
-	if euo.mutation.ApplicantCleared() {
+	if euo.mutation.TalentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   education.ApplicantTable,
-			Columns: []string{education.ApplicantColumn},
+			Table:   education.TalentTable,
+			Columns: []string{education.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := euo.mutation.ApplicantIDs(); len(nodes) > 0 {
+	if nodes := euo.mutation.TalentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   education.ApplicantTable,
-			Columns: []string{education.ApplicantColumn},
+			Table:   education.TalentTable,
+			Columns: []string{education.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}

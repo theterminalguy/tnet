@@ -10,8 +10,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
 )
 
@@ -82,16 +82,16 @@ func (plc *PortfolioLinkCreate) SetName(s string) *PortfolioLinkCreate {
 	return plc
 }
 
-// SetApplicantID sets the "applicant_id" field.
-func (plc *PortfolioLinkCreate) SetApplicantID(i int) *PortfolioLinkCreate {
-	plc.mutation.SetApplicantID(i)
+// SetTalentID sets the "talent_id" field.
+func (plc *PortfolioLinkCreate) SetTalentID(i int) *PortfolioLinkCreate {
+	plc.mutation.SetTalentID(i)
 	return plc
 }
 
-// SetNillableApplicantID sets the "applicant_id" field if the given value is not nil.
-func (plc *PortfolioLinkCreate) SetNillableApplicantID(i *int) *PortfolioLinkCreate {
+// SetNillableTalentID sets the "talent_id" field if the given value is not nil.
+func (plc *PortfolioLinkCreate) SetNillableTalentID(i *int) *PortfolioLinkCreate {
 	if i != nil {
-		plc.SetApplicantID(*i)
+		plc.SetTalentID(*i)
 	}
 	return plc
 }
@@ -102,9 +102,9 @@ func (plc *PortfolioLinkCreate) SetID(i int) *PortfolioLinkCreate {
 	return plc
 }
 
-// SetApplicant sets the "applicant" edge to the Applicant entity.
-func (plc *PortfolioLinkCreate) SetApplicant(a *Applicant) *PortfolioLinkCreate {
-	return plc.SetApplicantID(a.ID)
+// SetTalent sets the "talent" edge to the Talent entity.
+func (plc *PortfolioLinkCreate) SetTalent(t *Talent) *PortfolioLinkCreate {
+	return plc.SetTalentID(t.ID)
 }
 
 // Mutation returns the PortfolioLinkMutation object of the builder.
@@ -290,24 +290,24 @@ func (plc *PortfolioLinkCreate) createSpec() (*PortfolioLink, *sqlgraph.CreateSp
 		})
 		_node.Name = value
 	}
-	if nodes := plc.mutation.ApplicantIDs(); len(nodes) > 0 {
+	if nodes := plc.mutation.TalentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   portfoliolink.ApplicantTable,
-			Columns: []string{portfoliolink.ApplicantColumn},
+			Table:   portfoliolink.TalentTable,
+			Columns: []string{portfoliolink.TalentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: applicant.FieldID,
+					Column: talent.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ApplicantID = nodes[0]
+		_node.TalentID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

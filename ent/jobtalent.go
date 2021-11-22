@@ -8,14 +8,14 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/jobtalent"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
 )
 
-// JobApplication is the model entity for the JobApplication schema.
-type JobApplication struct {
+// JobTalent is the model entity for the JobTalent schema.
+type JobTalent struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"-"`
@@ -27,25 +27,25 @@ type JobApplication struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
-	// ApplicantID holds the value of the "applicant_id" field.
-	ApplicantID int `json:"-"`
+	// TalentID holds the value of the "talent_id" field.
+	TalentID int `json:"-"`
 	// JobID holds the value of the "job_id" field.
 	JobID int `json:"-"`
 	// ReferralSource holds the value of the "referral_source" field.
 	ReferralSource string `json:"referral_source,omitempty"`
 	// Status holds the value of the "status" field.
-	Status jobapplication.Status `json:"status,omitempty"`
+	Status jobtalent.Status `json:"status,omitempty"`
 	// Note holds the value of the "note" field.
 	Note string `json:"note,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the JobApplicationQuery when eager-loading is set.
-	Edges JobApplicationEdges `json:"edges"`
+	// The values are being populated by the JobTalentQuery when eager-loading is set.
+	Edges JobTalentEdges `json:"edges"`
 }
 
-// JobApplicationEdges holds the relations/edges for other nodes in the graph.
-type JobApplicationEdges struct {
-	// Applicant holds the value of the applicant edge.
-	Applicant *Applicant `json:"applicant,omitempty"`
+// JobTalentEdges holds the relations/edges for other nodes in the graph.
+type JobTalentEdges struct {
+	// Talent holds the value of the talent edge.
+	Talent *Talent `json:"talent,omitempty"`
 	// Job holds the value of the job edge.
 	Job *Job `json:"job,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -53,23 +53,23 @@ type JobApplicationEdges struct {
 	loadedTypes [2]bool
 }
 
-// ApplicantOrErr returns the Applicant value or an error if the edge
+// TalentOrErr returns the Talent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e JobApplicationEdges) ApplicantOrErr() (*Applicant, error) {
+func (e JobTalentEdges) TalentOrErr() (*Talent, error) {
 	if e.loadedTypes[0] {
-		if e.Applicant == nil {
-			// The edge applicant was loaded in eager-loading,
+		if e.Talent == nil {
+			// The edge talent was loaded in eager-loading,
 			// but was not found.
-			return nil, &NotFoundError{label: applicant.Label}
+			return nil, &NotFoundError{label: talent.Label}
 		}
-		return e.Applicant, nil
+		return e.Talent, nil
 	}
-	return nil, &NotLoadedError{edge: "applicant"}
+	return nil, &NotLoadedError{edge: "talent"}
 }
 
 // JobOrErr returns the Job value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e JobApplicationEdges) JobOrErr() (*Job, error) {
+func (e JobTalentEdges) JobOrErr() (*Job, error) {
 	if e.loadedTypes[1] {
 		if e.Job == nil {
 			// The edge job was loaded in eager-loading,
@@ -82,161 +82,161 @@ func (e JobApplicationEdges) JobOrErr() (*Job, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*JobApplication) scanValues(columns []string) ([]interface{}, error) {
+func (*JobTalent) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case jobapplication.FieldID, jobapplication.FieldApplicantID, jobapplication.FieldJobID:
+		case jobtalent.FieldID, jobtalent.FieldTalentID, jobtalent.FieldJobID:
 			values[i] = new(sql.NullInt64)
-		case jobapplication.FieldReferralSource, jobapplication.FieldStatus, jobapplication.FieldNote:
+		case jobtalent.FieldReferralSource, jobtalent.FieldStatus, jobtalent.FieldNote:
 			values[i] = new(sql.NullString)
-		case jobapplication.FieldCreatedAt, jobapplication.FieldUpdatedAt, jobapplication.FieldDeletedAt:
+		case jobtalent.FieldCreatedAt, jobtalent.FieldUpdatedAt, jobtalent.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case jobapplication.FieldUUID:
+		case jobtalent.FieldUUID:
 			values[i] = new(uuid.UUID)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type JobApplication", columns[i])
+			return nil, fmt.Errorf("unexpected column %q for type JobTalent", columns[i])
 		}
 	}
 	return values, nil
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the JobApplication fields.
-func (ja *JobApplication) assignValues(columns []string, values []interface{}) error {
+// to the JobTalent fields.
+func (jt *JobTalent) assignValues(columns []string, values []interface{}) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case jobapplication.FieldID:
+		case jobtalent.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			ja.ID = int(value.Int64)
-		case jobapplication.FieldUUID:
+			jt.ID = int(value.Int64)
+		case jobtalent.FieldUUID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field uuid", values[i])
 			} else if value != nil {
-				ja.UUID = *value
+				jt.UUID = *value
 			}
-		case jobapplication.FieldCreatedAt:
+		case jobtalent.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				ja.CreatedAt = value.Time
+				jt.CreatedAt = value.Time
 			}
-		case jobapplication.FieldUpdatedAt:
+		case jobtalent.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				ja.UpdatedAt = value.Time
+				jt.UpdatedAt = value.Time
 			}
-		case jobapplication.FieldDeletedAt:
+		case jobtalent.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				ja.DeletedAt = new(time.Time)
-				*ja.DeletedAt = value.Time
+				jt.DeletedAt = new(time.Time)
+				*jt.DeletedAt = value.Time
 			}
-		case jobapplication.FieldApplicantID:
+		case jobtalent.FieldTalentID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field applicant_id", values[i])
+				return fmt.Errorf("unexpected type %T for field talent_id", values[i])
 			} else if value.Valid {
-				ja.ApplicantID = int(value.Int64)
+				jt.TalentID = int(value.Int64)
 			}
-		case jobapplication.FieldJobID:
+		case jobtalent.FieldJobID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field job_id", values[i])
 			} else if value.Valid {
-				ja.JobID = int(value.Int64)
+				jt.JobID = int(value.Int64)
 			}
-		case jobapplication.FieldReferralSource:
+		case jobtalent.FieldReferralSource:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field referral_source", values[i])
 			} else if value.Valid {
-				ja.ReferralSource = value.String
+				jt.ReferralSource = value.String
 			}
-		case jobapplication.FieldStatus:
+		case jobtalent.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				ja.Status = jobapplication.Status(value.String)
+				jt.Status = jobtalent.Status(value.String)
 			}
-		case jobapplication.FieldNote:
+		case jobtalent.FieldNote:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field note", values[i])
 			} else if value.Valid {
-				ja.Note = value.String
+				jt.Note = value.String
 			}
 		}
 	}
 	return nil
 }
 
-// QueryApplicant queries the "applicant" edge of the JobApplication entity.
-func (ja *JobApplication) QueryApplicant() *ApplicantQuery {
-	return (&JobApplicationClient{config: ja.config}).QueryApplicant(ja)
+// QueryTalent queries the "talent" edge of the JobTalent entity.
+func (jt *JobTalent) QueryTalent() *TalentQuery {
+	return (&JobTalentClient{config: jt.config}).QueryTalent(jt)
 }
 
-// QueryJob queries the "job" edge of the JobApplication entity.
-func (ja *JobApplication) QueryJob() *JobQuery {
-	return (&JobApplicationClient{config: ja.config}).QueryJob(ja)
+// QueryJob queries the "job" edge of the JobTalent entity.
+func (jt *JobTalent) QueryJob() *JobQuery {
+	return (&JobTalentClient{config: jt.config}).QueryJob(jt)
 }
 
-// Update returns a builder for updating this JobApplication.
-// Note that you need to call JobApplication.Unwrap() before calling this method if this JobApplication
+// Update returns a builder for updating this JobTalent.
+// Note that you need to call JobTalent.Unwrap() before calling this method if this JobTalent
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (ja *JobApplication) Update() *JobApplicationUpdateOne {
-	return (&JobApplicationClient{config: ja.config}).UpdateOne(ja)
+func (jt *JobTalent) Update() *JobTalentUpdateOne {
+	return (&JobTalentClient{config: jt.config}).UpdateOne(jt)
 }
 
-// Unwrap unwraps the JobApplication entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the JobTalent entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (ja *JobApplication) Unwrap() *JobApplication {
-	tx, ok := ja.config.driver.(*txDriver)
+func (jt *JobTalent) Unwrap() *JobTalent {
+	tx, ok := jt.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: JobApplication is not a transactional entity")
+		panic("ent: JobTalent is not a transactional entity")
 	}
-	ja.config.driver = tx.drv
-	return ja
+	jt.config.driver = tx.drv
+	return jt
 }
 
 // String implements the fmt.Stringer.
-func (ja *JobApplication) String() string {
+func (jt *JobTalent) String() string {
 	var builder strings.Builder
-	builder.WriteString("JobApplication(")
-	builder.WriteString(fmt.Sprintf("id=%v", ja.ID))
+	builder.WriteString("JobTalent(")
+	builder.WriteString(fmt.Sprintf("id=%v", jt.ID))
 	builder.WriteString(", uuid=")
-	builder.WriteString(fmt.Sprintf("%v", ja.UUID))
+	builder.WriteString(fmt.Sprintf("%v", jt.UUID))
 	builder.WriteString(", created_at=")
-	builder.WriteString(ja.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(jt.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
-	builder.WriteString(ja.UpdatedAt.Format(time.ANSIC))
-	if v := ja.DeletedAt; v != nil {
+	builder.WriteString(jt.UpdatedAt.Format(time.ANSIC))
+	if v := jt.DeletedAt; v != nil {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	builder.WriteString(", applicant_id=")
-	builder.WriteString(fmt.Sprintf("%v", ja.ApplicantID))
+	builder.WriteString(", talent_id=")
+	builder.WriteString(fmt.Sprintf("%v", jt.TalentID))
 	builder.WriteString(", job_id=")
-	builder.WriteString(fmt.Sprintf("%v", ja.JobID))
+	builder.WriteString(fmt.Sprintf("%v", jt.JobID))
 	builder.WriteString(", referral_source=")
-	builder.WriteString(ja.ReferralSource)
+	builder.WriteString(jt.ReferralSource)
 	builder.WriteString(", status=")
-	builder.WriteString(fmt.Sprintf("%v", ja.Status))
+	builder.WriteString(fmt.Sprintf("%v", jt.Status))
 	builder.WriteString(", note=")
-	builder.WriteString(ja.Note)
+	builder.WriteString(jt.Note)
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// JobApplications is a parsable slice of JobApplication.
-type JobApplications []*JobApplication
+// JobTalents is a parsable slice of JobTalent.
+type JobTalents []*JobTalent
 
-func (ja JobApplications) config(cfg config) {
-	for _i := range ja {
-		ja[_i].config = cfg
+func (jt JobTalents) config(cfg config) {
+	for _i := range jt {
+		jt[_i].config = cfg
 	}
 }

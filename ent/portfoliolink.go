@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
 )
 
@@ -30,8 +30,8 @@ type PortfolioLink struct {
 	URL string `json:"url,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
-	// ApplicantID holds the value of the "applicant_id" field.
-	ApplicantID int `json:"-"`
+	// TalentID holds the value of the "talent_id" field.
+	TalentID int `json:"-"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PortfolioLinkQuery when eager-loading is set.
 	Edges PortfolioLinkEdges `json:"edges"`
@@ -39,25 +39,25 @@ type PortfolioLink struct {
 
 // PortfolioLinkEdges holds the relations/edges for other nodes in the graph.
 type PortfolioLinkEdges struct {
-	// Applicant holds the value of the applicant edge.
-	Applicant *Applicant `json:"applicant,omitempty"`
+	// Talent holds the value of the talent edge.
+	Talent *Talent `json:"talent,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// ApplicantOrErr returns the Applicant value or an error if the edge
+// TalentOrErr returns the Talent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e PortfolioLinkEdges) ApplicantOrErr() (*Applicant, error) {
+func (e PortfolioLinkEdges) TalentOrErr() (*Talent, error) {
 	if e.loadedTypes[0] {
-		if e.Applicant == nil {
-			// The edge applicant was loaded in eager-loading,
+		if e.Talent == nil {
+			// The edge talent was loaded in eager-loading,
 			// but was not found.
-			return nil, &NotFoundError{label: applicant.Label}
+			return nil, &NotFoundError{label: talent.Label}
 		}
-		return e.Applicant, nil
+		return e.Talent, nil
 	}
-	return nil, &NotLoadedError{edge: "applicant"}
+	return nil, &NotLoadedError{edge: "talent"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -65,7 +65,7 @@ func (*PortfolioLink) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case portfoliolink.FieldID, portfoliolink.FieldApplicantID:
+		case portfoliolink.FieldID, portfoliolink.FieldTalentID:
 			values[i] = new(sql.NullInt64)
 		case portfoliolink.FieldURL, portfoliolink.FieldName:
 			values[i] = new(sql.NullString)
@@ -131,20 +131,20 @@ func (pl *PortfolioLink) assignValues(columns []string, values []interface{}) er
 			} else if value.Valid {
 				pl.Name = value.String
 			}
-		case portfoliolink.FieldApplicantID:
+		case portfoliolink.FieldTalentID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field applicant_id", values[i])
+				return fmt.Errorf("unexpected type %T for field talent_id", values[i])
 			} else if value.Valid {
-				pl.ApplicantID = int(value.Int64)
+				pl.TalentID = int(value.Int64)
 			}
 		}
 	}
 	return nil
 }
 
-// QueryApplicant queries the "applicant" edge of the PortfolioLink entity.
-func (pl *PortfolioLink) QueryApplicant() *ApplicantQuery {
-	return (&PortfolioLinkClient{config: pl.config}).QueryApplicant(pl)
+// QueryTalent queries the "talent" edge of the PortfolioLink entity.
+func (pl *PortfolioLink) QueryTalent() *TalentQuery {
+	return (&PortfolioLinkClient{config: pl.config}).QueryTalent(pl)
 }
 
 // Update returns a builder for updating this PortfolioLink.
@@ -184,8 +184,8 @@ func (pl *PortfolioLink) String() string {
 	builder.WriteString(pl.URL)
 	builder.WriteString(", name=")
 	builder.WriteString(pl.Name)
-	builder.WriteString(", applicant_id=")
-	builder.WriteString(fmt.Sprintf("%v", pl.ApplicantID))
+	builder.WriteString(", talent_id=")
+	builder.WriteString(fmt.Sprintf("%v", pl.TalentID))
 	builder.WriteByte(')')
 	return builder.String()
 }

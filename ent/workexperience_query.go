@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/workexperience"
 )
 
@@ -26,7 +26,7 @@ type WorkExperienceQuery struct {
 	fields     []string
 	predicates []predicate.WorkExperience
 	// eager-loading edges.
-	withApplicant *ApplicantQuery
+	withTalent *TalentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,9 +63,9 @@ func (weq *WorkExperienceQuery) Order(o ...OrderFunc) *WorkExperienceQuery {
 	return weq
 }
 
-// QueryApplicant chains the current query on the "applicant" edge.
-func (weq *WorkExperienceQuery) QueryApplicant() *ApplicantQuery {
-	query := &ApplicantQuery{config: weq.config}
+// QueryTalent chains the current query on the "talent" edge.
+func (weq *WorkExperienceQuery) QueryTalent() *TalentQuery {
+	query := &TalentQuery{config: weq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := weq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -76,8 +76,8 @@ func (weq *WorkExperienceQuery) QueryApplicant() *ApplicantQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(workexperience.Table, workexperience.FieldID, selector),
-			sqlgraph.To(applicant.Table, applicant.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, workexperience.ApplicantTable, workexperience.ApplicantColumn),
+			sqlgraph.To(talent.Table, talent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, workexperience.TalentTable, workexperience.TalentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(weq.driver.Dialect(), step)
 		return fromU, nil
@@ -261,26 +261,26 @@ func (weq *WorkExperienceQuery) Clone() *WorkExperienceQuery {
 		return nil
 	}
 	return &WorkExperienceQuery{
-		config:        weq.config,
-		limit:         weq.limit,
-		offset:        weq.offset,
-		order:         append([]OrderFunc{}, weq.order...),
-		predicates:    append([]predicate.WorkExperience{}, weq.predicates...),
-		withApplicant: weq.withApplicant.Clone(),
+		config:     weq.config,
+		limit:      weq.limit,
+		offset:     weq.offset,
+		order:      append([]OrderFunc{}, weq.order...),
+		predicates: append([]predicate.WorkExperience{}, weq.predicates...),
+		withTalent: weq.withTalent.Clone(),
 		// clone intermediate query.
 		sql:  weq.sql.Clone(),
 		path: weq.path,
 	}
 }
 
-// WithApplicant tells the query-builder to eager-load the nodes that are connected to
-// the "applicant" edge. The optional arguments are used to configure the query builder of the edge.
-func (weq *WorkExperienceQuery) WithApplicant(opts ...func(*ApplicantQuery)) *WorkExperienceQuery {
-	query := &ApplicantQuery{config: weq.config}
+// WithTalent tells the query-builder to eager-load the nodes that are connected to
+// the "talent" edge. The optional arguments are used to configure the query builder of the edge.
+func (weq *WorkExperienceQuery) WithTalent(opts ...func(*TalentQuery)) *WorkExperienceQuery {
+	query := &TalentQuery{config: weq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	weq.withApplicant = query
+	weq.withTalent = query
 	return weq
 }
 
@@ -350,7 +350,7 @@ func (weq *WorkExperienceQuery) sqlAll(ctx context.Context) ([]*WorkExperience, 
 		nodes       = []*WorkExperience{}
 		_spec       = weq.querySpec()
 		loadedTypes = [1]bool{
-			weq.withApplicant != nil,
+			weq.withTalent != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -373,17 +373,17 @@ func (weq *WorkExperienceQuery) sqlAll(ctx context.Context) ([]*WorkExperience, 
 		return nodes, nil
 	}
 
-	if query := weq.withApplicant; query != nil {
+	if query := weq.withTalent; query != nil {
 		ids := make([]int, 0, len(nodes))
 		nodeids := make(map[int][]*WorkExperience)
 		for i := range nodes {
-			fk := nodes[i].ApplicantID
+			fk := nodes[i].TalentID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
 			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		query.Where(applicant.IDIn(ids...))
+		query.Where(talent.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
@@ -391,10 +391,10 @@ func (weq *WorkExperienceQuery) sqlAll(ctx context.Context) ([]*WorkExperience, 
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "applicant_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "talent_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.Applicant = n
+				nodes[i].Edges.Talent = n
 			}
 		}
 	}

@@ -5,14 +5,14 @@ package ent
 import (
 	"time"
 
-	"github.com/10hourlabs/tentn/ent/applicant"
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/jobtalent"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/schema"
 	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/workexperience"
 	"github.com/google/uuid"
 )
@@ -21,49 +21,6 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
-	applicantMixin := schema.Applicant{}.Mixin()
-	applicantMixinFields0 := applicantMixin[0].Fields()
-	_ = applicantMixinFields0
-	applicantMixinFields1 := applicantMixin[1].Fields()
-	_ = applicantMixinFields1
-	applicantFields := schema.Applicant{}.Fields()
-	_ = applicantFields
-	// applicantDescUUID is the schema descriptor for uuid field.
-	applicantDescUUID := applicantMixinFields0[1].Descriptor()
-	// applicant.DefaultUUID holds the default value on creation for the uuid field.
-	applicant.DefaultUUID = applicantDescUUID.Default.(func() uuid.UUID)
-	// applicantDescCreatedAt is the schema descriptor for created_at field.
-	applicantDescCreatedAt := applicantMixinFields1[0].Descriptor()
-	// applicant.DefaultCreatedAt holds the default value on creation for the created_at field.
-	applicant.DefaultCreatedAt = applicantDescCreatedAt.Default.(func() time.Time)
-	// applicantDescUpdatedAt is the schema descriptor for updated_at field.
-	applicantDescUpdatedAt := applicantMixinFields1[1].Descriptor()
-	// applicant.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	applicant.DefaultUpdatedAt = applicantDescUpdatedAt.Default.(func() time.Time)
-	// applicant.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	applicant.UpdateDefaultUpdatedAt = applicantDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// applicantDescReferralCode is the schema descriptor for referral_code field.
-	applicantDescReferralCode := applicantFields[6].Descriptor()
-	// applicant.DefaultReferralCode holds the default value on creation for the referral_code field.
-	applicant.DefaultReferralCode = applicantDescReferralCode.Default.(string)
-	// applicantDescCountryCode is the schema descriptor for country_code field.
-	applicantDescCountryCode := applicantFields[11].Descriptor()
-	// applicant.CountryCodeValidator is a validator for the "country_code" field. It is called by the builders before save.
-	applicant.CountryCodeValidator = func() func(string) error {
-		validators := applicantDescCountryCode.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(country_code string) error {
-			for _, fn := range fns {
-				if err := fn(country_code); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
 	educationMixin := schema.Education{}.Mixin()
 	educationMixinFields0 := educationMixin[0].Fields()
 	_ = educationMixinFields0
@@ -135,27 +92,27 @@ func init() {
 	jobDescLocation := jobFields[3].Descriptor()
 	// job.DefaultLocation holds the default value on creation for the location field.
 	job.DefaultLocation = jobDescLocation.Default.(string)
-	jobapplicationMixin := schema.JobApplication{}.Mixin()
-	jobapplicationMixinFields0 := jobapplicationMixin[0].Fields()
-	_ = jobapplicationMixinFields0
-	jobapplicationMixinFields1 := jobapplicationMixin[1].Fields()
-	_ = jobapplicationMixinFields1
-	jobapplicationFields := schema.JobApplication{}.Fields()
-	_ = jobapplicationFields
-	// jobapplicationDescUUID is the schema descriptor for uuid field.
-	jobapplicationDescUUID := jobapplicationMixinFields0[1].Descriptor()
-	// jobapplication.DefaultUUID holds the default value on creation for the uuid field.
-	jobapplication.DefaultUUID = jobapplicationDescUUID.Default.(func() uuid.UUID)
-	// jobapplicationDescCreatedAt is the schema descriptor for created_at field.
-	jobapplicationDescCreatedAt := jobapplicationMixinFields1[0].Descriptor()
-	// jobapplication.DefaultCreatedAt holds the default value on creation for the created_at field.
-	jobapplication.DefaultCreatedAt = jobapplicationDescCreatedAt.Default.(func() time.Time)
-	// jobapplicationDescUpdatedAt is the schema descriptor for updated_at field.
-	jobapplicationDescUpdatedAt := jobapplicationMixinFields1[1].Descriptor()
-	// jobapplication.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	jobapplication.DefaultUpdatedAt = jobapplicationDescUpdatedAt.Default.(func() time.Time)
-	// jobapplication.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	jobapplication.UpdateDefaultUpdatedAt = jobapplicationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	jobtalentMixin := schema.JobTalent{}.Mixin()
+	jobtalentMixinFields0 := jobtalentMixin[0].Fields()
+	_ = jobtalentMixinFields0
+	jobtalentMixinFields1 := jobtalentMixin[1].Fields()
+	_ = jobtalentMixinFields1
+	jobtalentFields := schema.JobTalent{}.Fields()
+	_ = jobtalentFields
+	// jobtalentDescUUID is the schema descriptor for uuid field.
+	jobtalentDescUUID := jobtalentMixinFields0[1].Descriptor()
+	// jobtalent.DefaultUUID holds the default value on creation for the uuid field.
+	jobtalent.DefaultUUID = jobtalentDescUUID.Default.(func() uuid.UUID)
+	// jobtalentDescCreatedAt is the schema descriptor for created_at field.
+	jobtalentDescCreatedAt := jobtalentMixinFields1[0].Descriptor()
+	// jobtalent.DefaultCreatedAt holds the default value on creation for the created_at field.
+	jobtalent.DefaultCreatedAt = jobtalentDescCreatedAt.Default.(func() time.Time)
+	// jobtalentDescUpdatedAt is the schema descriptor for updated_at field.
+	jobtalentDescUpdatedAt := jobtalentMixinFields1[1].Descriptor()
+	// jobtalent.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	jobtalent.DefaultUpdatedAt = jobtalentDescUpdatedAt.Default.(func() time.Time)
+	// jobtalent.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	jobtalent.UpdateDefaultUpdatedAt = jobtalentDescUpdatedAt.UpdateDefault.(func() time.Time)
 	portfoliolinkMixin := schema.PortfolioLink{}.Mixin()
 	portfoliolinkMixinFields0 := portfoliolinkMixin[0].Fields()
 	_ = portfoliolinkMixinFields0
@@ -206,6 +163,49 @@ func init() {
 	skillDescPreferred := skillFields[2].Descriptor()
 	// skill.DefaultPreferred holds the default value on creation for the preferred field.
 	skill.DefaultPreferred = skillDescPreferred.Default.(bool)
+	talentMixin := schema.Talent{}.Mixin()
+	talentMixinFields0 := talentMixin[0].Fields()
+	_ = talentMixinFields0
+	talentMixinFields1 := talentMixin[1].Fields()
+	_ = talentMixinFields1
+	talentFields := schema.Talent{}.Fields()
+	_ = talentFields
+	// talentDescUUID is the schema descriptor for uuid field.
+	talentDescUUID := talentMixinFields0[1].Descriptor()
+	// talent.DefaultUUID holds the default value on creation for the uuid field.
+	talent.DefaultUUID = talentDescUUID.Default.(func() uuid.UUID)
+	// talentDescCreatedAt is the schema descriptor for created_at field.
+	talentDescCreatedAt := talentMixinFields1[0].Descriptor()
+	// talent.DefaultCreatedAt holds the default value on creation for the created_at field.
+	talent.DefaultCreatedAt = talentDescCreatedAt.Default.(func() time.Time)
+	// talentDescUpdatedAt is the schema descriptor for updated_at field.
+	talentDescUpdatedAt := talentMixinFields1[1].Descriptor()
+	// talent.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	talent.DefaultUpdatedAt = talentDescUpdatedAt.Default.(func() time.Time)
+	// talent.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	talent.UpdateDefaultUpdatedAt = talentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// talentDescReferralCode is the schema descriptor for referral_code field.
+	talentDescReferralCode := talentFields[6].Descriptor()
+	// talent.DefaultReferralCode holds the default value on creation for the referral_code field.
+	talent.DefaultReferralCode = talentDescReferralCode.Default.(string)
+	// talentDescCountryCode is the schema descriptor for country_code field.
+	talentDescCountryCode := talentFields[11].Descriptor()
+	// talent.CountryCodeValidator is a validator for the "country_code" field. It is called by the builders before save.
+	talent.CountryCodeValidator = func() func(string) error {
+		validators := talentDescCountryCode.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(country_code string) error {
+			for _, fn := range fns {
+				if err := fn(country_code); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	workexperienceMixin := schema.WorkExperience{}.Mixin()
 	workexperienceMixinFields0 := workexperienceMixin[0].Fields()
 	_ = workexperienceMixinFields0

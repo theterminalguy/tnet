@@ -24,7 +24,7 @@ func NewSkillHandler() *SkillHandler {
 }
 
 func (*SkillHandler) ResourceName() string {
-	return "applicants/skills"
+	return "talents/skills"
 }
 
 func (h *SkillHandler) ReadAll(c echo.Context) error {

@@ -9,21 +9,21 @@ import (
 	"entgo.io/ent/schema/index"
 )
 
-// Applicant holds the schema definition for the Applicant entity.
-type Applicant struct {
+// Talent holds the schema definition for the Talent entity.
+type Talent struct {
 	ent.Schema
 }
 
-// Mixins for Applicant
-func (Applicant) Mixin() []ent.Mixin {
+// Mixins for Talent
+func (Talent) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		UUIDMixin{},
 		TimeStampMixin{},
 	}
 }
 
-// Fields of the Applicant.
-func (Applicant) Fields() []ent.Field {
+// Fields of the Talent.
+func (Talent) Fields() []ent.Field {
 	return []ent.Field{
 		field.String(oneword.FirstName),
 		field.String(oneword.LastName),
@@ -34,14 +34,14 @@ func (Applicant) Fields() []ent.Field {
 		field.String(oneword.PreferredJobTitle),
 
 		// Set on create.
-		// This is the applicant referrer database id
+		// This is the Talent referrer database id
 		field.Int(oneword.ReferrerID).
 			Optional().
 			StructTag(`json:"-"`),
 
 		// Provided by the user
 		// Should be validate against existing
-		// Applicants TenTNCode
+		// Talents TenTNCode
 		// This should be optional
 		field.String(oneword.ReferralCode).
 			Default(oneword.NULL).
@@ -73,7 +73,7 @@ func (Applicant) Fields() []ent.Field {
 	}
 }
 
-func (Applicant) Indexes() []ent.Index {
+func (Talent) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields(oneword.ReferralCode, oneword.ReferrerID),
 
@@ -82,10 +82,10 @@ func (Applicant) Indexes() []ent.Index {
 	}
 }
 
-// Edges of the Applicant.
-func (Applicant) Edges() []ent.Edge {
+// Edges of the Talent.
+func (Talent) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To(oneword.Referees, Applicant.Type).
+		edge.To(oneword.Referees, Talent.Type).
 			From(oneword.Referrer).
 			Unique().
 			Field(oneword.ReferrerID),
@@ -94,7 +94,7 @@ func (Applicant) Edges() []ent.Edge {
 
 		edge.To(oneword.Skills, Skill.Type),
 
-		edge.To(oneword.JobApplications, JobApplication.Type),
+		edge.To(oneword.JobTalents, JobTalent.Type),
 
 		edge.To("work_experiences", WorkExperience.Type),
 

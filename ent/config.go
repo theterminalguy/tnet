@@ -24,13 +24,13 @@ type config struct {
 
 // hooks per client, for fast access.
 type hooks struct {
-	Applicant        []ent.Hook
 	Education        []ent.Hook
 	EmergencyContact []ent.Hook
 	Job              []ent.Hook
-	JobApplication   []ent.Hook
+	JobTalent        []ent.Hook
 	PortfolioLink    []ent.Hook
 	Skill            []ent.Hook
+	Talent           []ent.Hook
 	WorkExperience   []ent.Hook
 }
 
