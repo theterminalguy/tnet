@@ -55,13 +55,18 @@ func (*TalentRepository) GetByUUID(id uuid.UUID) (*ent.Talent, error) {
 	}
 	// TODO: this code server as a how to on how to
 	// add edges to a node
-	// ```
-	// 		peeps, _ := a.QueryReferees().All(dBContext)
-	// 		log.Println("Peeps", peeps)
-	// 		a.Edges = ent.TalentEdges{
-	// 			Referees: peeps,
-	// 		}
-	// ```
+	//```
+	// peeps, _ := a.QueryReferees().All(dBContext)
+	// log.Println("Peeps", peeps)
+	// a.Edges = ent.ApplicantEdges{
+	// 	Referees: peeps,
+	// }
+
+	pLinks, _ := a.QueryPortfoliolinks().All(dBContext)
+	a.Edges = ent.TalentEdges{
+		Portfoliolinks: pLinks,
+	}
+	//```
 	if a.DeletedAt != nil {
 		return nil, RecordNotFoundError
 	}
