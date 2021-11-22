@@ -89,6 +89,12 @@ func (r *JobTalentRepository) Update(id uuid.UUID, p JobTalentParams) (*ent.JobT
 	if err != nil {
 		return nil, []error{err}
 	}
+
+	err = validateParams(p, "JobUUID")
+	if err != nil {
+		return nil, []error{err}
+	}
+
 	record, err := r.GetByUUID(id)
 	if err != nil {
 		return nil, []error{err}

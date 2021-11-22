@@ -81,10 +81,6 @@ func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
 }
 
 func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
-	err := validateParams(p, "ApplicantUUID")
-	if err != nil {
-		return nil, []error{err}
-	}
 	record, err := r.GetByUUID(id)
 	if err != nil {
 		return nil, []error{err}

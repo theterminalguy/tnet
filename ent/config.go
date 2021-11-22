@@ -28,6 +28,7 @@ type hooks struct {
 	EmergencyContact []ent.Hook
 	Job              []ent.Hook
 	JobTalent        []ent.Hook
+	Partner          []ent.Hook
 	PortfolioLink    []ent.Hook
 	Skill            []ent.Hook
 	Talent           []ent.Hook

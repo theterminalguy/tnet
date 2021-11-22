@@ -182,6 +182,33 @@ var (
 			},
 		},
 	}
+	// PartnersColumns holds the columns for the "partners" table.
+	PartnersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "company_name", Type: field.TypeString},
+		{Name: "company_location", Type: field.TypeString},
+		{Name: "website_url", Type: field.TypeString},
+		{Name: "contact_person_name", Type: field.TypeString},
+		{Name: "contact_person_phone_number", Type: field.TypeString},
+		{Name: "contact_person_email", Type: field.TypeString},
+	}
+	// PartnersTable holds the schema information for the "partners" table.
+	PartnersTable = &schema.Table{
+		Name:       "partners",
+		Columns:    PartnersColumns,
+		PrimaryKey: []*schema.Column{PartnersColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "partner_uuid",
+				Unique:  true,
+				Columns: []*schema.Column{PartnersColumns[1]},
+			},
+		},
+	}
 	// PortfolioLinksColumns holds the columns for the "portfolio_links" table.
 	PortfolioLinksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -364,6 +391,7 @@ var (
 		EmergencyContactsTable,
 		JobsTable,
 		JobTalentsTable,
+		PartnersTable,
 		PortfolioLinksTable,
 		SkillsTable,
 		TalentsTable,

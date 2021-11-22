@@ -9,6 +9,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobtalent"
+	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/schema"
 	"github.com/10hourlabs/tentn/ent/skill"
@@ -113,6 +114,27 @@ func init() {
 	jobtalent.DefaultUpdatedAt = jobtalentDescUpdatedAt.Default.(func() time.Time)
 	// jobtalent.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	jobtalent.UpdateDefaultUpdatedAt = jobtalentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	partnerMixin := schema.Partner{}.Mixin()
+	partnerMixinFields0 := partnerMixin[0].Fields()
+	_ = partnerMixinFields0
+	partnerMixinFields1 := partnerMixin[1].Fields()
+	_ = partnerMixinFields1
+	partnerFields := schema.Partner{}.Fields()
+	_ = partnerFields
+	// partnerDescUUID is the schema descriptor for uuid field.
+	partnerDescUUID := partnerMixinFields0[1].Descriptor()
+	// partner.DefaultUUID holds the default value on creation for the uuid field.
+	partner.DefaultUUID = partnerDescUUID.Default.(func() uuid.UUID)
+	// partnerDescCreatedAt is the schema descriptor for created_at field.
+	partnerDescCreatedAt := partnerMixinFields1[0].Descriptor()
+	// partner.DefaultCreatedAt holds the default value on creation for the created_at field.
+	partner.DefaultCreatedAt = partnerDescCreatedAt.Default.(func() time.Time)
+	// partnerDescUpdatedAt is the schema descriptor for updated_at field.
+	partnerDescUpdatedAt := partnerMixinFields1[1].Descriptor()
+	// partner.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	partner.DefaultUpdatedAt = partnerDescUpdatedAt.Default.(func() time.Time)
+	// partner.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	partner.UpdateDefaultUpdatedAt = partnerDescUpdatedAt.UpdateDefault.(func() time.Time)
 	portfoliolinkMixin := schema.PortfolioLink{}.Mixin()
 	portfoliolinkMixinFields0 := portfoliolinkMixin[0].Fields()
 	_ = portfoliolinkMixinFields0

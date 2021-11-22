@@ -61,6 +61,19 @@ func (f JobTalentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, e
 	return f(ctx, mv)
 }
 
+// The PartnerFunc type is an adapter to allow the use of ordinary
+// function as Partner mutator.
+type PartnerFunc func(context.Context, *ent.PartnerMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PartnerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.PartnerMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PartnerMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The PortfolioLinkFunc type is an adapter to allow the use of ordinary
 // function as PortfolioLink mutator.
 type PortfolioLinkFunc func(context.Context, *ent.PortfolioLinkMutation) (ent.Value, error)

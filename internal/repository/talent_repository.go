@@ -114,10 +114,6 @@ func (r *TalentRepository) Create(p TalentParams) (*ent.Talent, error) {
 }
 
 func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*ent.Talent, []error) {
-	err := validateParams(p, "TalentUUID")
-	if err != nil {
-		return nil, []error{err}
-	}
 	record, err := r.GetByUUID(id)
 	if err != nil {
 		return nil, []error{err}

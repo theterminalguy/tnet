@@ -12,6 +12,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobtalent"
+	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/skill"
@@ -35,6 +36,7 @@ const (
 	TypeEmergencyContact = "EmergencyContact"
 	TypeJob              = "Job"
 	TypeJobTalent        = "JobTalent"
+	TypePartner          = "Partner"
 	TypePortfolioLink    = "PortfolioLink"
 	TypeSkill            = "Skill"
 	TypeTalent           = "Talent"
@@ -4013,6 +4015,812 @@ func (m *JobTalentMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown JobTalent edge %s", name)
+}
+
+// PartnerMutation represents an operation that mutates the Partner nodes in the graph.
+type PartnerMutation struct {
+	config
+	op                        Op
+	typ                       string
+	id                        *int
+	uuid                      *uuid.UUID
+	created_at                *time.Time
+	updated_at                *time.Time
+	deleted_at                *time.Time
+	_CompanyName              *string
+	_CompanyLocation          *string
+	_WebsiteUrl               *string
+	_ContactPersonName        *string
+	_ContactPersonPhoneNumber *string
+	_ContactPersonEmail       *string
+	clearedFields             map[string]struct{}
+	done                      bool
+	oldValue                  func(context.Context) (*Partner, error)
+	predicates                []predicate.Partner
+}
+
+var _ ent.Mutation = (*PartnerMutation)(nil)
+
+// partnerOption allows management of the mutation configuration using functional options.
+type partnerOption func(*PartnerMutation)
+
+// newPartnerMutation creates new mutation for the Partner entity.
+func newPartnerMutation(c config, op Op, opts ...partnerOption) *PartnerMutation {
+	m := &PartnerMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePartner,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPartnerID sets the ID field of the mutation.
+func withPartnerID(id int) partnerOption {
+	return func(m *PartnerMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Partner
+		)
+		m.oldValue = func(ctx context.Context) (*Partner, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Partner.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPartner sets the old Partner of the mutation.
+func withPartner(node *Partner) partnerOption {
+	return func(m *PartnerMutation) {
+		m.oldValue = func(context.Context) (*Partner, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PartnerMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PartnerMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Partner entities.
+func (m *PartnerMutation) SetID(id int) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PartnerMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetUUID sets the "uuid" field.
+func (m *PartnerMutation) SetUUID(u uuid.UUID) {
+	m.uuid = &u
+}
+
+// UUID returns the value of the "uuid" field in the mutation.
+func (m *PartnerMutation) UUID() (r uuid.UUID, exists bool) {
+	v := m.uuid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUUID returns the old "uuid" field's value of the Partner entity.
+// If the Partner object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PartnerMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUUID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUUID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
+	}
+	return oldValue.UUID, nil
+}
+
+// ResetUUID resets all changes to the "uuid" field.
+func (m *PartnerMutation) ResetUUID() {
+	m.uuid = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *PartnerMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *PartnerMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Partner entity.
+// If the Partner object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PartnerMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *PartnerMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *PartnerMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *PartnerMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Partner entity.
+// If the Partner object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PartnerMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *PartnerMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *PartnerMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *PartnerMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the Partner entity.
+// If the Partner object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PartnerMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *PartnerMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[partner.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *PartnerMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[partner.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *PartnerMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, partner.FieldDeletedAt)
+}
+
+// SetCompanyName sets the "CompanyName" field.
+func (m *PartnerMutation) SetCompanyName(s string) {
+	m._CompanyName = &s
+}
+
+// CompanyName returns the value of the "CompanyName" field in the mutation.
+func (m *PartnerMutation) CompanyName() (r string, exists bool) {
+	v := m._CompanyName
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCompanyName returns the old "CompanyName" field's value of the Partner entity.
+// If the Partner object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PartnerMutation) OldCompanyName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCompanyName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCompanyName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCompanyName: %w", err)
+	}
+	return oldValue.CompanyName, nil
+}
+
+// ResetCompanyName resets all changes to the "CompanyName" field.
+func (m *PartnerMutation) ResetCompanyName() {
+	m._CompanyName = nil
+}
+
+// SetCompanyLocation sets the "CompanyLocation" field.
+func (m *PartnerMutation) SetCompanyLocation(s string) {
+	m._CompanyLocation = &s
+}
+
+// CompanyLocation returns the value of the "CompanyLocation" field in the mutation.
+func (m *PartnerMutation) CompanyLocation() (r string, exists bool) {
+	v := m._CompanyLocation
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCompanyLocation returns the old "CompanyLocation" field's value of the Partner entity.
+// If the Partner object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PartnerMutation) OldCompanyLocation(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCompanyLocation is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCompanyLocation requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCompanyLocation: %w", err)
+	}
+	return oldValue.CompanyLocation, nil
+}
+
+// ResetCompanyLocation resets all changes to the "CompanyLocation" field.
+func (m *PartnerMutation) ResetCompanyLocation() {
+	m._CompanyLocation = nil
+}
+
+// SetWebsiteUrl sets the "WebsiteUrl" field.
+func (m *PartnerMutation) SetWebsiteUrl(s string) {
+	m._WebsiteUrl = &s
+}
+
+// WebsiteUrl returns the value of the "WebsiteUrl" field in the mutation.
+func (m *PartnerMutation) WebsiteUrl() (r string, exists bool) {
+	v := m._WebsiteUrl
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWebsiteUrl returns the old "WebsiteUrl" field's value of the Partner entity.
+// If the Partner object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PartnerMutation) OldWebsiteUrl(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldWebsiteUrl is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldWebsiteUrl requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWebsiteUrl: %w", err)
+	}
+	return oldValue.WebsiteUrl, nil
+}
+
+// ResetWebsiteUrl resets all changes to the "WebsiteUrl" field.
+func (m *PartnerMutation) ResetWebsiteUrl() {
+	m._WebsiteUrl = nil
+}
+
+// SetContactPersonName sets the "ContactPersonName" field.
+func (m *PartnerMutation) SetContactPersonName(s string) {
+	m._ContactPersonName = &s
+}
+
+// ContactPersonName returns the value of the "ContactPersonName" field in the mutation.
+func (m *PartnerMutation) ContactPersonName() (r string, exists bool) {
+	v := m._ContactPersonName
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContactPersonName returns the old "ContactPersonName" field's value of the Partner entity.
+// If the Partner object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PartnerMutation) OldContactPersonName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldContactPersonName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldContactPersonName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContactPersonName: %w", err)
+	}
+	return oldValue.ContactPersonName, nil
+}
+
+// ResetContactPersonName resets all changes to the "ContactPersonName" field.
+func (m *PartnerMutation) ResetContactPersonName() {
+	m._ContactPersonName = nil
+}
+
+// SetContactPersonPhoneNumber sets the "ContactPersonPhoneNumber" field.
+func (m *PartnerMutation) SetContactPersonPhoneNumber(s string) {
+	m._ContactPersonPhoneNumber = &s
+}
+
+// ContactPersonPhoneNumber returns the value of the "ContactPersonPhoneNumber" field in the mutation.
+func (m *PartnerMutation) ContactPersonPhoneNumber() (r string, exists bool) {
+	v := m._ContactPersonPhoneNumber
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContactPersonPhoneNumber returns the old "ContactPersonPhoneNumber" field's value of the Partner entity.
+// If the Partner object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PartnerMutation) OldContactPersonPhoneNumber(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldContactPersonPhoneNumber is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldContactPersonPhoneNumber requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContactPersonPhoneNumber: %w", err)
+	}
+	return oldValue.ContactPersonPhoneNumber, nil
+}
+
+// ResetContactPersonPhoneNumber resets all changes to the "ContactPersonPhoneNumber" field.
+func (m *PartnerMutation) ResetContactPersonPhoneNumber() {
+	m._ContactPersonPhoneNumber = nil
+}
+
+// SetContactPersonEmail sets the "ContactPersonEmail" field.
+func (m *PartnerMutation) SetContactPersonEmail(s string) {
+	m._ContactPersonEmail = &s
+}
+
+// ContactPersonEmail returns the value of the "ContactPersonEmail" field in the mutation.
+func (m *PartnerMutation) ContactPersonEmail() (r string, exists bool) {
+	v := m._ContactPersonEmail
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContactPersonEmail returns the old "ContactPersonEmail" field's value of the Partner entity.
+// If the Partner object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PartnerMutation) OldContactPersonEmail(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldContactPersonEmail is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldContactPersonEmail requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContactPersonEmail: %w", err)
+	}
+	return oldValue.ContactPersonEmail, nil
+}
+
+// ResetContactPersonEmail resets all changes to the "ContactPersonEmail" field.
+func (m *PartnerMutation) ResetContactPersonEmail() {
+	m._ContactPersonEmail = nil
+}
+
+// Where appends a list predicates to the PartnerMutation builder.
+func (m *PartnerMutation) Where(ps ...predicate.Partner) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *PartnerMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Partner).
+func (m *PartnerMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PartnerMutation) Fields() []string {
+	fields := make([]string, 0, 10)
+	if m.uuid != nil {
+		fields = append(fields, partner.FieldUUID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, partner.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, partner.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, partner.FieldDeletedAt)
+	}
+	if m._CompanyName != nil {
+		fields = append(fields, partner.FieldCompanyName)
+	}
+	if m._CompanyLocation != nil {
+		fields = append(fields, partner.FieldCompanyLocation)
+	}
+	if m._WebsiteUrl != nil {
+		fields = append(fields, partner.FieldWebsiteUrl)
+	}
+	if m._ContactPersonName != nil {
+		fields = append(fields, partner.FieldContactPersonName)
+	}
+	if m._ContactPersonPhoneNumber != nil {
+		fields = append(fields, partner.FieldContactPersonPhoneNumber)
+	}
+	if m._ContactPersonEmail != nil {
+		fields = append(fields, partner.FieldContactPersonEmail)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PartnerMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case partner.FieldUUID:
+		return m.UUID()
+	case partner.FieldCreatedAt:
+		return m.CreatedAt()
+	case partner.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case partner.FieldDeletedAt:
+		return m.DeletedAt()
+	case partner.FieldCompanyName:
+		return m.CompanyName()
+	case partner.FieldCompanyLocation:
+		return m.CompanyLocation()
+	case partner.FieldWebsiteUrl:
+		return m.WebsiteUrl()
+	case partner.FieldContactPersonName:
+		return m.ContactPersonName()
+	case partner.FieldContactPersonPhoneNumber:
+		return m.ContactPersonPhoneNumber()
+	case partner.FieldContactPersonEmail:
+		return m.ContactPersonEmail()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PartnerMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case partner.FieldUUID:
+		return m.OldUUID(ctx)
+	case partner.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case partner.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case partner.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case partner.FieldCompanyName:
+		return m.OldCompanyName(ctx)
+	case partner.FieldCompanyLocation:
+		return m.OldCompanyLocation(ctx)
+	case partner.FieldWebsiteUrl:
+		return m.OldWebsiteUrl(ctx)
+	case partner.FieldContactPersonName:
+		return m.OldContactPersonName(ctx)
+	case partner.FieldContactPersonPhoneNumber:
+		return m.OldContactPersonPhoneNumber(ctx)
+	case partner.FieldContactPersonEmail:
+		return m.OldContactPersonEmail(ctx)
+	}
+	return nil, fmt.Errorf("unknown Partner field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PartnerMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case partner.FieldUUID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUUID(v)
+		return nil
+	case partner.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case partner.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case partner.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case partner.FieldCompanyName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCompanyName(v)
+		return nil
+	case partner.FieldCompanyLocation:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCompanyLocation(v)
+		return nil
+	case partner.FieldWebsiteUrl:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWebsiteUrl(v)
+		return nil
+	case partner.FieldContactPersonName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContactPersonName(v)
+		return nil
+	case partner.FieldContactPersonPhoneNumber:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContactPersonPhoneNumber(v)
+		return nil
+	case partner.FieldContactPersonEmail:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContactPersonEmail(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Partner field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PartnerMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PartnerMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PartnerMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Partner numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PartnerMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(partner.FieldDeletedAt) {
+		fields = append(fields, partner.FieldDeletedAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PartnerMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PartnerMutation) ClearField(name string) error {
+	switch name {
+	case partner.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown Partner nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PartnerMutation) ResetField(name string) error {
+	switch name {
+	case partner.FieldUUID:
+		m.ResetUUID()
+		return nil
+	case partner.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case partner.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case partner.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case partner.FieldCompanyName:
+		m.ResetCompanyName()
+		return nil
+	case partner.FieldCompanyLocation:
+		m.ResetCompanyLocation()
+		return nil
+	case partner.FieldWebsiteUrl:
+		m.ResetWebsiteUrl()
+		return nil
+	case partner.FieldContactPersonName:
+		m.ResetContactPersonName()
+		return nil
+	case partner.FieldContactPersonPhoneNumber:
+		m.ResetContactPersonPhoneNumber()
+		return nil
+	case partner.FieldContactPersonEmail:
+		m.ResetContactPersonEmail()
+		return nil
+	}
+	return fmt.Errorf("unknown Partner field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PartnerMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PartnerMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PartnerMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PartnerMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PartnerMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PartnerMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PartnerMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Partner unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PartnerMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Partner edge %s", name)
 }
 
 // PortfolioLinkMutation represents an operation that mutates the PortfolioLink nodes in the graph.

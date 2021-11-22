@@ -1,0 +1,88 @@
+package handler
+
+import (
+	"fmt"
+	"net/http"
+
+	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/internal/service"
+	"github.com/10hourlabs/tentn/oneword"
+	"github.com/google/uuid"
+	"github.com/labstack/echo"
+)
+
+type PartnerHandler struct {
+	PartnerService    *service.PartnerService
+	PartnerRepository *repo.PartnerRepository
+}
+
+func NewPartnerHandler() *PartnerHandler {
+	return &PartnerHandler{
+		PartnerService:    service.NewPartnerService(),
+		PartnerRepository: repo.NewPartnerRepository(),
+	}
+}
+
+func (*PartnerHandler) ResourceName() string {
+	return "partners"
+}
+
+func (h *PartnerHandler) ReadAll(c echo.Context) error {
+	records, err := h.PartnerRepository.GetAll()
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, records)
+}
+
+func (h *PartnerHandler) ReadByID(c echo.Context) error {
+	id, err := uuid.Parse(c.Param(oneword.UUID))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	record, err := h.PartnerRepository.GetByUUID(id)
+	if err != nil {
+		return c.String(http.StatusNotFound, err.Error())
+	}
+	return c.JSON(http.StatusOK, record)
+}
+
+func (h *PartnerHandler) CreateOne(c echo.Context) error {
+	params := new(repo.PartnerParams)
+	if err := c.Bind(params); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	record, err := h.PartnerRepository.Create(*params)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusCreated, record)
+}
+
+func (h *PartnerHandler) UpdateByID(c echo.Context) error {
+	id, err := uuid.Parse(c.Param(oneword.UUID))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	params := new(repo.PartnerParams)
+	if err := c.Bind(params); err != nil {
+		return err
+	}
+	record, vldErrs := h.PartnerRepository.Update(id, *params)
+	if vldErrs != nil {
+		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
+	}
+	return c.JSON(http.StatusOK, record)
+}
+
+func (h *PartnerHandler) DeleteOne(c echo.Context) error {
+	id, err := uuid.Parse(c.Param(oneword.UUID))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	err = h.PartnerRepository.DeleteByUUID(id)
+	if err != nil {
+		return c.String(http.StatusNotFound, err.Error())
+	}
+	return c.NoContent(http.StatusNoContent)
+}
