@@ -3,6 +3,7 @@ package router
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/10hourlabs/tentn/internal/handler"
 	"github.com/labstack/echo"
@@ -13,6 +14,12 @@ func DefineRoutes() *echo.Echo {
 	e := echo.New()
 	e.Use(middleware.Logger())
 
+	e.GET("/", func(c echo.Context) error {
+		return c.String(
+			http.StatusOK,
+			fmt.Sprintf("TenTN API version 1.0 copyright (c) %v by 10hourlabs.com", time.Now().Year()),
+		)
+	})
 	e.GET("/health", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, http.StatusText(http.StatusOK))
 	})

@@ -2,7 +2,7 @@
 steps:
   - name: "gcr.io/cloud-builders/docker"
     id: "Building image for staging"
-    args: ["build", "-t", "${_STG_IMAGE}", "--target", "production", "."]
+    args: ["build", "-t", "${_STG_IMAGE}", "."]
     env:
       - "DOCKER_BUILDKIT=1"
 
@@ -39,4 +39,4 @@ substitutions:
   _REGION: "us-central1"
   _SERVICE_NAME: "${REPO_NAME}-staging"
   _ARTIFACT_REPO: "tentn-docker-repo"
-  _STG_IMAGE: "us-central1-docker.pkg.dev/${PROJECT_ID}/tentn-docker-repo/${BRANCH_NAME}_stg:${SHORT_SHA}"
+  _STG_IMAGE: "us-central1-docker.pkg.dev/${PROJECT_ID}/tentn-docker-repo/${REPO_NAME}_stg:${SHORT_SHA}"
