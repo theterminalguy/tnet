@@ -8,7 +8,7 @@ import (
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 type EmergencyContactHandler struct {

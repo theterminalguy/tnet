@@ -16,7 +16,7 @@ type MissionRepository struct{}
 type MissionParams struct {
 	PartnerUUID uuid.UUID `json:"partner_uuid" validate:"required"`
 	TalentUUID  uuid.UUID `json:"talent_uuid" validate:"required"`
-	MissionType        string    `json:"mission_type" validate:"required"`
+	MissionType string    `json:"mission_type" validate:"required"`
 	StartDate   string    `json:"start_date" validate:"datetime=2006-01-02T15:04:05Z07:00"`
 	EndDate     string    `json:"end_date"`
 }

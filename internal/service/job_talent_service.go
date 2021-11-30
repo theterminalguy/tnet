@@ -10,18 +10,18 @@ import (
 )
 
 type JobTalentService struct {
-	JobTalentRepository *repo.JobTalentRepository
-	JobRepository            *repo.JobRepository
-	TalentRepository      *repo.TalentRepository
-	PortfolioLinkRepository  *repo.PortfolioLinkRepository
+	JobTalentRepository     *repo.JobTalentRepository
+	JobRepository           *repo.JobRepository
+	TalentRepository        *repo.TalentRepository
+	PortfolioLinkRepository *repo.PortfolioLinkRepository
 }
 
 func NewJobTalentService() *JobTalentService {
 	return &JobTalentService{
-		JobTalentRepository: repo.NewJobTalentRepository(),
-		JobRepository:            repo.NewJobRepository(),
-		TalentRepository:      repo.NewTalentRepository(),
-		PortfolioLinkRepository:  repo.NewPortfolioLinkRepository(),
+		JobTalentRepository:     repo.NewJobTalentRepository(),
+		JobRepository:           repo.NewJobRepository(),
+		TalentRepository:        repo.NewTalentRepository(),
+		PortfolioLinkRepository: repo.NewPortfolioLinkRepository(),
 	}
 }
 

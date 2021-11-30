@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/10hourlabs/tentn/internal/handler"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func DefineRoutes() *echo.Echo {

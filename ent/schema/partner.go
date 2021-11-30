@@ -27,11 +27,12 @@ func (Partner) Fields() []ent.Field {
 		field.String("ContactPersonName"),
 		field.String("ContactPersonPhoneNumber"),
 		field.String("ContactPersonEmail").
-		Unique(),
+			Unique(),
 		field.String("WebsiteUrl").
-		Unique(),
+			Unique(),
 	}
 }
+
 // Edges of the Partner.
 func (Partner) Edges() []ent.Edge {
 	return []ent.Edge{
