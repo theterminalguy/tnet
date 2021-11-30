@@ -13,6 +13,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/jobtalent"
+	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/skill"
@@ -276,6 +277,21 @@ func (tu *TalentUpdate) AddEmergencyContacts(e ...*EmergencyContact) *TalentUpda
 	return tu.AddEmergencyContactIDs(ids...)
 }
 
+// AddMissionIDs adds the "missions" edge to the Mission entity by IDs.
+func (tu *TalentUpdate) AddMissionIDs(ids ...int) *TalentUpdate {
+	tu.mutation.AddMissionIDs(ids...)
+	return tu
+}
+
+// AddMissions adds the "missions" edges to the Mission entity.
+func (tu *TalentUpdate) AddMissions(m ...*Mission) *TalentUpdate {
+	ids := make([]int, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return tu.AddMissionIDs(ids...)
+}
+
 // Mutation returns the TalentMutation object of the builder.
 func (tu *TalentUpdate) Mutation() *TalentMutation {
 	return tu.mutation
@@ -432,6 +448,27 @@ func (tu *TalentUpdate) RemoveEmergencyContacts(e ...*EmergencyContact) *TalentU
 		ids[i] = e[i].ID
 	}
 	return tu.RemoveEmergencyContactIDs(ids...)
+}
+
+// ClearMissions clears all "missions" edges to the Mission entity.
+func (tu *TalentUpdate) ClearMissions() *TalentUpdate {
+	tu.mutation.ClearMissions()
+	return tu
+}
+
+// RemoveMissionIDs removes the "missions" edge to Mission entities by IDs.
+func (tu *TalentUpdate) RemoveMissionIDs(ids ...int) *TalentUpdate {
+	tu.mutation.RemoveMissionIDs(ids...)
+	return tu
+}
+
+// RemoveMissions removes "missions" edges to Mission entities.
+func (tu *TalentUpdate) RemoveMissions(m ...*Mission) *TalentUpdate {
+	ids := make([]int, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return tu.RemoveMissionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1060,6 +1097,60 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tu.mutation.MissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   talent.MissionsTable,
+			Columns: []string{talent.MissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: mission.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.RemovedMissionsIDs(); len(nodes) > 0 && !tu.mutation.MissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   talent.MissionsTable,
+			Columns: []string{talent.MissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: mission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.MissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   talent.MissionsTable,
+			Columns: []string{talent.MissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: mission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{talent.Label}
@@ -1321,6 +1412,21 @@ func (tuo *TalentUpdateOne) AddEmergencyContacts(e ...*EmergencyContact) *Talent
 	return tuo.AddEmergencyContactIDs(ids...)
 }
 
+// AddMissionIDs adds the "missions" edge to the Mission entity by IDs.
+func (tuo *TalentUpdateOne) AddMissionIDs(ids ...int) *TalentUpdateOne {
+	tuo.mutation.AddMissionIDs(ids...)
+	return tuo
+}
+
+// AddMissions adds the "missions" edges to the Mission entity.
+func (tuo *TalentUpdateOne) AddMissions(m ...*Mission) *TalentUpdateOne {
+	ids := make([]int, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return tuo.AddMissionIDs(ids...)
+}
+
 // Mutation returns the TalentMutation object of the builder.
 func (tuo *TalentUpdateOne) Mutation() *TalentMutation {
 	return tuo.mutation
@@ -1477,6 +1583,27 @@ func (tuo *TalentUpdateOne) RemoveEmergencyContacts(e ...*EmergencyContact) *Tal
 		ids[i] = e[i].ID
 	}
 	return tuo.RemoveEmergencyContactIDs(ids...)
+}
+
+// ClearMissions clears all "missions" edges to the Mission entity.
+func (tuo *TalentUpdateOne) ClearMissions() *TalentUpdateOne {
+	tuo.mutation.ClearMissions()
+	return tuo
+}
+
+// RemoveMissionIDs removes the "missions" edge to Mission entities by IDs.
+func (tuo *TalentUpdateOne) RemoveMissionIDs(ids ...int) *TalentUpdateOne {
+	tuo.mutation.RemoveMissionIDs(ids...)
+	return tuo
+}
+
+// RemoveMissions removes "missions" edges to Mission entities.
+func (tuo *TalentUpdateOne) RemoveMissions(m ...*Mission) *TalentUpdateOne {
+	ids := make([]int, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return tuo.RemoveMissionIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -2121,6 +2248,60 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: emergencycontact.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.MissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   talent.MissionsTable,
+			Columns: []string{talent.MissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: mission.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.RemovedMissionsIDs(); len(nodes) > 0 && !tuo.mutation.MissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   talent.MissionsTable,
+			Columns: []string{talent.MissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: mission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.MissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   talent.MissionsTable,
+			Columns: []string{talent.MissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: mission.FieldID,
 				},
 			},
 		}

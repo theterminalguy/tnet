@@ -9,6 +9,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobtalent"
+	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/schema"
@@ -114,6 +115,27 @@ func init() {
 	jobtalent.DefaultUpdatedAt = jobtalentDescUpdatedAt.Default.(func() time.Time)
 	// jobtalent.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	jobtalent.UpdateDefaultUpdatedAt = jobtalentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	missionMixin := schema.Mission{}.Mixin()
+	missionMixinFields0 := missionMixin[0].Fields()
+	_ = missionMixinFields0
+	missionMixinFields1 := missionMixin[1].Fields()
+	_ = missionMixinFields1
+	missionFields := schema.Mission{}.Fields()
+	_ = missionFields
+	// missionDescUUID is the schema descriptor for uuid field.
+	missionDescUUID := missionMixinFields0[1].Descriptor()
+	// mission.DefaultUUID holds the default value on creation for the uuid field.
+	mission.DefaultUUID = missionDescUUID.Default.(func() uuid.UUID)
+	// missionDescCreatedAt is the schema descriptor for created_at field.
+	missionDescCreatedAt := missionMixinFields1[0].Descriptor()
+	// mission.DefaultCreatedAt holds the default value on creation for the created_at field.
+	mission.DefaultCreatedAt = missionDescCreatedAt.Default.(func() time.Time)
+	// missionDescUpdatedAt is the schema descriptor for updated_at field.
+	missionDescUpdatedAt := missionMixinFields1[1].Descriptor()
+	// mission.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	mission.DefaultUpdatedAt = missionDescUpdatedAt.Default.(func() time.Time)
+	// mission.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	mission.UpdateDefaultUpdatedAt = missionDescUpdatedAt.UpdateDefault.(func() time.Time)
 	partnerMixin := schema.Partner{}.Mixin()
 	partnerMixinFields0 := partnerMixin[0].Fields()
 	_ = partnerMixinFields0

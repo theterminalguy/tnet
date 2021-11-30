@@ -13,6 +13,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobtalent"
+	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/skill"
@@ -37,6 +38,8 @@ type Client struct {
 	Job *JobClient
 	// JobTalent is the client for interacting with the JobTalent builders.
 	JobTalent *JobTalentClient
+	// Mission is the client for interacting with the Mission builders.
+	Mission *MissionClient
 	// Partner is the client for interacting with the Partner builders.
 	Partner *PartnerClient
 	// PortfolioLink is the client for interacting with the PortfolioLink builders.
@@ -64,6 +67,7 @@ func (c *Client) init() {
 	c.EmergencyContact = NewEmergencyContactClient(c.config)
 	c.Job = NewJobClient(c.config)
 	c.JobTalent = NewJobTalentClient(c.config)
+	c.Mission = NewMissionClient(c.config)
 	c.Partner = NewPartnerClient(c.config)
 	c.PortfolioLink = NewPortfolioLinkClient(c.config)
 	c.Skill = NewSkillClient(c.config)
@@ -106,6 +110,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		EmergencyContact: NewEmergencyContactClient(cfg),
 		Job:              NewJobClient(cfg),
 		JobTalent:        NewJobTalentClient(cfg),
+		Mission:          NewMissionClient(cfg),
 		Partner:          NewPartnerClient(cfg),
 		PortfolioLink:    NewPortfolioLinkClient(cfg),
 		Skill:            NewSkillClient(cfg),
@@ -133,6 +138,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		EmergencyContact: NewEmergencyContactClient(cfg),
 		Job:              NewJobClient(cfg),
 		JobTalent:        NewJobTalentClient(cfg),
+		Mission:          NewMissionClient(cfg),
 		Partner:          NewPartnerClient(cfg),
 		PortfolioLink:    NewPortfolioLinkClient(cfg),
 		Skill:            NewSkillClient(cfg),
@@ -171,6 +177,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.EmergencyContact.Use(hooks...)
 	c.Job.Use(hooks...)
 	c.JobTalent.Use(hooks...)
+	c.Mission.Use(hooks...)
 	c.Partner.Use(hooks...)
 	c.PortfolioLink.Use(hooks...)
 	c.Skill.Use(hooks...)
@@ -618,6 +625,128 @@ func (c *JobTalentClient) Hooks() []Hook {
 	return c.hooks.JobTalent
 }
 
+// MissionClient is a client for the Mission schema.
+type MissionClient struct {
+	config
+}
+
+// NewMissionClient returns a client for the Mission from the given config.
+func NewMissionClient(c config) *MissionClient {
+	return &MissionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `mission.Hooks(f(g(h())))`.
+func (c *MissionClient) Use(hooks ...Hook) {
+	c.hooks.Mission = append(c.hooks.Mission, hooks...)
+}
+
+// Create returns a create builder for Mission.
+func (c *MissionClient) Create() *MissionCreate {
+	mutation := newMissionMutation(c.config, OpCreate)
+	return &MissionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Mission entities.
+func (c *MissionClient) CreateBulk(builders ...*MissionCreate) *MissionCreateBulk {
+	return &MissionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Mission.
+func (c *MissionClient) Update() *MissionUpdate {
+	mutation := newMissionMutation(c.config, OpUpdate)
+	return &MissionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MissionClient) UpdateOne(m *Mission) *MissionUpdateOne {
+	mutation := newMissionMutation(c.config, OpUpdateOne, withMission(m))
+	return &MissionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MissionClient) UpdateOneID(id int) *MissionUpdateOne {
+	mutation := newMissionMutation(c.config, OpUpdateOne, withMissionID(id))
+	return &MissionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Mission.
+func (c *MissionClient) Delete() *MissionDelete {
+	mutation := newMissionMutation(c.config, OpDelete)
+	return &MissionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *MissionClient) DeleteOne(m *Mission) *MissionDeleteOne {
+	return c.DeleteOneID(m.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *MissionClient) DeleteOneID(id int) *MissionDeleteOne {
+	builder := c.Delete().Where(mission.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MissionDeleteOne{builder}
+}
+
+// Query returns a query builder for Mission.
+func (c *MissionClient) Query() *MissionQuery {
+	return &MissionQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Mission entity by its id.
+func (c *MissionClient) Get(ctx context.Context, id int) (*Mission, error) {
+	return c.Query().Where(mission.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MissionClient) GetX(ctx context.Context, id int) *Mission {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTalent queries the talent edge of a Mission.
+func (c *MissionClient) QueryTalent(m *Mission) *TalentQuery {
+	query := &TalentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(mission.Table, mission.FieldID, id),
+			sqlgraph.To(talent.Table, talent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, mission.TalentTable, mission.TalentColumn),
+		)
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPartner queries the partner edge of a Mission.
+func (c *MissionClient) QueryPartner(m *Mission) *PartnerQuery {
+	query := &PartnerQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(mission.Table, mission.FieldID, id),
+			sqlgraph.To(partner.Table, partner.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, mission.PartnerTable, mission.PartnerColumn),
+		)
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *MissionClient) Hooks() []Hook {
+	return c.hooks.Mission
+}
+
 // PartnerClient is a client for the Partner schema.
 type PartnerClient struct {
 	config
@@ -701,6 +830,22 @@ func (c *PartnerClient) GetX(ctx context.Context, id int) *Partner {
 		panic(err)
 	}
 	return obj
+}
+
+// QueryMissions queries the missions edge of a Partner.
+func (c *PartnerClient) QueryMissions(pa *Partner) *MissionQuery {
+	query := &MissionQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pa.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(partner.Table, partner.FieldID, id),
+			sqlgraph.To(mission.Table, mission.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, partner.MissionsTable, partner.MissionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(pa.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // Hooks returns the client hooks.
@@ -1126,6 +1271,22 @@ func (c *TalentClient) QueryEmergencyContacts(t *Talent) *EmergencyContactQuery 
 			sqlgraph.From(talent.Table, talent.FieldID, id),
 			sqlgraph.To(emergencycontact.Table, emergencycontact.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, talent.EmergencyContactsTable, talent.EmergencyContactsColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMissions queries the missions edge of a Talent.
+func (c *TalentClient) QueryMissions(t *Talent) *MissionQuery {
+	query := &MissionQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(talent.Table, talent.FieldID, id),
+			sqlgraph.To(mission.Table, mission.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, talent.MissionsTable, talent.MissionsColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil

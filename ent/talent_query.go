@@ -15,6 +15,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/jobtalent"
+	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/skill"
@@ -40,6 +41,7 @@ type TalentQuery struct {
 	withWorkExperiences   *WorkExperienceQuery
 	withEducations        *EducationQuery
 	withEmergencyContacts *EmergencyContactQuery
+	withMissions          *MissionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -252,6 +254,28 @@ func (tq *TalentQuery) QueryEmergencyContacts() *EmergencyContactQuery {
 	return query
 }
 
+// QueryMissions chains the current query on the "missions" edge.
+func (tq *TalentQuery) QueryMissions() *MissionQuery {
+	query := &MissionQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(talent.Table, talent.FieldID, selector),
+			sqlgraph.To(mission.Table, mission.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, talent.MissionsTable, talent.MissionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Talent entity from the query.
 // Returns a *NotFoundError when no Talent was found.
 func (tq *TalentQuery) First(ctx context.Context) (*Talent, error) {
@@ -441,6 +465,7 @@ func (tq *TalentQuery) Clone() *TalentQuery {
 		withWorkExperiences:   tq.withWorkExperiences.Clone(),
 		withEducations:        tq.withEducations.Clone(),
 		withEmergencyContacts: tq.withEmergencyContacts.Clone(),
+		withMissions:          tq.withMissions.Clone(),
 		// clone intermediate query.
 		sql:  tq.sql.Clone(),
 		path: tq.path,
@@ -535,6 +560,17 @@ func (tq *TalentQuery) WithEmergencyContacts(opts ...func(*EmergencyContactQuery
 	return tq
 }
 
+// WithMissions tells the query-builder to eager-load the nodes that are connected to
+// the "missions" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TalentQuery) WithMissions(opts ...func(*MissionQuery)) *TalentQuery {
+	query := &MissionQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withMissions = query
+	return tq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -600,7 +636,7 @@ func (tq *TalentQuery) sqlAll(ctx context.Context) ([]*Talent, error) {
 	var (
 		nodes       = []*Talent{}
 		_spec       = tq.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [9]bool{
 			tq.withReferrer != nil,
 			tq.withReferees != nil,
 			tq.withPortfoliolinks != nil,
@@ -609,6 +645,7 @@ func (tq *TalentQuery) sqlAll(ctx context.Context) ([]*Talent, error) {
 			tq.withWorkExperiences != nil,
 			tq.withEducations != nil,
 			tq.withEmergencyContacts != nil,
+			tq.withMissions != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -829,6 +866,31 @@ func (tq *TalentQuery) sqlAll(ctx context.Context) ([]*Talent, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "talent_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.EmergencyContacts = append(node.Edges.EmergencyContacts, n)
+		}
+	}
+
+	if query := tq.withMissions; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Talent)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Missions = []*Mission{}
+		}
+		query.Where(predicate.Mission(func(s *sql.Selector) {
+			s.Where(sql.InValues(talent.MissionsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TalentID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "talent_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Missions = append(node.Edges.Missions, n)
 		}
 	}
 

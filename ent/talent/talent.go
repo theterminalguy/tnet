@@ -65,6 +65,8 @@ const (
 	EdgeEducations = "educations"
 	// EdgeEmergencyContacts holds the string denoting the emergency_contacts edge name in mutations.
 	EdgeEmergencyContacts = "emergency_contacts"
+	// EdgeMissions holds the string denoting the missions edge name in mutations.
+	EdgeMissions = "missions"
 	// Table holds the table name of the talent in the database.
 	Table = "talents"
 	// ReferrerTable is the table that holds the referrer relation/edge.
@@ -117,6 +119,13 @@ const (
 	EmergencyContactsInverseTable = "emergency_contacts"
 	// EmergencyContactsColumn is the table column denoting the emergency_contacts relation/edge.
 	EmergencyContactsColumn = "talent_id"
+	// MissionsTable is the table that holds the missions relation/edge.
+	MissionsTable = "missions"
+	// MissionsInverseTable is the table name for the Mission entity.
+	// It exists in this package in order to avoid circular dependency with the "mission" package.
+	MissionsInverseTable = "missions"
+	// MissionsColumn is the table column denoting the missions relation/edge.
+	MissionsColumn = "talent_id"
 )
 
 // Columns holds all SQL columns for talent fields.

@@ -22,24 +22,6 @@ func JobTalentStatuses() []string {
 }
 
 // Mixins for JobTalent
-// func (JobTalent) Mixin() []ent.Mixin {
-// 	return []ent.Mixin{
-// 		UUIDMixin{},
-// 		TimeStampMixin{},
-// 		BelongsToMixin{
-// 			ParentName: oneword.Applicant,
-// 			ParentType: Applicant.Type,
-// 			Ref:        oneword.JobTalents,
-// 			ForeignKey: oneword.ApplicantID,
-// 		},
-// 		BelongsToMixin{
-// 			ParentName: oneword.Job,
-// 			ParentType: Job.Type,
-// 			Ref:        oneword.Talents,
-// 			ForeignKey: oneword.JobID,
-// 		},
-// 	}
-// }
 func (JobTalent) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		UUIDMixin{},

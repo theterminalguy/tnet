@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/google/uuid"
@@ -72,12 +73,6 @@ func (pu *PartnerUpdate) SetCompanyLocation(s string) *PartnerUpdate {
 	return pu
 }
 
-// SetWebsiteUrl sets the "WebsiteUrl" field.
-func (pu *PartnerUpdate) SetWebsiteUrl(s string) *PartnerUpdate {
-	pu.mutation.SetWebsiteUrl(s)
-	return pu
-}
-
 // SetContactPersonName sets the "ContactPersonName" field.
 func (pu *PartnerUpdate) SetContactPersonName(s string) *PartnerUpdate {
 	pu.mutation.SetContactPersonName(s)
@@ -96,9 +91,51 @@ func (pu *PartnerUpdate) SetContactPersonEmail(s string) *PartnerUpdate {
 	return pu
 }
 
+// SetWebsiteUrl sets the "WebsiteUrl" field.
+func (pu *PartnerUpdate) SetWebsiteUrl(s string) *PartnerUpdate {
+	pu.mutation.SetWebsiteUrl(s)
+	return pu
+}
+
+// AddMissionIDs adds the "missions" edge to the Mission entity by IDs.
+func (pu *PartnerUpdate) AddMissionIDs(ids ...int) *PartnerUpdate {
+	pu.mutation.AddMissionIDs(ids...)
+	return pu
+}
+
+// AddMissions adds the "missions" edges to the Mission entity.
+func (pu *PartnerUpdate) AddMissions(m ...*Mission) *PartnerUpdate {
+	ids := make([]int, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return pu.AddMissionIDs(ids...)
+}
+
 // Mutation returns the PartnerMutation object of the builder.
 func (pu *PartnerUpdate) Mutation() *PartnerMutation {
 	return pu.mutation
+}
+
+// ClearMissions clears all "missions" edges to the Mission entity.
+func (pu *PartnerUpdate) ClearMissions() *PartnerUpdate {
+	pu.mutation.ClearMissions()
+	return pu
+}
+
+// RemoveMissionIDs removes the "missions" edge to Mission entities by IDs.
+func (pu *PartnerUpdate) RemoveMissionIDs(ids ...int) *PartnerUpdate {
+	pu.mutation.RemoveMissionIDs(ids...)
+	return pu
+}
+
+// RemoveMissions removes "missions" edges to Mission entities.
+func (pu *PartnerUpdate) RemoveMissions(m ...*Mission) *PartnerUpdate {
+	ids := make([]int, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return pu.RemoveMissionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -223,13 +260,6 @@ func (pu *PartnerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: partner.FieldCompanyLocation,
 		})
 	}
-	if value, ok := pu.mutation.WebsiteUrl(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: partner.FieldWebsiteUrl,
-		})
-	}
 	if value, ok := pu.mutation.ContactPersonName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -250,6 +280,67 @@ func (pu *PartnerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Value:  value,
 			Column: partner.FieldContactPersonEmail,
 		})
+	}
+	if value, ok := pu.mutation.WebsiteUrl(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: partner.FieldWebsiteUrl,
+		})
+	}
+	if pu.mutation.MissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   partner.MissionsTable,
+			Columns: []string{partner.MissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: mission.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedMissionsIDs(); len(nodes) > 0 && !pu.mutation.MissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   partner.MissionsTable,
+			Columns: []string{partner.MissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: mission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.MissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   partner.MissionsTable,
+			Columns: []string{partner.MissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: mission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -314,12 +405,6 @@ func (puo *PartnerUpdateOne) SetCompanyLocation(s string) *PartnerUpdateOne {
 	return puo
 }
 
-// SetWebsiteUrl sets the "WebsiteUrl" field.
-func (puo *PartnerUpdateOne) SetWebsiteUrl(s string) *PartnerUpdateOne {
-	puo.mutation.SetWebsiteUrl(s)
-	return puo
-}
-
 // SetContactPersonName sets the "ContactPersonName" field.
 func (puo *PartnerUpdateOne) SetContactPersonName(s string) *PartnerUpdateOne {
 	puo.mutation.SetContactPersonName(s)
@@ -338,9 +423,51 @@ func (puo *PartnerUpdateOne) SetContactPersonEmail(s string) *PartnerUpdateOne {
 	return puo
 }
 
+// SetWebsiteUrl sets the "WebsiteUrl" field.
+func (puo *PartnerUpdateOne) SetWebsiteUrl(s string) *PartnerUpdateOne {
+	puo.mutation.SetWebsiteUrl(s)
+	return puo
+}
+
+// AddMissionIDs adds the "missions" edge to the Mission entity by IDs.
+func (puo *PartnerUpdateOne) AddMissionIDs(ids ...int) *PartnerUpdateOne {
+	puo.mutation.AddMissionIDs(ids...)
+	return puo
+}
+
+// AddMissions adds the "missions" edges to the Mission entity.
+func (puo *PartnerUpdateOne) AddMissions(m ...*Mission) *PartnerUpdateOne {
+	ids := make([]int, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return puo.AddMissionIDs(ids...)
+}
+
 // Mutation returns the PartnerMutation object of the builder.
 func (puo *PartnerUpdateOne) Mutation() *PartnerMutation {
 	return puo.mutation
+}
+
+// ClearMissions clears all "missions" edges to the Mission entity.
+func (puo *PartnerUpdateOne) ClearMissions() *PartnerUpdateOne {
+	puo.mutation.ClearMissions()
+	return puo
+}
+
+// RemoveMissionIDs removes the "missions" edge to Mission entities by IDs.
+func (puo *PartnerUpdateOne) RemoveMissionIDs(ids ...int) *PartnerUpdateOne {
+	puo.mutation.RemoveMissionIDs(ids...)
+	return puo
+}
+
+// RemoveMissions removes "missions" edges to Mission entities.
+func (puo *PartnerUpdateOne) RemoveMissions(m ...*Mission) *PartnerUpdateOne {
+	ids := make([]int, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return puo.RemoveMissionIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -489,13 +616,6 @@ func (puo *PartnerUpdateOne) sqlSave(ctx context.Context) (_node *Partner, err e
 			Column: partner.FieldCompanyLocation,
 		})
 	}
-	if value, ok := puo.mutation.WebsiteUrl(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: partner.FieldWebsiteUrl,
-		})
-	}
 	if value, ok := puo.mutation.ContactPersonName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -516,6 +636,67 @@ func (puo *PartnerUpdateOne) sqlSave(ctx context.Context) (_node *Partner, err e
 			Value:  value,
 			Column: partner.FieldContactPersonEmail,
 		})
+	}
+	if value, ok := puo.mutation.WebsiteUrl(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: partner.FieldWebsiteUrl,
+		})
+	}
+	if puo.mutation.MissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   partner.MissionsTable,
+			Columns: []string{partner.MissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: mission.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedMissionsIDs(); len(nodes) > 0 && !puo.mutation.MissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   partner.MissionsTable,
+			Columns: []string{partner.MissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: mission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.MissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   partner.MissionsTable,
+			Columns: []string{partner.MissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: mission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Partner{config: puo.config}
 	_spec.Assign = _node.assignValues

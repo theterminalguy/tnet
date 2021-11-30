@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/google/uuid"
 )
@@ -81,12 +82,6 @@ func (pc *PartnerCreate) SetCompanyLocation(s string) *PartnerCreate {
 	return pc
 }
 
-// SetWebsiteUrl sets the "WebsiteUrl" field.
-func (pc *PartnerCreate) SetWebsiteUrl(s string) *PartnerCreate {
-	pc.mutation.SetWebsiteUrl(s)
-	return pc
-}
-
 // SetContactPersonName sets the "ContactPersonName" field.
 func (pc *PartnerCreate) SetContactPersonName(s string) *PartnerCreate {
 	pc.mutation.SetContactPersonName(s)
@@ -105,10 +100,31 @@ func (pc *PartnerCreate) SetContactPersonEmail(s string) *PartnerCreate {
 	return pc
 }
 
+// SetWebsiteUrl sets the "WebsiteUrl" field.
+func (pc *PartnerCreate) SetWebsiteUrl(s string) *PartnerCreate {
+	pc.mutation.SetWebsiteUrl(s)
+	return pc
+}
+
 // SetID sets the "id" field.
 func (pc *PartnerCreate) SetID(i int) *PartnerCreate {
 	pc.mutation.SetID(i)
 	return pc
+}
+
+// AddMissionIDs adds the "missions" edge to the Mission entity by IDs.
+func (pc *PartnerCreate) AddMissionIDs(ids ...int) *PartnerCreate {
+	pc.mutation.AddMissionIDs(ids...)
+	return pc
+}
+
+// AddMissions adds the "missions" edges to the Mission entity.
+func (pc *PartnerCreate) AddMissions(m ...*Mission) *PartnerCreate {
+	ids := make([]int, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return pc.AddMissionIDs(ids...)
 }
 
 // Mutation returns the PartnerMutation object of the builder.
@@ -213,9 +229,6 @@ func (pc *PartnerCreate) check() error {
 	if _, ok := pc.mutation.CompanyLocation(); !ok {
 		return &ValidationError{Name: "CompanyLocation", err: errors.New(`ent: missing required field "CompanyLocation"`)}
 	}
-	if _, ok := pc.mutation.WebsiteUrl(); !ok {
-		return &ValidationError{Name: "WebsiteUrl", err: errors.New(`ent: missing required field "WebsiteUrl"`)}
-	}
 	if _, ok := pc.mutation.ContactPersonName(); !ok {
 		return &ValidationError{Name: "ContactPersonName", err: errors.New(`ent: missing required field "ContactPersonName"`)}
 	}
@@ -224,6 +237,9 @@ func (pc *PartnerCreate) check() error {
 	}
 	if _, ok := pc.mutation.ContactPersonEmail(); !ok {
 		return &ValidationError{Name: "ContactPersonEmail", err: errors.New(`ent: missing required field "ContactPersonEmail"`)}
+	}
+	if _, ok := pc.mutation.WebsiteUrl(); !ok {
+		return &ValidationError{Name: "WebsiteUrl", err: errors.New(`ent: missing required field "WebsiteUrl"`)}
 	}
 	return nil
 }
@@ -306,14 +322,6 @@ func (pc *PartnerCreate) createSpec() (*Partner, *sqlgraph.CreateSpec) {
 		})
 		_node.CompanyLocation = value
 	}
-	if value, ok := pc.mutation.WebsiteUrl(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: partner.FieldWebsiteUrl,
-		})
-		_node.WebsiteUrl = value
-	}
 	if value, ok := pc.mutation.ContactPersonName(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -337,6 +345,33 @@ func (pc *PartnerCreate) createSpec() (*Partner, *sqlgraph.CreateSpec) {
 			Column: partner.FieldContactPersonEmail,
 		})
 		_node.ContactPersonEmail = value
+	}
+	if value, ok := pc.mutation.WebsiteUrl(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: partner.FieldWebsiteUrl,
+		})
+		_node.WebsiteUrl = value
+	}
+	if nodes := pc.mutation.MissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   partner.MissionsTable,
+			Columns: []string{partner.MissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: mission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

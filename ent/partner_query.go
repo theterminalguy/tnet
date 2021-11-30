@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -11,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/predicate"
 )
@@ -24,6 +26,8 @@ type PartnerQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.Partner
+	// eager-loading edges.
+	withMissions *MissionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -58,6 +62,28 @@ func (pq *PartnerQuery) Unique(unique bool) *PartnerQuery {
 func (pq *PartnerQuery) Order(o ...OrderFunc) *PartnerQuery {
 	pq.order = append(pq.order, o...)
 	return pq
+}
+
+// QueryMissions chains the current query on the "missions" edge.
+func (pq *PartnerQuery) QueryMissions() *MissionQuery {
+	query := &MissionQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(partner.Table, partner.FieldID, selector),
+			sqlgraph.To(mission.Table, mission.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, partner.MissionsTable, partner.MissionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Partner entity from the query.
@@ -236,15 +262,27 @@ func (pq *PartnerQuery) Clone() *PartnerQuery {
 		return nil
 	}
 	return &PartnerQuery{
-		config:     pq.config,
-		limit:      pq.limit,
-		offset:     pq.offset,
-		order:      append([]OrderFunc{}, pq.order...),
-		predicates: append([]predicate.Partner{}, pq.predicates...),
+		config:       pq.config,
+		limit:        pq.limit,
+		offset:       pq.offset,
+		order:        append([]OrderFunc{}, pq.order...),
+		predicates:   append([]predicate.Partner{}, pq.predicates...),
+		withMissions: pq.withMissions.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
 	}
+}
+
+// WithMissions tells the query-builder to eager-load the nodes that are connected to
+// the "missions" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PartnerQuery) WithMissions(opts ...func(*MissionQuery)) *PartnerQuery {
+	query := &MissionQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withMissions = query
+	return pq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -310,8 +348,11 @@ func (pq *PartnerQuery) prepareQuery(ctx context.Context) error {
 
 func (pq *PartnerQuery) sqlAll(ctx context.Context) ([]*Partner, error) {
 	var (
-		nodes = []*Partner{}
-		_spec = pq.querySpec()
+		nodes       = []*Partner{}
+		_spec       = pq.querySpec()
+		loadedTypes = [1]bool{
+			pq.withMissions != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &Partner{config: pq.config}
@@ -323,6 +364,7 @@ func (pq *PartnerQuery) sqlAll(ctx context.Context) ([]*Partner, error) {
 			return fmt.Errorf("ent: Assign called without calling ScanValues")
 		}
 		node := nodes[len(nodes)-1]
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if err := sqlgraph.QueryNodes(ctx, pq.driver, _spec); err != nil {
@@ -331,6 +373,32 @@ func (pq *PartnerQuery) sqlAll(ctx context.Context) ([]*Partner, error) {
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+
+	if query := pq.withMissions; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Partner)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Missions = []*Mission{}
+		}
+		query.Where(predicate.Mission(func(s *sql.Selector) {
+			s.Where(sql.InValues(partner.MissionsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.PartnerID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "partner_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Missions = append(node.Edges.Missions, n)
+		}
+	}
+
 	return nodes, nil
 }
 

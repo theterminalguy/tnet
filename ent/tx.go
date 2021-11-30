@@ -20,6 +20,8 @@ type Tx struct {
 	Job *JobClient
 	// JobTalent is the client for interacting with the JobTalent builders.
 	JobTalent *JobTalentClient
+	// Mission is the client for interacting with the Mission builders.
+	Mission *MissionClient
 	// Partner is the client for interacting with the Partner builders.
 	Partner *PartnerClient
 	// PortfolioLink is the client for interacting with the PortfolioLink builders.
@@ -169,6 +171,7 @@ func (tx *Tx) init() {
 	tx.EmergencyContact = NewEmergencyContactClient(tx.config)
 	tx.Job = NewJobClient(tx.config)
 	tx.JobTalent = NewJobTalentClient(tx.config)
+	tx.Mission = NewMissionClient(tx.config)
 	tx.Partner = NewPartnerClient(tx.config)
 	tx.PortfolioLink = NewPortfolioLinkClient(tx.config)
 	tx.Skill = NewSkillClient(tx.config)

@@ -182,6 +182,56 @@ var (
 			},
 		},
 	}
+	// MissionsColumns holds the columns for the "missions" table.
+	MissionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "mission_type", Type: field.TypeEnum, Enums: []string{"internal", "external"}},
+		{Name: "start_date", Type: field.TypeTime},
+		{Name: "end_date", Type: field.TypeTime, Nullable: true},
+		{Name: "partner_id", Type: field.TypeInt, Nullable: true},
+		{Name: "talent_id", Type: field.TypeInt, Nullable: true},
+	}
+	// MissionsTable holds the schema information for the "missions" table.
+	MissionsTable = &schema.Table{
+		Name:       "missions",
+		Columns:    MissionsColumns,
+		PrimaryKey: []*schema.Column{MissionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "missions_partners_missions",
+				Columns:    []*schema.Column{MissionsColumns[8]},
+				RefColumns: []*schema.Column{PartnersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "missions_talents_missions",
+				Columns:    []*schema.Column{MissionsColumns[9]},
+				RefColumns: []*schema.Column{TalentsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "mission_uuid",
+				Unique:  true,
+				Columns: []*schema.Column{MissionsColumns[1]},
+			},
+			{
+				Name:    "mission_talent_id",
+				Unique:  false,
+				Columns: []*schema.Column{MissionsColumns[9]},
+			},
+			{
+				Name:    "mission_partner_id",
+				Unique:  false,
+				Columns: []*schema.Column{MissionsColumns[8]},
+			},
+		},
+	}
 	// PartnersColumns holds the columns for the "partners" table.
 	PartnersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -191,10 +241,10 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "company_name", Type: field.TypeString},
 		{Name: "company_location", Type: field.TypeString},
-		{Name: "website_url", Type: field.TypeString},
 		{Name: "contact_person_name", Type: field.TypeString},
 		{Name: "contact_person_phone_number", Type: field.TypeString},
-		{Name: "contact_person_email", Type: field.TypeString},
+		{Name: "contact_person_email", Type: field.TypeString, Unique: true},
+		{Name: "website_url", Type: field.TypeString, Unique: true},
 	}
 	// PartnersTable holds the schema information for the "partners" table.
 	PartnersTable = &schema.Table{
@@ -391,6 +441,7 @@ var (
 		EmergencyContactsTable,
 		JobsTable,
 		JobTalentsTable,
+		MissionsTable,
 		PartnersTable,
 		PortfolioLinksTable,
 		SkillsTable,
@@ -404,6 +455,8 @@ func init() {
 	EmergencyContactsTable.ForeignKeys[0].RefTable = TalentsTable
 	JobTalentsTable.ForeignKeys[0].RefTable = JobsTable
 	JobTalentsTable.ForeignKeys[1].RefTable = TalentsTable
+	MissionsTable.ForeignKeys[0].RefTable = PartnersTable
+	MissionsTable.ForeignKeys[1].RefTable = TalentsTable
 	PortfolioLinksTable.ForeignKeys[0].RefTable = TalentsTable
 	SkillsTable.ForeignKeys[0].RefTable = TalentsTable
 	TalentsTable.ForeignKeys[0].RefTable = TalentsTable

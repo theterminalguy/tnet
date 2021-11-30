@@ -2225,6 +2225,34 @@ func HasEmergencyContactsWith(preds ...predicate.EmergencyContact) predicate.Tal
 	})
 }
 
+// HasMissions applies the HasEdge predicate on the "missions" edge.
+func HasMissions() predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(MissionsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, MissionsTable, MissionsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMissionsWith applies the HasEdge predicate on the "missions" edge with a given conditions (other predicates).
+func HasMissionsWith(preds ...predicate.Mission) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(MissionsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, MissionsTable, MissionsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Talent) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {

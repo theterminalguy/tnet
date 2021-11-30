@@ -18,6 +18,9 @@ type Job func(*sql.Selector)
 // JobTalent is the predicate function for jobtalent builders.
 type JobTalent func(*sql.Selector)
 
+// Mission is the predicate function for mission builders.
+type Mission func(*sql.Selector)
+
 // Partner is the predicate function for partner builders.
 type Partner func(*sql.Selector)
 

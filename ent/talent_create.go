@@ -13,6 +13,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/jobtalent"
+	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/talent"
@@ -297,6 +298,21 @@ func (tc *TalentCreate) AddEmergencyContacts(e ...*EmergencyContact) *TalentCrea
 		ids[i] = e[i].ID
 	}
 	return tc.AddEmergencyContactIDs(ids...)
+}
+
+// AddMissionIDs adds the "missions" edge to the Mission entity by IDs.
+func (tc *TalentCreate) AddMissionIDs(ids ...int) *TalentCreate {
+	tc.mutation.AddMissionIDs(ids...)
+	return tc
+}
+
+// AddMissions adds the "missions" edges to the Mission entity.
+func (tc *TalentCreate) AddMissions(m ...*Mission) *TalentCreate {
+	ids := make([]int, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return tc.AddMissionIDs(ids...)
 }
 
 // Mutation returns the TalentMutation object of the builder.
@@ -751,6 +767,25 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: emergencycontact.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.MissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   talent.MissionsTable,
+			Columns: []string{talent.MissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: mission.FieldID,
 				},
 			},
 		}

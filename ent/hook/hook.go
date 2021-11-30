@@ -61,6 +61,19 @@ func (f JobTalentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, e
 	return f(ctx, mv)
 }
 
+// The MissionFunc type is an adapter to allow the use of ordinary
+// function as Mission mutator.
+type MissionFunc func(context.Context, *ent.MissionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f MissionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.MissionMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MissionMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The PartnerFunc type is an adapter to allow the use of ordinary
 // function as Partner mutator.
 type PartnerFunc func(context.Context, *ent.PartnerMutation) (ent.Value, error)

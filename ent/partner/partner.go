@@ -25,16 +25,25 @@ const (
 	FieldCompanyName = "company_name"
 	// FieldCompanyLocation holds the string denoting the companylocation field in the database.
 	FieldCompanyLocation = "company_location"
-	// FieldWebsiteUrl holds the string denoting the websiteurl field in the database.
-	FieldWebsiteUrl = "website_url"
 	// FieldContactPersonName holds the string denoting the contactpersonname field in the database.
 	FieldContactPersonName = "contact_person_name"
 	// FieldContactPersonPhoneNumber holds the string denoting the contactpersonphonenumber field in the database.
 	FieldContactPersonPhoneNumber = "contact_person_phone_number"
 	// FieldContactPersonEmail holds the string denoting the contactpersonemail field in the database.
 	FieldContactPersonEmail = "contact_person_email"
+	// FieldWebsiteUrl holds the string denoting the websiteurl field in the database.
+	FieldWebsiteUrl = "website_url"
+	// EdgeMissions holds the string denoting the missions edge name in mutations.
+	EdgeMissions = "missions"
 	// Table holds the table name of the partner in the database.
 	Table = "partners"
+	// MissionsTable is the table that holds the missions relation/edge.
+	MissionsTable = "missions"
+	// MissionsInverseTable is the table name for the Mission entity.
+	// It exists in this package in order to avoid circular dependency with the "mission" package.
+	MissionsInverseTable = "missions"
+	// MissionsColumn is the table column denoting the missions relation/edge.
+	MissionsColumn = "partner_id"
 )
 
 // Columns holds all SQL columns for partner fields.
@@ -46,10 +55,10 @@ var Columns = []string{
 	FieldDeletedAt,
 	FieldCompanyName,
 	FieldCompanyLocation,
-	FieldWebsiteUrl,
 	FieldContactPersonName,
 	FieldContactPersonPhoneNumber,
 	FieldContactPersonEmail,
+	FieldWebsiteUrl,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

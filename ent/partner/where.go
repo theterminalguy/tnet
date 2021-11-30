@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/google/uuid"
 )
@@ -135,13 +136,6 @@ func CompanyLocation(v string) predicate.Partner {
 	})
 }
 
-// WebsiteUrl applies equality check predicate on the "WebsiteUrl" field. It's identical to WebsiteUrlEQ.
-func WebsiteUrl(v string) predicate.Partner {
-	return predicate.Partner(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldWebsiteUrl), v))
-	})
-}
-
 // ContactPersonName applies equality check predicate on the "ContactPersonName" field. It's identical to ContactPersonNameEQ.
 func ContactPersonName(v string) predicate.Partner {
 	return predicate.Partner(func(s *sql.Selector) {
@@ -160,6 +154,13 @@ func ContactPersonPhoneNumber(v string) predicate.Partner {
 func ContactPersonEmail(v string) predicate.Partner {
 	return predicate.Partner(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldContactPersonEmail), v))
+	})
+}
+
+// WebsiteUrl applies equality check predicate on the "WebsiteUrl" field. It's identical to WebsiteUrlEQ.
+func WebsiteUrl(v string) predicate.Partner {
+	return predicate.Partner(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldWebsiteUrl), v))
 	})
 }
 
@@ -703,117 +704,6 @@ func CompanyLocationContainsFold(v string) predicate.Partner {
 	})
 }
 
-// WebsiteUrlEQ applies the EQ predicate on the "WebsiteUrl" field.
-func WebsiteUrlEQ(v string) predicate.Partner {
-	return predicate.Partner(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldWebsiteUrl), v))
-	})
-}
-
-// WebsiteUrlNEQ applies the NEQ predicate on the "WebsiteUrl" field.
-func WebsiteUrlNEQ(v string) predicate.Partner {
-	return predicate.Partner(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldWebsiteUrl), v))
-	})
-}
-
-// WebsiteUrlIn applies the In predicate on the "WebsiteUrl" field.
-func WebsiteUrlIn(vs ...string) predicate.Partner {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Partner(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldWebsiteUrl), v...))
-	})
-}
-
-// WebsiteUrlNotIn applies the NotIn predicate on the "WebsiteUrl" field.
-func WebsiteUrlNotIn(vs ...string) predicate.Partner {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Partner(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldWebsiteUrl), v...))
-	})
-}
-
-// WebsiteUrlGT applies the GT predicate on the "WebsiteUrl" field.
-func WebsiteUrlGT(v string) predicate.Partner {
-	return predicate.Partner(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldWebsiteUrl), v))
-	})
-}
-
-// WebsiteUrlGTE applies the GTE predicate on the "WebsiteUrl" field.
-func WebsiteUrlGTE(v string) predicate.Partner {
-	return predicate.Partner(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldWebsiteUrl), v))
-	})
-}
-
-// WebsiteUrlLT applies the LT predicate on the "WebsiteUrl" field.
-func WebsiteUrlLT(v string) predicate.Partner {
-	return predicate.Partner(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldWebsiteUrl), v))
-	})
-}
-
-// WebsiteUrlLTE applies the LTE predicate on the "WebsiteUrl" field.
-func WebsiteUrlLTE(v string) predicate.Partner {
-	return predicate.Partner(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldWebsiteUrl), v))
-	})
-}
-
-// WebsiteUrlContains applies the Contains predicate on the "WebsiteUrl" field.
-func WebsiteUrlContains(v string) predicate.Partner {
-	return predicate.Partner(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldWebsiteUrl), v))
-	})
-}
-
-// WebsiteUrlHasPrefix applies the HasPrefix predicate on the "WebsiteUrl" field.
-func WebsiteUrlHasPrefix(v string) predicate.Partner {
-	return predicate.Partner(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldWebsiteUrl), v))
-	})
-}
-
-// WebsiteUrlHasSuffix applies the HasSuffix predicate on the "WebsiteUrl" field.
-func WebsiteUrlHasSuffix(v string) predicate.Partner {
-	return predicate.Partner(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldWebsiteUrl), v))
-	})
-}
-
-// WebsiteUrlEqualFold applies the EqualFold predicate on the "WebsiteUrl" field.
-func WebsiteUrlEqualFold(v string) predicate.Partner {
-	return predicate.Partner(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldWebsiteUrl), v))
-	})
-}
-
-// WebsiteUrlContainsFold applies the ContainsFold predicate on the "WebsiteUrl" field.
-func WebsiteUrlContainsFold(v string) predicate.Partner {
-	return predicate.Partner(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldWebsiteUrl), v))
-	})
-}
-
 // ContactPersonNameEQ applies the EQ predicate on the "ContactPersonName" field.
 func ContactPersonNameEQ(v string) predicate.Partner {
 	return predicate.Partner(func(s *sql.Selector) {
@@ -1144,6 +1034,145 @@ func ContactPersonEmailEqualFold(v string) predicate.Partner {
 func ContactPersonEmailContainsFold(v string) predicate.Partner {
 	return predicate.Partner(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldContactPersonEmail), v))
+	})
+}
+
+// WebsiteUrlEQ applies the EQ predicate on the "WebsiteUrl" field.
+func WebsiteUrlEQ(v string) predicate.Partner {
+	return predicate.Partner(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldWebsiteUrl), v))
+	})
+}
+
+// WebsiteUrlNEQ applies the NEQ predicate on the "WebsiteUrl" field.
+func WebsiteUrlNEQ(v string) predicate.Partner {
+	return predicate.Partner(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldWebsiteUrl), v))
+	})
+}
+
+// WebsiteUrlIn applies the In predicate on the "WebsiteUrl" field.
+func WebsiteUrlIn(vs ...string) predicate.Partner {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Partner(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldWebsiteUrl), v...))
+	})
+}
+
+// WebsiteUrlNotIn applies the NotIn predicate on the "WebsiteUrl" field.
+func WebsiteUrlNotIn(vs ...string) predicate.Partner {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Partner(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldWebsiteUrl), v...))
+	})
+}
+
+// WebsiteUrlGT applies the GT predicate on the "WebsiteUrl" field.
+func WebsiteUrlGT(v string) predicate.Partner {
+	return predicate.Partner(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldWebsiteUrl), v))
+	})
+}
+
+// WebsiteUrlGTE applies the GTE predicate on the "WebsiteUrl" field.
+func WebsiteUrlGTE(v string) predicate.Partner {
+	return predicate.Partner(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldWebsiteUrl), v))
+	})
+}
+
+// WebsiteUrlLT applies the LT predicate on the "WebsiteUrl" field.
+func WebsiteUrlLT(v string) predicate.Partner {
+	return predicate.Partner(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldWebsiteUrl), v))
+	})
+}
+
+// WebsiteUrlLTE applies the LTE predicate on the "WebsiteUrl" field.
+func WebsiteUrlLTE(v string) predicate.Partner {
+	return predicate.Partner(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldWebsiteUrl), v))
+	})
+}
+
+// WebsiteUrlContains applies the Contains predicate on the "WebsiteUrl" field.
+func WebsiteUrlContains(v string) predicate.Partner {
+	return predicate.Partner(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldWebsiteUrl), v))
+	})
+}
+
+// WebsiteUrlHasPrefix applies the HasPrefix predicate on the "WebsiteUrl" field.
+func WebsiteUrlHasPrefix(v string) predicate.Partner {
+	return predicate.Partner(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldWebsiteUrl), v))
+	})
+}
+
+// WebsiteUrlHasSuffix applies the HasSuffix predicate on the "WebsiteUrl" field.
+func WebsiteUrlHasSuffix(v string) predicate.Partner {
+	return predicate.Partner(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldWebsiteUrl), v))
+	})
+}
+
+// WebsiteUrlEqualFold applies the EqualFold predicate on the "WebsiteUrl" field.
+func WebsiteUrlEqualFold(v string) predicate.Partner {
+	return predicate.Partner(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldWebsiteUrl), v))
+	})
+}
+
+// WebsiteUrlContainsFold applies the ContainsFold predicate on the "WebsiteUrl" field.
+func WebsiteUrlContainsFold(v string) predicate.Partner {
+	return predicate.Partner(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldWebsiteUrl), v))
+	})
+}
+
+// HasMissions applies the HasEdge predicate on the "missions" edge.
+func HasMissions() predicate.Partner {
+	return predicate.Partner(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(MissionsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, MissionsTable, MissionsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMissionsWith applies the HasEdge predicate on the "missions" edge with a given conditions (other predicates).
+func HasMissionsWith(preds ...predicate.Mission) predicate.Partner {
+	return predicate.Partner(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(MissionsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, MissionsTable, MissionsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

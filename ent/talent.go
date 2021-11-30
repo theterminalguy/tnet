@@ -76,9 +76,11 @@ type TalentEdges struct {
 	Educations []*Education `json:"educations,omitempty"`
 	// EmergencyContacts holds the value of the emergency_contacts edge.
 	EmergencyContacts []*EmergencyContact `json:"emergency_contacts,omitempty"`
+	// Missions holds the value of the missions edge.
+	Missions []*Mission `json:"missions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [9]bool
 }
 
 // ReferrerOrErr returns the Referrer value or an error if the edge
@@ -156,6 +158,15 @@ func (e TalentEdges) EmergencyContactsOrErr() ([]*EmergencyContact, error) {
 		return e.EmergencyContacts, nil
 	}
 	return nil, &NotLoadedError{edge: "emergency_contacts"}
+}
+
+// MissionsOrErr returns the Missions value or an error if the edge
+// was not loaded in eager-loading.
+func (e TalentEdges) MissionsOrErr() ([]*Mission, error) {
+	if e.loadedTypes[8] {
+		return e.Missions, nil
+	}
+	return nil, &NotLoadedError{edge: "missions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -345,6 +356,11 @@ func (t *Talent) QueryEducations() *EducationQuery {
 // QueryEmergencyContacts queries the "emergency_contacts" edge of the Talent entity.
 func (t *Talent) QueryEmergencyContacts() *EmergencyContactQuery {
 	return (&TalentClient{config: t.config}).QueryEmergencyContacts(t)
+}
+
+// QueryMissions queries the "missions" edge of the Talent entity.
+func (t *Talent) QueryMissions() *MissionQuery {
+	return (&TalentClient{config: t.config}).QueryMissions(t)
 }
 
 // Update returns a builder for updating this Talent.

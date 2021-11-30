@@ -101,5 +101,7 @@ func (Talent) Edges() []ent.Edge {
 		edge.To("educations", Education.Type),
 
 		edge.To("emergency_contacts", EmergencyContact.Type),
+
+		edge.To("missions", Mission.Type),
 	}
 }

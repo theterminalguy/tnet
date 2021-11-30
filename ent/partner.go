@@ -29,14 +29,35 @@ type Partner struct {
 	CompanyName string `json:"CompanyName,omitempty"`
 	// CompanyLocation holds the value of the "CompanyLocation" field.
 	CompanyLocation string `json:"CompanyLocation,omitempty"`
-	// WebsiteUrl holds the value of the "WebsiteUrl" field.
-	WebsiteUrl string `json:"WebsiteUrl,omitempty"`
 	// ContactPersonName holds the value of the "ContactPersonName" field.
 	ContactPersonName string `json:"ContactPersonName,omitempty"`
 	// ContactPersonPhoneNumber holds the value of the "ContactPersonPhoneNumber" field.
 	ContactPersonPhoneNumber string `json:"ContactPersonPhoneNumber,omitempty"`
 	// ContactPersonEmail holds the value of the "ContactPersonEmail" field.
 	ContactPersonEmail string `json:"ContactPersonEmail,omitempty"`
+	// WebsiteUrl holds the value of the "WebsiteUrl" field.
+	WebsiteUrl string `json:"WebsiteUrl,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the PartnerQuery when eager-loading is set.
+	Edges PartnerEdges `json:"edges"`
+}
+
+// PartnerEdges holds the relations/edges for other nodes in the graph.
+type PartnerEdges struct {
+	// Missions holds the value of the missions edge.
+	Missions []*Mission `json:"missions,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// MissionsOrErr returns the Missions value or an error if the edge
+// was not loaded in eager-loading.
+func (e PartnerEdges) MissionsOrErr() ([]*Mission, error) {
+	if e.loadedTypes[0] {
+		return e.Missions, nil
+	}
+	return nil, &NotLoadedError{edge: "missions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -46,7 +67,7 @@ func (*Partner) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case partner.FieldID:
 			values[i] = new(sql.NullInt64)
-		case partner.FieldCompanyName, partner.FieldCompanyLocation, partner.FieldWebsiteUrl, partner.FieldContactPersonName, partner.FieldContactPersonPhoneNumber, partner.FieldContactPersonEmail:
+		case partner.FieldCompanyName, partner.FieldCompanyLocation, partner.FieldContactPersonName, partner.FieldContactPersonPhoneNumber, partner.FieldContactPersonEmail, partner.FieldWebsiteUrl:
 			values[i] = new(sql.NullString)
 		case partner.FieldCreatedAt, partner.FieldUpdatedAt, partner.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -110,12 +131,6 @@ func (pa *Partner) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				pa.CompanyLocation = value.String
 			}
-		case partner.FieldWebsiteUrl:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field WebsiteUrl", values[i])
-			} else if value.Valid {
-				pa.WebsiteUrl = value.String
-			}
 		case partner.FieldContactPersonName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field ContactPersonName", values[i])
@@ -134,9 +149,20 @@ func (pa *Partner) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				pa.ContactPersonEmail = value.String
 			}
+		case partner.FieldWebsiteUrl:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field WebsiteUrl", values[i])
+			} else if value.Valid {
+				pa.WebsiteUrl = value.String
+			}
 		}
 	}
 	return nil
+}
+
+// QueryMissions queries the "missions" edge of the Partner entity.
+func (pa *Partner) QueryMissions() *MissionQuery {
+	return (&PartnerClient{config: pa.config}).QueryMissions(pa)
 }
 
 // Update returns a builder for updating this Partner.
@@ -176,14 +202,14 @@ func (pa *Partner) String() string {
 	builder.WriteString(pa.CompanyName)
 	builder.WriteString(", CompanyLocation=")
 	builder.WriteString(pa.CompanyLocation)
-	builder.WriteString(", WebsiteUrl=")
-	builder.WriteString(pa.WebsiteUrl)
 	builder.WriteString(", ContactPersonName=")
 	builder.WriteString(pa.ContactPersonName)
 	builder.WriteString(", ContactPersonPhoneNumber=")
 	builder.WriteString(pa.ContactPersonPhoneNumber)
 	builder.WriteString(", ContactPersonEmail=")
 	builder.WriteString(pa.ContactPersonEmail)
+	builder.WriteString(", WebsiteUrl=")
+	builder.WriteString(pa.WebsiteUrl)
 	builder.WriteByte(')')
 	return builder.String()
 }

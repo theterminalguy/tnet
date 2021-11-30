@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
 
@@ -23,13 +24,17 @@ func (Partner) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("CompanyName"),
 		field.String("CompanyLocation"),
-		field.String("WebsiteUrl"),
 		field.String("ContactPersonName"),
 		field.String("ContactPersonPhoneNumber"),
-		field.String("ContactPersonEmail"),
+		field.String("ContactPersonEmail").
+		Unique(),
+		field.String("WebsiteUrl").
+		Unique(),
 	}
 }
 // Edges of the Partner.
 func (Partner) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.To("missions", Mission.Type),
+	}
 }

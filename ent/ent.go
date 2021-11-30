@@ -12,6 +12,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobtalent"
+	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/skill"
@@ -41,6 +42,7 @@ func columnChecker(table string) func(string) error {
 		emergencycontact.Table: emergencycontact.ValidColumn,
 		job.Table:              job.ValidColumn,
 		jobtalent.Table:        jobtalent.ValidColumn,
+		mission.Table:          mission.ValidColumn,
 		partner.Table:          partner.ValidColumn,
 		portfoliolink.Table:    portfoliolink.ValidColumn,
 		skill.Table:            skill.ValidColumn,
