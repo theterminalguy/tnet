@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
@@ -11,76 +10,77 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type JobTalentHandler struct {
-	JobTalentService    *service.JobTalentService
-	JobTalentRepository *repo.JobTalentRepository
+// DO NOT expose any methods to the outside world untill we have a better idea of what we want to do with it.
+type UserHandler struct {
+	UserService    *service.UserService
+	UserRepository *repo.UserRepository
 }
 
-func NewJobTalentHandler() *JobTalentHandler {
-	return &JobTalentHandler{
-		JobTalentService:    service.NewJobTalentService(),
-		JobTalentRepository: repo.NewJobTalentRepository(),
+func NewUserHandler() *UserHandler {
+	return &UserHandler{
+		UserService:    service.NewUserService(),
+		UserRepository: repo.NewUserRepository(),
 	}
 }
 
-func (*JobTalentHandler) ResourceName() string {
-	return "jobs/talents"
+func (*UserHandler) ResourceName() string {
+	return "user"
 }
 
-func (h *JobTalentHandler) ReadAll(c echo.Context) error {
-	records, err := h.JobTalentRepository.GetAll()
+func (h *UserHandler) ReadAll(c echo.Context) error {
+	records, err := h.UserRepository.GetAll()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	return c.JSON(http.StatusOK, records)
 }
 
-func (h *JobTalentHandler) ReadByID(c echo.Context) error {
+func (h *UserHandler) ReadByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := h.JobTalentRepository.GetByUUID(id)
+	record, err := h.UserRepository.GetByUUID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
 	return c.JSON(http.StatusOK, record)
 }
 
-func (h *JobTalentHandler) CreateOne(c echo.Context) error {
-	params := new(repo.JobTalentParams)
+func (h *UserHandler) CreateOne(c echo.Context) error {
+	params := new(repo.UserParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := h.JobTalentRepository.Create(*params)
+	record, err := h.UserRepository.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	return c.JSON(http.StatusCreated, record)
 }
 
-func (h *JobTalentHandler) UpdateByID(c echo.Context) error {
+func (h *UserHandler) UpdateByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	params := new(repo.JobTalentParams)
+	params := new(repo.UserParams)
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	record, vldErrs := h.JobTalentRepository.Update(id, *params)
-	if vldErrs != nil {
-		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
+	record, err := h.UserRepository.Update(id, *params)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 	return c.JSON(http.StatusOK, record)
 }
 
-func (h *JobTalentHandler) DeleteOne(c echo.Context) error {
+func (h *UserHandler) DeleteOne(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.JobTalentRepository.DeleteByUUID(id)
+	err = h.UserRepository.DeleteByUUID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

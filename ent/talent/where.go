@@ -2113,25 +2113,25 @@ func HasSkillsWith(preds ...predicate.Skill) predicate.Talent {
 	})
 }
 
-// HasJobTalents applies the HasEdge predicate on the "job_talents" edge.
-func HasJobTalents() predicate.Talent {
+// HasJobApplications applies the HasEdge predicate on the "job_applications" edge.
+func HasJobApplications() predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(JobTalentsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, JobTalentsTable, JobTalentsColumn),
+			sqlgraph.To(JobApplicationsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, JobApplicationsTable, JobApplicationsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasJobTalentsWith applies the HasEdge predicate on the "job_talents" edge with a given conditions (other predicates).
-func HasJobTalentsWith(preds ...predicate.JobTalent) predicate.Talent {
+// HasJobApplicationsWith applies the HasEdge predicate on the "job_applications" edge with a given conditions (other predicates).
+func HasJobApplicationsWith(preds ...predicate.JobApplication) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(JobTalentsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, JobTalentsTable, JobTalentsColumn),
+			sqlgraph.To(JobApplicationsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, JobApplicationsTable, JobApplicationsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

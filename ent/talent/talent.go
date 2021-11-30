@@ -57,8 +57,8 @@ const (
 	EdgePortfoliolinks = "portfoliolinks"
 	// EdgeSkills holds the string denoting the skills edge name in mutations.
 	EdgeSkills = "skills"
-	// EdgeJobTalents holds the string denoting the job_talents edge name in mutations.
-	EdgeJobTalents = "job_talents"
+	// EdgeJobApplications holds the string denoting the job_applications edge name in mutations.
+	EdgeJobApplications = "job_applications"
 	// EdgeWorkExperiences holds the string denoting the work_experiences edge name in mutations.
 	EdgeWorkExperiences = "work_experiences"
 	// EdgeEducations holds the string denoting the educations edge name in mutations.
@@ -91,13 +91,13 @@ const (
 	SkillsInverseTable = "skills"
 	// SkillsColumn is the table column denoting the skills relation/edge.
 	SkillsColumn = "talent_id"
-	// JobTalentsTable is the table that holds the job_talents relation/edge.
-	JobTalentsTable = "job_talents"
-	// JobTalentsInverseTable is the table name for the JobTalent entity.
-	// It exists in this package in order to avoid circular dependency with the "jobtalent" package.
-	JobTalentsInverseTable = "job_talents"
-	// JobTalentsColumn is the table column denoting the job_talents relation/edge.
-	JobTalentsColumn = "talent_id"
+	// JobApplicationsTable is the table that holds the job_applications relation/edge.
+	JobApplicationsTable = "job_applications"
+	// JobApplicationsInverseTable is the table name for the JobApplication entity.
+	// It exists in this package in order to avoid circular dependency with the "jobapplication" package.
+	JobApplicationsInverseTable = "job_applications"
+	// JobApplicationsColumn is the table column denoting the job_applications relation/edge.
+	JobApplicationsColumn = "talent_id"
 	// WorkExperiencesTable is the table that holds the work_experiences relation/edge.
 	WorkExperiencesTable = "work_experiences"
 	// WorkExperiencesInverseTable is the table name for the WorkExperience entity.

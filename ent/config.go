@@ -27,12 +27,13 @@ type hooks struct {
 	Education        []ent.Hook
 	EmergencyContact []ent.Hook
 	Job              []ent.Hook
-	JobTalent        []ent.Hook
+	JobApplication   []ent.Hook
 	Mission          []ent.Hook
 	Partner          []ent.Hook
 	PortfolioLink    []ent.Hook
 	Skill            []ent.Hook
 	Talent           []ent.Hook
+	User             []ent.Hook
 	WorkExperience   []ent.Hook
 }
 

@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
-	"github.com/10hourlabs/tentn/ent/jobtalent"
+	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/skill"
@@ -240,19 +240,19 @@ func (tc *TalentCreate) AddSkills(s ...*Skill) *TalentCreate {
 	return tc.AddSkillIDs(ids...)
 }
 
-// AddJobTalentIDs adds the "job_talents" edge to the JobTalent entity by IDs.
-func (tc *TalentCreate) AddJobTalentIDs(ids ...int) *TalentCreate {
-	tc.mutation.AddJobTalentIDs(ids...)
+// AddJobApplicationIDs adds the "job_applications" edge to the JobApplication entity by IDs.
+func (tc *TalentCreate) AddJobApplicationIDs(ids ...int) *TalentCreate {
+	tc.mutation.AddJobApplicationIDs(ids...)
 	return tc
 }
 
-// AddJobTalents adds the "job_talents" edges to the JobTalent entity.
-func (tc *TalentCreate) AddJobTalents(j ...*JobTalent) *TalentCreate {
+// AddJobApplications adds the "job_applications" edges to the JobApplication entity.
+func (tc *TalentCreate) AddJobApplications(j ...*JobApplication) *TalentCreate {
 	ids := make([]int, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
-	return tc.AddJobTalentIDs(ids...)
+	return tc.AddJobApplicationIDs(ids...)
 }
 
 // AddWorkExperienceIDs adds the "work_experiences" edge to the WorkExperience entity by IDs.
@@ -699,17 +699,17 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := tc.mutation.JobTalentsIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.JobApplicationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   talent.JobTalentsTable,
-			Columns: []string{talent.JobTalentsColumn},
+			Table:   talent.JobApplicationsTable,
+			Columns: []string{talent.JobApplicationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: jobtalent.FieldID,
+					Column: jobapplication.FieldID,
 				},
 			},
 		}

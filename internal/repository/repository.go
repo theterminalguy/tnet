@@ -22,6 +22,9 @@ var (
 
 	// errors
 	RecordNotFoundError error = errors.New("entity not found")
+
+	// TODO: replace all RecordNotFoundError for deleted record with this error
+	ErrRecordDeleted error = errors.New("entity has been deleted")
 )
 
 func init() {

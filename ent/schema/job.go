@@ -88,6 +88,6 @@ func (Job) Indexes() []ent.Index {
 // Edges of the Job.
 func (Job) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("job_talents", JobTalent.Type),
+		edge.To(oneword.Applications, JobApplication.Type),
 	}
 }

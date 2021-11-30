@@ -3,7 +3,7 @@ package router
 import (
 	"fmt"
 	"net/http"
-	"time"
+	"os"
 
 	"github.com/10hourlabs/tentn/internal/handler"
 	"github.com/labstack/echo/v4"
@@ -13,38 +13,39 @@ import (
 func DefineRoutes() *echo.Echo {
 	e := echo.New()
 	e.Use(middleware.Logger())
-
+	e.Use(middleware.Recover())
 	e.GET("/", func(c echo.Context) error {
-		return c.String(
-			http.StatusOK,
-			fmt.Sprintf("TenTN API version 1.0 copyright (c) %v by 10hourlabs.com", time.Now().Year()),
-		)
+		// TODO replace with documentation homepage
+		return c.String(http.StatusOK, "Talent Network API version 0.0.1")
 	})
 	e.GET("/health", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, http.StatusText(http.StatusOK))
 	})
-	return NewV1Router().createRoutes(e)
+	e.GET("/auth", handler.GoogleLoginHandler)
+	e.GET("/oauth2/google/callback", handler.GoogleOauth2CallbackHandler)
+	router := NewV1Router(e)
+	router.CreateRoutes()
+	return router.Engine()
 }
 
-func createRoutes(namespace string, rh RouteHandler, e *echo.Echo) {
-	basePath := fmt.Sprintf("/%s/%s", namespace, rh.Handler.ResourceName())
-	allPath := fmt.Sprintf("%s", basePath)
-	byIDPath := fmt.Sprintf("%s/:uuid", basePath)
+func createRoutes(g *echo.Group, rh RouteHandler) {
+	resourcePath := fmt.Sprintf("/%s", rh.Handler.ResourceName())
+	byIDPath := fmt.Sprintf("%s/:uuid", resourcePath)
 
 	// GET /resources
-	e.GET(allPath, rh.Handler.ReadAll, rh.Middleware...)
+	g.GET(resourcePath, rh.Handler.ReadAll, rh.Middleware...)
 
 	// GET /resources/:id
-	e.GET(byIDPath, rh.Handler.ReadByID, rh.Middleware...)
+	g.GET(byIDPath, rh.Handler.ReadByID, rh.Middleware...)
 
 	// POST /resources
-	e.POST(allPath, rh.Handler.CreateOne, rh.Middleware...)
+	g.POST(resourcePath, rh.Handler.CreateOne, rh.Middleware...)
 
 	// PUT /resources/:id
-	e.PUT(byIDPath, rh.Handler.UpdateByID, rh.Middleware...)
+	g.PUT(byIDPath, rh.Handler.UpdateByID, rh.Middleware...)
 
 	// DELETE /resources/:id
-	e.DELETE(byIDPath, rh.Handler.DeleteOne, rh.Middleware...)
+	g.DELETE(byIDPath, rh.Handler.DeleteOne, rh.Middleware...)
 }
 
 type RequestHandler interface {
@@ -66,33 +67,46 @@ type RouteHandler struct {
 }
 
 type v1Router struct {
-	namespace string
-	handlers  []RouteHandler
+	engine   *echo.Echo // ideally, the type for engine this should be an interface
+	handlers []RouteHandler
 }
 
-func (v1 *v1Router) createRoutes(e *echo.Echo) *echo.Echo {
-	for _, h := range v1.handlers {
-		createRoutes(v1.namespace, h, e)
+func (v1 *v1Router) Engine() *echo.Echo {
+	return v1.engine
+}
+
+func (v1 *v1Router) Namespace() *echo.Group {
+	return v1.Engine().Group("/v1")
+}
+
+// createRoutes creates all the routes for the given namespace
+// all routes in this namespace require authentication
+// you'd have to provide a JWT token to access the routes
+func (v1 *v1Router) CreateRoutes() {
+	config := middleware.JWTConfig{
+		SigningKey: []byte(os.Getenv("JWT_SIGNED_SECRET")),
 	}
-	return e
+	g := v1.Namespace()
+	g.Use(middleware.JWTWithConfig(config))
+	for _, h := range v1.handlers {
+		createRoutes(g, h)
+	}
 }
 
-func NewV1Router() *v1Router {
-	// TODO: use Echo Group construct
-	m := []echo.MiddlewareFunc{}
+func NewV1Router(e *echo.Echo) *v1Router {
 	return &v1Router{
-		namespace: "v1",
+		engine: e,
 		handlers: []RouteHandler{
-			{handler.NewJobHandler(), m},
-			{handler.NewJobTalentHandler(), m},
-			{handler.NewPortfolioLinkHandler(), m},
-			{handler.NewSkillHandler(), m},
-			{handler.NewWorkExperienceHandler(), m},
-			{handler.NewEducationHandler(), m},
-			{handler.NewEmergencyContactHandler(), m},
-			{handler.NewTalentHandler(), m},
-			{handler.NewPartnerHandler(), m},
-			{handler.NewMissionHandler(), m},
+			{handler.NewJobHandler(), nil},
+			{handler.NewJobApplicationHandler(), nil},
+			{handler.NewPortfolioLinkHandler(), nil},
+			{handler.NewSkillHandler(), nil},
+			{handler.NewWorkExperienceHandler(), nil},
+			{handler.NewEducationHandler(), nil},
+			{handler.NewEmergencyContactHandler(), nil},
+			{handler.NewTalentHandler(), nil},
+			{handler.NewPartnerHandler(), nil},
+			{handler.NewMissionHandler(), nil},
 		},
 	}
 }

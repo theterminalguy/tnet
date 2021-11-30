@@ -1,6 +1,7 @@
 package randutil
 
 import (
+	"encoding/base64"
 	"math/rand"
 	"time"
 )
@@ -20,4 +21,10 @@ func StringWithCharset(length int, charset string) string {
 
 func String(length int) string {
 	return StringWithCharset(length, charset)
+}
+
+func GenerateOauthStateToken() string {
+	b := make([]byte, 32)
+	rand.Read(b)
+	return base64.URLEncoding.EncodeToString(b)
 }

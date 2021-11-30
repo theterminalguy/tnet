@@ -6,12 +6,12 @@ import (
 	"github.com/10hourlabs/tentn/oneword"
 )
 
-// JobTalent holds the schema definition for the JobTalent entity.
-type JobTalent struct {
+// JobApplication holds the schema definition for the JobApplication entity.
+type JobApplication struct {
 	ent.Schema
 }
 
-func JobTalentStatuses() []string {
+func JobApplicationStatuses() []string {
 	return []string{
 		"screening",
 		"shortlisted",
@@ -21,33 +21,33 @@ func JobTalentStatuses() []string {
 	}
 }
 
-// Mixins for JobTalent
-func (JobTalent) Mixin() []ent.Mixin {
+// Mixins for JobApplication
+func (JobApplication) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		UUIDMixin{},
 		TimeStampMixin{},
 		BelongsToMixin{
 			ParentName: oneword.Talent,
 			ParentType: Talent.Type,
-			Ref:        oneword.JobTalents,
+			Ref:        oneword.JobApplications,
 			ForeignKey: oneword.TalentID,
 		},
 		BelongsToMixin{
 			ParentName: oneword.Job,
 			ParentType: Job.Type,
-			Ref:        oneword.JobTalents,
+			Ref:        oneword.Applications,
 			ForeignKey: oneword.JobID,
 		},
 	}
 }
 
-// Fields of the JobTalent.
-func (JobTalent) Fields() []ent.Field {
+// Fields of the JobApplication.
+func (JobApplication) Fields() []ent.Field {
 	return []ent.Field{
 		field.String(oneword.ReferralSource),
 
 		field.Enum(oneword.Status).
-			Values(JobTalentStatuses()...).
+			Values(JobApplicationStatuses()...).
 			Default(oneword.Screening),
 
 		field.Text(oneword.Note).
@@ -55,7 +55,7 @@ func (JobTalent) Fields() []ent.Field {
 	}
 }
 
-// Edges of the JobTalent.
-func (JobTalent) Edges() []ent.Edge {
+// Edges of the JobApplication.
+func (JobApplication) Edges() []ent.Edge {
 	return nil
 }

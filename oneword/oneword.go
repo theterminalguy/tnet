@@ -46,7 +46,6 @@ const (
 	Referees        string = "referees"
 	Applications    string = "applications"
 	JobApplications string = "job_applications"
-	JobTalents      string = "job_talents"
 	PortfolioLinks  string = "portfoliolinks"
 	Talent          string = "talent"
 	Talents         string = "talents"

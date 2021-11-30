@@ -68,8 +68,8 @@ type TalentEdges struct {
 	Portfoliolinks []*PortfolioLink `json:"portfoliolinks,omitempty"`
 	// Skills holds the value of the skills edge.
 	Skills []*Skill `json:"skills,omitempty"`
-	// JobTalents holds the value of the job_talents edge.
-	JobTalents []*JobTalent `json:"job_talents,omitempty"`
+	// JobApplications holds the value of the job_applications edge.
+	JobApplications []*JobApplication `json:"job_applications,omitempty"`
 	// WorkExperiences holds the value of the work_experiences edge.
 	WorkExperiences []*WorkExperience `json:"work_experiences,omitempty"`
 	// Educations holds the value of the educations edge.
@@ -124,13 +124,13 @@ func (e TalentEdges) SkillsOrErr() ([]*Skill, error) {
 	return nil, &NotLoadedError{edge: "skills"}
 }
 
-// JobTalentsOrErr returns the JobTalents value or an error if the edge
+// JobApplicationsOrErr returns the JobApplications value or an error if the edge
 // was not loaded in eager-loading.
-func (e TalentEdges) JobTalentsOrErr() ([]*JobTalent, error) {
+func (e TalentEdges) JobApplicationsOrErr() ([]*JobApplication, error) {
 	if e.loadedTypes[4] {
-		return e.JobTalents, nil
+		return e.JobApplications, nil
 	}
-	return nil, &NotLoadedError{edge: "job_talents"}
+	return nil, &NotLoadedError{edge: "job_applications"}
 }
 
 // WorkExperiencesOrErr returns the WorkExperiences value or an error if the edge
@@ -338,9 +338,9 @@ func (t *Talent) QuerySkills() *SkillQuery {
 	return (&TalentClient{config: t.config}).QuerySkills(t)
 }
 
-// QueryJobTalents queries the "job_talents" edge of the Talent entity.
-func (t *Talent) QueryJobTalents() *JobTalentQuery {
-	return (&TalentClient{config: t.config}).QueryJobTalents(t)
+// QueryJobApplications queries the "job_applications" edge of the Talent entity.
+func (t *Talent) QueryJobApplications() *JobApplicationQuery {
+	return (&TalentClient{config: t.config}).QueryJobApplications(t)
 }
 
 // QueryWorkExperiences queries the "work_experiences" edge of the Talent entity.

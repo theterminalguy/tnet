@@ -132,8 +132,8 @@ var (
 			},
 		},
 	}
-	// JobTalentsColumns holds the columns for the "job_talents" table.
-	JobTalentsColumns = []*schema.Column{
+	// JobApplicationsColumns holds the columns for the "job_applications" table.
+	JobApplicationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "uuid", Type: field.TypeUUID, Unique: true},
 		{Name: "created_at", Type: field.TypeTime},
@@ -145,40 +145,40 @@ var (
 		{Name: "job_id", Type: field.TypeInt, Nullable: true},
 		{Name: "talent_id", Type: field.TypeInt, Nullable: true},
 	}
-	// JobTalentsTable holds the schema information for the "job_talents" table.
-	JobTalentsTable = &schema.Table{
-		Name:       "job_talents",
-		Columns:    JobTalentsColumns,
-		PrimaryKey: []*schema.Column{JobTalentsColumns[0]},
+	// JobApplicationsTable holds the schema information for the "job_applications" table.
+	JobApplicationsTable = &schema.Table{
+		Name:       "job_applications",
+		Columns:    JobApplicationsColumns,
+		PrimaryKey: []*schema.Column{JobApplicationsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "job_talents_jobs_job_talents",
-				Columns:    []*schema.Column{JobTalentsColumns[8]},
+				Symbol:     "job_applications_jobs_applications",
+				Columns:    []*schema.Column{JobApplicationsColumns[8]},
 				RefColumns: []*schema.Column{JobsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "job_talents_talents_job_talents",
-				Columns:    []*schema.Column{JobTalentsColumns[9]},
+				Symbol:     "job_applications_talents_job_applications",
+				Columns:    []*schema.Column{JobApplicationsColumns[9]},
 				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "jobtalent_uuid",
+				Name:    "jobapplication_uuid",
 				Unique:  true,
-				Columns: []*schema.Column{JobTalentsColumns[1]},
+				Columns: []*schema.Column{JobApplicationsColumns[1]},
 			},
 			{
-				Name:    "jobtalent_talent_id",
+				Name:    "jobapplication_talent_id",
 				Unique:  false,
-				Columns: []*schema.Column{JobTalentsColumns[9]},
+				Columns: []*schema.Column{JobApplicationsColumns[9]},
 			},
 			{
-				Name:    "jobtalent_job_id",
+				Name:    "jobapplication_job_id",
 				Unique:  false,
-				Columns: []*schema.Column{JobTalentsColumns[8]},
+				Columns: []*schema.Column{JobApplicationsColumns[8]},
 			},
 		},
 	}
@@ -393,6 +393,40 @@ var (
 			},
 		},
 	}
+	// UsersColumns holds the columns for the "users" table.
+	UsersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString},
+		{Name: "role", Type: field.TypeEnum, Enums: []string{"user", "partner", "admin", "superadmin", "service-account"}, Default: "user"},
+	}
+	// UsersTable holds the schema information for the "users" table.
+	UsersTable = &schema.Table{
+		Name:       "users",
+		Columns:    UsersColumns,
+		PrimaryKey: []*schema.Column{UsersColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "user_uuid",
+				Unique:  true,
+				Columns: []*schema.Column{UsersColumns[1]},
+			},
+			{
+				Name:    "user_email",
+				Unique:  true,
+				Columns: []*schema.Column{UsersColumns[6]},
+			},
+			{
+				Name:    "user_role",
+				Unique:  false,
+				Columns: []*schema.Column{UsersColumns[7]},
+			},
+		},
+	}
 	// WorkExperiencesColumns holds the columns for the "work_experiences" table.
 	WorkExperiencesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -440,12 +474,13 @@ var (
 		EducationsTable,
 		EmergencyContactsTable,
 		JobsTable,
-		JobTalentsTable,
+		JobApplicationsTable,
 		MissionsTable,
 		PartnersTable,
 		PortfolioLinksTable,
 		SkillsTable,
 		TalentsTable,
+		UsersTable,
 		WorkExperiencesTable,
 	}
 )
@@ -453,8 +488,8 @@ var (
 func init() {
 	EducationsTable.ForeignKeys[0].RefTable = TalentsTable
 	EmergencyContactsTable.ForeignKeys[0].RefTable = TalentsTable
-	JobTalentsTable.ForeignKeys[0].RefTable = JobsTable
-	JobTalentsTable.ForeignKeys[1].RefTable = TalentsTable
+	JobApplicationsTable.ForeignKeys[0].RefTable = JobsTable
+	JobApplicationsTable.ForeignKeys[1].RefTable = TalentsTable
 	MissionsTable.ForeignKeys[0].RefTable = PartnersTable
 	MissionsTable.ForeignKeys[1].RefTable = TalentsTable
 	PortfolioLinksTable.ForeignKeys[0].RefTable = TalentsTable

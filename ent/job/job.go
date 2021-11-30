@@ -44,17 +44,17 @@ const (
 	FieldRequirements = "requirements"
 	// FieldYouHave holds the string denoting the you_have field in the database.
 	FieldYouHave = "you_have"
-	// EdgeJobTalents holds the string denoting the job_talents edge name in mutations.
-	EdgeJobTalents = "job_talents"
+	// EdgeApplications holds the string denoting the applications edge name in mutations.
+	EdgeApplications = "applications"
 	// Table holds the table name of the job in the database.
 	Table = "jobs"
-	// JobTalentsTable is the table that holds the job_talents relation/edge.
-	JobTalentsTable = "job_talents"
-	// JobTalentsInverseTable is the table name for the JobTalent entity.
-	// It exists in this package in order to avoid circular dependency with the "jobtalent" package.
-	JobTalentsInverseTable = "job_talents"
-	// JobTalentsColumn is the table column denoting the job_talents relation/edge.
-	JobTalentsColumn = "job_id"
+	// ApplicationsTable is the table that holds the applications relation/edge.
+	ApplicationsTable = "job_applications"
+	// ApplicationsInverseTable is the table name for the JobApplication entity.
+	// It exists in this package in order to avoid circular dependency with the "jobapplication" package.
+	ApplicationsInverseTable = "job_applications"
+	// ApplicationsColumn is the table column denoting the applications relation/edge.
+	ApplicationsColumn = "job_id"
 )
 
 // Columns holds all SQL columns for job fields.

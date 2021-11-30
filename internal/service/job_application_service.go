@@ -9,29 +9,29 @@ import (
 	"github.com/google/uuid"
 )
 
-type JobTalentService struct {
-	JobTalentRepository     *repo.JobTalentRepository
-	JobRepository           *repo.JobRepository
-	TalentRepository        *repo.TalentRepository
-	PortfolioLinkRepository *repo.PortfolioLinkRepository
+type JobApplicationService struct {
+	JobApplicationRepository *repo.JobApplicationRepository
+	JobRepository            *repo.JobRepository
+	TalentRepository         *repo.TalentRepository
+	PortfolioLinkRepository  *repo.PortfolioLinkRepository
 }
 
-func NewJobTalentService() *JobTalentService {
-	return &JobTalentService{
-		JobTalentRepository:     repo.NewJobTalentRepository(),
-		JobRepository:           repo.NewJobRepository(),
-		TalentRepository:        repo.NewTalentRepository(),
-		PortfolioLinkRepository: repo.NewPortfolioLinkRepository(),
+func NewJobApplicationService() *JobApplicationService {
+	return &JobApplicationService{
+		JobApplicationRepository: repo.NewJobApplicationRepository(),
+		JobRepository:            repo.NewJobRepository(),
+		TalentRepository:         repo.NewTalentRepository(),
+		PortfolioLinkRepository:  repo.NewPortfolioLinkRepository(),
 	}
 }
 
-func (*JobTalentService) Apply(jobUUID, TalentUUID uuid.UUID) {
+func (*JobApplicationService) Apply(jobUUID, TalentUUID uuid.UUID) {
 	// TODO
 	// user must have a linkedin profile
 	// user must have a GitHub profile for Enginering role
 }
 
-func (j *JobTalentService) Validate(TalentUUID, jobUUID uuid.UUID) error {
+func (j *JobApplicationService) Validate(TalentUUID, jobUUID uuid.UUID) error {
 
 	// TODO: This maybe improved upon using ent edge query
 	// example can be found here -- https://entgo.io/docs/predicates/#edge-predicates
@@ -71,7 +71,7 @@ func (j *JobTalentService) Validate(TalentUUID, jobUUID uuid.UUID) error {
 }
 
 //ContainsGithub checks to see if the array of given links contain Github
-func (*JobTalentService) ContainsGithub(pfLinks []*ent.PortfolioLink) error {
+func (*JobApplicationService) ContainsGithub(pfLinks []*ent.PortfolioLink) error {
 	var arr = make([]string, len(pfLinks))
 	for _, val := range pfLinks {
 		arr = append(arr, val.Name)
@@ -84,7 +84,7 @@ func (*JobTalentService) ContainsGithub(pfLinks []*ent.PortfolioLink) error {
 }
 
 //ContainsProductLinks checks to see if the array of given links contain either Dribble or Behance
-func (*JobTalentService) ContainsProductLinks(pfLinks []*ent.PortfolioLink) error {
+func (*JobApplicationService) ContainsProductLinks(pfLinks []*ent.PortfolioLink) error {
 	var arr = make([]string, len(pfLinks))
 	for _, val := range pfLinks {
 		arr = append(arr, val.Name)
@@ -97,7 +97,7 @@ func (*JobTalentService) ContainsProductLinks(pfLinks []*ent.PortfolioLink) erro
 }
 
 //ContainsLinkedin checks to see if the array of given links contain LinkedIn
-func (*JobTalentService) ContainsLinkedIn(pfLinks []*ent.PortfolioLink) bool {
+func (*JobApplicationService) ContainsLinkedIn(pfLinks []*ent.PortfolioLink) bool {
 	var arr = make([]string, len(pfLinks))
 	for _, val := range pfLinks {
 		arr = append(arr, val.Name)

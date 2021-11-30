@@ -15,8 +15,8 @@ type EmergencyContact func(*sql.Selector)
 // Job is the predicate function for job builders.
 type Job func(*sql.Selector)
 
-// JobTalent is the predicate function for jobtalent builders.
-type JobTalent func(*sql.Selector)
+// JobApplication is the predicate function for jobapplication builders.
+type JobApplication func(*sql.Selector)
 
 // Mission is the predicate function for mission builders.
 type Mission func(*sql.Selector)
@@ -32,6 +32,9 @@ type Skill func(*sql.Selector)
 
 // Talent is the predicate function for talent builders.
 type Talent func(*sql.Selector)
+
+// User is the predicate function for user builders.
+type User func(*sql.Selector)
 
 // WorkExperience is the predicate function for workexperience builders.
 type WorkExperience func(*sql.Selector)

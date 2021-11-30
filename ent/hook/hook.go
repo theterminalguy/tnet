@@ -48,15 +48,15 @@ func (f JobFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) 
 	return f(ctx, mv)
 }
 
-// The JobTalentFunc type is an adapter to allow the use of ordinary
-// function as JobTalent mutator.
-type JobTalentFunc func(context.Context, *ent.JobTalentMutation) (ent.Value, error)
+// The JobApplicationFunc type is an adapter to allow the use of ordinary
+// function as JobApplication mutator.
+type JobApplicationFunc func(context.Context, *ent.JobApplicationMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f JobTalentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.JobTalentMutation)
+func (f JobApplicationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.JobApplicationMutation)
 	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.JobTalentMutation", m)
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.JobApplicationMutation", m)
 	}
 	return f(ctx, mv)
 }
@@ -122,6 +122,19 @@ func (f TalentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 	mv, ok := m.(*ent.TalentMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TalentMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The UserFunc type is an adapter to allow the use of ordinary
+// function as User mutator.
+type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f UserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.UserMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserMutation", m)
 	}
 	return f(ctx, mv)
 }

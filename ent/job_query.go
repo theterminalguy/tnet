@@ -13,7 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/jobtalent"
+	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/predicate"
 )
 
@@ -27,7 +27,7 @@ type JobQuery struct {
 	fields     []string
 	predicates []predicate.Job
 	// eager-loading edges.
-	withJobTalents *JobTalentQuery
+	withApplications *JobApplicationQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -64,9 +64,9 @@ func (jq *JobQuery) Order(o ...OrderFunc) *JobQuery {
 	return jq
 }
 
-// QueryJobTalents chains the current query on the "job_talents" edge.
-func (jq *JobQuery) QueryJobTalents() *JobTalentQuery {
-	query := &JobTalentQuery{config: jq.config}
+// QueryApplications chains the current query on the "applications" edge.
+func (jq *JobQuery) QueryApplications() *JobApplicationQuery {
+	query := &JobApplicationQuery{config: jq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := jq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -77,8 +77,8 @@ func (jq *JobQuery) QueryJobTalents() *JobTalentQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(job.Table, job.FieldID, selector),
-			sqlgraph.To(jobtalent.Table, jobtalent.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, job.JobTalentsTable, job.JobTalentsColumn),
+			sqlgraph.To(jobapplication.Table, jobapplication.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, job.ApplicationsTable, job.ApplicationsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(jq.driver.Dialect(), step)
 		return fromU, nil
@@ -262,26 +262,26 @@ func (jq *JobQuery) Clone() *JobQuery {
 		return nil
 	}
 	return &JobQuery{
-		config:         jq.config,
-		limit:          jq.limit,
-		offset:         jq.offset,
-		order:          append([]OrderFunc{}, jq.order...),
-		predicates:     append([]predicate.Job{}, jq.predicates...),
-		withJobTalents: jq.withJobTalents.Clone(),
+		config:           jq.config,
+		limit:            jq.limit,
+		offset:           jq.offset,
+		order:            append([]OrderFunc{}, jq.order...),
+		predicates:       append([]predicate.Job{}, jq.predicates...),
+		withApplications: jq.withApplications.Clone(),
 		// clone intermediate query.
 		sql:  jq.sql.Clone(),
 		path: jq.path,
 	}
 }
 
-// WithJobTalents tells the query-builder to eager-load the nodes that are connected to
-// the "job_talents" edge. The optional arguments are used to configure the query builder of the edge.
-func (jq *JobQuery) WithJobTalents(opts ...func(*JobTalentQuery)) *JobQuery {
-	query := &JobTalentQuery{config: jq.config}
+// WithApplications tells the query-builder to eager-load the nodes that are connected to
+// the "applications" edge. The optional arguments are used to configure the query builder of the edge.
+func (jq *JobQuery) WithApplications(opts ...func(*JobApplicationQuery)) *JobQuery {
+	query := &JobApplicationQuery{config: jq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	jq.withJobTalents = query
+	jq.withApplications = query
 	return jq
 }
 
@@ -351,7 +351,7 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 		nodes       = []*Job{}
 		_spec       = jq.querySpec()
 		loadedTypes = [1]bool{
-			jq.withJobTalents != nil,
+			jq.withApplications != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -374,16 +374,16 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 		return nodes, nil
 	}
 
-	if query := jq.withJobTalents; query != nil {
+	if query := jq.withApplications; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
 		nodeids := make(map[int]*Job)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.JobTalents = []*JobTalent{}
+			nodes[i].Edges.Applications = []*JobApplication{}
 		}
-		query.Where(predicate.JobTalent(func(s *sql.Selector) {
-			s.Where(sql.InValues(job.JobTalentsColumn, fks...))
+		query.Where(predicate.JobApplication(func(s *sql.Selector) {
+			s.Where(sql.InValues(job.ApplicationsColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)
 		if err != nil {
@@ -395,7 +395,7 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 			if !ok {
 				return nil, fmt.Errorf(`unexpected foreign-key "job_id" returned %v for node %v`, fk, n.ID)
 			}
-			node.Edges.JobTalents = append(node.Edges.JobTalents, n)
+			node.Edges.Applications = append(node.Edges.Applications, n)
 		}
 	}
 
