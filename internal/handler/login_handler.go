@@ -22,7 +22,7 @@ var stateToken string
 var gconf *oauth2.Config = &oauth2.Config{
 	ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
 	ClientSecret: os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
-	RedirectURL:  fmt.Sprintf("%s/oauth2/callback", os.Getenv("APP_HOST")),
+	RedirectURL:  fmt.Sprintf("%s/oauth2/google/callback", os.Getenv("APP_HOST")),
 	Scopes: []string{
 		"https://www.googleapis.com/auth/userinfo.email",
 		"https://www.googleapis.com/auth/userinfo.profile",
