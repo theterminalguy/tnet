@@ -18,14 +18,17 @@ func DefineRoutes() *echo.Echo {
 		// TODO replace with documentation homepage
 		return c.String(http.StatusOK, "Talent Network API version 0.0.1")
 	})
-	e.GET("/health", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, http.StatusText(http.StatusOK))
-	})
+	e.GET("/health", HealthHandler)
 	e.GET("/auth", handler.GoogleLoginHandler)
 	e.GET("/oauth2/google/callback", handler.GoogleOauth2CallbackHandler)
 	router := NewV1Router(e)
 	router.CreateRoutes()
 	return router.Engine()
+}
+
+//HealtHanlder handles request that reaches the health endpoint
+func HealthHandler(c echo.Context) error {
+	return c.String(http.StatusOK, http.StatusText(http.StatusOK))
 }
 
 func createRoutes(g *echo.Group, rh RouteHandler) {
