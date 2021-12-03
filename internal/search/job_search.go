@@ -1,74 +1,66 @@
 package search
 
 import (
+	"fmt"
+
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/google/uuid"
 )
 
 type JobSearch struct {
 	JobRepository repo.JobRepository
 }
 
-func (*JobSearch) SearchableFields() []string {
-	// TODO: We should only allow search for indexed fields
-	// Some other fields make sense to search, let's add them later
-	return []string{"uuid", "slug", "title"}
-}
-
-func (*JobSearch) AllowedMatchers() []SearchMatcher {
-	// TODO: let's define the allowed matchers as a type so we don't have to
-	// hardcode them here. It's less error prone and prevent typos.
-	return []SearchMatcher{EQ, NEQ}
-
-}
-
-func (*JobSearch) PossibleFilters() map[string]interface{} {
+func (*JobSearch) PossibleFilters() []Filter {
 	// Terrible code but it works
 	// the compiler does not have to figure our the type at runtime
-	m := make(map[string]interface{})
-	m["uuid_eq"] = job.UUIDEQ
-	m["uuid_neq"] = job.UUIDNEQ
+	return []Filter{
+		UUID_EQ,
+		UUID_NE,
 
-	m["slug_eq"] = job.SlugEQ
-	m["slug_neq"] = job.SlugNEQ
+		SLUG_EQ,
+		SLUG_NE,
 
-	m["title_eq"] = job.TitleEQ
-	m["title_neq"] = job.TitleNEQ
-	return m
+		TITLE_EQ,
+		TITLE_NE,
+	}
 }
 
-func (s *JobSearch) Search(query map[string]string) []ent.Job {
+func (s *JobSearch) Search(query map[string]string) ([]*ent.Job, []error) {
+	// TOD: this implementation of search and filters is not reusable but works really well for now
+	// and makes it easy for us to decide what can be searchable and what can't.
+	// We should probably define a Searchable interface and implement it for each searchable entity
 	var ps []predicate.Job
+	var errors []error
 
 	pf := s.PossibleFilters()
-	for key, value := range query {
-		if _, ok := pf[key]; !ok {
-			continue
-		}
-		t := pf[key].(func(string) predicate.Job)
-		ps = append(ps, t(value))
-	}
-}
-
-func (s *JobSearch) extractSearchableFieldsAndMatchers(query map[string]string) ([]string, []string) {
-	var searchableFields []string
-	var matchers []string
-	for key, value := range query {
-		if s.isSearchableField(key) {
-			searchableFields = append(searchableFields, key)
-			matchers = append(matchers, value)
-		}
-	}
-	return searchableFields, matchers
-}
-
-func (s *JobSearch) isSearchableField(key string) bool {
-	for _, field := range s.SearchableFields() {
-		if field == key {
-			return true
+	for _, filter := range pf {
+		f := string(filter)
+		if v, ok := query[f]; ok {
+			switch filter {
+			case UUID_EQ:
+				ps = append(ps, job.UUIDEQ(uuid.MustParse(v)))
+			case UUID_NE:
+				ps = append(ps, job.UUIDNEQ(uuid.MustParse(v)))
+			case SLUG_EQ:
+				ps = append(ps, job.SlugEQ(v))
+			case SLUG_NE:
+				ps = append(ps, job.SlugNEQ(v))
+			case TITLE_EQ:
+				ps = append(ps, job.TitleEQ(v))
+			case TITLE_NE:
+				ps = append(ps, job.TitleNEQ(v))
+			default:
+				errors = append(errors, fmt.Errorf("%s is not a valid filter", filter))
+			}
 		}
 	}
-	return false
+	records, err := s.JobRepository.Filter(ps...)
+	if err != nil {
+		errors = append(errors, err)
+	}
+	return records, errors
 }
