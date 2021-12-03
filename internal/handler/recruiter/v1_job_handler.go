@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/internal/search"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -12,6 +13,7 @@ import (
 
 type V1RecruiterJobHandler struct {
 	JobRepository *repo.JobRepository
+	JobSearch     *search.JobSearch
 }
 
 func NewV1RecruiterJobHandler() *V1RecruiterJobHandler {

@@ -10,3 +10,6 @@
 //   - *_asc: Sort Ascending
 //   - *_desc: Sort Descending
 package search
+
+// TODO: Let's define interfaces which allows us to implment search using any data source. 
+// For example we can use a database(postgres, MySQL, elastic search), a file, a cache, a service, etc.
