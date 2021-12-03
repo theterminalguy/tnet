@@ -50,7 +50,7 @@ type Condition struct {
 func Extract(query map[string]interface{}) (conds []*Condition, errors []error) {
 	for k, v := range query {
 		lastIndex := strings.LastIndex(k, "_")
-		field := k[:lastIndex]
+		field := NormalizeField(k[:lastIndex])
 		matcher := SearchMatcher(k[lastIndex+1:])
 		if _, ok := AllowedMatchers[matcher]; !ok {
 			errors = append(errors, ErrInvalidMatcher(matcher))
@@ -64,4 +64,9 @@ func Extract(query map[string]interface{}) (conds []*Condition, errors []error) 
 		conds = append(conds, c)
 	}
 	return
+}
+
+// NormalizeField converts a field to a valid ent field name
+func NormalizeField(field string) string {
+	return strings.ToLower(strings.Replace(field, ".", "_", -1))
 }
