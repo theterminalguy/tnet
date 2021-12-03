@@ -25,6 +25,7 @@ func (*JobSearch) AllowedMatchers() []SearchMatcher {
 }
 
 func (*JobSearch) PossibleFilters() map[string]interface{} {
+	// Terrible code but it works
 	m := make(map[string]interface{})
 	m["uuid_eq"] = job.UUIDEQ
 	m["uuid_neq"] = job.UUIDNEQ
