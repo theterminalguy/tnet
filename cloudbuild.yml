@@ -39,4 +39,4 @@ substitutions:
   _REGION: "us-central1"
   _SERVICE_NAME: "${REPO_NAME}-staging"
   _ARTIFACT_REPO: "tentn-docker-repo"
-  _STG_IMAGE: "us-central1-docker.pkg.dev/${PROJECT_ID}/tentn-docker-repo/${REPO_NAME}_stg:${SHORT_SHA}"
+  _STG_IMAGE: "us-central1-docker.pkg.dev/${PROJECT_ID}/tentn-docker-repo/${REPO_NAME}-stg:${SHORT_SHA}"
