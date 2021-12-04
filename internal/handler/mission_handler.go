@@ -23,10 +23,6 @@ func NewMissionHandler() *MissionHandler {
 	}
 }
 
-func (*MissionHandler) ResourceName() string {
-	return "partners/missions"
-}
-
 func (h *MissionHandler) ReadAll(c echo.Context) error {
 	records, err := h.MissionRepository.GetAll()
 	if err != nil {

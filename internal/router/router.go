@@ -1,7 +1,6 @@
 package router
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/10hourlabs/tentn/internal/handler"
@@ -10,8 +9,6 @@ import (
 )
 
 type RequestHandler interface {
-	ResourceName() string
-
 	ReadAll(c echo.Context) error
 	ReadByID(c echo.Context) error
 
@@ -23,28 +20,19 @@ type RequestHandler interface {
 }
 
 type RouteHandler struct {
-	Handler    RequestHandler
-	Middleware []echo.MiddlewareFunc
+	Path        string
+	Handler     RequestHandler
+	Middlewares []echo.MiddlewareFunc
 }
 
 func (rh *RouteHandler) Restify(g *echo.Group) {
-	resourcePath := fmt.Sprintf("/%s", rh.Handler.ResourceName())
-	byIDPath := fmt.Sprintf("%s/:uuid", resourcePath)
-
-	// GET /resources
-	g.GET(resourcePath, rh.Handler.ReadAll, rh.Middleware...)
-
-	// GET /resources/:id
-	g.GET(byIDPath, rh.Handler.ReadByID, rh.Middleware...)
-
-	// POST /resources
-	g.POST(resourcePath, rh.Handler.CreateOne, rh.Middleware...)
-
-	// PUT /resources/:id
-	g.PUT(byIDPath, rh.Handler.UpdateByID, rh.Middleware...)
-
-	// DELETE /resources/:id
-	g.DELETE(byIDPath, rh.Handler.DeleteOne, rh.Middleware...)
+	resourcePath := "/" + rh.Path
+	resourceByIDPath := resourcePath + "/:uuid"
+	g.GET(resourcePath, rh.Handler.ReadAll, rh.Middlewares...)
+	g.POST(resourcePath, rh.Handler.CreateOne, rh.Middlewares...)
+	g.GET(resourceByIDPath, rh.Handler.ReadByID, rh.Middlewares...)
+	g.PUT(resourceByIDPath, rh.Handler.UpdateByID, rh.Middlewares...)
+	g.DELETE(resourceByIDPath, rh.Handler.DeleteOne, rh.Middlewares...)
 }
 
 func DefineRoutes() *echo.Echo {

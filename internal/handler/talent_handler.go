@@ -23,10 +23,6 @@ func NewTalentHandler() *TalentHandler {
 	}
 }
 
-func (*TalentHandler) ResourceName() string {
-	return oneword.Talents
-}
-
 func (h *TalentHandler) ReadAll(c echo.Context) error {
 	a, err := h.TalentRepository.GetAll()
 	if err != nil {

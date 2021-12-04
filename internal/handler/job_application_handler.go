@@ -23,10 +23,6 @@ func NewJobApplicationHandler() *JobApplicationHandler {
 	}
 }
 
-func (*JobApplicationHandler) ResourceName() string {
-	return "jobs/applications"
-}
-
 func (h *JobApplicationHandler) ReadAll(c echo.Context) error {
 	records, err := h.JobApplicationRepository.GetAll()
 	if err != nil {

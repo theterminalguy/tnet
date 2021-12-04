@@ -23,10 +23,6 @@ func NewSkillHandler() *SkillHandler {
 	}
 }
 
-func (*SkillHandler) ResourceName() string {
-	return "talents/skills"
-}
-
 func (h *SkillHandler) ReadAll(c echo.Context) error {
 	records, err := h.SkillRepository.GetAll()
 	if err != nil {

@@ -23,10 +23,6 @@ func NewWorkExperienceHandler() *WorkExperienceHandler {
 	}
 }
 
-func (*WorkExperienceHandler) ResourceName() string {
-	return "talents/work-experiences"
-}
-
 func (h *WorkExperienceHandler) ReadAll(c echo.Context) error {
 	records, err := h.WorkExperienceRepository.GetAll()
 	if err != nil {

@@ -23,10 +23,6 @@ func NewEducationHandler() *EducationHandler {
 	}
 }
 
-func (*EducationHandler) ResourceName() string {
-	return "talents/educations"
-}
-
 func (h *EducationHandler) ReadAll(c echo.Context) error {
 	records, err := h.EducationRepository.GetAll()
 	if err != nil {

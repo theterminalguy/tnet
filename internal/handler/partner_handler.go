@@ -23,10 +23,6 @@ func NewPartnerHandler() *PartnerHandler {
 	}
 }
 
-func (*PartnerHandler) ResourceName() string {
-	return "partners"
-}
-
 func (h *PartnerHandler) ReadAll(c echo.Context) error {
 	records, err := h.PartnerRepository.GetAll()
 	if err != nil {

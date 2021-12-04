@@ -23,10 +23,6 @@ func NewPortfolioLinkHandler() *PortfolioLinkHandler {
 	}
 }
 
-func (*PortfolioLinkHandler) ResourceName() string {
-	return "talents/portfolio-links"
-}
-
 func (h *PortfolioLinkHandler) ReadAll(c echo.Context) error {
 	records, err := h.PortfolioLinkRepository.GetAll()
 	if err != nil {

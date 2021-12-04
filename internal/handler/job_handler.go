@@ -23,10 +23,6 @@ func NewJobHandler() *JobHandler {
 	}
 }
 
-func (*JobHandler) ResourceName() string {
-	return oneword.Jobs
-}
-
 func (h *JobHandler) ReadAll(c echo.Context) error {
 	// TODO: implement pagination
 	// most likely coursor based

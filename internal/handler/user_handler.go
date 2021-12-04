@@ -23,10 +23,6 @@ func NewUserHandler() *UserHandler {
 	}
 }
 
-func (*UserHandler) ResourceName() string {
-	return "user"
-}
-
 func (h *UserHandler) ReadAll(c echo.Context) error {
 	records, err := h.UserRepository.GetAll()
 	if err != nil {

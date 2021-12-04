@@ -23,10 +23,6 @@ func NewEmergencyContactHandler() *EmergencyContactHandler {
 	}
 }
 
-func (*EmergencyContactHandler) ResourceName() string {
-	return "talents/emergency-contacts"
-}
-
 func (h *EmergencyContactHandler) ReadAll(c echo.Context) error {
 	records, err := h.EmergencyContactRepository.GetAll()
 	if err != nil {
