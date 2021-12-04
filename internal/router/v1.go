@@ -13,32 +13,23 @@ var jwtConfig middleware.JWTConfig = middleware.JWTConfig{
 }
 
 type v1Router struct {
-	engine   *echo.Echo // ideally, the type for engine this should be an interface
+	group    *echo.Group
 	handlers []RouteHandler
 }
 
-func (v1 *v1Router) Engine() *echo.Echo {
-	return v1.engine
-}
-
-func (v1 *v1Router) Namespace() *echo.Group {
-	return v1.Engine().Group("/v1")
-}
-
-// CreateRoutes creates all the routes for the given namespace
+// BuildRoutes creates all the routes for the given namespace
 // all routes in this namespace require authentication
 // you'd have to provide a JWT token to access the routes
-func (v1 *v1Router) CreateRoutes() {
-	g := v1.Namespace()
+func (v1 *v1Router) BuildRoutes() {
 	g.Use(middleware.JWTWithConfig(jwtConfig))
 	for _, h := range v1.handlers {
-		createRoutes(g, h)
+		h.Restify(v1.group)
 	}
 }
 
 func NewV1Router(e *echo.Echo) *v1Router {
 	return &v1Router{
-		engine: e,
+		group: e.Group("/v1"),
 		handlers: []RouteHandler{
 			{handler.NewJobHandler(), nil},
 			{handler.NewJobApplicationHandler(), nil},

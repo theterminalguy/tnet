@@ -27,7 +27,7 @@ type RouteHandler struct {
 	Middleware []echo.MiddlewareFunc
 }
 
-func createRoutes(g *echo.Group, rh RouteHandler) {
+func (rh *RouteHandler) Restify(g *echo.Group) {
 	resourcePath := fmt.Sprintf("/%s", rh.Handler.ResourceName())
 	byIDPath := fmt.Sprintf("%s/:uuid", resourcePath)
 
@@ -58,7 +58,6 @@ func DefineRoutes() *echo.Echo {
 	e.GET("/health", handler.HealthHandler)
 	e.GET("/auth", handler.GoogleLoginHandler)
 	e.GET("/oauth2/google/callback", handler.GoogleOauth2CallbackHandler)
-	router := NewV1Router(e)
-	router.CreateRoutes()
-	return router.Engine()
+	NewV1Router(e).BuildRoutes()
+	return e
 }
