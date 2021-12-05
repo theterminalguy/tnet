@@ -2,17 +2,10 @@ package osutil
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strings"
 )
-
-func Getenv(key, defaultValue string) string {
-	v := os.Getenv(key)
-	if v == "" {
-		return defaultValue
-	}
-	return v
-}
 
 var requiredRuntimeEnv = []string{
 	"ENV",
@@ -82,6 +75,7 @@ func CheckEnv() {
 // SetEnvFromFile sets env vars from a file
 // Only use this for dev mode
 func SetEnvFromFile(file string) {
+	fmt.Println("Setting env vars from file:", file)
 	fileContent, err := os.Open(file)
 	if err != nil {
 		panic(err)

@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/10hourlabs/tentn/internal/router"
-	"github.com/10hourlabs/tentn/util/osutil"
 )
 
 func main() {
-	osutil.CheckEnv()
 	e := router.DefineRoutes()
-	httpPort := fmt.Sprintf(":%v", osutil.Getenv("PORT", "8080"))
+	httpPort := fmt.Sprintf(":%v", os.Getenv("PORT"))
 	e.Logger.Fatal(e.Start(httpPort))
 }

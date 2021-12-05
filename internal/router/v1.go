@@ -21,7 +21,7 @@ type v1Router struct {
 // all routes in this namespace require authentication
 // you'd have to provide a JWT token to access the routes
 func (v1 *v1Router) BuildRoutes() {
-	g.Use(middleware.JWTWithConfig(jwtConfig))
+	v1.group.Use(middleware.JWTWithConfig(jwtConfig))
 	for _, h := range v1.handlers {
 		h.Restify(v1.group)
 	}

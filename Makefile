@@ -10,6 +10,9 @@ setup: ## Builds the web container
 start: ## Start all services
 	STAGE=app-build docker-compose -f docker-compose.yml up
 
+dev: ## Run the web server in dev mode without using docker
+	ENV=dev go run cmd/web/main.go
+
 stop: ## Stop all services
 	STAGE=app-build docker-compose -f docker-compose.yml down
 
