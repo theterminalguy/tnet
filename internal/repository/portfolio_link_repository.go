@@ -39,7 +39,7 @@ func (*PortfolioLinkRepository) GetByUUID(id uuid.UUID) (*ent.PortfolioLink, err
 		return nil, err
 	}
 	if record.DeletedAt != nil {
-		return nil, RecordNotFoundError
+		return nil, ErrRecordDeleted
 	}
 	return record, nil
 }

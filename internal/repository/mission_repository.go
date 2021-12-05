@@ -43,7 +43,7 @@ func (*MissionRepository) GetByUUID(id uuid.UUID) (*ent.Mission, error) {
 		return nil, err
 	}
 	if record.DeletedAt != nil {
-		return nil, RecordNotFoundError
+		return nil, ErrRecordDeleted
 	}
 	return record, nil
 }
@@ -67,6 +67,9 @@ func (*MissionRepository) Create(p MissionParams) (*ent.Mission, error) {
 			mission.PartnerID(j.ID),
 			mission.TalentID(a.ID),
 		)).All(dBContext)
+	if err != nil {
+		return nil, err
+	}
 	if collection.HasAny(records) {
 		return nil, errors.New("existing mission for partner")
 	}

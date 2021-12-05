@@ -46,7 +46,7 @@ func (*JobApplicationRepository) GetByUUID(id uuid.UUID) (*ent.JobApplication, e
 		return nil, err
 	}
 	if record.DeletedAt != nil {
-		return nil, RecordNotFoundError
+		return nil, ErrRecordDeleted
 	}
 	return record, nil
 }

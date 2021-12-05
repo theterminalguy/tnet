@@ -42,7 +42,7 @@ func (*EmergencyContactRepository) GetByUUID(id uuid.UUID) (*ent.EmergencyContac
 		return nil, err
 	}
 	if record.DeletedAt != nil {
-		return nil, RecordNotFoundError
+		return nil, ErrRecordDeleted
 	}
 	return record, nil
 }
