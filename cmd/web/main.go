@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	osutil.CheckEnv()
 	e := router.DefineRoutes()
 	httpPort := fmt.Sprintf(":%v", osutil.Getenv("PORT", "8080"))
 	e.Logger.Fatal(e.Start(httpPort))

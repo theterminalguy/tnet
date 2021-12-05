@@ -31,7 +31,7 @@ func init() {
 	var client *ent.Client
 	var err error
 	dBContext = context.Background()
-	if os.Getenv("ENV") == "staging" {
+	if os.Getenv("ENV") == "staging" || os.Getenv("ENV") == "test" {
 		client, err = database.NewSQLite3InMemoryClient()
 	} else {
 		client, err = database.NewPostgresClient()
