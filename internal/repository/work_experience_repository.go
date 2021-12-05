@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
+	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/workexperience"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/10hourlabs/tentn/util/date"
@@ -35,6 +36,16 @@ func (*WorkExperienceRepository) GetAll() ([]*ent.WorkExperience, error) {
 		return nil, err
 	}
 	return records, nil
+}
+
+func (*WorkExperienceRepository) Filter(prd ...predicate.WorkExperience) ([]*ent.WorkExperience, error) {
+	wkExps, err := dBConn.WorkExperience.Query().
+		Where(prd...).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return wkExps, nil
 }
 
 func (*WorkExperienceRepository) GetByUUID(id uuid.UUID) (*ent.WorkExperience, error) {

@@ -3,38 +3,39 @@ package search
 import (
 	"fmt"
 	"net/url"
+	"strconv"
 
 	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/skill"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/google/uuid"
 )
 
-type JobSearch struct {
-	JobRepository repo.JobRepository
+type SkillSearch struct {
+	SkillRepository repo.SkillRepository
 }
 
-func (*JobSearch) PossibleFilters() []Filter {
+func (*SkillSearch) PossibleFilters() []Filter {
 	// Terrible code but it works
 	// the compiler does not have to figure our the type at runtime
 	return []Filter{
 		UUID_EQ,
 		UUID_NEQ,
 
-		SLUG_EQ,
-		SLUG_NEQ,
+		NAME_EQ,
+		NAME_NEQ,
 
-		TITLE_EQ,
-		TITLE_NEQ,
+		YEAR_EXP_EQ,
+		YEAR_EXP_NEQ,
 	}
 }
 
-func (s *JobSearch) Search(qs string) ([]*ent.Job, []error) {
+func (s *SkillSearch) Search(qs string) ([]*ent.Skill, []error) {
 	// TODO: this implementation of search and filters is not reusable but works really well for now
 	// and makes it easy for us to decide what can be searchable and what can't.
 	// We should probably define a Searchable interface and implement it for each searchable entity
-	var ps []predicate.Job
+	var ps []predicate.Skill
 	var errors []error
 	query, err := url.ParseQuery(qs)
 	if err != nil {
@@ -48,25 +49,41 @@ func (s *JobSearch) Search(qs string) ([]*ent.Job, []error) {
 			v := vv[0]
 			switch filter {
 			case UUID_EQ:
-				ps = append(ps, job.UUIDEQ(uuid.MustParse(v)))
+				ps = append(ps, skill.UUIDEQ(uuid.MustParse(v)))
 			case UUID_NEQ:
-				ps = append(ps, job.UUIDNEQ(uuid.MustParse(v)))
-			case SLUG_EQ:
-				ps = append(ps, job.SlugEQ(v))
-			case SLUG_NEQ:
-				ps = append(ps, job.SlugNEQ(v))
-			case TITLE_EQ:
-				ps = append(ps, job.TitleEQ(v))
-			case TITLE_NEQ:
-				ps = append(ps, job.TitleNEQ(v))
+				ps = append(ps, skill.UUIDNEQ(uuid.MustParse(v)))
+			case NAME_EQ:
+				ps = append(ps, skill.NameEQ(v))
+			case NAME_NEQ:
+				ps = append(ps, skill.NameNEQ(v))
+			case YEAR_EXP_EQ:
+				fv, err := stringToFloat32(v)
+				if err != nil {
+					errors = append(errors, err)
+				}
+				ps = append(ps, skill.YearsOfExperienceEQ(fv))
+			case YEAR_EXP_NEQ:
+				fv, err := stringToFloat32(v)
+				if err != nil {
+					errors = append(errors, err)
+				}
+				ps = append(ps, skill.YearsOfExperienceNEQ(fv))
 			default:
 				errors = append(errors, fmt.Errorf("%s is not a valid filter", filter))
 			}
 		}
 	}
-	records, err := s.JobRepository.Filter(ps...)
+	records, err := s.SkillRepository.Filter(ps...)
 	if err != nil {
 		errors = append(errors, err)
 	}
 	return records, errors
+}
+
+func stringToFloat32(val string) (float32, error) {
+	fv, err := strconv.ParseFloat(val, 32)
+	if err != nil {
+		return 0.0, err
+	}
+	return float32(fv), nil
 }

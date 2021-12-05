@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
+	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/randutil"
 	"github.com/10hourlabs/tentn/util/collection"
@@ -35,6 +36,27 @@ type TalentParams struct {
 func NewTalentRepository() *TalentRepository {
 	return &TalentRepository{}
 }
+
+func (*TalentRepository) Filter(prd ...predicate.Talent) ([]*ent.Talent, error) {
+	jobs, err := dBConn.Talent.Query().
+		Where(prd...).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return jobs, nil
+}
+
+// func (*TalentRepository) LikeFilter(prd ...predicate.Talent) ([]*ent.Talent, error) {
+// 	talents, err := dBConn.Talent.Query().
+// 	Where(func(s *sql.Selector){
+//         s.Where(sql.Like(talent.FieldCountryCode,"_B%"))
+//     }).All(dBContext)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return talents, nil
+// }
 
 func (*TalentRepository) GetAll() ([]*ent.Talent, error) {
 	Talents, err := dBConn.Talent.Query().
