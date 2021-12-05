@@ -39,8 +39,6 @@ services:
       - .env
 
   web:
-    tty: true
-    stdin_open: true
     depends_on:
       - postgres
     build:
@@ -55,6 +53,19 @@ services:
     env_file:
       - .env
     restart: unless-stopped
+
+  webtest:
+    tty: true
+    stdin_open: true
+    build:
+      context: .
+      target: test
+    networks:
+      - tentn
+    environment:
+      - ENV=test
+    env_file:
+      - .env
 
 volumes:
     postgres:

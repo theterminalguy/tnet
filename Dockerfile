@@ -2,6 +2,8 @@
 
 FROM golang:1.17-buster as deps
 
+ENV PLATFORM="docker"
+
 WORKDIR /app
 
 COPY go.* ./

@@ -26,8 +26,8 @@ scaffold: ## Generate a new resource scaffold
 	go run cmd/generate/main.go $(resource)
 
 test: ## Run all tests
-	COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 STAGE=test docker-compose -f docker-compose.yml build web
-	STAGE=test docker-compose -f docker-compose.yml up web
+	COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose -f docker-compose.yml build --no-cache webtest
+	docker-compose -f docker-compose.yml up webtest
 
 hot-reload: ## Enables hot reload for the web service
 	STAGE=hot-reload docker-compose -f docker-compose.yml build web 

@@ -38,16 +38,17 @@ var requiredRuntimeEnvForProd = []string{
 func CheckEnv() {
 	// First check if we're running in dev or test mode
 	if os.Getenv("ENV") == "dev" || os.Getenv("ENV") == "test" {
-		// check if .env file exists
-		if _, err := os.Stat(".env"); os.IsNotExist(err) {
-			panic("Missing .env file")
+		if os.Getenv("PLATFORM") != "docker" {
+			// check if .env file exists, this means you are running locally
+			if _, err := os.Stat(".env"); os.IsNotExist(err) {
+				panic("Missing .env file")
+			}
+			// set env vars from .env file
+			SetEnvFromFile(".env")
 		}
-		// set env vars from .env file
-		SetEnvFromFile(".env")
 	}
 
 	var errs []string
-
 	for _, key := range requiredRuntimeEnv {
 		if os.Getenv(key) == "" {
 			errs = append(errs, "Missing required env var: "+key)
@@ -66,7 +67,6 @@ func CheckEnv() {
 			}
 		}
 	}
-
 	if len(errs) > 0 {
 		panic(strings.Join(errs, "\n"))
 	}
@@ -91,6 +91,10 @@ func SetEnvFromFile(file string) {
 		parts := strings.SplitN(line, "=", 2)
 		if len(parts) != 2 {
 			panic("invalid line in .env file: " + line)
+		}
+		// Do not set ENV var
+		if parts[0] == "ENV" {
+			continue
 		}
 		os.Setenv(parts[0], parts[1])
 	}
