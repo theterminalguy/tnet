@@ -43,6 +43,7 @@ func NewV1Router(e *echo.Echo) *v1Router {
 			},
 			{
 				Path:        "talents",
+				Except:      []HTTPMethod{POST},
 				Handler:     handler.NewTalentHandler(),
 				Middlewares: nil,
 			},
