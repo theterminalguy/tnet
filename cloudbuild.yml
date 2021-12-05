@@ -14,12 +14,19 @@ steps:
 
   - name: "gcr.io/cloud-builders/docker"
     id: "Running test"
-    args: ["run", "--rm", "${_TEST_IMAGE}"]
-    env:
-      - "ENV=${_ENV}"
-      - "PORT=${_PORT}"
-      - "APP_HOST=${_APP_HOST}"
-  
+    args:
+      [
+        "run",
+        "-e",
+        "ENV=${_ENV}",
+        "-e",
+        "PORT=${_PORT}",
+        "-e",
+        "APP_HOST=${_APP_HOST}",
+        "--rm",
+        "${_TEST_IMAGE}",
+      ]
+
   - name: "gcr.io/cloud-builders/docker"
     id: "Building image for staging"
     args: ["build", "-t", "${_STG_IMAGE}", "--target", "prod", "."]
