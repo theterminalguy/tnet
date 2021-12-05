@@ -19,8 +19,18 @@ type RequestHandler interface {
 	DeleteOne(c echo.Context) error
 }
 
+type HTTPMethod string
+
+const (
+	GET    HTTPMethod = http.MethodGet
+	POST   HTTPMethod = http.MethodPost
+	PUT    HTTPMethod = http.MethodPut
+	DELETE HTTPMethod = http.MethodDelete
+)
+
 type RouteHandler struct {
 	Path        string
+	Except      []HTTPMethod
 	Handler     RequestHandler
 	Middlewares []echo.MiddlewareFunc
 }
@@ -28,11 +38,38 @@ type RouteHandler struct {
 func (rh *RouteHandler) Restify(g *echo.Group) {
 	resourcePath := "/" + rh.Path
 	resourceByIDPath := resourcePath + "/:uuid"
-	g.GET(resourcePath, rh.Handler.ReadAll, rh.Middlewares...)
-	g.POST(resourcePath, rh.Handler.CreateOne, rh.Middlewares...)
-	g.GET(resourceByIDPath, rh.Handler.ReadByID, rh.Middlewares...)
-	g.PUT(resourceByIDPath, rh.Handler.UpdateByID, rh.Middlewares...)
-	g.DELETE(resourceByIDPath, rh.Handler.DeleteOne, rh.Middlewares...)
+	endpoints := make(map[HTTPMethod]func())
+	endpoints[GET] = func() {
+		g.GET(resourcePath, rh.Handler.ReadAll, rh.Middlewares...)
+		g.GET(resourceByIDPath, rh.Handler.ReadByID, rh.Middlewares...)
+	}
+	endpoints[POST] = func() {
+		g.POST(resourcePath, rh.Handler.CreateOne, rh.Middlewares...)
+	}
+	endpoints[PUT] = func() {
+		g.PUT(resourceByIDPath, rh.Handler.UpdateByID, rh.Middlewares...)
+	}
+	endpoints[DELETE] = func() {
+		g.DELETE(resourceByIDPath, rh.Handler.DeleteOne, rh.Middlewares...)
+	}
+	allMethods := []HTTPMethod{GET, POST, PUT, DELETE}
+	diff := func(a, b []HTTPMethod) []HTTPMethod {
+		mb := make(map[HTTPMethod]bool, len(b))
+		for _, m := range b {
+			mb[m] = true
+		}
+		var ms []HTTPMethod
+		for _, m := range a {
+			if _, ok := mb[m]; !ok {
+				ms = append(ms, m)
+			}
+		}
+		return ms
+	}
+	allowedMethods := diff(allMethods, rh.Except)
+	for _, method := range allowedMethods {
+		endpoints[method]()
+	}
 }
 
 func DefineRoutes() *echo.Echo {
