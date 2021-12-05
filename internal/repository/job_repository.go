@@ -49,7 +49,7 @@ func (*JobRepository) GetByUUID(id uuid.UUID) (*ent.Job, error) {
 		return nil, err
 	}
 	if j.DeletedAt != nil {
-		return nil, RecordNotFoundError
+		return nil, ErrRecordDeleted
 	}
 	return j, nil
 }

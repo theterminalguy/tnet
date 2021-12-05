@@ -45,7 +45,7 @@ func (*WorkExperienceRepository) GetByUUID(id uuid.UUID) (*ent.WorkExperience, e
 		return nil, err
 	}
 	if record.DeletedAt != nil {
-		return nil, RecordNotFoundError
+		return nil, ErrRecordDeleted
 	}
 	return record, nil
 }

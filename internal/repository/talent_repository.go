@@ -14,7 +14,7 @@ import (
 	"github.com/google/uuid"
 )
 
-var invalidReferralCodeError error = errors.New("invalid referral code")
+var ErrInvalidReferralCode error = errors.New("invalid referral code")
 
 type TalentRepository struct{}
 
@@ -68,7 +68,7 @@ func (*TalentRepository) GetByUUID(id uuid.UUID) (*ent.Talent, error) {
 	}
 	//```
 	if a.DeletedAt != nil {
-		return nil, RecordNotFoundError
+		return nil, ErrRecordDeleted
 	}
 	return a, nil
 }
@@ -101,7 +101,7 @@ func (r *TalentRepository) Create(p TalentParams) (*ent.Talent, error) {
 			Where(talent.TentnCodeEQ(p.ReferralCode)).
 			Only(dBContext)
 		if err != nil {
-			return nil, invalidReferralCodeError
+			return nil, ErrInvalidReferralCode
 		}
 		q.SetReferrerID(ref.ID)
 		q.SetReferralCode(ref.TentnCode)

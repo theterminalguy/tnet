@@ -45,7 +45,7 @@ func (*EducationRepository) GetByUUID(id uuid.UUID) (*ent.Education, error) {
 		return nil, err
 	}
 	if record.DeletedAt != nil {
-		return nil, RecordNotFoundError
+		return nil, ErrRecordDeleted
 	}
 	return record, nil
 }

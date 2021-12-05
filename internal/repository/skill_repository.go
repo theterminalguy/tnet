@@ -59,7 +59,7 @@ func (*SkillRepository) GetByUUID(id uuid.UUID) (*ent.Skill, error) {
 		return nil, err
 	}
 	if record.DeletedAt != nil {
-		return nil, RecordNotFoundError
+		return nil, ErrRecordDeleted
 	}
 	return record, nil
 }
