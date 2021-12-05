@@ -3,7 +3,6 @@ package userrole
 type Role string
 
 const (
-	User       Role = "user"
 	Talent     Role = "talent"
 	Recruiter  Role = "recruiter"
 	Admin      Role = "admin"
