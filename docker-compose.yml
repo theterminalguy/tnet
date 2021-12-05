@@ -39,6 +39,8 @@ services:
       - .env
 
   web:
+    tty: true
+    stdin_open: true
     depends_on:
       - postgres
     build:
