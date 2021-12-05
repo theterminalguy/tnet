@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/google/uuid"
 )
 
@@ -132,6 +133,13 @@ func Name(v string) predicate.User {
 func Email(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldEmail), v))
+	})
+}
+
+// Approved applies equality check predicate on the "approved" field. It's identical to ApprovedEQ.
+func Approved(v bool) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldApproved), v))
 	})
 }
 
@@ -676,21 +684,23 @@ func EmailContainsFold(v string) predicate.User {
 }
 
 // RoleEQ applies the EQ predicate on the "role" field.
-func RoleEQ(v Role) predicate.User {
+func RoleEQ(v userrole.Role) predicate.User {
+	vc := v
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRole), v))
+		s.Where(sql.EQ(s.C(FieldRole), vc))
 	})
 }
 
 // RoleNEQ applies the NEQ predicate on the "role" field.
-func RoleNEQ(v Role) predicate.User {
+func RoleNEQ(v userrole.Role) predicate.User {
+	vc := v
 	return predicate.User(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRole), v))
+		s.Where(sql.NEQ(s.C(FieldRole), vc))
 	})
 }
 
 // RoleIn applies the In predicate on the "role" field.
-func RoleIn(vs ...Role) predicate.User {
+func RoleIn(vs ...userrole.Role) predicate.User {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -707,7 +717,7 @@ func RoleIn(vs ...Role) predicate.User {
 }
 
 // RoleNotIn applies the NotIn predicate on the "role" field.
-func RoleNotIn(vs ...Role) predicate.User {
+func RoleNotIn(vs ...userrole.Role) predicate.User {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -720,6 +730,20 @@ func RoleNotIn(vs ...Role) predicate.User {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldRole), v...))
+	})
+}
+
+// ApprovedEQ applies the EQ predicate on the "approved" field.
+func ApprovedEQ(v bool) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldApproved), v))
+	})
+}
+
+// ApprovedNEQ applies the NEQ predicate on the "approved" field.
+func ApprovedNEQ(v bool) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldApproved), v))
 	})
 }
 

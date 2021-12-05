@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/google/uuid"
 )
 
@@ -28,6 +29,8 @@ const (
 	FieldEmail = "email"
 	// FieldRole holds the string denoting the role field in the database.
 	FieldRole = "role"
+	// FieldApproved holds the string denoting the approved field in the database.
+	FieldApproved = "approved"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 )
@@ -42,6 +45,7 @@ var Columns = []string{
 	FieldName,
 	FieldEmail,
 	FieldRole,
+	FieldApproved,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -63,31 +67,14 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultApproved holds the default value on creation for the "approved" field.
+	DefaultApproved bool
 )
-
-// Role defines the type for the "role" enum field.
-type Role string
-
-// RoleUser is the default value of the Role enum.
-const DefaultRole = RoleUser
-
-// Role values.
-const (
-	RoleUser           Role = "user"
-	RolePartner        Role = "partner"
-	RoleAdmin          Role = "admin"
-	RoleSuperadmin     Role = "superadmin"
-	RoleServiceAccount Role = "service-account"
-)
-
-func (r Role) String() string {
-	return string(r)
-}
 
 // RoleValidator is a validator for the "role" field enum values. It is called by the builders before save.
-func RoleValidator(r Role) error {
+func RoleValidator(r userrole.Role) error {
 	switch r {
-	case RoleUser, RolePartner, RoleAdmin, RoleSuperadmin, RoleServiceAccount:
+	case "talent", "recruiter", "admin", "superadmin":
 		return nil
 	default:
 		return fmt.Errorf("user: invalid enum value for role field: %q", r)

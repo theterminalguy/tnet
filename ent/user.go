@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -30,7 +31,9 @@ type User struct {
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
 	// Role holds the value of the "role" field.
-	Role user.Role `json:"role,omitempty"`
+	Role userrole.Role `json:"role,omitempty"`
+	// Approved holds the value of the "approved" field.
+	Approved bool `json:"approved,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -38,6 +41,8 @@ func (*User) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case user.FieldApproved:
+			values[i] = new(sql.NullBool)
 		case user.FieldID:
 			values[i] = new(sql.NullInt64)
 		case user.FieldName, user.FieldEmail, user.FieldRole:
@@ -108,7 +113,13 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field role", values[i])
 			} else if value.Valid {
-				u.Role = user.Role(value.String)
+				u.Role = userrole.Role(value.String)
+			}
+		case user.FieldApproved:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field approved", values[i])
+			} else if value.Valid {
+				u.Approved = value.Bool
 			}
 		}
 	}
@@ -154,6 +165,8 @@ func (u *User) String() string {
 	builder.WriteString(u.Email)
 	builder.WriteString(", role=")
 	builder.WriteString(fmt.Sprintf("%v", u.Role))
+	builder.WriteString(", approved=")
+	builder.WriteString(fmt.Sprintf("%v", u.Approved))
 	builder.WriteByte(')')
 	return builder.String()
 }

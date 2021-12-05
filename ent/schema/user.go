@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+	"github.com/10hourlabs/tentn/ent/schema/userrole"
 )
 
 // User holds the schema definition for the User entity.
@@ -19,26 +20,16 @@ func (User) Mixin() []ent.Mixin {
 	}
 }
 
-// TODO: should we implement a value interface instead?
-// See: https://entgo.io/docs/schema-fields#enum-fields
-func UserRoles() []string {
-	return []string{
-		"user",
-		"partner",
-		"admin",
-		"superadmin",      // Boss
-		"service-account", // Ex Machina
-	}
-}
-
 // Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name"),
 		field.String("email"),
 		field.Enum("role").
-			Default("user").
-			Values(UserRoles()...),
+			GoType(userrole.Role("")),
+
+		field.Bool("approved").
+			Default(false),
 	}
 }
 

@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -82,15 +83,21 @@ func (uc *UserCreate) SetEmail(s string) *UserCreate {
 }
 
 // SetRole sets the "role" field.
-func (uc *UserCreate) SetRole(u user.Role) *UserCreate {
+func (uc *UserCreate) SetRole(u userrole.Role) *UserCreate {
 	uc.mutation.SetRole(u)
 	return uc
 }
 
-// SetNillableRole sets the "role" field if the given value is not nil.
-func (uc *UserCreate) SetNillableRole(u *user.Role) *UserCreate {
-	if u != nil {
-		uc.SetRole(*u)
+// SetApproved sets the "approved" field.
+func (uc *UserCreate) SetApproved(b bool) *UserCreate {
+	uc.mutation.SetApproved(b)
+	return uc
+}
+
+// SetNillableApproved sets the "approved" field if the given value is not nil.
+func (uc *UserCreate) SetNillableApproved(b *bool) *UserCreate {
+	if b != nil {
+		uc.SetApproved(*b)
 	}
 	return uc
 }
@@ -184,9 +191,9 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultUpdatedAt()
 		uc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := uc.mutation.Role(); !ok {
-		v := user.DefaultRole
-		uc.mutation.SetRole(v)
+	if _, ok := uc.mutation.Approved(); !ok {
+		v := user.DefaultApproved
+		uc.mutation.SetApproved(v)
 	}
 }
 
@@ -214,6 +221,9 @@ func (uc *UserCreate) check() error {
 		if err := user.RoleValidator(v); err != nil {
 			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "role": %w`, err)}
 		}
+	}
+	if _, ok := uc.mutation.Approved(); !ok {
+		return &ValidationError{Name: "approved", err: errors.New(`ent: missing required field "approved"`)}
 	}
 	return nil
 }
@@ -303,6 +313,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldRole,
 		})
 		_node.Role = value
+	}
+	if value, ok := uc.mutation.Approved(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: user.FieldApproved,
+		})
+		_node.Approved = value
 	}
 	return _node, _spec
 }

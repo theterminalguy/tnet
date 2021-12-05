@@ -16,6 +16,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/user"
@@ -9444,7 +9445,8 @@ type UserMutation struct {
 	deleted_at    *time.Time
 	name          *string
 	email         *string
-	role          *user.Role
+	role          *userrole.Role
+	approved      *bool
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*User, error)
@@ -9766,12 +9768,12 @@ func (m *UserMutation) ResetEmail() {
 }
 
 // SetRole sets the "role" field.
-func (m *UserMutation) SetRole(u user.Role) {
+func (m *UserMutation) SetRole(u userrole.Role) {
 	m.role = &u
 }
 
 // Role returns the value of the "role" field in the mutation.
-func (m *UserMutation) Role() (r user.Role, exists bool) {
+func (m *UserMutation) Role() (r userrole.Role, exists bool) {
 	v := m.role
 	if v == nil {
 		return
@@ -9782,7 +9784,7 @@ func (m *UserMutation) Role() (r user.Role, exists bool) {
 // OldRole returns the old "role" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldRole(ctx context.Context) (v user.Role, err error) {
+func (m *UserMutation) OldRole(ctx context.Context) (v userrole.Role, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldRole is only allowed on UpdateOne operations")
 	}
@@ -9799,6 +9801,42 @@ func (m *UserMutation) OldRole(ctx context.Context) (v user.Role, err error) {
 // ResetRole resets all changes to the "role" field.
 func (m *UserMutation) ResetRole() {
 	m.role = nil
+}
+
+// SetApproved sets the "approved" field.
+func (m *UserMutation) SetApproved(b bool) {
+	m.approved = &b
+}
+
+// Approved returns the value of the "approved" field in the mutation.
+func (m *UserMutation) Approved() (r bool, exists bool) {
+	v := m.approved
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldApproved returns the old "approved" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldApproved(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldApproved is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldApproved requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldApproved: %w", err)
+	}
+	return oldValue.Approved, nil
+}
+
+// ResetApproved resets all changes to the "approved" field.
+func (m *UserMutation) ResetApproved() {
+	m.approved = nil
 }
 
 // Where appends a list predicates to the UserMutation builder.
@@ -9820,7 +9858,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.uuid != nil {
 		fields = append(fields, user.FieldUUID)
 	}
@@ -9841,6 +9879,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.role != nil {
 		fields = append(fields, user.FieldRole)
+	}
+	if m.approved != nil {
+		fields = append(fields, user.FieldApproved)
 	}
 	return fields
 }
@@ -9864,6 +9905,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Email()
 	case user.FieldRole:
 		return m.Role()
+	case user.FieldApproved:
+		return m.Approved()
 	}
 	return nil, false
 }
@@ -9887,6 +9930,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldEmail(ctx)
 	case user.FieldRole:
 		return m.OldRole(ctx)
+	case user.FieldApproved:
+		return m.OldApproved(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -9939,11 +9984,18 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		m.SetEmail(v)
 		return nil
 	case user.FieldRole:
-		v, ok := value.(user.Role)
+		v, ok := value.(userrole.Role)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRole(v)
+		return nil
+	case user.FieldApproved:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetApproved(v)
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
@@ -10023,6 +10075,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldRole:
 		m.ResetRole()
+		return nil
+	case user.FieldApproved:
+		m.ResetApproved()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
