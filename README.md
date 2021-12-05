@@ -58,3 +58,23 @@ All tests can be run with `$ make test`.
 ## Known Issues
 
 If you run into `ent` related issues, try running `$ make ent-generate` to generate the schema and `$ make up` to bring up the services.
+
+## Useful Make Commands
+
+Run any of the following command prefixing `$ make <command>`:
+
+```
+help:  Output available commands
+setup:  Builds the web container
+start:  Start all services
+dev:  Run the web server in dev mode without using docker
+pg:  Starts the postgres server
+stop:  Stop all services
+destroy:  Remove all containers and images. Also, destroy all volumes
+scaffold:  Generate a new resource scaffold
+test:  Run all tests
+hot-reload:  Enables hot reload for the web service
+ent-generate:  Generate ent Assests
+go-format:  Run go fmt ./... on all go files
+
+```
