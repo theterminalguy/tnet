@@ -10,6 +10,12 @@ setup: ## Builds the web container
 start: ## Start all services
 	STAGE=app-build docker-compose -f docker-compose.yml up
 
+dev: ## Run the web server in dev mode without using docker
+	ENV=dev go run cmd/web/main.go
+
+pg: ## Starts the postgres server
+	docker-compose -f docker-compose.yml up -d postgres
+
 stop: ## Stop all services
 	STAGE=app-build docker-compose -f docker-compose.yml down
 
@@ -20,8 +26,8 @@ scaffold: ## Generate a new resource scaffold
 	go run cmd/generate/main.go $(resource)
 
 test: ## Run all tests
-	STAGE=tests docker-compose -f docker-compose.yml build web 
-	STAGE=tests docker-compose -f docker-compose.yml up web
+	COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose -f docker-compose.yml build --no-cache webtest
+	docker-compose -f docker-compose.yml up webtest
 
 hot-reload: ## Enables hot reload for the web service
 	STAGE=hot-reload docker-compose -f docker-compose.yml build web 

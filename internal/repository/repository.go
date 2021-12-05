@@ -8,6 +8,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/internal/database"
+	"github.com/10hourlabs/tentn/util/osutil"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
@@ -28,10 +29,13 @@ var (
 )
 
 func init() {
+	// TODO: should we have this here or in main?
+	osutil.CheckEnv()
+
 	var client *ent.Client
 	var err error
 	dBContext = context.Background()
-	if os.Getenv("ENV") == "staging" {
+	if os.Getenv("ENV") == "staging" || os.Getenv("ENV") == "test" {
 		client, err = database.NewSQLite3InMemoryClient()
 	} else {
 		client, err = database.NewPostgresClient()
