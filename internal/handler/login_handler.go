@@ -38,6 +38,9 @@ var gconf *oauth2.Config = &oauth2.Config{
 	Endpoint: google.Endpoint,
 }
 
+// GoogleOauth2CallbackHandler handles the callback from Google OAuth2
+// anyone who signs up with Google will be redirected to this handler
+// and will be automatically created with the "Talent" role
 func GoogleOauth2CallbackHandler(c echo.Context) error {
 	// TODO: we should redirect to a page once the flow completes without errors
 	// this page should show the user profile obtained from google and also
@@ -97,6 +100,13 @@ func GoogleOauth2CallbackHandler(c echo.Context) error {
 		return err
 	}
 	return c.JSON(http.StatusOK, echo.Map{"token": token})
+}
+
+// SlackOauth2CallbackHandler handles the callback from Slack OAuth2
+// anyone who signs up with Slack will be redirected to this handler
+// and will be automatically created with the "Recruiter" role
+func SlackOauth2CallbackHandler(c echo.Context) error {
+	return nil
 }
 
 func TalentLoginHanlder(c echo.Context) error {
