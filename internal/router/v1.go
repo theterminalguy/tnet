@@ -2,41 +2,27 @@ package router
 
 import (
 	"github.com/10hourlabs/tentn/internal/handler"
+	public_handler "github.com/10hourlabs/tentn/internal/handler/public"
+	talent_handler "github.com/10hourlabs/tentn/internal/handler/talent"
 	"github.com/10hourlabs/tentn/internal/middleware"
 	"github.com/labstack/echo/v4"
 )
 
-type v1Router struct {
-	group       *echo.Group
-	middlewares []echo.MiddlewareFunc
-	handlers    []RouteHandler
-}
-
-// BuildRoutes creates all the routes for the given namespace
-// all routes in this namespace require authentication
-// you'd have to provide a JWT token to access the routes
-func (v1 *v1Router) BuildRoutes() {
-	v1.group.Use(v1.middlewares...)
-	for _, h := range v1.handlers {
-		h.Restify(v1.group)
-	}
-}
-
 func DefineV1Routes(e *echo.Echo) {
-	publicV1Router := &v1Router{
+	publicV1Router := &Router{
 		group: e.Group("/v1/public"),
 		handlers: []RouteHandler{
 			{
 				Path:        "jobs",
 				Only:        []HTTPMethod{GET},
-				Handler:     handler.NewJobHandler(), //NewPublicJobHandler(),
+				Handler:     public_handler.NewV1PublicJobHanler(),
 				Middlewares: nil,
 			},
 		},
 	}
 	publicV1Router.BuildRoutes()
 
-	talentRouter := &v1Router{
+	talentRouter := &Router{
 		group: e.Group("/v1/talent"),
 		middlewares: []echo.MiddlewareFunc{
 			middleware.JWTAuthenticate(),
@@ -44,14 +30,15 @@ func DefineV1Routes(e *echo.Echo) {
 		handlers: []RouteHandler{
 			{
 				Path:        "jobs",
-				Handler:     handler.NewJobHandler(),
+				Only:        []HTTPMethod{GET},
+				Handler:     talent_handler.NewV1TalentJobHandler(),
 				Middlewares: nil,
 			},
 		},
 	}
 	talentRouter.BuildRoutes()
 
-	recruiterRouter := &v1Router{
+	recruiterRouter := &Router{
 		group: e.Group("/v1/recruiter"),
 		middlewares: []echo.MiddlewareFunc{
 			middleware.JWTAuthenticate(),

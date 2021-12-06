@@ -3,10 +3,24 @@ package router
 import (
 	"net/http"
 
-	"github.com/10hourlabs/tentn/internal/handler"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
+
+type Router struct {
+	group       *echo.Group
+	middlewares []echo.MiddlewareFunc
+	handlers    []RouteHandler
+}
+
+// BuildRoutes creates all the routes for the given namespace
+// all routes in this namespace require authentication
+// you'd have to provide a JWT token to access the routes
+func (r *Router) BuildRoutes() {
+	r.group.Use(r.middlewares...)
+	for _, h := range r.handlers {
+		h.Restify(r.group)
+	}
+}
 
 type RequestHandler interface {
 	ReadAll(c echo.Context) error
@@ -77,19 +91,4 @@ func (rh *RouteHandler) Restify(g *echo.Group) {
 	for _, method := range allowedMethods {
 		endpoints[method]()
 	}
-}
-
-func DefineRoutes() *echo.Echo {
-	e := echo.New()
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.GET("/", func(c echo.Context) error {
-		// TODO replace with documentation homepage
-		return c.String(http.StatusOK, "Talent Network API version 0.0.1")
-	})
-	e.GET("/health", handler.HealthHandler)
-	e.GET("/auth", handler.GoogleLoginHandler)
-	e.GET("/oauth2/google/callback", handler.GoogleOauth2CallbackHandler)
-	DefineV1Routes(e)
-	return e
 }
