@@ -10,14 +10,14 @@ import (
 
 func DefineRoutes() *echo.Echo {
 	e := echo.New()
-	e.Use(middleware.Logger())
+	e.Use(middleware.Logger()) // TODO: use a custom logger
 	e.Use(middleware.Recover())
 	e.GET("/", func(c echo.Context) error {
 		// TODO replace with documentation homepage
 		return c.String(http.StatusOK, "Talent Network API version 0.0.1")
 	})
 	e.GET("/health", handler.HealthHandler)
-	e.GET("/auth", handler.GoogleLoginHandler)
+	e.GET("/talent/auth", handler.TalentLoginHanlder)
 	e.GET("/oauth2/google/callback", handler.GoogleOauth2CallbackHandler)
 	DefineV1Routes(e)
 	return e

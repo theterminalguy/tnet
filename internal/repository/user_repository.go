@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
+	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -11,8 +12,9 @@ import (
 type UserRepository struct{}
 
 type UserParams struct {
-	Name  string `json:"name" validate:"required"`
-	Email string `json:"email" validate:"required,email"`
+	Name  string        `json:"name" validate:"required"`
+	Email string        `json:"email" validate:"required,email"`
+	Role  userrole.Role `json:"role"`
 }
 
 func NewUserRepository() *UserRepository {
@@ -64,6 +66,7 @@ func (*UserRepository) Create(p UserParams) (*ent.User, error) {
 		Create().
 		SetName(p.Name).
 		SetEmail(p.Email).
+		SetRole(p.Role).
 		Save(dBContext)
 	if err != nil {
 		return nil, err

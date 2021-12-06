@@ -9,12 +9,20 @@ import (
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
+	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/randutil"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+)
+
+type Token string
+
+const (
+	IDToken     = "id_token"
+	AccessToken = "access_token"
 )
 
 var stateToken string
@@ -59,6 +67,7 @@ func GoogleOauth2CallbackHandler(c echo.Context) error {
 	record, err := ur.GetByEmail(userInfo.Email)
 	if err != nil {
 		if ent.IsNotFound(err) {
+			userInfo.Role = userrole.Talent
 			record, err = ur.Create(userInfo)
 			if err != nil {
 				return err
@@ -67,12 +76,20 @@ func GoogleOauth2CallbackHandler(c echo.Context) error {
 			return err
 		}
 	}
-	claim := &jwt.StandardClaims{
-		Audience:  record.UUID.String(),
-		ExpiresAt: time.Now().Add(time.Minute * 2).Unix(),
-		IssuedAt:  time.Now().Unix(),
-		Issuer:    "tentn.web.api",
-		Subject:   record.Email,
+	claim := struct {
+		Role      string `json:"role"`
+		TokenType Token  `json:"token_type"`
+		jwt.StandardClaims
+	}{
+		Role:      string(record.Role),
+		TokenType: IDToken,
+		StandardClaims: jwt.StandardClaims{
+			Audience:  c.Request().Host,
+			ExpiresAt: time.Now().Add(time.Hour * 1).Unix(),
+			IssuedAt:  time.Now().Unix(),
+			Issuer:    c.Request().Host,
+			Subject:   record.UUID.String(),
+		},
 	}
 	jwttok := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 	token, err := jwttok.SignedString([]byte(os.Getenv("JWT_SIGNED_SECRET")))
@@ -82,13 +99,7 @@ func GoogleOauth2CallbackHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"token": token})
 }
 
-func GoogleLoginHandler(c echo.Context) error {
-	// TODO, remove this check
-	// I'd prefer we check all env vars are set before the app starts
-	// but this is a quick fix for now
-	if os.Getenv("JWT_SIGNED_SECRET") == "" {
-		panic("JWT_SIGNED_SECRET is not set")
-	}
+func TalentLoginHanlder(c echo.Context) error {
 	stateToken = randutil.GenerateOauthStateToken()
 	url := gconf.AuthCodeURL(stateToken)
 	return c.Redirect(http.StatusTemporaryRedirect, url)

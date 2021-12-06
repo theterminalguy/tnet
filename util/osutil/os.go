@@ -11,6 +11,7 @@ var requiredRuntimeEnv = []string{
 	"ENV",
 	"PORT",
 	"APP_HOST",
+	"JWT_SIGNED_SECRET",
 }
 
 var requiredRuntimeEnvForDev = []string{
@@ -23,8 +24,6 @@ var requiredRuntimeEnvForDev = []string{
 
 	"GOOGLE_OAUTH_CLIENT_ID",
 	"GOOGLE_OAUTH_CLIENT_SECRET",
-
-	"JWT_SIGNED_SECRET",
 }
 
 var requiredRuntimeEnvForProd = []string{
