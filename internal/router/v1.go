@@ -15,73 +15,59 @@ var jwtConfig middleware.JWTConfig = middleware.JWTConfig{
 type v1Router struct {
 	group    *echo.Group
 	handlers []RouteHandler
+	//talentHandlers
+	// recruiterHandlers
+	// publicHandlers
+	// ensure duplicate users don't signup
 }
 
 // BuildRoutes creates all the routes for the given namespace
 // all routes in this namespace require authentication
 // you'd have to provide a JWT token to access the routes
-func (v1 *v1Router) BuildRoutes() {
-	v1.group.Use(middleware.JWTWithConfig(jwtConfig))
+func (v1 *v1Router) BuildRoutes(m ...echo.MiddlewareFunc) {
+	v1.group.Use(m...)
 	for _, h := range v1.handlers {
 		h.Restify(v1.group)
 	}
 }
 
-func NewV1Router(e *echo.Echo) *v1Router {
-	return &v1Router{
-		group: e.Group("/v1"),
+func DefineV1Routes(e *echo.Echo) {
+	publicV1Router := &v1Router{
+		group: e.Group("/v1/public"),
 		handlers: []RouteHandler{
 			{
 				Path:        "jobs",
 				Handler:     handler.NewJobHandler(),
 				Middlewares: nil,
 			},
+		},
+	}
+	publicV1Router.BuildRoutes(nil)
+
+	protected := []echo.MiddlewareFunc{
+		middleware.JWTWithConfig(jwtConfig),
+	}
+	talentRouter := &v1Router{
+		group: e.Group("/v1/talent"),
+		handlers: []RouteHandler{
 			{
-				Path:        "jobs/applications",
-				Handler:     handler.NewJobApplicationHandler(),
-				Middlewares: nil,
-			},
-			{
-				Path:        "talents",
-				Except:      []HTTPMethod{POST, PUT, DELETE},
-				Handler:     handler.NewTalentHandler(),
-				Middlewares: nil,
-			},
-			{
-				Path:        "talents/portfolio-links",
-				Handler:     handler.NewPortfolioLinkHandler(),
-				Middlewares: nil,
-			},
-			{
-				Path:        "talents/skills",
-				Handler:     handler.NewSkillHandler(),
-				Middlewares: nil,
-			},
-			{
-				Path:        "talents/work-experiences",
-				Handler:     handler.NewWorkExperienceHandler(),
-				Middlewares: nil,
-			},
-			{
-				Path:        "talents/educations",
-				Handler:     handler.NewEducationHandler(),
-				Middlewares: nil,
-			},
-			{
-				Path:        "talents/emergency-contacts",
-				Handler:     handler.NewEmergencyContactHandler(),
-				Middlewares: nil,
-			},
-			{
-				Path:        "partners",
-				Handler:     handler.NewPartnerHandler(),
-				Middlewares: nil,
-			},
-			{
-				Path:        "partners/missions",
-				Handler:     handler.NewMissionHandler(),
+				Path:        "jobs",
+				Handler:     handler.NewJobHandler(),
 				Middlewares: nil,
 			},
 		},
 	}
+	talentRouter.BuildRoutes(protected...)
+	
+	recruiterRouter := &v1Router{
+		group: e.Group("/v1/recruiter"),
+		handlers: []RouteHandler{
+			{
+				Path:        "jobs",
+				Handler:     handler.NewJobHandler(),
+				Middlewares: nil,
+			},
+		},
+	}
+	recruiterRouter.BuildRoutes(protected...)
 }
