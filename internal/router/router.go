@@ -1,8 +1,6 @@
 package router
 
 import (
-	"net/http"
-
 	"github.com/labstack/echo/v4"
 )
 
@@ -23,6 +21,7 @@ func (r *Router) BuildRoutes() {
 }
 
 type RequestHandler interface {
+	Search(c echo.Context) error
 	ReadAll(c echo.Context) error
 	ReadByID(c echo.Context) error
 
@@ -36,10 +35,12 @@ type RequestHandler interface {
 type HTTPMethod string
 
 const (
-	GET    HTTPMethod = http.MethodGet
-	POST   HTTPMethod = http.MethodPost
-	PUT    HTTPMethod = http.MethodPut
-	DELETE HTTPMethod = http.MethodDelete
+	GET    HTTPMethod = "GET"
+	POST   HTTPMethod = "POST"
+	PUT    HTTPMethod = "PUT"
+	DELETE HTTPMethod = "DELETE"
+	GET_ID HTTPMethod = "GET_ID"
+	SEARCH HTTPMethod = "SEARCH"
 )
 
 type RouteHandler struct {
@@ -53,10 +54,16 @@ type RouteHandler struct {
 func (rh *RouteHandler) Restify(g *echo.Group) {
 	resourcePath := "/" + rh.Path
 	resourceByIDPath := resourcePath + "/:uuid"
+	searchPath := resourceByIDPath + "/search"
 	endpoints := make(map[HTTPMethod]func())
 	endpoints[GET] = func() {
 		g.GET(resourcePath, rh.Handler.ReadAll, rh.Middlewares...)
+	}
+	endpoints[GET_ID] = func() {
 		g.GET(resourceByIDPath, rh.Handler.ReadByID, rh.Middlewares...)
+	}
+	endpoints[SEARCH] = func() {
+		g.GET(searchPath, rh.Handler.ReadByID, rh.Middlewares...)
 	}
 	endpoints[POST] = func() {
 		g.POST(resourcePath, rh.Handler.CreateOne, rh.Middlewares...)
@@ -73,7 +80,7 @@ func (rh *RouteHandler) Restify(g *echo.Group) {
 		}
 		return
 	}
-	allMethods := []HTTPMethod{GET, POST, PUT, DELETE}
+	allMethods := []HTTPMethod{GET, POST, PUT, DELETE, GET_ID, SEARCH}
 	diff := func(a, b []HTTPMethod) []HTTPMethod {
 		mb := make(map[HTTPMethod]bool, len(b))
 		for _, m := range b {

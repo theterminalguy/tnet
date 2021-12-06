@@ -9,14 +9,20 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func DefineV1Routes(e *echo.Echo) {
+func DefineV1Routes(e *echo.Echo) *echo.Echo {
 	publicV1Router := &Router{
 		group: e.Group("/v1/public"),
 		handlers: []RouteHandler{
 			{
 				Path:        "jobs",
 				Only:        []HTTPMethod{GET},
-				Handler:     public_handler.NewV1PublicJobHanler(),
+				Handler:     public_handler.NewV1PublicJobHandler(),
+				Middlewares: nil,
+			},
+			{
+				Path:        "employment-types",
+				Only:        []HTTPMethod{GET},
+				Handler:     public_handler.NewV1EmploymentTypeHandler(),
 				Middlewares: nil,
 			},
 		},
@@ -33,6 +39,12 @@ func DefineV1Routes(e *echo.Echo) {
 				Path:        "jobs",
 				Only:        []HTTPMethod{GET},
 				Handler:     talent_handler.NewV1TalentJobHandler(),
+				Middlewares: nil,
+			},
+			{
+				Path:        "skills",
+				Except: []HTTPMethod{SEARCH},
+				Handler:     talent_handler.NewV1SkillHandler(),
 				Middlewares: nil,
 			},
 		},
@@ -53,4 +65,6 @@ func DefineV1Routes(e *echo.Echo) {
 		},
 	}
 	recruiterRouter.BuildRoutes()
+
+	return e
 }

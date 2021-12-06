@@ -19,6 +19,10 @@ func NewV1TalentJobHandler() *V1TaletJobHandler {
 	}
 }
 
+func (*V1TaletJobHandler) Search(c echo.Context) error {
+	return nil
+}
+
 func (h *V1TaletJobHandler) ReadAll(c echo.Context) error {
 	// TODO: implement pagination
 	// most likely coursor based

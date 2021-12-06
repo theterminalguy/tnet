@@ -20,6 +20,10 @@ func NewV1RecruiterJobHandler() *V1RecruiterJobHandler {
 	}
 }
 
+func (*V1RecruiterJobHandler) Search(c echo.Context) error {
+	return nil
+}
+
 // ReadAll returns all jobs created by the recruiter
 func (h *V1RecruiterJobHandler) ReadAll(c echo.Context) error {
 	// TODO: implement pagination

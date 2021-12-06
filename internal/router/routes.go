@@ -19,6 +19,6 @@ func DefineRoutes() *echo.Echo {
 	e.GET("/health", handler.HealthHandler)
 	e.GET("/talent/auth", handler.TalentLoginHanlder)
 	e.GET("/oauth2/google/callback", handler.GoogleOauth2CallbackHandler)
-	DefineV1Routes(e)
+	e = DefineV1Routes(e)
 	return e
 }

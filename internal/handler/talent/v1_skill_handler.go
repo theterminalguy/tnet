@@ -1,4 +1,4 @@
-package handler
+package talent
 
 import (
 	"fmt"
@@ -11,19 +11,23 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type SkillHandler struct {
+type V1SkillHandler struct {
 	SkillService    *service.SkillService
 	SkillRepository *repo.SkillRepository
 }
 
-func NewSkillHandler() *SkillHandler {
-	return &SkillHandler{
+func NewV1SkillHandler() *V1SkillHandler {
+	return &V1SkillHandler{
 		SkillService:    service.NewSkillService(),
 		SkillRepository: repo.NewSkillRepository(),
 	}
 }
 
-func (h *SkillHandler) ReadAll(c echo.Context) error {
+func (*V1SkillHandler) Search(c echo.Context) error {
+	return nil
+}
+
+func (h *V1SkillHandler) ReadAll(c echo.Context) error {
 	records, err := h.SkillRepository.GetAll()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
@@ -31,7 +35,7 @@ func (h *SkillHandler) ReadAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, records)
 }
 
-func (h *SkillHandler) ReadByID(c echo.Context) error {
+func (h *V1SkillHandler) ReadByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -43,7 +47,7 @@ func (h *SkillHandler) ReadByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, record)
 }
 
-func (h *SkillHandler) CreateOne(c echo.Context) error {
+func (h *V1SkillHandler) CreateOne(c echo.Context) error {
 	params := new(repo.SkillParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -55,7 +59,7 @@ func (h *SkillHandler) CreateOne(c echo.Context) error {
 	return c.JSON(http.StatusCreated, record)
 }
 
-func (h *SkillHandler) UpdateByID(c echo.Context) error {
+func (h *V1SkillHandler) UpdateByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -71,7 +75,7 @@ func (h *SkillHandler) UpdateByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, record)
 }
 
-func (h *SkillHandler) DeleteOne(c echo.Context) error {
+func (h *V1SkillHandler) DeleteOne(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())

@@ -13,10 +13,14 @@ type V1PublicJobHandler struct {
 	JobRepository *repo.JobRepository
 }
 
-func NewV1PublicJobHanler() *V1PublicJobHandler {
+func NewV1PublicJobHandler() *V1PublicJobHandler {
 	return &V1PublicJobHandler{
 		JobRepository: repo.NewJobRepository(),
 	}
+}
+
+func (*V1PublicJobHandler) Search(c echo.Context) error {
+	return nil
 }
 
 // ReadAlll return all jobs scopd to a paritcular talent
