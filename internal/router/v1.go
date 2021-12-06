@@ -1,9 +1,10 @@
 package router
 
 import (
-	"github.com/10hourlabs/tentn/internal/handler"
 	public_handler "github.com/10hourlabs/tentn/internal/handler/public"
+	recruiter_handler "github.com/10hourlabs/tentn/internal/handler/recruiter"
 	talent_handler "github.com/10hourlabs/tentn/internal/handler/talent"
+
 	"github.com/10hourlabs/tentn/internal/middleware"
 	"github.com/labstack/echo/v4"
 )
@@ -46,7 +47,7 @@ func DefineV1Routes(e *echo.Echo) {
 		handlers: []RouteHandler{
 			{
 				Path:        "jobs",
-				Handler:     handler.NewJobHandler(),
+				Handler:     recruiter_handler.NewV1RecruiterJobHandler(),
 				Middlewares: nil,
 			},
 		},

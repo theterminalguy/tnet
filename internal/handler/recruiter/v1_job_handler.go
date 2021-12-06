@@ -1,29 +1,27 @@
-package handler
+package recruiter
 
 import (
 	"fmt"
 	"net/http"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
-type JobHandler struct {
-	JobService    *service.JobService
+type V1RecruiterJobHandler struct {
 	JobRepository *repo.JobRepository
 }
 
-func NewJobHandler() *JobHandler {
-	return &JobHandler{
-		JobService:    service.NewJobService(),
+func NewV1RecruiterJobHandler() *V1RecruiterJobHandler {
+	return &V1RecruiterJobHandler{
 		JobRepository: repo.NewJobRepository(),
 	}
 }
 
-func (h *JobHandler) ReadAll(c echo.Context) error {
+// ReadAll returns all jobs created by the recruiter
+func (h *V1RecruiterJobHandler) ReadAll(c echo.Context) error {
 	// TODO: implement pagination
 	// most likely coursor based
 	jobs, err := h.JobRepository.GetAll()
@@ -33,7 +31,8 @@ func (h *JobHandler) ReadAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, jobs)
 }
 
-func (h *JobHandler) ReadByID(c echo.Context) error {
+// ReadByID return a job by its id. The job must be created by the recruiter
+func (h *V1RecruiterJobHandler) ReadByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -45,7 +44,8 @@ func (h *JobHandler) ReadByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, j)
 }
 
-func (h *JobHandler) CreateOne(c echo.Context) error {
+// CreateOne creates a new job for the recruiter
+func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	params := new(repo.JobParams)
 	if err := c.Bind(params); err != nil {
 		return err
@@ -57,7 +57,8 @@ func (h *JobHandler) CreateOne(c echo.Context) error {
 	return c.JSON(http.StatusCreated, j)
 }
 
-func (h *JobHandler) UpdateByID(c echo.Context) error {
+// UpdateByID updates a job by its id. The job must be created by the recruiter
+func (h *V1RecruiterJobHandler) UpdateByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -73,7 +74,8 @@ func (h *JobHandler) UpdateByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, j)
 }
 
-func (h *JobHandler) DeleteOne(c echo.Context) error {
+// DeleteByID deletes a job by its id. The job must be created by the recruiter
+func (h *V1RecruiterJobHandler) DeleteOne(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
