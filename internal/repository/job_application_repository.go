@@ -64,12 +64,14 @@ func (*JobApplicationRepository) Create(p JobApplicationParams) (*ent.JobApplica
 	if err != nil {
 		return nil, err
 	}
-	// TODO: don't ignore errors
-	records, _ := dBConn.JobApplication.Query().Where(
+	records, err := dBConn.JobApplication.Query().Where(
 		jobapplication.And(
 			jobapplication.JobID(j.ID),
 			jobapplication.TalentID(a.ID),
 		)).All(dBContext)
+	if err != nil {
+		return nil, err
+	}
 	if collection.HasAny(records) {
 		return nil, errors.New("talent already applied for this job")
 	}

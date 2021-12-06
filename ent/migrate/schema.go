@@ -402,7 +402,8 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString},
-		{Name: "role", Type: field.TypeEnum, Enums: []string{"user", "partner", "admin", "superadmin", "service-account"}, Default: "user"},
+		{Name: "role", Type: field.TypeEnum, Enums: []string{"talent", "recruiter"}},
+		{Name: "approved", Type: field.TypeBool, Default: false},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{

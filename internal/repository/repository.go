@@ -91,11 +91,9 @@ func setNillableYearsOfExperience(val *float32, cb func(v *float32) error) error
 }
 
 func setNillableBoolField(val bool, cb func(v bool) error) error {
-
 	err := cb(val)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }

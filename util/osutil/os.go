@@ -11,6 +11,7 @@ var requiredRuntimeEnv = []string{
 	"ENV",
 	"PORT",
 	"APP_HOST",
+	"JWT_SIGNED_SECRET",
 }
 
 var requiredRuntimeEnvForDev = []string{
@@ -23,8 +24,6 @@ var requiredRuntimeEnvForDev = []string{
 
 	"GOOGLE_OAUTH_CLIENT_ID",
 	"GOOGLE_OAUTH_CLIENT_SECRET",
-
-	"JWT_SIGNED_SECRET",
 }
 
 var requiredRuntimeEnvForProd = []string{
@@ -36,6 +35,9 @@ var requiredRuntimeEnvForProd = []string{
 }
 
 func CheckEnv() {
+	if os.Getenv("DEBUG") == "true" {
+		return
+	}
 	// First check if we're running in dev or test mode
 	if os.Getenv("ENV") == "dev" || os.Getenv("ENV") == "test" {
 		if os.Getenv("PLATFORM") != "docker" {

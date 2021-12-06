@@ -272,6 +272,10 @@ func init() {
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
 	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	user.UpdateDefaultUpdatedAt = userDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// userDescApproved is the schema descriptor for approved field.
+	userDescApproved := userFields[3].Descriptor()
+	// user.DefaultApproved holds the default value on creation for the approved field.
+	user.DefaultApproved = userDescApproved.Default.(bool)
 	workexperienceMixin := schema.WorkExperience{}.Mixin()
 	workexperienceMixinFields0 := workexperienceMixin[0].Fields()
 	_ = workexperienceMixinFields0

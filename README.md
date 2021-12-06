@@ -78,3 +78,29 @@ ent-generate:  Generate ent Assests
 go-format:  Run go fmt ./... on all go files
 
 ```
+
+## Setting up your debugger in vscode
+
+Use the below launch.json file
+
+```json
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "DEBUG TenTN",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${fileDirname}",
+            "envFile": "${workspaceFolder}/.env",
+            "env": {
+                "DEBUG": "true"
+            }
+        }
+    ]
+}
+```

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -73,15 +74,21 @@ func (uu *UserUpdate) SetEmail(s string) *UserUpdate {
 }
 
 // SetRole sets the "role" field.
-func (uu *UserUpdate) SetRole(u user.Role) *UserUpdate {
+func (uu *UserUpdate) SetRole(u userrole.Role) *UserUpdate {
 	uu.mutation.SetRole(u)
 	return uu
 }
 
-// SetNillableRole sets the "role" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableRole(u *user.Role) *UserUpdate {
-	if u != nil {
-		uu.SetRole(*u)
+// SetApproved sets the "approved" field.
+func (uu *UserUpdate) SetApproved(b bool) *UserUpdate {
+	uu.mutation.SetApproved(b)
+	return uu
+}
+
+// SetNillableApproved sets the "approved" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableApproved(b *bool) *UserUpdate {
+	if b != nil {
+		uu.SetApproved(*b)
 	}
 	return uu
 }
@@ -236,6 +243,13 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: user.FieldRole,
 		})
 	}
+	if value, ok := uu.mutation.Approved(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: user.FieldApproved,
+		})
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -300,15 +314,21 @@ func (uuo *UserUpdateOne) SetEmail(s string) *UserUpdateOne {
 }
 
 // SetRole sets the "role" field.
-func (uuo *UserUpdateOne) SetRole(u user.Role) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetRole(u userrole.Role) *UserUpdateOne {
 	uuo.mutation.SetRole(u)
 	return uuo
 }
 
-// SetNillableRole sets the "role" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableRole(u *user.Role) *UserUpdateOne {
-	if u != nil {
-		uuo.SetRole(*u)
+// SetApproved sets the "approved" field.
+func (uuo *UserUpdateOne) SetApproved(b bool) *UserUpdateOne {
+	uuo.mutation.SetApproved(b)
+	return uuo
+}
+
+// SetNillableApproved sets the "approved" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableApproved(b *bool) *UserUpdateOne {
+	if b != nil {
+		uuo.SetApproved(*b)
 	}
 	return uuo
 }
@@ -485,6 +505,13 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Type:   field.TypeEnum,
 			Value:  value,
 			Column: user.FieldRole,
+		})
+	}
+	if value, ok := uuo.mutation.Approved(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: user.FieldApproved,
 		})
 	}
 	_node = &User{config: uuo.config}

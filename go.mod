@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	entgo.io/ent v0.9.1
+	github.com/casbin/casbin v1.9.1
 	github.com/go-playground/validator/v10 v10.9.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
