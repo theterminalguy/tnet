@@ -28,7 +28,8 @@ func DefineV1Routes(e *echo.Echo) {
 		handlers: []RouteHandler{
 			{
 				Path:        "jobs",
-				Handler:     handler.NewJobHandler(),
+				Only:        []HTTPMethod{GET},
+				Handler:     handler.NewJobHandler(), //NewPublicJobHandler(),
 				Middlewares: nil,
 			},
 		},

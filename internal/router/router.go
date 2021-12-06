@@ -30,6 +30,7 @@ const (
 
 type RouteHandler struct {
 	Path        string
+	Only        []HTTPMethod
 	Except      []HTTPMethod
 	Handler     RequestHandler
 	Middlewares []echo.MiddlewareFunc
@@ -51,6 +52,12 @@ func (rh *RouteHandler) Restify(g *echo.Group) {
 	}
 	endpoints[DELETE] = func() {
 		g.DELETE(resourceByIDPath, rh.Handler.DeleteOne, rh.Middlewares...)
+	}
+	if len(rh.Only) > 0 {
+		for _, method := range rh.Only {
+			endpoints[method]()
+		}
+		return
 	}
 	allMethods := []HTTPMethod{GET, POST, PUT, DELETE}
 	diff := func(a, b []HTTPMethod) []HTTPMethod {
