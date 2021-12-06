@@ -35,6 +35,9 @@ var requiredRuntimeEnvForProd = []string{
 }
 
 func CheckEnv() {
+	if os.Getenv("DEBUG") == "true" {
+		return
+	}
 	// First check if we're running in dev or test mode
 	if os.Getenv("ENV") == "dev" || os.Getenv("ENV") == "test" {
 		if os.Getenv("PLATFORM") != "docker" {

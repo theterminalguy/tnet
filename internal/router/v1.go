@@ -33,6 +33,7 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 		group: e.Group("/v1/talent"),
 		middlewares: []echo.MiddlewareFunc{
 			middleware.JWTAuthenticate(),
+			middleware.EnforceTalent(),
 		},
 		handlers: []RouteHandler{
 			{
@@ -43,7 +44,7 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 			},
 			{
 				Path:        "skills",
-				Except: []HTTPMethod{SEARCH},
+				Except:      []HTTPMethod{SEARCH},
 				Handler:     talent_handler.NewV1SkillHandler(),
 				Middlewares: nil,
 			},
