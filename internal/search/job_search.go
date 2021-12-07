@@ -8,7 +8,6 @@ import (
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/google/uuid"
 )
 
 type JobSearch struct {
@@ -16,17 +15,10 @@ type JobSearch struct {
 }
 
 func (*JobSearch) PossibleFilters() []Filter {
-	// Terrible code but it works
-	// the compiler does not have to figure our the type at runtime
 	return []Filter{
-		UUID_EQ,
-		UUID_NEQ,
-
 		SLUG_EQ,
-		SLUG_NEQ,
 
 		TITLE_EQ,
-		TITLE_NEQ,
 	}
 }
 
@@ -47,18 +39,10 @@ func (s *JobSearch) Search(qs string) ([]*ent.Job, []error) {
 		if vv, ok := query[f]; ok {
 			v := vv[0]
 			switch filter {
-			case UUID_EQ:
-				ps = append(ps, job.UUIDEQ(uuid.MustParse(v)))
-			case UUID_NEQ:
-				ps = append(ps, job.UUIDNEQ(uuid.MustParse(v)))
 			case SLUG_EQ:
 				ps = append(ps, job.SlugEQ(v))
-			case SLUG_NEQ:
-				ps = append(ps, job.SlugNEQ(v))
 			case TITLE_EQ:
 				ps = append(ps, job.TitleEQ(v))
-			case TITLE_NEQ:
-				ps = append(ps, job.TitleNEQ(v))
 			default:
 				errors = append(errors, fmt.Errorf("%s is not a valid filter", filter))
 			}

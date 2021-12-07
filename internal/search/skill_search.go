@@ -17,17 +17,8 @@ type SkillSearch struct {
 }
 
 func (*SkillSearch) PossibleFilters() []Filter {
-	// Terrible code but it works
-	// the compiler does not have to figure our the type at runtime
 	return []Filter{
-		UUID_EQ,
-		UUID_NEQ,
-
 		NAME_EQ,
-		NAME_NEQ,
-
-		YEAR_EXP_EQ,
-		YEAR_EXP_NEQ,
 	}
 }
 

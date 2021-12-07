@@ -53,4 +53,9 @@ var (
 
 	PROGRAM_EQ   Filter = "program_eq"
 	PROGRAM_NEQ Filter = "program_neq"
+
+	PREFRRED_EQ   Filter = "program_eq"
+	PREFERRED_NEQ Filter = "program_neq"
+
+	REFRERRAL_CODE_EQ   Filter = "referral_code_eq"
 )
