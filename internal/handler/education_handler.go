@@ -23,6 +23,10 @@ func NewEducationHandler() *EducationHandler {
 	}
 }
 
+func (h *EducationHandler) Search(c echo.Context) error {
+	return nil
+}
+
 func (h *EducationHandler) ReadAll(c echo.Context) error {
 	records, err := h.EducationRepository.GetAll()
 	if err != nil {

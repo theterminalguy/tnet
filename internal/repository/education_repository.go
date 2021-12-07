@@ -5,6 +5,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/education"
+	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/10hourlabs/tentn/util/date"
 	"github.com/google/uuid"
@@ -25,6 +26,16 @@ type EducationParams struct {
 
 func NewEducationRepository() *EducationRepository {
 	return &EducationRepository{}
+}
+
+func (*EducationRepository) Filter(prd ...predicate.Education) ([]*ent.Education, error) {
+	educations, err := dBConn.Education.Query().
+		Where(prd...).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return educations, nil
 }
 
 func (*EducationRepository) GetAll() ([]*ent.Education, error) {

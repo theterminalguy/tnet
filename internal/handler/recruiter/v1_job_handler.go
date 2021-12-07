@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/internal/search"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -12,6 +13,7 @@ import (
 
 type V1RecruiterJobHandler struct {
 	JobRepository *repo.JobRepository
+	JobSearch     *search.JobSearch
 }
 
 func NewV1RecruiterJobHandler() *V1RecruiterJobHandler {
@@ -20,11 +22,16 @@ func NewV1RecruiterJobHandler() *V1RecruiterJobHandler {
 	}
 }
 
-func (*V1RecruiterJobHandler) Search(c echo.Context) error {
-	return nil
+func (h *V1RecruiterJobHandler) Search(c echo.Context) error {
+	jobSearch := new(search.JobSearch)
+	query := c.QueryString()
+	records, vldErrs := jobSearch.Search(query)
+	if vldErrs != nil {
+		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
+	}
+	return c.JSON(http.StatusOK, records)
 }
 
-// ReadAll returns all jobs created by the recruiter
 func (h *V1RecruiterJobHandler) ReadAll(c echo.Context) error {
 	// TODO: implement pagination
 	// most likely coursor based

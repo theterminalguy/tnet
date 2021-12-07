@@ -5,6 +5,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
 )
@@ -29,6 +30,16 @@ type JobParams struct {
 
 func NewJobRepository() *JobRepository {
 	return &JobRepository{}
+}
+
+func (*JobRepository) Filter(prd ...predicate.Job) ([]*ent.Job, error) {
+	jobs, err := dBConn.Job.Query().
+		Where(prd...).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return jobs, nil
 }
 
 func (*JobRepository) GetAll() ([]*ent.Job, error) {

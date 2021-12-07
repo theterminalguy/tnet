@@ -5,6 +5,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
+	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
 )
@@ -19,6 +20,16 @@ type PortfolioLinkParams struct {
 
 func NewPortfolioLinkRepository() *PortfolioLinkRepository {
 	return &PortfolioLinkRepository{}
+}
+
+func (*PortfolioLinkRepository) Filter(prd ...predicate.PortfolioLink) ([]*ent.PortfolioLink, error) {
+	pfLinks, err := dBConn.PortfolioLink.Query().
+		Where(prd...).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return pfLinks, nil
 }
 
 func (*PortfolioLinkRepository) GetAll() ([]*ent.PortfolioLink, error) {
@@ -80,7 +91,7 @@ func (r *PortfolioLinkRepository) Update(id uuid.UUID, p PortfolioLinkParams) (*
 
 	// Set and Validate URL if provided
 	if vldErr := setNillableStringField(p.URL, func(v string) error {
-		err := validateParams(p, "Address")
+		err := validateParams(p, "URL")
 		if err != nil {
 			return err
 		}

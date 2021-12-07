@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
+	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
@@ -27,6 +28,16 @@ type SkillParams struct {
 
 func NewSkillRepository() *SkillRepository {
 	return &SkillRepository{}
+}
+
+func (*SkillRepository) Filter(prd ...predicate.Skill) ([]*ent.Skill, error) {
+	skills, err := dBConn.Skill.Query().
+		Where(prd...).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return skills, nil
 }
 
 func (*SkillRepository) GetAll() ([]*ent.Skill, error) {

@@ -23,6 +23,10 @@ func NewWorkExperienceHandler() *WorkExperienceHandler {
 	}
 }
 
+func (h *WorkExperienceHandler) Search(c echo.Context) error {
+	return nil
+}
+
 func (h *WorkExperienceHandler) ReadAll(c echo.Context) error {
 	records, err := h.WorkExperienceRepository.GetAll()
 	if err != nil {

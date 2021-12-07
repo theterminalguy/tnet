@@ -23,6 +23,10 @@ func NewPortfolioLinkHandler() *PortfolioLinkHandler {
 	}
 }
 
+func (h *PortfolioLinkHandler) Search(c echo.Context) error {
+	return nil
+}
+
 func (h *PortfolioLinkHandler) ReadAll(c echo.Context) error {
 	records, err := h.PortfolioLinkRepository.GetAll()
 	if err != nil {

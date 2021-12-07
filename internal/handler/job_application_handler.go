@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/internal/search"
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
@@ -21,6 +22,16 @@ func NewJobApplicationHandler() *JobApplicationHandler {
 		JobApplicationService:    service.NewJobApplicationService(),
 		JobApplicationRepository: repo.NewJobApplicationRepository(),
 	}
+}
+
+func (h *JobApplicationHandler) Search(c echo.Context) error {
+	jobApplicationSearch := new(search.JobApplicationSearch)
+	query := c.QueryString()
+	records, vldErrs := jobApplicationSearch.Search(query)
+	if vldErrs != nil {
+		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
+	}
+	return c.JSON(http.StatusOK, records)
 }
 
 func (h *JobApplicationHandler) ReadAll(c echo.Context) error {
