@@ -1,5 +1,7 @@
 # Talent Network
 
+![Talent Network](https://www.lebow.drexel.edu/sites/default/files/story/1501077931-network.jpg)
+
 Talent Network is an API only service for finding and connecting with talents and companies. As a talent, you can find companies that match your skills and interests, and as a company, you can find talents that are looking for work.
 
 ## Architecture
