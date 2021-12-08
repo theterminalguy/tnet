@@ -15,13 +15,13 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 		handlers: []RouteHandler{
 			{
 				Path:        "jobs",
-				Only:        []HTTPMethod{GET},
+				Only:        []Request{READ_ALL},
 				Handler:     public_handler.NewV1PublicJobHandler(),
 				Middlewares: nil,
 			},
 			{
 				Path:        "employment-types",
-				Only:        []HTTPMethod{GET},
+				Only:        []Request{READ_ALL},
 				Handler:     public_handler.NewV1EmploymentTypeHandler(),
 				Middlewares: nil,
 			},
@@ -38,13 +38,13 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 		handlers: []RouteHandler{
 			{
 				Path:        "jobs",
-				Only:        []HTTPMethod{GET},
+				Only:        []Request{READ_ALL},
 				Handler:     talent_handler.NewV1TalentJobHandler(),
 				Middlewares: nil,
 			},
 			{
 				Path:        "skills",
-				Except:      []HTTPMethod{SEARCH},
+				Except:      []Request{SEARCH},
 				Handler:     talent_handler.NewV1SkillHandler(),
 				Middlewares: nil,
 			},
