@@ -24,29 +24,35 @@ type RequestHandler interface {
 	Search(c echo.Context) error
 	ReadAll(c echo.Context) error
 	ReadByID(c echo.Context) error
-
 	CreateOne(c echo.Context) error
-
 	UpdateByID(c echo.Context) error
-
 	DeleteOne(c echo.Context) error
 }
 
-type HTTPMethod string
+type Request string
 
 const (
-	GET    HTTPMethod = "GET"
-	POST   HTTPMethod = "POST"
-	PUT    HTTPMethod = "PUT"
-	DELETE HTTPMethod = "DELETE"
-	GET_ID HTTPMethod = "GET_ID"
-	SEARCH HTTPMethod = "SEARCH"
+	SEARCH       Request = "SEARCH"
+	READ_ALL     Request = "READ_ALL"
+	READ_BY_ID   Request = "READ_BY_ID"
+	CREATE_ONE   Request = "CREATE_ONE"
+	UPDATE_BY_ID Request = "UPDATE_BY_ID"
+	DELETE_BY_ID Request = "DELETE_BY_ID"
 )
+
+var RequestsAllowedByDefault []Request = []Request{
+	SEARCH,
+	READ_ALL,
+	READ_BY_ID,
+	CREATE_ONE,
+	UPDATE_BY_ID,
+	DELETE_BY_ID,
+}
 
 type RouteHandler struct {
 	Path        string
-	Only        []HTTPMethod
-	Except      []HTTPMethod
+	Only        []Request
+	Except      []Request
 	Handler     RequestHandler
 	Middlewares []echo.MiddlewareFunc
 }
@@ -55,23 +61,23 @@ func (rh *RouteHandler) Restify(g *echo.Group) {
 	resourcePath := "/" + rh.Path
 	resourceByIDPath := resourcePath + "/:uuid"
 	searchPath := resourceByIDPath + "/search"
-	endpoints := make(map[HTTPMethod]func())
-	endpoints[GET] = func() {
+	endpoints := make(map[Request]func())
+	endpoints[READ_ALL] = func() {
 		g.GET(resourcePath, rh.Handler.ReadAll, rh.Middlewares...)
 	}
-	endpoints[GET_ID] = func() {
+	endpoints[READ_BY_ID] = func() {
 		g.GET(resourceByIDPath, rh.Handler.ReadByID, rh.Middlewares...)
 	}
 	endpoints[SEARCH] = func() {
-		g.GET(searchPath, rh.Handler.ReadByID, rh.Middlewares...)
+		g.GET(searchPath, rh.Handler.Search, rh.Middlewares...)
 	}
-	endpoints[POST] = func() {
+	endpoints[CREATE_ONE] = func() {
 		g.POST(resourcePath, rh.Handler.CreateOne, rh.Middlewares...)
 	}
-	endpoints[PUT] = func() {
+	endpoints[UPDATE_BY_ID] = func() {
 		g.PUT(resourceByIDPath, rh.Handler.UpdateByID, rh.Middlewares...)
 	}
-	endpoints[DELETE] = func() {
+	endpoints[DELETE_BY_ID] = func() {
 		g.DELETE(resourceByIDPath, rh.Handler.DeleteOne, rh.Middlewares...)
 	}
 	if len(rh.Only) > 0 {
@@ -80,13 +86,12 @@ func (rh *RouteHandler) Restify(g *echo.Group) {
 		}
 		return
 	}
-	allMethods := []HTTPMethod{GET, POST, PUT, DELETE, GET_ID, SEARCH}
-	diff := func(a, b []HTTPMethod) []HTTPMethod {
-		mb := make(map[HTTPMethod]bool, len(b))
+	diff := func(a, b []Request) []Request {
+		mb := make(map[Request]bool, len(b))
 		for _, m := range b {
 			mb[m] = true
 		}
-		var ms []HTTPMethod
+		var ms []Request
 		for _, m := range a {
 			if _, ok := mb[m]; !ok {
 				ms = append(ms, m)
@@ -94,8 +99,8 @@ func (rh *RouteHandler) Restify(g *echo.Group) {
 		}
 		return ms
 	}
-	allowedMethods := diff(allMethods, rh.Except)
-	for _, method := range allowedMethods {
-		endpoints[method]()
+	reqs := diff(RequestsAllowedByDefault, rh.Except)
+	for _, req := range reqs {
+		endpoints[req]()
 	}
 }
