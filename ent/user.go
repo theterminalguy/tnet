@@ -34,6 +34,27 @@ type User struct {
 	Role userrole.Role `json:"role,omitempty"`
 	// Approved holds the value of the "approved" field.
 	Approved bool `json:"approved,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the UserQuery when eager-loading is set.
+	Edges UserEdges `json:"edges"`
+}
+
+// UserEdges holds the relations/edges for other nodes in the graph.
+type UserEdges struct {
+	// Talents holds the value of the talents edge.
+	Talents []*Talent `json:"talents,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// TalentsOrErr returns the Talents value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) TalentsOrErr() ([]*Talent, error) {
+	if e.loadedTypes[0] {
+		return e.Talents, nil
+	}
+	return nil, &NotLoadedError{edge: "talents"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -124,6 +145,11 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 		}
 	}
 	return nil
+}
+
+// QueryTalents queries the "talents" edge of the User entity.
+func (u *User) QueryTalents() *TalentQuery {
+	return (&UserClient{config: u.config}).QueryTalents(u)
 }
 
 // Update returns a builder for updating this User.

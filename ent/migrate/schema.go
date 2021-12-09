@@ -361,6 +361,7 @@ var (
 		{Name: "city", Type: field.TypeString},
 		{Name: "joined_tentn_at", Type: field.TypeTime, Nullable: true},
 		{Name: "referrer_id", Type: field.TypeInt, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt, Nullable: true},
 	}
 	// TalentsTable holds the schema information for the "talents" table.
 	TalentsTable = &schema.Table{
@@ -374,12 +375,23 @@ var (
 				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
+			{
+				Symbol:     "talents_users_talents",
+				Columns:    []*schema.Column{TalentsColumns[19]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
 		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "talent_uuid",
 				Unique:  true,
 				Columns: []*schema.Column{TalentsColumns[1]},
+			},
+			{
+				Name:    "talent_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{TalentsColumns[19]},
 			},
 			{
 				Name:    "talent_referral_code_referrer_id",
@@ -496,5 +508,6 @@ func init() {
 	PortfolioLinksTable.ForeignKeys[0].RefTable = TalentsTable
 	SkillsTable.ForeignKeys[0].RefTable = TalentsTable
 	TalentsTable.ForeignKeys[0].RefTable = TalentsTable
+	TalentsTable.ForeignKeys[1].RefTable = UsersTable
 	WorkExperiencesTable.ForeignKeys[0].RefTable = TalentsTable
 }

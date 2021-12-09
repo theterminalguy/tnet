@@ -19,6 +19,12 @@ func (Talent) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		UUIDMixin{},
 		TimeStampMixin{},
+		BelongsToMixin{
+			ParentName: "user",
+			ParentType: User.Type,
+			Ref:        "talents",
+			ForeignKey: "user_id",
+		},
 	}
 }
 

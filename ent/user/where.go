@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/google/uuid"
@@ -744,6 +745,34 @@ func ApprovedEQ(v bool) predicate.User {
 func ApprovedNEQ(v bool) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldApproved), v))
+	})
+}
+
+// HasTalents applies the HasEdge predicate on the "talents" edge.
+func HasTalents() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TalentsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TalentsTable, TalentsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTalentsWith applies the HasEdge predicate on the "talents" edge with a given conditions (other predicates).
+func HasTalentsWith(preds ...predicate.Talent) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TalentsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TalentsTable, TalentsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

@@ -1157,6 +1157,22 @@ func (c *TalentClient) GetX(ctx context.Context, id int) *Talent {
 	return obj
 }
 
+// QueryUser queries the user edge of a Talent.
+func (c *TalentClient) QueryUser(t *Talent) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(talent.Table, talent.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, talent.UserTable, talent.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryReferrer queries the referrer edge of a Talent.
 func (c *TalentClient) QueryReferrer(t *Talent) *TalentQuery {
 	query := &TalentQuery{config: c.config}
@@ -1389,6 +1405,22 @@ func (c *UserClient) GetX(ctx context.Context, id int) *User {
 		panic(err)
 	}
 	return obj
+}
+
+// QueryTalents queries the talents edge of a User.
+func (c *UserClient) QueryTalents(u *User) *TalentQuery {
+	query := &TalentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(talent.Table, talent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TalentsTable, user.TalentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // Hooks returns the client hooks.

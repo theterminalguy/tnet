@@ -18,6 +18,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/10hourlabs/tentn/ent/workexperience"
 	"github.com/google/uuid"
 )
@@ -64,6 +65,26 @@ func (tu *TalentUpdate) SetNillableDeletedAt(t *time.Time) *TalentUpdate {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (tu *TalentUpdate) ClearDeletedAt() *TalentUpdate {
 	tu.mutation.ClearDeletedAt()
+	return tu
+}
+
+// SetUserID sets the "user_id" field.
+func (tu *TalentUpdate) SetUserID(i int) *TalentUpdate {
+	tu.mutation.SetUserID(i)
+	return tu
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (tu *TalentUpdate) SetNillableUserID(i *int) *TalentUpdate {
+	if i != nil {
+		tu.SetUserID(*i)
+	}
+	return tu
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (tu *TalentUpdate) ClearUserID() *TalentUpdate {
+	tu.mutation.ClearUserID()
 	return tu
 }
 
@@ -165,6 +186,11 @@ func (tu *TalentUpdate) SetNillableJoinedTentnAt(t *time.Time) *TalentUpdate {
 func (tu *TalentUpdate) ClearJoinedTentnAt() *TalentUpdate {
 	tu.mutation.ClearJoinedTentnAt()
 	return tu
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (tu *TalentUpdate) SetUser(u *User) *TalentUpdate {
+	return tu.SetUserID(u.ID)
 }
 
 // SetReferrer sets the "referrer" edge to the Talent entity.
@@ -295,6 +321,12 @@ func (tu *TalentUpdate) AddMissions(m ...*Mission) *TalentUpdate {
 // Mutation returns the TalentMutation object of the builder.
 func (tu *TalentUpdate) Mutation() *TalentMutation {
 	return tu.mutation
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (tu *TalentUpdate) ClearUser() *TalentUpdate {
+	tu.mutation.ClearUser()
+	return tu
 }
 
 // ClearReferrer clears the "referrer" edge to the Talent entity.
@@ -683,6 +715,41 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeTime,
 			Column: talent.FieldJoinedTentnAt,
 		})
+	}
+	if tu.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   talent.UserTable,
+			Columns: []string{talent.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   talent.UserTable,
+			Columns: []string{talent.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if tu.mutation.ReferrerCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1202,6 +1269,26 @@ func (tuo *TalentUpdateOne) ClearDeletedAt() *TalentUpdateOne {
 	return tuo
 }
 
+// SetUserID sets the "user_id" field.
+func (tuo *TalentUpdateOne) SetUserID(i int) *TalentUpdateOne {
+	tuo.mutation.SetUserID(i)
+	return tuo
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (tuo *TalentUpdateOne) SetNillableUserID(i *int) *TalentUpdateOne {
+	if i != nil {
+		tuo.SetUserID(*i)
+	}
+	return tuo
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (tuo *TalentUpdateOne) ClearUserID() *TalentUpdateOne {
+	tuo.mutation.ClearUserID()
+	return tuo
+}
+
 // SetFirstName sets the "first_name" field.
 func (tuo *TalentUpdateOne) SetFirstName(s string) *TalentUpdateOne {
 	tuo.mutation.SetFirstName(s)
@@ -1300,6 +1387,11 @@ func (tuo *TalentUpdateOne) SetNillableJoinedTentnAt(t *time.Time) *TalentUpdate
 func (tuo *TalentUpdateOne) ClearJoinedTentnAt() *TalentUpdateOne {
 	tuo.mutation.ClearJoinedTentnAt()
 	return tuo
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (tuo *TalentUpdateOne) SetUser(u *User) *TalentUpdateOne {
+	return tuo.SetUserID(u.ID)
 }
 
 // SetReferrer sets the "referrer" edge to the Talent entity.
@@ -1430,6 +1522,12 @@ func (tuo *TalentUpdateOne) AddMissions(m ...*Mission) *TalentUpdateOne {
 // Mutation returns the TalentMutation object of the builder.
 func (tuo *TalentUpdateOne) Mutation() *TalentMutation {
 	return tuo.mutation
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (tuo *TalentUpdateOne) ClearUser() *TalentUpdateOne {
+	tuo.mutation.ClearUser()
+	return tuo
 }
 
 // ClearReferrer clears the "referrer" edge to the Talent entity.
@@ -1842,6 +1940,41 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Type:   field.TypeTime,
 			Column: talent.FieldJoinedTentnAt,
 		})
+	}
+	if tuo.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   talent.UserTable,
+			Columns: []string{talent.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   talent.UserTable,
+			Columns: []string{talent.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if tuo.mutation.ReferrerCleared() {
 		edge := &sqlgraph.EdgeSpec{

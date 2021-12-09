@@ -31,8 +31,17 @@ const (
 	FieldRole = "role"
 	// FieldApproved holds the string denoting the approved field in the database.
 	FieldApproved = "approved"
+	// EdgeTalents holds the string denoting the talents edge name in mutations.
+	EdgeTalents = "talents"
 	// Table holds the table name of the user in the database.
 	Table = "users"
+	// TalentsTable is the table that holds the talents relation/edge.
+	TalentsTable = "talents"
+	// TalentsInverseTable is the table name for the Talent entity.
+	// It exists in this package in order to avoid circular dependency with the "talent" package.
+	TalentsInverseTable = "talents"
+	// TalentsColumn is the table column denoting the talents relation/edge.
+	TalentsColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.

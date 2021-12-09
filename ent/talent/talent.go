@@ -21,6 +21,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
+	// FieldUserID holds the string denoting the user_id field in the database.
+	FieldUserID = "user_id"
 	// FieldFirstName holds the string denoting the first_name field in the database.
 	FieldFirstName = "first_name"
 	// FieldLastName holds the string denoting the last_name field in the database.
@@ -49,6 +51,8 @@ const (
 	FieldCity = "city"
 	// FieldJoinedTentnAt holds the string denoting the joined_tentn_at field in the database.
 	FieldJoinedTentnAt = "joined_tentn_at"
+	// EdgeUser holds the string denoting the user edge name in mutations.
+	EdgeUser = "user"
 	// EdgeReferrer holds the string denoting the referrer edge name in mutations.
 	EdgeReferrer = "referrer"
 	// EdgeReferees holds the string denoting the referees edge name in mutations.
@@ -69,6 +73,13 @@ const (
 	EdgeMissions = "missions"
 	// Table holds the table name of the talent in the database.
 	Table = "talents"
+	// UserTable is the table that holds the user relation/edge.
+	UserTable = "talents"
+	// UserInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UserInverseTable = "users"
+	// UserColumn is the table column denoting the user relation/edge.
+	UserColumn = "user_id"
 	// ReferrerTable is the table that holds the referrer relation/edge.
 	ReferrerTable = "talents"
 	// ReferrerColumn is the table column denoting the referrer relation/edge.
@@ -135,6 +146,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
+	FieldUserID,
 	FieldFirstName,
 	FieldLastName,
 	FieldPreferredName,

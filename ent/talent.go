@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -25,6 +26,8 @@ type Talent struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
+	// UserID holds the value of the "user_id" field.
+	UserID int `json:"-"`
 	// FirstName holds the value of the "first_name" field.
 	FirstName string `json:"first_name,omitempty"`
 	// LastName holds the value of the "last_name" field.
@@ -60,6 +63,8 @@ type Talent struct {
 
 // TalentEdges holds the relations/edges for other nodes in the graph.
 type TalentEdges struct {
+	// User holds the value of the user edge.
+	User *User `json:"user,omitempty"`
 	// Referrer holds the value of the referrer edge.
 	Referrer *Talent `json:"referrer,omitempty"`
 	// Referees holds the value of the referees edge.
@@ -80,13 +85,27 @@ type TalentEdges struct {
 	Missions []*Mission `json:"missions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [9]bool
+	loadedTypes [10]bool
+}
+
+// UserOrErr returns the User value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e TalentEdges) UserOrErr() (*User, error) {
+	if e.loadedTypes[0] {
+		if e.User == nil {
+			// The edge user was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.User, nil
+	}
+	return nil, &NotLoadedError{edge: "user"}
 }
 
 // ReferrerOrErr returns the Referrer value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e TalentEdges) ReferrerOrErr() (*Talent, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.Referrer == nil {
 			// The edge referrer was loaded in eager-loading,
 			// but was not found.
@@ -100,7 +119,7 @@ func (e TalentEdges) ReferrerOrErr() (*Talent, error) {
 // RefereesOrErr returns the Referees value or an error if the edge
 // was not loaded in eager-loading.
 func (e TalentEdges) RefereesOrErr() ([]*Talent, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Referees, nil
 	}
 	return nil, &NotLoadedError{edge: "referees"}
@@ -109,7 +128,7 @@ func (e TalentEdges) RefereesOrErr() ([]*Talent, error) {
 // PortfoliolinksOrErr returns the Portfoliolinks value or an error if the edge
 // was not loaded in eager-loading.
 func (e TalentEdges) PortfoliolinksOrErr() ([]*PortfolioLink, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.Portfoliolinks, nil
 	}
 	return nil, &NotLoadedError{edge: "portfoliolinks"}
@@ -118,7 +137,7 @@ func (e TalentEdges) PortfoliolinksOrErr() ([]*PortfolioLink, error) {
 // SkillsOrErr returns the Skills value or an error if the edge
 // was not loaded in eager-loading.
 func (e TalentEdges) SkillsOrErr() ([]*Skill, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.Skills, nil
 	}
 	return nil, &NotLoadedError{edge: "skills"}
@@ -127,7 +146,7 @@ func (e TalentEdges) SkillsOrErr() ([]*Skill, error) {
 // JobApplicationsOrErr returns the JobApplications value or an error if the edge
 // was not loaded in eager-loading.
 func (e TalentEdges) JobApplicationsOrErr() ([]*JobApplication, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		return e.JobApplications, nil
 	}
 	return nil, &NotLoadedError{edge: "job_applications"}
@@ -136,7 +155,7 @@ func (e TalentEdges) JobApplicationsOrErr() ([]*JobApplication, error) {
 // WorkExperiencesOrErr returns the WorkExperiences value or an error if the edge
 // was not loaded in eager-loading.
 func (e TalentEdges) WorkExperiencesOrErr() ([]*WorkExperience, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[6] {
 		return e.WorkExperiences, nil
 	}
 	return nil, &NotLoadedError{edge: "work_experiences"}
@@ -145,7 +164,7 @@ func (e TalentEdges) WorkExperiencesOrErr() ([]*WorkExperience, error) {
 // EducationsOrErr returns the Educations value or an error if the edge
 // was not loaded in eager-loading.
 func (e TalentEdges) EducationsOrErr() ([]*Education, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[7] {
 		return e.Educations, nil
 	}
 	return nil, &NotLoadedError{edge: "educations"}
@@ -154,7 +173,7 @@ func (e TalentEdges) EducationsOrErr() ([]*Education, error) {
 // EmergencyContactsOrErr returns the EmergencyContacts value or an error if the edge
 // was not loaded in eager-loading.
 func (e TalentEdges) EmergencyContactsOrErr() ([]*EmergencyContact, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[8] {
 		return e.EmergencyContacts, nil
 	}
 	return nil, &NotLoadedError{edge: "emergency_contacts"}
@@ -163,7 +182,7 @@ func (e TalentEdges) EmergencyContactsOrErr() ([]*EmergencyContact, error) {
 // MissionsOrErr returns the Missions value or an error if the edge
 // was not loaded in eager-loading.
 func (e TalentEdges) MissionsOrErr() ([]*Mission, error) {
-	if e.loadedTypes[8] {
+	if e.loadedTypes[9] {
 		return e.Missions, nil
 	}
 	return nil, &NotLoadedError{edge: "missions"}
@@ -174,7 +193,7 @@ func (*Talent) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case talent.FieldID, talent.FieldReferrerID:
+		case talent.FieldID, talent.FieldUserID, talent.FieldReferrerID:
 			values[i] = new(sql.NullInt64)
 		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldReferralCode, talent.FieldTentnCode, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity:
 			values[i] = new(sql.NullString)
@@ -227,6 +246,12 @@ func (t *Talent) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				t.DeletedAt = new(time.Time)
 				*t.DeletedAt = value.Time
+			}
+		case talent.FieldUserID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+			} else if value.Valid {
+				t.UserID = int(value.Int64)
 			}
 		case talent.FieldFirstName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -318,6 +343,11 @@ func (t *Talent) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
+// QueryUser queries the "user" edge of the Talent entity.
+func (t *Talent) QueryUser() *UserQuery {
+	return (&TalentClient{config: t.config}).QueryUser(t)
+}
+
 // QueryReferrer queries the "referrer" edge of the Talent entity.
 func (t *Talent) QueryReferrer() *TalentQuery {
 	return (&TalentClient{config: t.config}).QueryReferrer(t)
@@ -396,6 +426,8 @@ func (t *Talent) String() string {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", user_id=")
+	builder.WriteString(fmt.Sprintf("%v", t.UserID))
 	builder.WriteString(", first_name=")
 	builder.WriteString(t.FirstName)
 	builder.WriteString(", last_name=")

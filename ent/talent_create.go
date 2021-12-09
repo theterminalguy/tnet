@@ -17,6 +17,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/10hourlabs/tentn/ent/workexperience"
 	"github.com/google/uuid"
 )
@@ -72,6 +73,20 @@ func (tc *TalentCreate) SetDeletedAt(t time.Time) *TalentCreate {
 func (tc *TalentCreate) SetNillableDeletedAt(t *time.Time) *TalentCreate {
 	if t != nil {
 		tc.SetDeletedAt(*t)
+	}
+	return tc
+}
+
+// SetUserID sets the "user_id" field.
+func (tc *TalentCreate) SetUserID(i int) *TalentCreate {
+	tc.mutation.SetUserID(i)
+	return tc
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (tc *TalentCreate) SetNillableUserID(i *int) *TalentCreate {
+	if i != nil {
+		tc.SetUserID(*i)
 	}
 	return tc
 }
@@ -188,6 +203,11 @@ func (tc *TalentCreate) SetNillableJoinedTentnAt(t *time.Time) *TalentCreate {
 func (tc *TalentCreate) SetID(i int) *TalentCreate {
 	tc.mutation.SetID(i)
 	return tc
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (tc *TalentCreate) SetUser(u *User) *TalentCreate {
+	return tc.SetUserID(u.ID)
 }
 
 // SetReferrer sets the "referrer" edge to the Talent entity.
@@ -621,6 +641,26 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Column: talent.FieldJoinedTentnAt,
 		})
 		_node.JoinedTentnAt = &value
+	}
+	if nodes := tc.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   talent.UserTable,
+			Columns: []string{talent.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.UserID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := tc.mutation.ReferrerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

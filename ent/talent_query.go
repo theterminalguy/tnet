@@ -20,6 +20,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/10hourlabs/tentn/ent/workexperience"
 )
 
@@ -33,6 +34,7 @@ type TalentQuery struct {
 	fields     []string
 	predicates []predicate.Talent
 	// eager-loading edges.
+	withUser              *UserQuery
 	withReferrer          *TalentQuery
 	withReferees          *TalentQuery
 	withPortfoliolinks    *PortfolioLinkQuery
@@ -76,6 +78,28 @@ func (tq *TalentQuery) Unique(unique bool) *TalentQuery {
 func (tq *TalentQuery) Order(o ...OrderFunc) *TalentQuery {
 	tq.order = append(tq.order, o...)
 	return tq
+}
+
+// QueryUser chains the current query on the "user" edge.
+func (tq *TalentQuery) QueryUser() *UserQuery {
+	query := &UserQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(talent.Table, talent.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, talent.UserTable, talent.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryReferrer chains the current query on the "referrer" edge.
@@ -457,6 +481,7 @@ func (tq *TalentQuery) Clone() *TalentQuery {
 		offset:                tq.offset,
 		order:                 append([]OrderFunc{}, tq.order...),
 		predicates:            append([]predicate.Talent{}, tq.predicates...),
+		withUser:              tq.withUser.Clone(),
 		withReferrer:          tq.withReferrer.Clone(),
 		withReferees:          tq.withReferees.Clone(),
 		withPortfoliolinks:    tq.withPortfoliolinks.Clone(),
@@ -470,6 +495,17 @@ func (tq *TalentQuery) Clone() *TalentQuery {
 		sql:  tq.sql.Clone(),
 		path: tq.path,
 	}
+}
+
+// WithUser tells the query-builder to eager-load the nodes that are connected to
+// the "user" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TalentQuery) WithUser(opts ...func(*UserQuery)) *TalentQuery {
+	query := &UserQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withUser = query
+	return tq
 }
 
 // WithReferrer tells the query-builder to eager-load the nodes that are connected to
@@ -636,7 +672,8 @@ func (tq *TalentQuery) sqlAll(ctx context.Context) ([]*Talent, error) {
 	var (
 		nodes       = []*Talent{}
 		_spec       = tq.querySpec()
-		loadedTypes = [9]bool{
+		loadedTypes = [10]bool{
+			tq.withUser != nil,
 			tq.withReferrer != nil,
 			tq.withReferees != nil,
 			tq.withPortfoliolinks != nil,
@@ -666,6 +703,32 @@ func (tq *TalentQuery) sqlAll(ctx context.Context) ([]*Talent, error) {
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+
+	if query := tq.withUser; query != nil {
+		ids := make([]int, 0, len(nodes))
+		nodeids := make(map[int][]*Talent)
+		for i := range nodes {
+			fk := nodes[i].UserID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(user.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "user_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.User = n
+			}
+		}
 	}
 
 	if query := tq.withReferrer; query != nil {

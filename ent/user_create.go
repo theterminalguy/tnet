@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
+	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -106,6 +107,21 @@ func (uc *UserCreate) SetNillableApproved(b *bool) *UserCreate {
 func (uc *UserCreate) SetID(i int) *UserCreate {
 	uc.mutation.SetID(i)
 	return uc
+}
+
+// AddTalentIDs adds the "talents" edge to the Talent entity by IDs.
+func (uc *UserCreate) AddTalentIDs(ids ...int) *UserCreate {
+	uc.mutation.AddTalentIDs(ids...)
+	return uc
+}
+
+// AddTalents adds the "talents" edges to the Talent entity.
+func (uc *UserCreate) AddTalents(t ...*Talent) *UserCreate {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uc.AddTalentIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -321,6 +337,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldApproved,
 		})
 		_node.Approved = value
+	}
+	if nodes := uc.mutation.TalentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TalentsTable,
+			Columns: []string{user.TalentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: talent.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

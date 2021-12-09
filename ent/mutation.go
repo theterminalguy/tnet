@@ -7440,6 +7440,8 @@ type TalentMutation struct {
 	city                      *string
 	joined_tentn_at           *time.Time
 	clearedFields             map[string]struct{}
+	user                      *int
+	cleareduser               bool
 	referrer                  *int
 	clearedreferrer           bool
 	referees                  map[int]struct{}
@@ -7711,6 +7713,55 @@ func (m *TalentMutation) DeletedAtCleared() bool {
 func (m *TalentMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 	delete(m.clearedFields, talent.FieldDeletedAt)
+}
+
+// SetUserID sets the "user_id" field.
+func (m *TalentMutation) SetUserID(i int) {
+	m.user = &i
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *TalentMutation) UserID() (r int, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Talent entity.
+// If the Talent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TalentMutation) OldUserID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (m *TalentMutation) ClearUserID() {
+	m.user = nil
+	m.clearedFields[talent.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *TalentMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[talent.FieldUserID]
+	return ok
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *TalentMutation) ResetUserID() {
+	m.user = nil
+	delete(m.clearedFields, talent.FieldUserID)
 }
 
 // SetFirstName sets the "first_name" field.
@@ -8256,6 +8307,32 @@ func (m *TalentMutation) ResetJoinedTentnAt() {
 	delete(m.clearedFields, talent.FieldJoinedTentnAt)
 }
 
+// ClearUser clears the "user" edge to the User entity.
+func (m *TalentMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *TalentMutation) UserCleared() bool {
+	return m.UserIDCleared() || m.cleareduser
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *TalentMutation) UserIDs() (ids []int) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *TalentMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
 // ClearReferrer clears the "referrer" edge to the Talent entity.
 func (m *TalentMutation) ClearReferrer() {
 	m.clearedreferrer = true
@@ -8733,7 +8810,7 @@ func (m *TalentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TalentMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.uuid != nil {
 		fields = append(fields, talent.FieldUUID)
 	}
@@ -8745,6 +8822,9 @@ func (m *TalentMutation) Fields() []string {
 	}
 	if m.deleted_at != nil {
 		fields = append(fields, talent.FieldDeletedAt)
+	}
+	if m.user != nil {
+		fields = append(fields, talent.FieldUserID)
 	}
 	if m.first_name != nil {
 		fields = append(fields, talent.FieldFirstName)
@@ -8804,6 +8884,8 @@ func (m *TalentMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case talent.FieldDeletedAt:
 		return m.DeletedAt()
+	case talent.FieldUserID:
+		return m.UserID()
 	case talent.FieldFirstName:
 		return m.FirstName()
 	case talent.FieldLastName:
@@ -8849,6 +8931,8 @@ func (m *TalentMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldUpdatedAt(ctx)
 	case talent.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
+	case talent.FieldUserID:
+		return m.OldUserID(ctx)
 	case talent.FieldFirstName:
 		return m.OldFirstName(ctx)
 	case talent.FieldLastName:
@@ -8913,6 +8997,13 @@ func (m *TalentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
+		return nil
+	case talent.FieldUserID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
 		return nil
 	case talent.FieldFirstName:
 		v, ok := value.(string)
@@ -9048,6 +9139,9 @@ func (m *TalentMutation) ClearedFields() []string {
 	if m.FieldCleared(talent.FieldDeletedAt) {
 		fields = append(fields, talent.FieldDeletedAt)
 	}
+	if m.FieldCleared(talent.FieldUserID) {
+		fields = append(fields, talent.FieldUserID)
+	}
 	if m.FieldCleared(talent.FieldReferrerID) {
 		fields = append(fields, talent.FieldReferrerID)
 	}
@@ -9073,6 +9167,9 @@ func (m *TalentMutation) ClearField(name string) error {
 	switch name {
 	case talent.FieldDeletedAt:
 		m.ClearDeletedAt()
+		return nil
+	case talent.FieldUserID:
+		m.ClearUserID()
 		return nil
 	case talent.FieldReferrerID:
 		m.ClearReferrerID()
@@ -9102,6 +9199,9 @@ func (m *TalentMutation) ResetField(name string) error {
 		return nil
 	case talent.FieldDeletedAt:
 		m.ResetDeletedAt()
+		return nil
+	case talent.FieldUserID:
+		m.ResetUserID()
 		return nil
 	case talent.FieldFirstName:
 		m.ResetFirstName()
@@ -9151,7 +9251,10 @@ func (m *TalentMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TalentMutation) AddedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
+	if m.user != nil {
+		edges = append(edges, talent.EdgeUser)
+	}
 	if m.referrer != nil {
 		edges = append(edges, talent.EdgeReferrer)
 	}
@@ -9186,6 +9289,10 @@ func (m *TalentMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *TalentMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case talent.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
 	case talent.EdgeReferrer:
 		if id := m.referrer; id != nil {
 			return []ent.Value{*id}
@@ -9244,7 +9351,7 @@ func (m *TalentMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TalentMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.removedreferees != nil {
 		edges = append(edges, talent.EdgeReferees)
 	}
@@ -9330,7 +9437,10 @@ func (m *TalentMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TalentMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
+	if m.cleareduser {
+		edges = append(edges, talent.EdgeUser)
+	}
 	if m.clearedreferrer {
 		edges = append(edges, talent.EdgeReferrer)
 	}
@@ -9365,6 +9475,8 @@ func (m *TalentMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *TalentMutation) EdgeCleared(name string) bool {
 	switch name {
+	case talent.EdgeUser:
+		return m.cleareduser
 	case talent.EdgeReferrer:
 		return m.clearedreferrer
 	case talent.EdgeReferees:
@@ -9391,6 +9503,9 @@ func (m *TalentMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *TalentMutation) ClearEdge(name string) error {
 	switch name {
+	case talent.EdgeUser:
+		m.ClearUser()
+		return nil
 	case talent.EdgeReferrer:
 		m.ClearReferrer()
 		return nil
@@ -9402,6 +9517,9 @@ func (m *TalentMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *TalentMutation) ResetEdge(name string) error {
 	switch name {
+	case talent.EdgeUser:
+		m.ResetUser()
+		return nil
 	case talent.EdgeReferrer:
 		m.ResetReferrer()
 		return nil
@@ -9436,21 +9554,24 @@ func (m *TalentMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	uuid          *uuid.UUID
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *time.Time
-	name          *string
-	email         *string
-	role          *userrole.Role
-	approved      *bool
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*User, error)
-	predicates    []predicate.User
+	op             Op
+	typ            string
+	id             *int
+	uuid           *uuid.UUID
+	created_at     *time.Time
+	updated_at     *time.Time
+	deleted_at     *time.Time
+	name           *string
+	email          *string
+	role           *userrole.Role
+	approved       *bool
+	clearedFields  map[string]struct{}
+	talents        map[int]struct{}
+	removedtalents map[int]struct{}
+	clearedtalents bool
+	done           bool
+	oldValue       func(context.Context) (*User, error)
+	predicates     []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -9839,6 +9960,60 @@ func (m *UserMutation) ResetApproved() {
 	m.approved = nil
 }
 
+// AddTalentIDs adds the "talents" edge to the Talent entity by ids.
+func (m *UserMutation) AddTalentIDs(ids ...int) {
+	if m.talents == nil {
+		m.talents = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.talents[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTalents clears the "talents" edge to the Talent entity.
+func (m *UserMutation) ClearTalents() {
+	m.clearedtalents = true
+}
+
+// TalentsCleared reports if the "talents" edge to the Talent entity was cleared.
+func (m *UserMutation) TalentsCleared() bool {
+	return m.clearedtalents
+}
+
+// RemoveTalentIDs removes the "talents" edge to the Talent entity by IDs.
+func (m *UserMutation) RemoveTalentIDs(ids ...int) {
+	if m.removedtalents == nil {
+		m.removedtalents = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.talents, ids[i])
+		m.removedtalents[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTalents returns the removed IDs of the "talents" edge to the Talent entity.
+func (m *UserMutation) RemovedTalentsIDs() (ids []int) {
+	for id := range m.removedtalents {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TalentsIDs returns the "talents" edge IDs in the mutation.
+func (m *UserMutation) TalentsIDs() (ids []int) {
+	for id := range m.talents {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTalents resets all changes to the "talents" edge.
+func (m *UserMutation) ResetTalents() {
+	m.talents = nil
+	m.clearedtalents = false
+	m.removedtalents = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -10085,49 +10260,85 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.talents != nil {
+		edges = append(edges, user.EdgeTalents)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *UserMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case user.EdgeTalents:
+		ids := make([]ent.Value, 0, len(m.talents))
+		for id := range m.talents {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedtalents != nil {
+		edges = append(edges, user.EdgeTalents)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *UserMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case user.EdgeTalents:
+		ids := make([]ent.Value, 0, len(m.removedtalents))
+		for id := range m.removedtalents {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedtalents {
+		edges = append(edges, user.EdgeTalents)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *UserMutation) EdgeCleared(name string) bool {
+	switch name {
+	case user.EdgeTalents:
+		return m.clearedtalents
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *UserMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown User unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *UserMutation) ResetEdge(name string) error {
+	switch name {
+	case user.EdgeTalents:
+		m.ResetTalents()
+		return nil
+	}
 	return fmt.Errorf("unknown User edge %s", name)
 }
 
