@@ -27,11 +27,11 @@ var requiredRuntimeEnvForDev = []string{
 }
 
 var requiredRuntimeEnvForProd = []string{
-	"CLOUDSQL_PG_USER",
-	"CLOUDSQL_PG_PASSWORD",
-	"CLOUDSQL_PG_SOCKET",
-	"CLOUDSQL_PG_INSTANCE",
-	"CLOUDSQL_PG_DBNAME",
+	// "CLOUDSQL_PG_USER",
+	// "CLOUDSQL_PG_PASSWORD",
+	// "CLOUDSQL_PG_SOCKET",
+	// "CLOUDSQL_PG_INSTANCE",
+	// "CLOUDSQL_PG_DBNAME",
 }
 
 func CheckEnv() {

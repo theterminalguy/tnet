@@ -18,11 +18,13 @@ steps:
       [
         "run",
         "-e",
-        "ENV=${_ENV}",
+        "ENV=test",
         "-e",
-        "PORT=${_PORT}",
+        "PORT=8080",
         "-e",
-        "APP_HOST=${_APP_HOST}",
+        "APP_HOST=http://localhost:8080",
+        "-e",
+        "JWT_SIGNED_SECRET=mysupersecret12345",
         "--rm",
         "${_TEST_IMAGE}",
       ]
@@ -54,6 +56,14 @@ steps:
         "--min-instances",
         "${_MIN_INSTANCES}",
         "--allow-unauthenticated",
+        "--set-env-vars",
+        "JWT_SIGNED_SECRET=${_JWT_SIGNED_SECRET}",
+        "--set-env-vars",
+        "APP_HOST=${_APP_HOST}",
+        "--set-env-vars",
+        "GOOGLE_OAUTH_CLIENT_ID=${_GOOGLE_OAUTH_CLIENT_ID}",
+        "--set-env-vars",
+        "GOOGLE_OAUTH_CLIENT_SECRET=${_GOOGLE_OAUTH_CLIENT_SECRET}",
       ]
 
 images:
