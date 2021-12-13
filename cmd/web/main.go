@@ -10,5 +10,10 @@ import (
 func main() {
 	e := router.DefineRoutes()
 	httpPort := fmt.Sprintf(":%v", os.Getenv("PORT"))
-	e.Logger.Fatal(e.Start(httpPort))
+	if os.Getenv("ENV") == "dev" {
+		e.Logger.Fatal(e.StartTLS(httpPort, "cert.pem", "cert-key.pem"))
+	} else {
+		// Cloud Run automatically enforces TLS
+		e.Logger.Fatal(e.Start(httpPort))
+	}
 }

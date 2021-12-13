@@ -87,9 +87,6 @@ Use the below launch.json file
 
 ```json
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
@@ -106,3 +103,18 @@ Use the below launch.json file
     ]
 }
 ```
+
+## Provisioning TLS Certificates
+
+If you run into issues with the app starting in development mode, you can use the following command to generate a self signed certificate.
+
+```shell
+    $ openssl req -x509 -newkey rsa:4096 -keyout cert-key.pem -out cert.pem -days 365 -nodes -subj "/C=US/ST=CA/L=San Francisco/O=TenTN/CN=localhost"
+```
+The above will generate a self signed certificate for the domain `localhost`. However, we recommend you use [mkcert](https://github.com/FiloSottile/mkcert) to generate a certificate.
+
+```shell
+$ mkcert -key-file cert-key.pem -cert-file cert.pem localhost
+```
+
+Now head over to https://localhost:<port> and you should be able to see the app.

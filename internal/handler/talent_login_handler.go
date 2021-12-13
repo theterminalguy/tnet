@@ -25,7 +25,7 @@ const (
 	AccessToken = "access_token"
 )
 
-var stateToken string
+var googleOauth2StateToken string
 
 var gconf *oauth2.Config = &oauth2.Config{
 	ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
@@ -46,7 +46,7 @@ func GoogleOauth2CallbackHandler(c echo.Context) error {
 	// this page should show the user profile obtained from google and also
 	// shows their access token. They should be able to copy the access token to a clipboard.
 	// We can implement a simple webpage with a button to copy the access token to clipboard.
-	if stateToken != c.QueryParam("state") {
+	if googleOauth2StateToken != c.QueryParam("state") {
 		// the state token is invalid, someone may be trying to intercept our login flow
 		return echo.ErrUnauthorized
 	}
@@ -102,15 +102,8 @@ func GoogleOauth2CallbackHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"token": token})
 }
 
-// SlackOauth2CallbackHandler handles the callback from Slack OAuth2
-// anyone who signs up with Slack will be redirected to this handler
-// and will be automatically created with the "Recruiter" role
-func SlackOauth2CallbackHandler(c echo.Context) error {
-	return nil
-}
-
 func TalentLoginHanlder(c echo.Context) error {
-	stateToken = randutil.GenerateOauthStateToken()
-	url := gconf.AuthCodeURL(stateToken)
+	googleOauth2StateToken = randutil.GenerateOauthStateToken()
+	url := gconf.AuthCodeURL(googleOauth2StateToken)
 	return c.Redirect(http.StatusTemporaryRedirect, url)
 }
