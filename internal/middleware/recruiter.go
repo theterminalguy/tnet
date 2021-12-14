@@ -12,15 +12,16 @@ func EnforceApprovedRecruiter() echo.MiddlewareFunc {
 			user := c.Get("user").(*jwt.Token)
 			claims := user.Claims.(jwt.MapClaims)
 			if claims["role"] != string(userrole.Recruiter) {
-				return c.JSON(401, map[string]string{
-					"message": "You are not a recruiter",
-				})
+				return echo.ErrUnauthorized
 			}
-			if claims["approved"] != false {
-				return c.JSON(401, map[string]string{
-					"message": "Not authorized",
-				})
+			if claims["approved"] == false {
+				return echo.ErrUnauthorized
 			}
+			// TODO: prevent deleted accounts
+			// This isn't done now as we are yet to figure out the best way to approach this
+			// The obvious straightforward way is to check if the user is deleted, but that
+			// would require a database query. We may have to cache the user data to allow for
+			// faster access.
 			return next(c)
 		}
 	}
