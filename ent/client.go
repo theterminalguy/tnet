@@ -17,6 +17,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/10hourlabs/tentn/ent/workexperience"
@@ -47,6 +48,8 @@ type Client struct {
 	PortfolioLink *PortfolioLinkClient
 	// Skill is the client for interacting with the Skill builders.
 	Skill *SkillClient
+	// SlackAppInstall is the client for interacting with the SlackAppInstall builders.
+	SlackAppInstall *SlackAppInstallClient
 	// Talent is the client for interacting with the Talent builders.
 	Talent *TalentClient
 	// User is the client for interacting with the User builders.
@@ -74,6 +77,7 @@ func (c *Client) init() {
 	c.Partner = NewPartnerClient(c.config)
 	c.PortfolioLink = NewPortfolioLinkClient(c.config)
 	c.Skill = NewSkillClient(c.config)
+	c.SlackAppInstall = NewSlackAppInstallClient(c.config)
 	c.Talent = NewTalentClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.WorkExperience = NewWorkExperienceClient(c.config)
@@ -118,6 +122,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Partner:          NewPartnerClient(cfg),
 		PortfolioLink:    NewPortfolioLinkClient(cfg),
 		Skill:            NewSkillClient(cfg),
+		SlackAppInstall:  NewSlackAppInstallClient(cfg),
 		Talent:           NewTalentClient(cfg),
 		User:             NewUserClient(cfg),
 		WorkExperience:   NewWorkExperienceClient(cfg),
@@ -147,6 +152,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Partner:          NewPartnerClient(cfg),
 		PortfolioLink:    NewPortfolioLinkClient(cfg),
 		Skill:            NewSkillClient(cfg),
+		SlackAppInstall:  NewSlackAppInstallClient(cfg),
 		Talent:           NewTalentClient(cfg),
 		User:             NewUserClient(cfg),
 		WorkExperience:   NewWorkExperienceClient(cfg),
@@ -187,6 +193,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Partner.Use(hooks...)
 	c.PortfolioLink.Use(hooks...)
 	c.Skill.Use(hooks...)
+	c.SlackAppInstall.Use(hooks...)
 	c.Talent.Use(hooks...)
 	c.User.Use(hooks...)
 	c.WorkExperience.Use(hooks...)
@@ -1072,6 +1079,112 @@ func (c *SkillClient) Hooks() []Hook {
 	return c.hooks.Skill
 }
 
+// SlackAppInstallClient is a client for the SlackAppInstall schema.
+type SlackAppInstallClient struct {
+	config
+}
+
+// NewSlackAppInstallClient returns a client for the SlackAppInstall from the given config.
+func NewSlackAppInstallClient(c config) *SlackAppInstallClient {
+	return &SlackAppInstallClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `slackappinstall.Hooks(f(g(h())))`.
+func (c *SlackAppInstallClient) Use(hooks ...Hook) {
+	c.hooks.SlackAppInstall = append(c.hooks.SlackAppInstall, hooks...)
+}
+
+// Create returns a create builder for SlackAppInstall.
+func (c *SlackAppInstallClient) Create() *SlackAppInstallCreate {
+	mutation := newSlackAppInstallMutation(c.config, OpCreate)
+	return &SlackAppInstallCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SlackAppInstall entities.
+func (c *SlackAppInstallClient) CreateBulk(builders ...*SlackAppInstallCreate) *SlackAppInstallCreateBulk {
+	return &SlackAppInstallCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SlackAppInstall.
+func (c *SlackAppInstallClient) Update() *SlackAppInstallUpdate {
+	mutation := newSlackAppInstallMutation(c.config, OpUpdate)
+	return &SlackAppInstallUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SlackAppInstallClient) UpdateOne(sai *SlackAppInstall) *SlackAppInstallUpdateOne {
+	mutation := newSlackAppInstallMutation(c.config, OpUpdateOne, withSlackAppInstall(sai))
+	return &SlackAppInstallUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SlackAppInstallClient) UpdateOneID(id int) *SlackAppInstallUpdateOne {
+	mutation := newSlackAppInstallMutation(c.config, OpUpdateOne, withSlackAppInstallID(id))
+	return &SlackAppInstallUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SlackAppInstall.
+func (c *SlackAppInstallClient) Delete() *SlackAppInstallDelete {
+	mutation := newSlackAppInstallMutation(c.config, OpDelete)
+	return &SlackAppInstallDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *SlackAppInstallClient) DeleteOne(sai *SlackAppInstall) *SlackAppInstallDeleteOne {
+	return c.DeleteOneID(sai.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *SlackAppInstallClient) DeleteOneID(id int) *SlackAppInstallDeleteOne {
+	builder := c.Delete().Where(slackappinstall.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SlackAppInstallDeleteOne{builder}
+}
+
+// Query returns a query builder for SlackAppInstall.
+func (c *SlackAppInstallClient) Query() *SlackAppInstallQuery {
+	return &SlackAppInstallQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a SlackAppInstall entity by its id.
+func (c *SlackAppInstallClient) Get(ctx context.Context, id int) (*SlackAppInstall, error) {
+	return c.Query().Where(slackappinstall.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SlackAppInstallClient) GetX(ctx context.Context, id int) *SlackAppInstall {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a SlackAppInstall.
+func (c *SlackAppInstallClient) QueryUser(sai *SlackAppInstall) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sai.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(slackappinstall.Table, slackappinstall.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, slackappinstall.UserTable, slackappinstall.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(sai.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SlackAppInstallClient) Hooks() []Hook {
+	return c.hooks.SlackAppInstall
+}
+
 // TalentClient is a client for the Talent schema.
 type TalentClient struct {
 	config
@@ -1416,6 +1529,22 @@ func (c *UserClient) QueryTalents(u *User) *TalentQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(talent.Table, talent.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.TalentsTable, user.TalentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySlackAppInstalls queries the slack_app_installs edge of a User.
+func (c *UserClient) QuerySlackAppInstalls(u *User) *SlackAppInstallQuery {
+	query := &SlackAppInstallQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(slackappinstall.Table, slackappinstall.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.SlackAppInstallsTable, user.SlackAppInstallsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

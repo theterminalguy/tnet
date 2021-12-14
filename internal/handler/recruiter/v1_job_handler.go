@@ -34,7 +34,7 @@ func (h *V1RecruiterJobHandler) Search(c echo.Context) error {
 
 func (h *V1RecruiterJobHandler) ReadAll(c echo.Context) error {
 	// TODO: implement pagination
-	// most likely coursor based
+	// most likely cursor based
 	jobs, err := h.JobRepository.GetAll()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())

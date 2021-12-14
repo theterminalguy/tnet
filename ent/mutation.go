@@ -18,6 +18,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/10hourlabs/tentn/ent/workexperience"
@@ -43,6 +44,7 @@ const (
 	TypePartner          = "Partner"
 	TypePortfolioLink    = "PortfolioLink"
 	TypeSkill            = "Skill"
+	TypeSlackAppInstall  = "SlackAppInstall"
 	TypeTalent           = "Talent"
 	TypeUser             = "User"
 	TypeWorkExperience   = "WorkExperience"
@@ -7416,6 +7418,1159 @@ func (m *SkillMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Skill edge %s", name)
 }
 
+// SlackAppInstallMutation represents an operation that mutates the SlackAppInstall nodes in the graph.
+type SlackAppInstallMutation struct {
+	config
+	op                    Op
+	typ                   string
+	id                    *int
+	uuid                  *uuid.UUID
+	created_at            *time.Time
+	updated_at            *time.Time
+	deleted_at            *time.Time
+	team_id               *string
+	team_name             *string
+	authed_user_id        *string
+	authed_user_email     *string
+	app_id                *string
+	bot_user_id           *string
+	access_token          *string
+	token_type            *string
+	scope                 *string
+	is_enterprise_install *bool
+	clearedFields         map[string]struct{}
+	user                  *int
+	cleareduser           bool
+	done                  bool
+	oldValue              func(context.Context) (*SlackAppInstall, error)
+	predicates            []predicate.SlackAppInstall
+}
+
+var _ ent.Mutation = (*SlackAppInstallMutation)(nil)
+
+// slackappinstallOption allows management of the mutation configuration using functional options.
+type slackappinstallOption func(*SlackAppInstallMutation)
+
+// newSlackAppInstallMutation creates new mutation for the SlackAppInstall entity.
+func newSlackAppInstallMutation(c config, op Op, opts ...slackappinstallOption) *SlackAppInstallMutation {
+	m := &SlackAppInstallMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeSlackAppInstall,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withSlackAppInstallID sets the ID field of the mutation.
+func withSlackAppInstallID(id int) slackappinstallOption {
+	return func(m *SlackAppInstallMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *SlackAppInstall
+		)
+		m.oldValue = func(ctx context.Context) (*SlackAppInstall, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().SlackAppInstall.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withSlackAppInstall sets the old SlackAppInstall of the mutation.
+func withSlackAppInstall(node *SlackAppInstall) slackappinstallOption {
+	return func(m *SlackAppInstallMutation) {
+		m.oldValue = func(context.Context) (*SlackAppInstall, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m SlackAppInstallMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m SlackAppInstallMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of SlackAppInstall entities.
+func (m *SlackAppInstallMutation) SetID(id int) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *SlackAppInstallMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetUUID sets the "uuid" field.
+func (m *SlackAppInstallMutation) SetUUID(u uuid.UUID) {
+	m.uuid = &u
+}
+
+// UUID returns the value of the "uuid" field in the mutation.
+func (m *SlackAppInstallMutation) UUID() (r uuid.UUID, exists bool) {
+	v := m.uuid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUUID returns the old "uuid" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUUID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUUID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
+	}
+	return oldValue.UUID, nil
+}
+
+// ResetUUID resets all changes to the "uuid" field.
+func (m *SlackAppInstallMutation) ResetUUID() {
+	m.uuid = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *SlackAppInstallMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *SlackAppInstallMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *SlackAppInstallMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *SlackAppInstallMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *SlackAppInstallMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *SlackAppInstallMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *SlackAppInstallMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *SlackAppInstallMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *SlackAppInstallMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[slackappinstall.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *SlackAppInstallMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[slackappinstall.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *SlackAppInstallMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, slackappinstall.FieldDeletedAt)
+}
+
+// SetUserID sets the "user_id" field.
+func (m *SlackAppInstallMutation) SetUserID(i int) {
+	m.user = &i
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *SlackAppInstallMutation) UserID() (r int, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldUserID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (m *SlackAppInstallMutation) ClearUserID() {
+	m.user = nil
+	m.clearedFields[slackappinstall.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *SlackAppInstallMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[slackappinstall.FieldUserID]
+	return ok
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *SlackAppInstallMutation) ResetUserID() {
+	m.user = nil
+	delete(m.clearedFields, slackappinstall.FieldUserID)
+}
+
+// SetTeamID sets the "team_id" field.
+func (m *SlackAppInstallMutation) SetTeamID(s string) {
+	m.team_id = &s
+}
+
+// TeamID returns the value of the "team_id" field in the mutation.
+func (m *SlackAppInstallMutation) TeamID() (r string, exists bool) {
+	v := m.team_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTeamID returns the old "team_id" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldTeamID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTeamID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTeamID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTeamID: %w", err)
+	}
+	return oldValue.TeamID, nil
+}
+
+// ResetTeamID resets all changes to the "team_id" field.
+func (m *SlackAppInstallMutation) ResetTeamID() {
+	m.team_id = nil
+}
+
+// SetTeamName sets the "team_name" field.
+func (m *SlackAppInstallMutation) SetTeamName(s string) {
+	m.team_name = &s
+}
+
+// TeamName returns the value of the "team_name" field in the mutation.
+func (m *SlackAppInstallMutation) TeamName() (r string, exists bool) {
+	v := m.team_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTeamName returns the old "team_name" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldTeamName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTeamName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTeamName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTeamName: %w", err)
+	}
+	return oldValue.TeamName, nil
+}
+
+// ResetTeamName resets all changes to the "team_name" field.
+func (m *SlackAppInstallMutation) ResetTeamName() {
+	m.team_name = nil
+}
+
+// SetAuthedUserID sets the "authed_user_id" field.
+func (m *SlackAppInstallMutation) SetAuthedUserID(s string) {
+	m.authed_user_id = &s
+}
+
+// AuthedUserID returns the value of the "authed_user_id" field in the mutation.
+func (m *SlackAppInstallMutation) AuthedUserID() (r string, exists bool) {
+	v := m.authed_user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAuthedUserID returns the old "authed_user_id" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldAuthedUserID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldAuthedUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldAuthedUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAuthedUserID: %w", err)
+	}
+	return oldValue.AuthedUserID, nil
+}
+
+// ResetAuthedUserID resets all changes to the "authed_user_id" field.
+func (m *SlackAppInstallMutation) ResetAuthedUserID() {
+	m.authed_user_id = nil
+}
+
+// SetAuthedUserEmail sets the "authed_user_email" field.
+func (m *SlackAppInstallMutation) SetAuthedUserEmail(s string) {
+	m.authed_user_email = &s
+}
+
+// AuthedUserEmail returns the value of the "authed_user_email" field in the mutation.
+func (m *SlackAppInstallMutation) AuthedUserEmail() (r string, exists bool) {
+	v := m.authed_user_email
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAuthedUserEmail returns the old "authed_user_email" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldAuthedUserEmail(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldAuthedUserEmail is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldAuthedUserEmail requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAuthedUserEmail: %w", err)
+	}
+	return oldValue.AuthedUserEmail, nil
+}
+
+// ResetAuthedUserEmail resets all changes to the "authed_user_email" field.
+func (m *SlackAppInstallMutation) ResetAuthedUserEmail() {
+	m.authed_user_email = nil
+}
+
+// SetAppID sets the "app_id" field.
+func (m *SlackAppInstallMutation) SetAppID(s string) {
+	m.app_id = &s
+}
+
+// AppID returns the value of the "app_id" field in the mutation.
+func (m *SlackAppInstallMutation) AppID() (r string, exists bool) {
+	v := m.app_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAppID returns the old "app_id" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldAppID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldAppID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldAppID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAppID: %w", err)
+	}
+	return oldValue.AppID, nil
+}
+
+// ResetAppID resets all changes to the "app_id" field.
+func (m *SlackAppInstallMutation) ResetAppID() {
+	m.app_id = nil
+}
+
+// SetBotUserID sets the "bot_user_id" field.
+func (m *SlackAppInstallMutation) SetBotUserID(s string) {
+	m.bot_user_id = &s
+}
+
+// BotUserID returns the value of the "bot_user_id" field in the mutation.
+func (m *SlackAppInstallMutation) BotUserID() (r string, exists bool) {
+	v := m.bot_user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBotUserID returns the old "bot_user_id" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldBotUserID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldBotUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldBotUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBotUserID: %w", err)
+	}
+	return oldValue.BotUserID, nil
+}
+
+// ResetBotUserID resets all changes to the "bot_user_id" field.
+func (m *SlackAppInstallMutation) ResetBotUserID() {
+	m.bot_user_id = nil
+}
+
+// SetAccessToken sets the "access_token" field.
+func (m *SlackAppInstallMutation) SetAccessToken(s string) {
+	m.access_token = &s
+}
+
+// AccessToken returns the value of the "access_token" field in the mutation.
+func (m *SlackAppInstallMutation) AccessToken() (r string, exists bool) {
+	v := m.access_token
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAccessToken returns the old "access_token" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldAccessToken(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldAccessToken is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldAccessToken requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAccessToken: %w", err)
+	}
+	return oldValue.AccessToken, nil
+}
+
+// ResetAccessToken resets all changes to the "access_token" field.
+func (m *SlackAppInstallMutation) ResetAccessToken() {
+	m.access_token = nil
+}
+
+// SetTokenType sets the "token_type" field.
+func (m *SlackAppInstallMutation) SetTokenType(s string) {
+	m.token_type = &s
+}
+
+// TokenType returns the value of the "token_type" field in the mutation.
+func (m *SlackAppInstallMutation) TokenType() (r string, exists bool) {
+	v := m.token_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenType returns the old "token_type" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldTokenType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTokenType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTokenType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenType: %w", err)
+	}
+	return oldValue.TokenType, nil
+}
+
+// ResetTokenType resets all changes to the "token_type" field.
+func (m *SlackAppInstallMutation) ResetTokenType() {
+	m.token_type = nil
+}
+
+// SetScope sets the "scope" field.
+func (m *SlackAppInstallMutation) SetScope(s string) {
+	m.scope = &s
+}
+
+// Scope returns the value of the "scope" field in the mutation.
+func (m *SlackAppInstallMutation) Scope() (r string, exists bool) {
+	v := m.scope
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScope returns the old "scope" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldScope(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldScope is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldScope requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScope: %w", err)
+	}
+	return oldValue.Scope, nil
+}
+
+// ResetScope resets all changes to the "scope" field.
+func (m *SlackAppInstallMutation) ResetScope() {
+	m.scope = nil
+}
+
+// SetIsEnterpriseInstall sets the "is_enterprise_install" field.
+func (m *SlackAppInstallMutation) SetIsEnterpriseInstall(b bool) {
+	m.is_enterprise_install = &b
+}
+
+// IsEnterpriseInstall returns the value of the "is_enterprise_install" field in the mutation.
+func (m *SlackAppInstallMutation) IsEnterpriseInstall() (r bool, exists bool) {
+	v := m.is_enterprise_install
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsEnterpriseInstall returns the old "is_enterprise_install" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldIsEnterpriseInstall(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIsEnterpriseInstall is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIsEnterpriseInstall requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsEnterpriseInstall: %w", err)
+	}
+	return oldValue.IsEnterpriseInstall, nil
+}
+
+// ResetIsEnterpriseInstall resets all changes to the "is_enterprise_install" field.
+func (m *SlackAppInstallMutation) ResetIsEnterpriseInstall() {
+	m.is_enterprise_install = nil
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *SlackAppInstallMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *SlackAppInstallMutation) UserCleared() bool {
+	return m.UserIDCleared() || m.cleareduser
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *SlackAppInstallMutation) UserIDs() (ids []int) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *SlackAppInstallMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// Where appends a list predicates to the SlackAppInstallMutation builder.
+func (m *SlackAppInstallMutation) Where(ps ...predicate.SlackAppInstall) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *SlackAppInstallMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (SlackAppInstall).
+func (m *SlackAppInstallMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *SlackAppInstallMutation) Fields() []string {
+	fields := make([]string, 0, 15)
+	if m.uuid != nil {
+		fields = append(fields, slackappinstall.FieldUUID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, slackappinstall.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, slackappinstall.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, slackappinstall.FieldDeletedAt)
+	}
+	if m.user != nil {
+		fields = append(fields, slackappinstall.FieldUserID)
+	}
+	if m.team_id != nil {
+		fields = append(fields, slackappinstall.FieldTeamID)
+	}
+	if m.team_name != nil {
+		fields = append(fields, slackappinstall.FieldTeamName)
+	}
+	if m.authed_user_id != nil {
+		fields = append(fields, slackappinstall.FieldAuthedUserID)
+	}
+	if m.authed_user_email != nil {
+		fields = append(fields, slackappinstall.FieldAuthedUserEmail)
+	}
+	if m.app_id != nil {
+		fields = append(fields, slackappinstall.FieldAppID)
+	}
+	if m.bot_user_id != nil {
+		fields = append(fields, slackappinstall.FieldBotUserID)
+	}
+	if m.access_token != nil {
+		fields = append(fields, slackappinstall.FieldAccessToken)
+	}
+	if m.token_type != nil {
+		fields = append(fields, slackappinstall.FieldTokenType)
+	}
+	if m.scope != nil {
+		fields = append(fields, slackappinstall.FieldScope)
+	}
+	if m.is_enterprise_install != nil {
+		fields = append(fields, slackappinstall.FieldIsEnterpriseInstall)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *SlackAppInstallMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case slackappinstall.FieldUUID:
+		return m.UUID()
+	case slackappinstall.FieldCreatedAt:
+		return m.CreatedAt()
+	case slackappinstall.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case slackappinstall.FieldDeletedAt:
+		return m.DeletedAt()
+	case slackappinstall.FieldUserID:
+		return m.UserID()
+	case slackappinstall.FieldTeamID:
+		return m.TeamID()
+	case slackappinstall.FieldTeamName:
+		return m.TeamName()
+	case slackappinstall.FieldAuthedUserID:
+		return m.AuthedUserID()
+	case slackappinstall.FieldAuthedUserEmail:
+		return m.AuthedUserEmail()
+	case slackappinstall.FieldAppID:
+		return m.AppID()
+	case slackappinstall.FieldBotUserID:
+		return m.BotUserID()
+	case slackappinstall.FieldAccessToken:
+		return m.AccessToken()
+	case slackappinstall.FieldTokenType:
+		return m.TokenType()
+	case slackappinstall.FieldScope:
+		return m.Scope()
+	case slackappinstall.FieldIsEnterpriseInstall:
+		return m.IsEnterpriseInstall()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *SlackAppInstallMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case slackappinstall.FieldUUID:
+		return m.OldUUID(ctx)
+	case slackappinstall.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case slackappinstall.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case slackappinstall.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case slackappinstall.FieldUserID:
+		return m.OldUserID(ctx)
+	case slackappinstall.FieldTeamID:
+		return m.OldTeamID(ctx)
+	case slackappinstall.FieldTeamName:
+		return m.OldTeamName(ctx)
+	case slackappinstall.FieldAuthedUserID:
+		return m.OldAuthedUserID(ctx)
+	case slackappinstall.FieldAuthedUserEmail:
+		return m.OldAuthedUserEmail(ctx)
+	case slackappinstall.FieldAppID:
+		return m.OldAppID(ctx)
+	case slackappinstall.FieldBotUserID:
+		return m.OldBotUserID(ctx)
+	case slackappinstall.FieldAccessToken:
+		return m.OldAccessToken(ctx)
+	case slackappinstall.FieldTokenType:
+		return m.OldTokenType(ctx)
+	case slackappinstall.FieldScope:
+		return m.OldScope(ctx)
+	case slackappinstall.FieldIsEnterpriseInstall:
+		return m.OldIsEnterpriseInstall(ctx)
+	}
+	return nil, fmt.Errorf("unknown SlackAppInstall field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SlackAppInstallMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case slackappinstall.FieldUUID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUUID(v)
+		return nil
+	case slackappinstall.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case slackappinstall.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case slackappinstall.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case slackappinstall.FieldUserID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case slackappinstall.FieldTeamID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTeamID(v)
+		return nil
+	case slackappinstall.FieldTeamName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTeamName(v)
+		return nil
+	case slackappinstall.FieldAuthedUserID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAuthedUserID(v)
+		return nil
+	case slackappinstall.FieldAuthedUserEmail:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAuthedUserEmail(v)
+		return nil
+	case slackappinstall.FieldAppID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAppID(v)
+		return nil
+	case slackappinstall.FieldBotUserID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBotUserID(v)
+		return nil
+	case slackappinstall.FieldAccessToken:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAccessToken(v)
+		return nil
+	case slackappinstall.FieldTokenType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenType(v)
+		return nil
+	case slackappinstall.FieldScope:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScope(v)
+		return nil
+	case slackappinstall.FieldIsEnterpriseInstall:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsEnterpriseInstall(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SlackAppInstall field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *SlackAppInstallMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *SlackAppInstallMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SlackAppInstallMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown SlackAppInstall numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *SlackAppInstallMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(slackappinstall.FieldDeletedAt) {
+		fields = append(fields, slackappinstall.FieldDeletedAt)
+	}
+	if m.FieldCleared(slackappinstall.FieldUserID) {
+		fields = append(fields, slackappinstall.FieldUserID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *SlackAppInstallMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *SlackAppInstallMutation) ClearField(name string) error {
+	switch name {
+	case slackappinstall.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case slackappinstall.FieldUserID:
+		m.ClearUserID()
+		return nil
+	}
+	return fmt.Errorf("unknown SlackAppInstall nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *SlackAppInstallMutation) ResetField(name string) error {
+	switch name {
+	case slackappinstall.FieldUUID:
+		m.ResetUUID()
+		return nil
+	case slackappinstall.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case slackappinstall.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case slackappinstall.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case slackappinstall.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case slackappinstall.FieldTeamID:
+		m.ResetTeamID()
+		return nil
+	case slackappinstall.FieldTeamName:
+		m.ResetTeamName()
+		return nil
+	case slackappinstall.FieldAuthedUserID:
+		m.ResetAuthedUserID()
+		return nil
+	case slackappinstall.FieldAuthedUserEmail:
+		m.ResetAuthedUserEmail()
+		return nil
+	case slackappinstall.FieldAppID:
+		m.ResetAppID()
+		return nil
+	case slackappinstall.FieldBotUserID:
+		m.ResetBotUserID()
+		return nil
+	case slackappinstall.FieldAccessToken:
+		m.ResetAccessToken()
+		return nil
+	case slackappinstall.FieldTokenType:
+		m.ResetTokenType()
+		return nil
+	case slackappinstall.FieldScope:
+		m.ResetScope()
+		return nil
+	case slackappinstall.FieldIsEnterpriseInstall:
+		m.ResetIsEnterpriseInstall()
+		return nil
+	}
+	return fmt.Errorf("unknown SlackAppInstall field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *SlackAppInstallMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.user != nil {
+		edges = append(edges, slackappinstall.EdgeUser)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *SlackAppInstallMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case slackappinstall.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *SlackAppInstallMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *SlackAppInstallMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *SlackAppInstallMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.cleareduser {
+		edges = append(edges, slackappinstall.EdgeUser)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *SlackAppInstallMutation) EdgeCleared(name string) bool {
+	switch name {
+	case slackappinstall.EdgeUser:
+		return m.cleareduser
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *SlackAppInstallMutation) ClearEdge(name string) error {
+	switch name {
+	case slackappinstall.EdgeUser:
+		m.ClearUser()
+		return nil
+	}
+	return fmt.Errorf("unknown SlackAppInstall unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *SlackAppInstallMutation) ResetEdge(name string) error {
+	switch name {
+	case slackappinstall.EdgeUser:
+		m.ResetUser()
+		return nil
+	}
+	return fmt.Errorf("unknown SlackAppInstall edge %s", name)
+}
+
 // TalentMutation represents an operation that mutates the Talent nodes in the graph.
 type TalentMutation struct {
 	config
@@ -9554,24 +10709,27 @@ func (m *TalentMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op             Op
-	typ            string
-	id             *int
-	uuid           *uuid.UUID
-	created_at     *time.Time
-	updated_at     *time.Time
-	deleted_at     *time.Time
-	name           *string
-	email          *string
-	role           *userrole.Role
-	approved       *bool
-	clearedFields  map[string]struct{}
-	talents        map[int]struct{}
-	removedtalents map[int]struct{}
-	clearedtalents bool
-	done           bool
-	oldValue       func(context.Context) (*User, error)
-	predicates     []predicate.User
+	op                        Op
+	typ                       string
+	id                        *int
+	uuid                      *uuid.UUID
+	created_at                *time.Time
+	updated_at                *time.Time
+	deleted_at                *time.Time
+	name                      *string
+	email                     *string
+	role                      *userrole.Role
+	approved                  *bool
+	clearedFields             map[string]struct{}
+	talents                   map[int]struct{}
+	removedtalents            map[int]struct{}
+	clearedtalents            bool
+	slack_app_installs        map[int]struct{}
+	removedslack_app_installs map[int]struct{}
+	clearedslack_app_installs bool
+	done                      bool
+	oldValue                  func(context.Context) (*User, error)
+	predicates                []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -10014,6 +11172,60 @@ func (m *UserMutation) ResetTalents() {
 	m.removedtalents = nil
 }
 
+// AddSlackAppInstallIDs adds the "slack_app_installs" edge to the SlackAppInstall entity by ids.
+func (m *UserMutation) AddSlackAppInstallIDs(ids ...int) {
+	if m.slack_app_installs == nil {
+		m.slack_app_installs = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.slack_app_installs[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSlackAppInstalls clears the "slack_app_installs" edge to the SlackAppInstall entity.
+func (m *UserMutation) ClearSlackAppInstalls() {
+	m.clearedslack_app_installs = true
+}
+
+// SlackAppInstallsCleared reports if the "slack_app_installs" edge to the SlackAppInstall entity was cleared.
+func (m *UserMutation) SlackAppInstallsCleared() bool {
+	return m.clearedslack_app_installs
+}
+
+// RemoveSlackAppInstallIDs removes the "slack_app_installs" edge to the SlackAppInstall entity by IDs.
+func (m *UserMutation) RemoveSlackAppInstallIDs(ids ...int) {
+	if m.removedslack_app_installs == nil {
+		m.removedslack_app_installs = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.slack_app_installs, ids[i])
+		m.removedslack_app_installs[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSlackAppInstalls returns the removed IDs of the "slack_app_installs" edge to the SlackAppInstall entity.
+func (m *UserMutation) RemovedSlackAppInstallsIDs() (ids []int) {
+	for id := range m.removedslack_app_installs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SlackAppInstallsIDs returns the "slack_app_installs" edge IDs in the mutation.
+func (m *UserMutation) SlackAppInstallsIDs() (ids []int) {
+	for id := range m.slack_app_installs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSlackAppInstalls resets all changes to the "slack_app_installs" edge.
+func (m *UserMutation) ResetSlackAppInstalls() {
+	m.slack_app_installs = nil
+	m.clearedslack_app_installs = false
+	m.removedslack_app_installs = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -10260,9 +11472,12 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.talents != nil {
 		edges = append(edges, user.EdgeTalents)
+	}
+	if m.slack_app_installs != nil {
+		edges = append(edges, user.EdgeSlackAppInstalls)
 	}
 	return edges
 }
@@ -10277,15 +11492,24 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeSlackAppInstalls:
+		ids := make([]ent.Value, 0, len(m.slack_app_installs))
+		for id := range m.slack_app_installs {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removedtalents != nil {
 		edges = append(edges, user.EdgeTalents)
+	}
+	if m.removedslack_app_installs != nil {
+		edges = append(edges, user.EdgeSlackAppInstalls)
 	}
 	return edges
 }
@@ -10300,15 +11524,24 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeSlackAppInstalls:
+		ids := make([]ent.Value, 0, len(m.removedslack_app_installs))
+		for id := range m.removedslack_app_installs {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedtalents {
 		edges = append(edges, user.EdgeTalents)
+	}
+	if m.clearedslack_app_installs {
+		edges = append(edges, user.EdgeSlackAppInstalls)
 	}
 	return edges
 }
@@ -10319,6 +11552,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 	switch name {
 	case user.EdgeTalents:
 		return m.clearedtalents
+	case user.EdgeSlackAppInstalls:
+		return m.clearedslack_app_installs
 	}
 	return false
 }
@@ -10337,6 +11572,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 	switch name {
 	case user.EdgeTalents:
 		m.ResetTalents()
+		return nil
+	case user.EdgeSlackAppInstalls:
+		m.ResetSlackAppInstalls()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

@@ -30,6 +30,9 @@ type PortfolioLink func(*sql.Selector)
 // Skill is the predicate function for skill builders.
 type Skill func(*sql.Selector)
 
+// SlackAppInstall is the predicate function for slackappinstall builders.
+type SlackAppInstall func(*sql.Selector)
+
 // Talent is the predicate function for talent builders.
 type Talent func(*sql.Selector)
 

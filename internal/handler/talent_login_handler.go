@@ -6,36 +6,46 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/randutil"
-	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
 
-type Token string
-
-const (
-	IDToken     = "id_token"
-	AccessToken = "access_token"
-)
-
 var googleOauth2StateToken string
 
-var gconf *oauth2.Config = &oauth2.Config{
-	ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
-	ClientSecret: os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
-	RedirectURL:  fmt.Sprintf("%s/oauth2/google/callback", os.Getenv("APP_HOST")),
-	Scopes: []string{
-		"https://www.googleapis.com/auth/userinfo.email",
-		"https://www.googleapis.com/auth/userinfo.profile",
+type GoogleOauth2Client struct {
+	*oauth2.Config
+}
+
+var gconf *GoogleOauth2Client = &GoogleOauth2Client{
+	Config: &oauth2.Config{
+		ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
+		ClientSecret: os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
+		RedirectURL:  fmt.Sprintf("%s/oauth2/google/callback", os.Getenv("APP_HOST")),
+		Scopes: []string{
+			"https://www.googleapis.com/auth/userinfo.email",
+			"https://www.googleapis.com/auth/userinfo.profile",
+		},
+		Endpoint: google.Endpoint,
 	},
-	Endpoint: google.Endpoint,
+}
+
+func (s *GoogleOauth2Client) GetUsersProfile(tok *oauth2.Token) (*repo.UserParams, error) {
+	client := gconf.Client(context.Background(), tok)
+	resp, err := client.Get("https://www.googleapis.com/oauth2/v3/userinfo")
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	var userInfo repo.UserParams
+	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
+		return nil, err
+	}
+	return &userInfo, nil
 }
 
 // GoogleOauth2CallbackHandler handles the callback from Google OAuth2
@@ -56,46 +66,17 @@ func GoogleOauth2CallbackHandler(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	client := gconf.Client(context.Background(), tok)
-	resp, err := client.Get("https://www.googleapis.com/oauth2/v3/userinfo")
+	talentProfile, err := gconf.GetUsersProfile(tok)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
-	var userInfo repo.UserParams
-	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
+	ts := service.NewTalentService()
+	talent, err := ts.RegisterTalent(talentProfile)
+	if err != nil {
 		return err
 	}
-	ur := repo.NewUserRepository()
-	record, err := ur.GetByEmail(userInfo.Email)
-	if err != nil {
-		if ent.IsNotFound(err) {
-			userInfo.Role = userrole.Talent
-			record, err = ur.Create(userInfo)
-			if err != nil {
-				return err
-			}
-		} else {
-			return err
-		}
-	}
-	claim := struct {
-		Role      string `json:"role"`
-		TokenType Token  `json:"token_type"`
-		jwt.StandardClaims
-	}{
-		Role:      string(record.Role),
-		TokenType: IDToken,
-		StandardClaims: jwt.StandardClaims{
-			Audience:  c.Request().Host,
-			ExpiresAt: time.Now().Add(time.Hour * 1).Unix(),
-			IssuedAt:  time.Now().Unix(),
-			Issuer:    c.Request().Host,
-			Subject:   record.UUID.String(),
-		},
-	}
-	jwttok := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
-	token, err := jwttok.SignedString([]byte(os.Getenv("JWT_SIGNED_SECRET")))
+	claims := NewJWTClaims(talent, c)
+	token, err := claims.GenerateToken()
 	if err != nil {
 		return err
 	}

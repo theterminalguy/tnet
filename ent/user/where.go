@@ -776,6 +776,34 @@ func HasTalentsWith(preds ...predicate.Talent) predicate.User {
 	})
 }
 
+// HasSlackAppInstalls applies the HasEdge predicate on the "slack_app_installs" edge.
+func HasSlackAppInstalls() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SlackAppInstallsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SlackAppInstallsTable, SlackAppInstallsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSlackAppInstallsWith applies the HasEdge predicate on the "slack_app_installs" edge with a given conditions (other predicates).
+func HasSlackAppInstallsWith(preds ...predicate.SlackAppInstall) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SlackAppInstallsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SlackAppInstallsTable, SlackAppInstallsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(func(s *sql.Selector) {

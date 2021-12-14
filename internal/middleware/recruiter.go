@@ -1,1 +1,27 @@
 package middleware
+
+import (
+	"github.com/10hourlabs/tentn/ent/schema/userrole"
+	"github.com/golang-jwt/jwt"
+	"github.com/labstack/echo/v4"
+)
+
+func EnforceApprovedRecruiter() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			user := c.Get("user").(*jwt.Token)
+			claims := user.Claims.(jwt.MapClaims)
+			if claims["role"] != string(userrole.Recruiter) {
+				return c.JSON(401, map[string]string{
+					"message": "You are not a recruiter",
+				})
+			}
+			if claims["approved"] != false {
+				return c.JSON(401, map[string]string{
+					"message": "Not authorized",
+				})
+			}
+			return next(c)
+		}
+	}
+}

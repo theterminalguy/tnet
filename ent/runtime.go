@@ -14,6 +14,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/schema"
 	"github.com/10hourlabs/tentn/ent/skill"
+	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/10hourlabs/tentn/ent/workexperience"
@@ -208,6 +209,27 @@ func init() {
 	skillDescPreferred := skillFields[2].Descriptor()
 	// skill.DefaultPreferred holds the default value on creation for the preferred field.
 	skill.DefaultPreferred = skillDescPreferred.Default.(bool)
+	slackappinstallMixin := schema.SlackAppInstall{}.Mixin()
+	slackappinstallMixinFields0 := slackappinstallMixin[0].Fields()
+	_ = slackappinstallMixinFields0
+	slackappinstallMixinFields1 := slackappinstallMixin[1].Fields()
+	_ = slackappinstallMixinFields1
+	slackappinstallFields := schema.SlackAppInstall{}.Fields()
+	_ = slackappinstallFields
+	// slackappinstallDescUUID is the schema descriptor for uuid field.
+	slackappinstallDescUUID := slackappinstallMixinFields0[1].Descriptor()
+	// slackappinstall.DefaultUUID holds the default value on creation for the uuid field.
+	slackappinstall.DefaultUUID = slackappinstallDescUUID.Default.(func() uuid.UUID)
+	// slackappinstallDescCreatedAt is the schema descriptor for created_at field.
+	slackappinstallDescCreatedAt := slackappinstallMixinFields1[0].Descriptor()
+	// slackappinstall.DefaultCreatedAt holds the default value on creation for the created_at field.
+	slackappinstall.DefaultCreatedAt = slackappinstallDescCreatedAt.Default.(func() time.Time)
+	// slackappinstallDescUpdatedAt is the schema descriptor for updated_at field.
+	slackappinstallDescUpdatedAt := slackappinstallMixinFields1[1].Descriptor()
+	// slackappinstall.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	slackappinstall.DefaultUpdatedAt = slackappinstallDescUpdatedAt.Default.(func() time.Time)
+	// slackappinstall.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	slackappinstall.UpdateDefaultUpdatedAt = slackappinstallDescUpdatedAt.UpdateDefault.(func() time.Time)
 	talentMixin := schema.Talent{}.Mixin()
 	talentMixinFields0 := talentMixin[0].Fields()
 	_ = talentMixinFields0

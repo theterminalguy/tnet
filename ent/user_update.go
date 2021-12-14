@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
+	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
@@ -109,6 +110,21 @@ func (uu *UserUpdate) AddTalents(t ...*Talent) *UserUpdate {
 	return uu.AddTalentIDs(ids...)
 }
 
+// AddSlackAppInstallIDs adds the "slack_app_installs" edge to the SlackAppInstall entity by IDs.
+func (uu *UserUpdate) AddSlackAppInstallIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddSlackAppInstallIDs(ids...)
+	return uu
+}
+
+// AddSlackAppInstalls adds the "slack_app_installs" edges to the SlackAppInstall entity.
+func (uu *UserUpdate) AddSlackAppInstalls(s ...*SlackAppInstall) *UserUpdate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uu.AddSlackAppInstallIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -133,6 +149,27 @@ func (uu *UserUpdate) RemoveTalents(t ...*Talent) *UserUpdate {
 		ids[i] = t[i].ID
 	}
 	return uu.RemoveTalentIDs(ids...)
+}
+
+// ClearSlackAppInstalls clears all "slack_app_installs" edges to the SlackAppInstall entity.
+func (uu *UserUpdate) ClearSlackAppInstalls() *UserUpdate {
+	uu.mutation.ClearSlackAppInstalls()
+	return uu
+}
+
+// RemoveSlackAppInstallIDs removes the "slack_app_installs" edge to SlackAppInstall entities by IDs.
+func (uu *UserUpdate) RemoveSlackAppInstallIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveSlackAppInstallIDs(ids...)
+	return uu
+}
+
+// RemoveSlackAppInstalls removes "slack_app_installs" edges to SlackAppInstall entities.
+func (uu *UserUpdate) RemoveSlackAppInstalls(s ...*SlackAppInstall) *UserUpdate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uu.RemoveSlackAppInstallIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -341,6 +378,60 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.SlackAppInstallsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SlackAppInstallsTable,
+			Columns: []string{user.SlackAppInstallsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: slackappinstall.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedSlackAppInstallsIDs(); len(nodes) > 0 && !uu.mutation.SlackAppInstallsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SlackAppInstallsTable,
+			Columns: []string{user.SlackAppInstallsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: slackappinstall.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.SlackAppInstallsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SlackAppInstallsTable,
+			Columns: []string{user.SlackAppInstallsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: slackappinstall.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -439,6 +530,21 @@ func (uuo *UserUpdateOne) AddTalents(t ...*Talent) *UserUpdateOne {
 	return uuo.AddTalentIDs(ids...)
 }
 
+// AddSlackAppInstallIDs adds the "slack_app_installs" edge to the SlackAppInstall entity by IDs.
+func (uuo *UserUpdateOne) AddSlackAppInstallIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddSlackAppInstallIDs(ids...)
+	return uuo
+}
+
+// AddSlackAppInstalls adds the "slack_app_installs" edges to the SlackAppInstall entity.
+func (uuo *UserUpdateOne) AddSlackAppInstalls(s ...*SlackAppInstall) *UserUpdateOne {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uuo.AddSlackAppInstallIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -463,6 +569,27 @@ func (uuo *UserUpdateOne) RemoveTalents(t ...*Talent) *UserUpdateOne {
 		ids[i] = t[i].ID
 	}
 	return uuo.RemoveTalentIDs(ids...)
+}
+
+// ClearSlackAppInstalls clears all "slack_app_installs" edges to the SlackAppInstall entity.
+func (uuo *UserUpdateOne) ClearSlackAppInstalls() *UserUpdateOne {
+	uuo.mutation.ClearSlackAppInstalls()
+	return uuo
+}
+
+// RemoveSlackAppInstallIDs removes the "slack_app_installs" edge to SlackAppInstall entities by IDs.
+func (uuo *UserUpdateOne) RemoveSlackAppInstallIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveSlackAppInstallIDs(ids...)
+	return uuo
+}
+
+// RemoveSlackAppInstalls removes "slack_app_installs" edges to SlackAppInstall entities.
+func (uuo *UserUpdateOne) RemoveSlackAppInstalls(s ...*SlackAppInstall) *UserUpdateOne {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uuo.RemoveSlackAppInstallIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -687,6 +814,60 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: talent.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.SlackAppInstallsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SlackAppInstallsTable,
+			Columns: []string{user.SlackAppInstallsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: slackappinstall.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedSlackAppInstallsIDs(); len(nodes) > 0 && !uuo.mutation.SlackAppInstallsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SlackAppInstallsTable,
+			Columns: []string{user.SlackAppInstallsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: slackappinstall.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.SlackAppInstallsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SlackAppInstallsTable,
+			Columns: []string{user.SlackAppInstallsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: slackappinstall.FieldID,
 				},
 			},
 		}

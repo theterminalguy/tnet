@@ -33,6 +33,8 @@ const (
 	FieldApproved = "approved"
 	// EdgeTalents holds the string denoting the talents edge name in mutations.
 	EdgeTalents = "talents"
+	// EdgeSlackAppInstalls holds the string denoting the slack_app_installs edge name in mutations.
+	EdgeSlackAppInstalls = "slack_app_installs"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// TalentsTable is the table that holds the talents relation/edge.
@@ -42,6 +44,13 @@ const (
 	TalentsInverseTable = "talents"
 	// TalentsColumn is the table column denoting the talents relation/edge.
 	TalentsColumn = "user_id"
+	// SlackAppInstallsTable is the table that holds the slack_app_installs relation/edge.
+	SlackAppInstallsTable = "slack_app_installs"
+	// SlackAppInstallsInverseTable is the table name for the SlackAppInstall entity.
+	// It exists in this package in order to avoid circular dependency with the "slackappinstall" package.
+	SlackAppInstallsInverseTable = "slack_app_installs"
+	// SlackAppInstallsColumn is the table column denoting the slack_app_installs relation/edge.
+	SlackAppInstallsColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.

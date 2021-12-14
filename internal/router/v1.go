@@ -56,6 +56,7 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 		group: e.Group("/v1/recruiter"),
 		middlewares: []echo.MiddlewareFunc{
 			middleware.JWTAuthenticate(),
+			middleware.EnforceApprovedRecruiter(),
 		},
 		handlers: []RouteHandler{
 			{

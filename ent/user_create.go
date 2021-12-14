@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
+	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
@@ -122,6 +123,21 @@ func (uc *UserCreate) AddTalents(t ...*Talent) *UserCreate {
 		ids[i] = t[i].ID
 	}
 	return uc.AddTalentIDs(ids...)
+}
+
+// AddSlackAppInstallIDs adds the "slack_app_installs" edge to the SlackAppInstall entity by IDs.
+func (uc *UserCreate) AddSlackAppInstallIDs(ids ...int) *UserCreate {
+	uc.mutation.AddSlackAppInstallIDs(ids...)
+	return uc
+}
+
+// AddSlackAppInstalls adds the "slack_app_installs" edges to the SlackAppInstall entity.
+func (uc *UserCreate) AddSlackAppInstalls(s ...*SlackAppInstall) *UserCreate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uc.AddSlackAppInstallIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -349,6 +365,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: talent.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.SlackAppInstallsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SlackAppInstallsTable,
+			Columns: []string{user.SlackAppInstallsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: slackappinstall.FieldID,
 				},
 			},
 		}

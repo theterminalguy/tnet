@@ -12,7 +12,7 @@ func EnforceTalent() echo.MiddlewareFunc {
 			user := c.Get("user").(*jwt.Token)
 			claims := user.Claims.(jwt.MapClaims)
 			if claims["role"] != string(userrole.Talent) {
-				return c.JSON(401, map[string]interface{}{
+				return c.JSON(401, map[string]string{
 					"message": "You are not a talent",
 				})
 			}

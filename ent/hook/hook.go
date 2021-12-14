@@ -113,6 +113,19 @@ func (f SkillFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return f(ctx, mv)
 }
 
+// The SlackAppInstallFunc type is an adapter to allow the use of ordinary
+// function as SlackAppInstall mutator.
+type SlackAppInstallFunc func(context.Context, *ent.SlackAppInstallMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SlackAppInstallFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.SlackAppInstallMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SlackAppInstallMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The TalentFunc type is an adapter to allow the use of ordinary
 // function as Talent mutator.
 type TalentFunc func(context.Context, *ent.TalentMutation) (ent.Value, error)

@@ -12,9 +12,10 @@ import (
 type UserRepository struct{}
 
 type UserParams struct {
-	Name  string        `json:"name" validate:"required"`
-	Email string        `json:"email" validate:"required,email"`
-	Role  userrole.Role `json:"role"`
+	Name     string        `json:"name" validate:"required"`
+	Email    string        `json:"email" validate:"required,email"`
+	Role     userrole.Role `json:"role"`
+	Approved bool
 }
 
 func NewUserRepository() *UserRepository {
@@ -67,6 +68,7 @@ func (*UserRepository) Create(p UserParams) (*ent.User, error) {
 		SetName(p.Name).
 		SetEmail(p.Email).
 		SetRole(p.Role).
+		SetApproved(p.Approved).
 		Save(dBContext)
 	if err != nil {
 		return nil, err

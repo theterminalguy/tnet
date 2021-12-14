@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"os"
 
+	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/randutil"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
@@ -32,11 +34,15 @@ type SlackOauthResponse struct {
 	IsEnterpriseInstall bool   `json:"is_enterprise_install"`
 }
 
-type SlackOauthClient struct {
+func (s *SlackOauthResponse) GetRecruitersEmail() string {
+	return fmt.Sprintf("%s@%s.slack.com", s.AuthedUser.ID, s.Team.ID)
+}
+
+type SlackOauth2Client struct {
 	*oauth2.Config
 }
 
-var slackConf *SlackOauthClient = &SlackOauthClient{
+var slackConf *SlackOauth2Client = &SlackOauth2Client{
 	Config: &oauth2.Config{
 		ClientID:     os.Getenv("SLACK_OAUTH_CLIENT_ID"),
 		ClientSecret: os.Getenv("SLACK_OAUTH_CLIENT_SECRET"),
@@ -51,7 +57,7 @@ var slackConf *SlackOauthClient = &SlackOauthClient{
 	},
 }
 
-func (s *SlackOauthClient) Exchange(code string) (*SlackOauthResponse, error) {
+func (s *SlackOauth2Client) Exchange(code string) (*SlackOauthResponse, error) {
 	form := url.Values{}
 	form.Add("code", code)
 	form.Add("client_id", slackConf.ClientID)
@@ -79,7 +85,7 @@ type SlackUserProfile struct {
 	} `json:"profile"`
 }
 
-func (s *SlackOauthClient) GetUsersProfile(slackUserID, accessToken string) (*SlackUserProfile, error) {
+func (s *SlackOauth2Client) GetUsersProfile(slackUserID, accessToken string) (*SlackUserProfile, error) {
 	query := url.Values{}
 	query.Add("user", slackUserID)
 	req, err := http.NewRequest(http.MethodGet, "https://slack.com/api/users.profile.get", nil)
@@ -109,8 +115,8 @@ func SlackOauth2CallbackHandler(c echo.Context) error {
 		// the state token is invalid, someone may be trying to intercept our login flow
 		return echo.ErrUnauthorized
 	}
-	if c.QueryParams().Has("error") {
-		return c.String(http.StatusOK, "You denied access to your Slack account")
+	if err := c.QueryParam("error"); err != "" {
+		return c.String(http.StatusOK, fmt.Sprintf("You denied access to your Slack account: %s", err))
 	}
 	// Exchange code for token
 	code := c.QueryParam("code")
@@ -118,15 +124,38 @@ func SlackOauth2CallbackHandler(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	// Get user profile
+	// Get user slack profile
 	slackUserProfile, err := slackConf.GetUsersProfile(oauthResp.AuthedUser.ID, oauthResp.AccessToken)
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"profile": slackUserProfile,
-		"oauth":   oauthResp,
-	})
+	rs := service.NewRecruiterService()
+	recruiter, err := rs.InstallSlackApp(
+		repo.UserParams{
+			Name:  slackUserProfile.Profile.RealName,
+			Email: oauthResp.GetRecruitersEmail(),
+		},
+		repo.SlackAppInstallParams{
+			TeamID:              oauthResp.Team.ID,
+			TeamName:            oauthResp.Team.Name,
+			AuthedUserID:        oauthResp.AuthedUser.ID,
+			AuthedUserEmail:     slackUserProfile.Profile.Email,
+			AppID:               oauthResp.AppID,
+			BotUserID:           oauthResp.BotUserID,
+			AccessToken:         oauthResp.AccessToken,
+			TokenType:           oauthResp.TokenType,
+			Scope:               oauthResp.Scope,
+			IsEnterpriseInstall: oauthResp.IsEnterpriseInstall,
+		})
+	if err != nil {
+		return err
+	}
+	claims := NewJWTClaims(recruiter, c)
+	tok, err := claims.GenerateToken()
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, echo.Map{"token": tok})
 }
 
 func RecruiterLoginHanlder(c echo.Context) error {

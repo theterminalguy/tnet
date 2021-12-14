@@ -340,6 +340,61 @@ var (
 			},
 		},
 	}
+	// SlackAppInstallsColumns holds the columns for the "slack_app_installs" table.
+	SlackAppInstallsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "team_id", Type: field.TypeString},
+		{Name: "team_name", Type: field.TypeString},
+		{Name: "authed_user_id", Type: field.TypeString},
+		{Name: "authed_user_email", Type: field.TypeString},
+		{Name: "app_id", Type: field.TypeString},
+		{Name: "bot_user_id", Type: field.TypeString},
+		{Name: "access_token", Type: field.TypeString},
+		{Name: "token_type", Type: field.TypeString},
+		{Name: "scope", Type: field.TypeString},
+		{Name: "is_enterprise_install", Type: field.TypeBool},
+		{Name: "user_id", Type: field.TypeInt, Nullable: true},
+	}
+	// SlackAppInstallsTable holds the schema information for the "slack_app_installs" table.
+	SlackAppInstallsTable = &schema.Table{
+		Name:       "slack_app_installs",
+		Columns:    SlackAppInstallsColumns,
+		PrimaryKey: []*schema.Column{SlackAppInstallsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "slack_app_installs_users_slack_app_installs",
+				Columns:    []*schema.Column{SlackAppInstallsColumns[15]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "slackappinstall_uuid",
+				Unique:  true,
+				Columns: []*schema.Column{SlackAppInstallsColumns[1]},
+			},
+			{
+				Name:    "slackappinstall_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{SlackAppInstallsColumns[15]},
+			},
+			{
+				Name:    "slackappinstall_team_id",
+				Unique:  true,
+				Columns: []*schema.Column{SlackAppInstallsColumns[5]},
+			},
+			{
+				Name:    "slackappinstall_team_name_authed_user_email_authed_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{SlackAppInstallsColumns[6], SlackAppInstallsColumns[8], SlackAppInstallsColumns[7]},
+			},
+		},
+	}
 	// TalentsColumns holds the columns for the "talents" table.
 	TalentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -492,6 +547,7 @@ var (
 		PartnersTable,
 		PortfolioLinksTable,
 		SkillsTable,
+		SlackAppInstallsTable,
 		TalentsTable,
 		UsersTable,
 		WorkExperiencesTable,
@@ -507,6 +563,7 @@ func init() {
 	MissionsTable.ForeignKeys[1].RefTable = TalentsTable
 	PortfolioLinksTable.ForeignKeys[0].RefTable = TalentsTable
 	SkillsTable.ForeignKeys[0].RefTable = TalentsTable
+	SlackAppInstallsTable.ForeignKeys[0].RefTable = UsersTable
 	TalentsTable.ForeignKeys[0].RefTable = TalentsTable
 	TalentsTable.ForeignKeys[1].RefTable = UsersTable
 	WorkExperiencesTable.ForeignKeys[0].RefTable = TalentsTable
