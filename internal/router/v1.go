@@ -48,6 +48,12 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 				Handler:     talent_handler.NewV1SkillHandler(),
 				Middlewares: nil,
 			},
+			{
+				Path:        "profile",
+				Except:      []Request{SEARCH},
+				Handler:     talent_handler.NewV1TalentProfileHandler(),
+				Middlewares: nil,
+			},
 		},
 	}
 	talentRouter.BuildRoutes()

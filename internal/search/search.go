@@ -11,7 +11,7 @@
 //   - *_desc: Sort Descending
 package search
 
-// TODO: Let's define interfaces which allows us to implment search using any data source. 
+// TODO: Let's define interfaces which allows us to implment search using any data source.
 // For example we can use a database(postgres, MySQL, elastic search), a file, a cache, a service, etc.
 
 // TODO: While still using this "rough" implementation we need to allow searching with a date-period range

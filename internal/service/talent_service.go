@@ -7,12 +7,14 @@ import (
 )
 
 type TalentService struct {
-	UserRepo *repo.UserRepository
+	UserRepo   *repo.UserRepository
+	TalentRepo *repo.TalentRepository
 }
 
 func NewTalentService() *TalentService {
 	return &TalentService{
-		UserRepo: repo.NewUserRepository(),
+		UserRepo:   repo.NewUserRepository(),
+		TalentRepo: repo.NewTalentRepository(),
 	}
 }
 
@@ -32,4 +34,29 @@ func (t *TalentService) RegisterTalent(up *repo.UserParams) (*ent.User, error) {
 		return talent, nil
 	}
 	return nil, err
+}
+
+func (t *TalentService) CreateProfile(user *ent.User, p *repo.TalentParams) (*ent.Talent, error) {
+	p.Email = user.Email
+	p.UserID = user.ID
+
+	a, err := t.TalentRepo.Create(*p)
+	if err != nil {
+		return nil, err
+	}
+	return a, nil
+}
+
+func (t *TalentService) UpdateProfile(user *ent.User, p *repo.TalentParams) (*ent.Talent, []error) {
+	p.Email = user.Email
+	talent, err := t.TalentRepo.GetTalentByUserID(user.ID)
+	if err != nil {
+		return nil, []error{err}
+	}
+	a, vldErrs := t.TalentRepo.Update(talent.UUID, *p)
+	if vldErrs != nil {
+		return nil, vldErrs
+	}
+
+	return a, nil
 }

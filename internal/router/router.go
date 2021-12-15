@@ -34,8 +34,10 @@ type Request string
 const (
 	SEARCH       Request = "SEARCH"
 	READ_ALL     Request = "READ_ALL"
+	READ         Request = "READ"
 	READ_BY_ID   Request = "READ_BY_ID"
 	CREATE_ONE   Request = "CREATE_ONE"
+	UPDATE       Request = "UPDATE"
 	UPDATE_BY_ID Request = "UPDATE_BY_ID"
 	DELETE_BY_ID Request = "DELETE_BY_ID"
 )
@@ -43,8 +45,10 @@ const (
 var RequestsAllowedByDefault []Request = []Request{
 	SEARCH,
 	READ_ALL,
+	READ,
 	READ_BY_ID,
 	CREATE_ONE,
+	UPDATE,
 	UPDATE_BY_ID,
 	DELETE_BY_ID,
 }
@@ -65,6 +69,9 @@ func (rh *RouteHandler) Restify(g *echo.Group) {
 	endpoints[READ_ALL] = func() {
 		g.GET(resourcePath, rh.Handler.ReadAll, rh.Middlewares...)
 	}
+	endpoints[READ] = func() {
+		g.GET(resourcePath, rh.Handler.ReadByID, rh.Middlewares...)
+	}
 	endpoints[READ_BY_ID] = func() {
 		g.GET(resourceByIDPath, rh.Handler.ReadByID, rh.Middlewares...)
 	}
@@ -73,6 +80,9 @@ func (rh *RouteHandler) Restify(g *echo.Group) {
 	}
 	endpoints[CREATE_ONE] = func() {
 		g.POST(resourcePath, rh.Handler.CreateOne, rh.Middlewares...)
+	}
+	endpoints[UPDATE] = func() {
+		g.PUT(resourcePath, rh.Handler.UpdateByID, rh.Middlewares...)
 	}
 	endpoints[UPDATE_BY_ID] = func() {
 		g.PUT(resourceByIDPath, rh.Handler.UpdateByID, rh.Middlewares...)

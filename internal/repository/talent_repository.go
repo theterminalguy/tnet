@@ -20,14 +20,15 @@ var ErrInvalidReferralCode error = errors.New("invalid referral code")
 type TalentRepository struct{}
 
 type TalentParams struct {
+	UserID                int    `json:"user_id validate:"required"`
 	FirstName             string `json:"first_name" validate:"required"`
 	LastName              string `json:"last_name" validate:"required"`
+	Email                 string `json:"email" validate:"required"`
 	PreferredName         string `json:"preferred_name" validate:"required"`
 	Pronoun               string `json:"pronoun" validate:"required"`
 	PreferredJobTitle     string `json:"preferred_job_title" validate:"required"`
 	ReferralCode          string `json:"referral_code"`
 	ProfessionalStartDate string `json:"professional_start_date" validate:"datetime=2006-01-02T15:04:05Z07:00"`
-	Email                 string `json:"email" validate:"required,email"`
 	Phone                 string `json:"phone" validate:"required"`
 	CountryCode           string `json:"country_code" validate:"required,iso3166_1_alpha2"`
 	City                  string `json:"city" validate:"required"`
@@ -66,6 +67,18 @@ func (*TalentRepository) GetAll() ([]*ent.Talent, error) {
 		return nil, err
 	}
 	return Talents, nil
+}
+
+func (*TalentRepository) GetByEmail(email string) (*ent.Talent, error) {
+	record, err := dBConn.Talent.Query().
+		Where(talent.And(
+			talent.EmailEQ(email),
+			talent.DeletedAtIsNil())).
+		Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return record, nil
 }
 
 func (*TalentRepository) GetByUUID(id uuid.UUID) (*ent.Talent, error) {
@@ -117,7 +130,8 @@ func (r *TalentRepository) Create(p TalentParams) (*ent.Talent, error) {
 		SetPhone(p.Phone).
 		SetCountryCode(p.CountryCode).
 		SetTentnCode(r.genTenTNCode(p)).
-		SetCity(p.City)
+		SetCity(p.City).
+		SetUserID(p.UserID)
 	if len(p.ReferralCode) > 1 {
 		ref, err := dBConn.Talent.Query().
 			Where(talent.TentnCodeEQ(p.ReferralCode)).
@@ -136,6 +150,10 @@ func (r *TalentRepository) Create(p TalentParams) (*ent.Talent, error) {
 }
 
 func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*ent.Talent, []error) {
+	err := validateParams(p, "TalentUUID")
+	if err != nil {
+		return nil, []error{err}
+	}
 	record, err := r.GetByUUID(id)
 	if err != nil {
 		return nil, []error{err}
@@ -198,18 +216,6 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*ent.Talent, []
 			return err
 		}
 		bldr.SetPreferredJobTitle(v)
-		return nil
-	}); vldErr != nil {
-		vldErrs = append(vldErrs, vldErr)
-	}
-
-	// Set and Validate Email if provided
-	if vldErr := setNillableStringField(p.Email, func(v string) error {
-		err := validateParams(p, "Email")
-		if err != nil {
-			return err
-		}
-		bldr.SetEmail(v)
 		return nil
 	}); vldErr != nil {
 		vldErrs = append(vldErrs, vldErr)
@@ -299,4 +305,16 @@ func (r *TalentRepository) genTenTNCode(p TalentParams) string {
 		attempts += 1
 	}
 	return randutil.StringWithCharset(10, p.FirstName+p.LastName+"0123456789")
+}
+
+func (r *TalentRepository) GetTalentByUserID(userId int) (*ent.Talent, error) {
+	record, err := dBConn.Talent.Query().
+		Where(talent.And(
+			talent.UserIDEQ(userId),
+			talent.DeletedAtIsNil())).
+		Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return record, nil
 }

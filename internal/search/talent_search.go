@@ -18,7 +18,7 @@ func (*TalentSearch) PossibleFilters() []Filter {
 	return []Filter{
 		EMAIL_EQ,
 
-		REFRERRAL_CODE_EQ,	
+		REFRERRAL_CODE_EQ,
 	}
 }
 
