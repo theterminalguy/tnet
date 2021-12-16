@@ -1,4 +1,4 @@
-package handler
+package talent
 
 import (
 	"fmt"
@@ -11,23 +11,23 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type PortfolioLinkHandler struct {
+type V1PortfolioLinkHandler struct {
 	PortfolioLinkService    *service.PortfolioLinkService
 	PortfolioLinkRepository *repo.PortfolioLinkRepository
 }
 
-func NewPortfolioLinkHandler() *PortfolioLinkHandler {
-	return &PortfolioLinkHandler{
+func NewV1PortfolioLinkHandler() *V1PortfolioLinkHandler {
+	return &V1PortfolioLinkHandler{
 		PortfolioLinkService:    service.NewPortfolioLinkService(),
 		PortfolioLinkRepository: repo.NewPortfolioLinkRepository(),
 	}
 }
 
-func (h *PortfolioLinkHandler) Search(c echo.Context) error {
+func (h *V1PortfolioLinkHandler) Search(c echo.Context) error {
 	return nil
 }
 
-func (h *PortfolioLinkHandler) ReadAll(c echo.Context) error {
+func (h *V1PortfolioLinkHandler) ReadAll(c echo.Context) error {
 	records, err := h.PortfolioLinkRepository.GetAll()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
@@ -35,7 +35,7 @@ func (h *PortfolioLinkHandler) ReadAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, records)
 }
 
-func (h *PortfolioLinkHandler) ReadByID(c echo.Context) error {
+func (h *V1PortfolioLinkHandler) ReadByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -47,7 +47,7 @@ func (h *PortfolioLinkHandler) ReadByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, record)
 }
 
-func (h *PortfolioLinkHandler) CreateOne(c echo.Context) error {
+func (h *V1PortfolioLinkHandler) CreateOne(c echo.Context) error {
 	params := new(repo.PortfolioLinkParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -59,7 +59,7 @@ func (h *PortfolioLinkHandler) CreateOne(c echo.Context) error {
 	return c.JSON(http.StatusCreated, record)
 }
 
-func (h *PortfolioLinkHandler) UpdateByID(c echo.Context) error {
+func (h *V1PortfolioLinkHandler) UpdateByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -75,7 +75,7 @@ func (h *PortfolioLinkHandler) UpdateByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, record)
 }
 
-func (h *PortfolioLinkHandler) DeleteOne(c echo.Context) error {
+func (h *V1PortfolioLinkHandler) DeleteOne(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
