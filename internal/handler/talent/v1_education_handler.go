@@ -1,4 +1,4 @@
-package handler
+package talent
 
 import (
 	"fmt"
@@ -11,23 +11,23 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type EducationHandler struct {
+type V1EducationHandler struct {
 	EducationService    *service.EducationService
 	EducationRepository *repo.EducationRepository
 }
 
-func NewEducationHandler() *EducationHandler {
-	return &EducationHandler{
+func NewV1EducationHandler() *V1EducationHandler {
+	return &V1EducationHandler{
 		EducationService:    service.NewEducationService(),
 		EducationRepository: repo.NewEducationRepository(),
 	}
 }
 
-func (h *EducationHandler) Search(c echo.Context) error {
+func (h *V1EducationHandler) Search(c echo.Context) error {
 	return nil
 }
 
-func (h *EducationHandler) ReadAll(c echo.Context) error {
+func (h *V1EducationHandler) ReadAll(c echo.Context) error {
 	records, err := h.EducationRepository.GetAll()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
@@ -35,7 +35,7 @@ func (h *EducationHandler) ReadAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, records)
 }
 
-func (h *EducationHandler) ReadByID(c echo.Context) error {
+func (h *V1EducationHandler) ReadByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -47,7 +47,7 @@ func (h *EducationHandler) ReadByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, record)
 }
 
-func (h *EducationHandler) CreateOne(c echo.Context) error {
+func (h *V1EducationHandler) CreateOne(c echo.Context) error {
 	params := new(repo.EducationParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -59,7 +59,7 @@ func (h *EducationHandler) CreateOne(c echo.Context) error {
 	return c.JSON(http.StatusCreated, record)
 }
 
-func (h *EducationHandler) UpdateByID(c echo.Context) error {
+func (h *V1EducationHandler) UpdateByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -75,7 +75,7 @@ func (h *EducationHandler) UpdateByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, record)
 }
 
-func (h *EducationHandler) DeleteOne(c echo.Context) error {
+func (h *V1EducationHandler) DeleteOne(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
