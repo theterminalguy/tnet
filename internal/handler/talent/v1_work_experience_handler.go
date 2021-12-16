@@ -1,4 +1,4 @@
-package handler
+package talent
 
 import (
 	"fmt"
@@ -11,23 +11,23 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type WorkExperienceHandler struct {
+type V1WorkExperienceHandler struct {
 	WorkExperienceService    *service.WorkExperienceService
 	WorkExperienceRepository *repo.WorkExperienceRepository
 }
 
-func NewWorkExperienceHandler() *WorkExperienceHandler {
-	return &WorkExperienceHandler{
+func NewV1WorkExperienceHandler() *V1WorkExperienceHandler {
+	return &V1WorkExperienceHandler{
 		WorkExperienceService:    service.NewWorkExperienceService(),
 		WorkExperienceRepository: repo.NewWorkExperienceRepository(),
 	}
 }
 
-func (h *WorkExperienceHandler) Search(c echo.Context) error {
+func (h *V1WorkExperienceHandler) Search(c echo.Context) error {
 	return nil
 }
 
-func (h *WorkExperienceHandler) ReadAll(c echo.Context) error {
+func (h *V1WorkExperienceHandler) ReadAll(c echo.Context) error {
 	records, err := h.WorkExperienceRepository.GetAll()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
@@ -35,7 +35,7 @@ func (h *WorkExperienceHandler) ReadAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, records)
 }
 
-func (h *WorkExperienceHandler) ReadByID(c echo.Context) error {
+func (h *V1WorkExperienceHandler) ReadByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -47,7 +47,7 @@ func (h *WorkExperienceHandler) ReadByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, record)
 }
 
-func (h *WorkExperienceHandler) CreateOne(c echo.Context) error {
+func (h *V1WorkExperienceHandler) CreateOne(c echo.Context) error {
 	params := new(repo.WorkExperienceParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -59,7 +59,7 @@ func (h *WorkExperienceHandler) CreateOne(c echo.Context) error {
 	return c.JSON(http.StatusCreated, record)
 }
 
-func (h *WorkExperienceHandler) UpdateByID(c echo.Context) error {
+func (h *V1WorkExperienceHandler) UpdateByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -75,7 +75,7 @@ func (h *WorkExperienceHandler) UpdateByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, record)
 }
 
-func (h *WorkExperienceHandler) DeleteOne(c echo.Context) error {
+func (h *V1WorkExperienceHandler) DeleteOne(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())

@@ -60,6 +60,12 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 				Handler:     talent_handler.NewV1PortfolioLinkHandler(),
 				Middlewares: nil,
 			},
+			{
+				Path:        "work-experiences",
+				Except:      []Request{SEARCH,READ,UPDATE},
+				Handler:     talent_handler.NewV1WorkExperienceHandler(),
+				Middlewares: nil,
+			},
 		},
 	}
 	talentRouter.BuildRoutes()
