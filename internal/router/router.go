@@ -64,7 +64,7 @@ type RouteHandler struct {
 func (rh *RouteHandler) Restify(g *echo.Group) {
 	resourcePath := "/" + rh.Path
 	resourceByIDPath := resourcePath + "/:uuid"
-	searchPath := resourceByIDPath + "/search"
+	searchPath := resourcePath + "/search"
 	endpoints := make(map[Request]func())
 	endpoints[READ_ALL] = func() {
 		g.GET(resourcePath, rh.Handler.ReadAll, rh.Middlewares...)

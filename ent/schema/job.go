@@ -79,6 +79,7 @@ func (Job) Fields() []ent.Field {
 func (Job) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields(oneword.Title),
+		index.Fields(oneword.Category),
 
 		index.Fields(oneword.Slug).
 			Unique(),
