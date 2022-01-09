@@ -20,7 +20,7 @@ var ErrInvalidReferralCode error = errors.New("invalid referral code")
 type TalentRepository struct{}
 
 type TalentParams struct {
-	UserID                int    `json:"user_id validate:"required"`
+	UserID                int    `json:"user_id" validate:"required"`
 	FirstName             string `json:"first_name" validate:"required"`
 	LastName              string `json:"last_name" validate:"required"`
 	Email                 string `json:"email" validate:"required"`
@@ -28,7 +28,7 @@ type TalentParams struct {
 	Pronoun               string `json:"pronoun" validate:"required"`
 	PreferredJobTitle     string `json:"preferred_job_title" validate:"required"`
 	ReferralCode          string `json:"referral_code"`
-	ProfessionalStartDate string `json:"professional_start_date" validate:"datetime=2006-01-02T15:04:05Z07:00"`
+	ProfessionalStartDate string `json:"professional_start_date" validate:"required"` // YYYY-MM-DD
 	Phone                 string `json:"phone" validate:"required"`
 	CountryCode           string `json:"country_code" validate:"required,iso3166_1_alpha2"`
 	City                  string `json:"city" validate:"required"`
@@ -113,7 +113,7 @@ func (r *TalentRepository) Create(p TalentParams) (*ent.Talent, error) {
 	if err != nil {
 		return nil, err
 	}
-	startDate, err := date.JSStringToRFC3339(p.ProfessionalStartDate)
+	startDate, err := time.Parse(date.ISOLayout, p.ProfessionalStartDate)
 	if err != nil {
 		return nil, err
 	}
@@ -125,7 +125,7 @@ func (r *TalentRepository) Create(p TalentParams) (*ent.Talent, error) {
 		SetPronoun(p.Pronoun).
 		SetPreferredJobTitle(p.PreferredJobTitle).
 		SetReferralCode(p.ReferralCode).
-		SetProfessionalStartDate(*startDate).
+		SetProfessionalStartDate(startDate).
 		SetEmail(p.Email).
 		SetPhone(p.Phone).
 		SetCountryCode(p.CountryCode).
