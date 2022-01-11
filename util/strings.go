@@ -1,6 +1,9 @@
 package util
 
-import "strings"
+import (
+	"math/rand"
+	"strings"
+)
 
 // TitlelizeUnderscore
 // Takes a string in the form `hello_world`
@@ -28,4 +31,9 @@ func RemoveUnderscore(s string) string {
 		return strings.Join(s, "")
 	}
 	return s
+}
+
+func RandomStringElement(s []string) string {
+	randPos := rand.Intn(len(s))
+	return s[randPos]
 }

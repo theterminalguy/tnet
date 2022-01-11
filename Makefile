@@ -38,3 +38,6 @@ ent-generate: ## Generate ent Assests
 
 go-format: ## Run go fmt ./... on all go files
 	go fmt ./...
+
+task: ## Run a task
+	ENV=dev go run cmd/task/main.go $(name) $(params)
