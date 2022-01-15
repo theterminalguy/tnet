@@ -36,7 +36,7 @@ func (t *CreateFakeTalents) CreateFakeTalent() error {
 	if err != nil {
 		return err
 	}
-	talentParams := &repo.TalentParams{
+	talentParams := repo.TalentParams{
 		UserID:        user.ID,
 		FirstName:     fName,
 		LastName:      lName,

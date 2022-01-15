@@ -62,19 +62,19 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 			},
 			{
 				Path:        "portfolio-links",
-				Except:      []Request{SEARCH,READ,UPDATE},
+				Except:      []Request{SEARCH, READ, UPDATE},
 				Handler:     talent_handler.NewV1PortfolioLinkHandler(),
 				Middlewares: nil,
 			},
 			{
 				Path:        "work-experiences",
-				Except:      []Request{SEARCH,READ,UPDATE},
+				Except:      []Request{SEARCH, READ, UPDATE},
 				Handler:     talent_handler.NewV1WorkExperienceHandler(),
 				Middlewares: nil,
 			},
 			{
 				Path:        "educations",
-				Except:      []Request{SEARCH,READ,UPDATE},
+				Except:      []Request{SEARCH, READ, UPDATE},
 				Handler:     talent_handler.NewV1EducationHandler(),
 				Middlewares: nil,
 			},
@@ -93,6 +93,12 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 				Path:        "jobs",
 				Handler:     recruiter_handler.NewV1RecruiterJobHandler(),
 				Middlewares: nil,
+			},
+			{
+				Path:        "talents",
+				Handler:     recruiter_handler.NewV1TalentSearchFilterHandler(),
+				Middlewares: nil,
+				Only:        []Request{SEARCH},
 			},
 		},
 	}

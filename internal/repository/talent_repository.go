@@ -39,7 +39,8 @@ func NewTalentRepository() *TalentRepository {
 }
 
 func (*TalentRepository) Filter(prd ...predicate.Talent) ([]*ent.Talent, error) {
-	jobs, err := dBConn.Talent.Query().
+	// TODO: remove debug
+	jobs, err := dBConn.Debug().Talent.Query().
 		Where(prd...).
 		All(dBContext)
 	if err != nil {
@@ -101,7 +102,6 @@ func (*TalentRepository) GetByUUID(id uuid.UUID) (*ent.Talent, error) {
 	a.Edges = ent.TalentEdges{
 		Portfoliolinks: pLinks,
 	}
-	//```
 	if a.DeletedAt != nil {
 		return nil, ErrRecordDeleted
 	}

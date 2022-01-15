@@ -31,8 +31,8 @@ func NewJWTClaims(u *ent.User, c echo.Context) *JWTClaims {
 		Approved:  u.Approved,
 		StandardClaims: jwt.StandardClaims{
 			Audience: c.Request().Host,
-			// TODO: token expiration should be configurable
-			ExpiresAt: time.Now().Add(time.Hour * 1).Unix(),
+			// TODO: token expiration should be configurable, currently set to 1 day
+			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 			IssuedAt:  time.Now().Unix(),
 			Issuer:    c.Request().Host,
 			Subject:   u.UUID.String(),

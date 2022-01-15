@@ -4,21 +4,27 @@ import (
 	"fmt"
 	"net/url"
 
+	"entgo.io/ent/dialect/sql"
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/talent"
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/util/collection"
 )
 
 type TalentSearch struct {
 	TalentRepository repo.TalentRepository
 }
 
-func (*TalentSearch) PossibleFilters() []Filter {
-	return []Filter{
-		EMAIL_EQ,
-
-		REFRERRAL_CODE_EQ,
+func (*TalentSearch) PossibleFilters() map[string]Filter {
+	return map[string]Filter{
+		"email":                  EMAIL,
+		"email_eq":               EMAIL_EQ,
+		"city":                   CITY,
+		"city_eq":                CITY_EQ,
+		"country":                COUNTRY,
+		"years_of_experience":    YEARS_OF_EXPERIENCE,
+		"years_of_experience_eq": YEARS_OF_EXPERIENCE_EQ,
 	}
 }
 
@@ -32,25 +38,49 @@ func (s *TalentSearch) Search(qs string) ([]*ent.Talent, []error) {
 	if err != nil {
 		errors = append(errors, err)
 	}
-
-	pf := s.PossibleFilters()
-	for _, filter := range pf {
+	// loop through all user provided filters
+	for f := range query {
+		if s.PossibleFilters()[f] == "" {
+			errors = append(errors, fmt.Errorf("%s is not a valid filter", f))
+			continue
+		}
+	}
+	for _, filter := range s.PossibleFilters() {
 		f := string(filter)
-		if vv, ok := query[f]; ok {
-			v := vv[0]
+		if values, ok := query[f]; ok {
+			v := values[0]
 			switch filter {
-			case TENTN_CODE_EQ:
-				ps = append(ps, talent.TentnCodeEQ(v))
-			case REFRERRAL_CODE_EQ:
-				ps = append(ps, talent.ReferralCodeEQ(v))
-			default:
-				errors = append(errors, fmt.Errorf("%s is not a valid filter", filter))
+			case CITY, CITY_EQ:
+				ps = append(ps, talent.CityEQ(v))
+			case EMAIL, EMAIL_EQ:
+				ps = append(ps, talent.EmailEQ(v))
+			case COUNTRY:
+				ps = append(ps, talent.CountryCodeEQ(v))
+			case YEARS_OF_EXPERIENCE:
+				//TODO: This should be a blog post
+				filter := func() predicate.Talent {
+					return predicate.Talent(func(s *sql.Selector) {
+						s.Where(sql.ExprP("DATE_PART('year', AGE(CURRENT_DATE, professional_start_date)) >= $1", v))
+					})
+				}
+				ps = append(ps, filter())
+			case YEARS_OF_EXPERIENCE_EQ:
+				filter := func() predicate.Talent {
+					return predicate.Talent(func(s *sql.Selector) {
+						s.Where(sql.ExprP("DATE_PART('year', AGE(CURRENT_DATE, professional_start_date)) = $1", v))
+					})
+				}
+				ps = append(ps, filter())
 			}
 		}
+	}
+	if collection.HasAny(errors) {
+		return nil, errors
 	}
 	records, err := s.TalentRepository.Filter(ps...)
 	if err != nil {
 		errors = append(errors, err)
+		return nil, errors
 	}
-	return records, errors
+	return records, nil
 }

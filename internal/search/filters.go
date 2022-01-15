@@ -18,7 +18,13 @@ var (
 	YEAR_EXP_EQ  Filter = "year_exp_eq"
 	YEAR_EXP_NEQ Filter = "year_exp_neq"
 
+	EMAIL    Filter = "email"
 	EMAIL_EQ Filter = "email_eq"
+
+	CITY    Filter = "city"
+	CITY_EQ Filter = "city_eq"
+
+	COUNTRY Filter = "country"
 
 	TENTN_CODE_EQ Filter = "tentn_code_eq"
 
@@ -26,4 +32,7 @@ var (
 	STATUS_NEQ Filter = "status_neq"
 
 	REFRERRAL_CODE_EQ Filter = "referral_code_eq"
+
+	YEARS_OF_EXPERIENCE    Filter = "years_of_experience"
+	YEARS_OF_EXPERIENCE_EQ Filter = "years_of_experience_eq"
 )

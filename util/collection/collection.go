@@ -14,3 +14,19 @@ func HasAny(t interface{}) bool {
 		return false
 	}
 }
+
+// Contains returns true if the slice contains the element
+func Contains(t interface{}, element interface{}) bool {
+	switch reflect.TypeOf(t).Kind() {
+	case reflect.Slice:
+		s := reflect.ValueOf(t)
+		for i := 0; i < s.Len(); i++ {
+			if s.Index(i).Interface() == element {
+				return true
+			}
+		}
+		return false
+	default:
+		return false
+	}
+}

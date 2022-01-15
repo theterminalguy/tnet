@@ -45,7 +45,7 @@ func (h *V1TalentProfileHandler) ReadByID(c echo.Context) error {
 }
 
 func (h *V1TalentProfileHandler) CreateOne(c echo.Context) error {
-	params := new(repo.TalentParams)
+	params := repo.TalentParams{}
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

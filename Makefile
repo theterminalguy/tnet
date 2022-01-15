@@ -16,6 +16,9 @@ dev: ## Run the web server in dev mode without using docker
 pg: ## Starts the postgres server
 	docker-compose -f docker-compose.yml up -d postgres
 
+pgadmin: ## Start PG Admin
+	docker-compose -f docker-compose.yml up -d pgadmin
+
 stop: ## Stop all services
 	STAGE=app-build docker-compose -f docker-compose.yml down
 
