@@ -51,11 +51,12 @@ func (s *TalentSearch) Search(qs string) ([]*ent.Talent, []error) {
 			v := values[0]
 			switch filter {
 			case CITY, CITY_EQ:
-				ps = append(ps, talent.CityEQ(v))
+				// TODO: this should be a blog post
+				ps = append(ps, talent.CityEqualFold(v))
 			case EMAIL, EMAIL_EQ:
-				ps = append(ps, talent.EmailEQ(v))
+				ps = append(ps, talent.EmailEqualFold(v))
 			case COUNTRY:
-				ps = append(ps, talent.CountryCodeEQ(v))
+				ps = append(ps, talent.CountryCodeEqualFold(v))
 			case YEARS_OF_EXPERIENCE:
 				//TODO: This should be a blog post
 				filter := func() predicate.Talent {

@@ -80,6 +80,7 @@ func (Talent) Fields() []ent.Field {
 }
 
 func (Talent) Indexes() []ent.Index {
+	// first_name, last_name, email, phone, country_code, city, preferred name, pronoun
 	return []ent.Index{
 		index.Fields(oneword.ReferralCode, oneword.ReferrerID),
 
