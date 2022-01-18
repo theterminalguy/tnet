@@ -35,6 +35,8 @@ const (
 	EdgeTalents = "talents"
 	// EdgeSlackAppInstalls holds the string denoting the slack_app_installs edge name in mutations.
 	EdgeSlackAppInstalls = "slack_app_installs"
+	// EdgeJobs holds the string denoting the jobs edge name in mutations.
+	EdgeJobs = "jobs"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// TalentsTable is the table that holds the talents relation/edge.
@@ -51,6 +53,13 @@ const (
 	SlackAppInstallsInverseTable = "slack_app_installs"
 	// SlackAppInstallsColumn is the table column denoting the slack_app_installs relation/edge.
 	SlackAppInstallsColumn = "user_id"
+	// JobsTable is the table that holds the jobs relation/edge.
+	JobsTable = "jobs"
+	// JobsInverseTable is the table name for the Job entity.
+	// It exists in this package in order to avoid circular dependency with the "job" package.
+	JobsInverseTable = "jobs"
+	// JobsColumn is the table column denoting the jobs relation/edge.
+	JobsColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.

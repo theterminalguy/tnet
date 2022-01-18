@@ -496,6 +496,22 @@ func (c *JobClient) GetX(ctx context.Context, id int) *Job {
 	return obj
 }
 
+// QueryUser queries the user edge of a Job.
+func (c *JobClient) QueryUser(j *Job) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := j.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(job.Table, job.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, job.UserTable, job.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(j.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryApplications queries the applications edge of a Job.
 func (c *JobClient) QueryApplications(j *Job) *JobApplicationQuery {
 	query := &JobApplicationQuery{config: c.config}
@@ -1545,6 +1561,22 @@ func (c *UserClient) QuerySlackAppInstalls(u *User) *SlackAppInstallQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(slackappinstall.Table, slackappinstall.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.SlackAppInstallsTable, user.SlackAppInstallsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryJobs queries the jobs edge of a User.
+func (c *UserClient) QueryJobs(u *User) *JobQuery {
+	query := &JobQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(job.Table, job.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.JobsTable, user.JobsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
@@ -125,6 +126,21 @@ func (uu *UserUpdate) AddSlackAppInstalls(s ...*SlackAppInstall) *UserUpdate {
 	return uu.AddSlackAppInstallIDs(ids...)
 }
 
+// AddJobIDs adds the "jobs" edge to the Job entity by IDs.
+func (uu *UserUpdate) AddJobIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddJobIDs(ids...)
+	return uu
+}
+
+// AddJobs adds the "jobs" edges to the Job entity.
+func (uu *UserUpdate) AddJobs(j ...*Job) *UserUpdate {
+	ids := make([]int, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return uu.AddJobIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -170,6 +186,27 @@ func (uu *UserUpdate) RemoveSlackAppInstalls(s ...*SlackAppInstall) *UserUpdate 
 		ids[i] = s[i].ID
 	}
 	return uu.RemoveSlackAppInstallIDs(ids...)
+}
+
+// ClearJobs clears all "jobs" edges to the Job entity.
+func (uu *UserUpdate) ClearJobs() *UserUpdate {
+	uu.mutation.ClearJobs()
+	return uu
+}
+
+// RemoveJobIDs removes the "jobs" edge to Job entities by IDs.
+func (uu *UserUpdate) RemoveJobIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveJobIDs(ids...)
+	return uu
+}
+
+// RemoveJobs removes "jobs" edges to Job entities.
+func (uu *UserUpdate) RemoveJobs(j ...*Job) *UserUpdate {
+	ids := make([]int, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return uu.RemoveJobIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -432,6 +469,60 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.JobsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.JobsTable,
+			Columns: []string{user.JobsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: job.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedJobsIDs(); len(nodes) > 0 && !uu.mutation.JobsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.JobsTable,
+			Columns: []string{user.JobsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: job.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.JobsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.JobsTable,
+			Columns: []string{user.JobsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: job.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -545,6 +636,21 @@ func (uuo *UserUpdateOne) AddSlackAppInstalls(s ...*SlackAppInstall) *UserUpdate
 	return uuo.AddSlackAppInstallIDs(ids...)
 }
 
+// AddJobIDs adds the "jobs" edge to the Job entity by IDs.
+func (uuo *UserUpdateOne) AddJobIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddJobIDs(ids...)
+	return uuo
+}
+
+// AddJobs adds the "jobs" edges to the Job entity.
+func (uuo *UserUpdateOne) AddJobs(j ...*Job) *UserUpdateOne {
+	ids := make([]int, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return uuo.AddJobIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -590,6 +696,27 @@ func (uuo *UserUpdateOne) RemoveSlackAppInstalls(s ...*SlackAppInstall) *UserUpd
 		ids[i] = s[i].ID
 	}
 	return uuo.RemoveSlackAppInstallIDs(ids...)
+}
+
+// ClearJobs clears all "jobs" edges to the Job entity.
+func (uuo *UserUpdateOne) ClearJobs() *UserUpdateOne {
+	uuo.mutation.ClearJobs()
+	return uuo
+}
+
+// RemoveJobIDs removes the "jobs" edge to Job entities by IDs.
+func (uuo *UserUpdateOne) RemoveJobIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveJobIDs(ids...)
+	return uuo
+}
+
+// RemoveJobs removes "jobs" edges to Job entities.
+func (uuo *UserUpdateOne) RemoveJobs(j ...*Job) *UserUpdateOne {
+	ids := make([]int, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return uuo.RemoveJobIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -868,6 +995,60 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: slackappinstall.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.JobsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.JobsTable,
+			Columns: []string{user.JobsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: job.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedJobsIDs(); len(nodes) > 0 && !uuo.mutation.JobsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.JobsTable,
+			Columns: []string{user.JobsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: job.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.JobsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.JobsTable,
+			Columns: []string{user.JobsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: job.FieldID,
 				},
 			},
 		}

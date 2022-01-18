@@ -12,13 +12,13 @@ import (
 )
 
 type V1RecruiterJobHandler struct {
-	JobRepository *repo.JobRepository
+	JobRepository repo.JobQuerier
 	JobSearch     *search.JobSearch
 }
 
-func NewV1RecruiterJobHandler() *V1RecruiterJobHandler {
+func NewV1RecruiterJobHandler(jobQuerier repo.JobQuerier) *V1RecruiterJobHandler {
 	return &V1RecruiterJobHandler{
-		JobRepository: repo.NewJobRepository(),
+		JobRepository: 	jobQuerier,
 	}
 }
 

@@ -17,6 +17,15 @@ import (
 
 var ErrInvalidReferralCode error = errors.New("invalid referral code")
 
+type TalentQuerier interface {
+	GetAll() ([]*ent.Talent, error)
+	GetByUUID(id uuid.UUID) (*ent.Talent, error)
+	GetTalentByUserID(userId int) (*ent.Talent, error)
+	Create(p TalentParams) (*ent.Talent, error)
+	Update(id uuid.UUID, p TalentParams) (*ent.Talent, []error)
+	DeleteByUUID(id uuid.UUID) error
+}
+
 type TalentRepository struct{}
 
 type TalentParams struct {
@@ -40,13 +49,13 @@ func NewTalentRepository() *TalentRepository {
 
 func (*TalentRepository) Filter(prd ...predicate.Talent) ([]*ent.Talent, error) {
 	// TODO: remove debug
-	jobs, err := dBConn.Debug().Talent.Query().
+	talents, err := dBConn.Debug().Talent.Query().
 		Where(prd...).
 		All(dBContext)
 	if err != nil {
 		return nil, err
 	}
-	return jobs, nil
+	return talents, nil
 }
 
 // func (*TalentRepository) LikeFilter(prd ...predicate.Talent) ([]*ent.Talent, error) {
@@ -99,8 +108,13 @@ func (*TalentRepository) GetByUUID(id uuid.UUID) (*ent.Talent, error) {
 	// }
 
 	pLinks, _ := a.QueryPortfoliolinks().All(dBContext)
+	eduLinks, _ := a.QueryEducations().All(dBContext)
+	wrkExpLinks, _ := a.QueryWorkExperiences().All(dBContext)
+
 	a.Edges = ent.TalentEdges{
-		Portfoliolinks: pLinks,
+		Portfoliolinks:  pLinks,
+		Educations:      eduLinks,
+		WorkExperiences: wrkExpLinks,
 	}
 	if a.DeletedAt != nil {
 		return nil, ErrRecordDeleted
@@ -163,7 +177,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*ent.Talent, []
 
 	// Set and Validate FirstName if provided
 	if vldErr := setNillableStringField(p.FirstName, func(v string) error {
-		err := validateParams(p, "FirsName")
+		err := validateParams(p, "FirstName")
 		if err != nil {
 			return err
 		}
@@ -233,7 +247,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*ent.Talent, []
 		vldErrs = append(vldErrs, vldErr)
 	}
 
-	// Set and Validate Phone if provided
+	// Set and Validate CountryCode if provided
 	if vldErr := setNillableStringField(p.CountryCode, func(v string) error {
 		err := validateParams(p, "CountryCode")
 		if err != nil {

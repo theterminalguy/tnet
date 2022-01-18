@@ -13,13 +13,13 @@ import (
 
 type V1EducationHandler struct {
 	EducationService    *service.EducationService
-	EducationRepository *repo.EducationRepository
+	EducationRepository repo.EducationQuerier
 }
 
-func NewV1EducationHandler() *V1EducationHandler {
+func NewV1EducationHandler(eduQuerier repo.EducationQuerier) *V1EducationHandler {
 	return &V1EducationHandler{
 		EducationService:    service.NewEducationService(),
-		EducationRepository: repo.NewEducationRepository(),
+		EducationRepository: eduQuerier,
 	}
 }
 
@@ -28,9 +28,13 @@ func (h *V1EducationHandler) Search(c echo.Context) error {
 }
 
 func (h *V1EducationHandler) ReadAll(c echo.Context) error {
-	records, err := h.EducationRepository.GetAll()
+	talent, err := GetCurrentTalent(c)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, err.Error())
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	records, err := h.EducationRepository.GetAllForTalent(talent.ID)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 	return c.JSON(http.StatusOK, records)
 }
@@ -48,6 +52,10 @@ func (h *V1EducationHandler) ReadByID(c echo.Context) error {
 }
 
 func (h *V1EducationHandler) CreateOne(c echo.Context) error {
+	err := VerifyTalentUUID(c)
+	if err != nil {
+		return c.String(http.StatusUnauthorized, err.Error())
+	}
 	params := new(repo.EducationParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -60,6 +68,10 @@ func (h *V1EducationHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *V1EducationHandler) UpdateByID(c echo.Context) error {
+	err := VerifyTalentUUID(c)
+	if err != nil {
+		return c.String(http.StatusUnauthorized, err.Error())
+	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())

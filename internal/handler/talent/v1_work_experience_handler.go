@@ -13,13 +13,13 @@ import (
 
 type V1WorkExperienceHandler struct {
 	WorkExperienceService    *service.WorkExperienceService
-	WorkExperienceRepository *repo.WorkExperienceRepository
+	WorkExperienceRepository repo.WorkExperienceQuerier
 }
 
-func NewV1WorkExperienceHandler() *V1WorkExperienceHandler {
+func NewV1WorkExperienceHandler(wrkExpQurier repo.WorkExperienceQuerier) *V1WorkExperienceHandler {
 	return &V1WorkExperienceHandler{
 		WorkExperienceService:    service.NewWorkExperienceService(),
-		WorkExperienceRepository: repo.NewWorkExperienceRepository(),
+		WorkExperienceRepository: wrkExpQurier,
 	}
 }
 
@@ -28,9 +28,13 @@ func (h *V1WorkExperienceHandler) Search(c echo.Context) error {
 }
 
 func (h *V1WorkExperienceHandler) ReadAll(c echo.Context) error {
-	records, err := h.WorkExperienceRepository.GetAll()
+	talent, err := GetCurrentTalent(c)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, err.Error())
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	records, err := h.WorkExperienceRepository.GetAllForTalent(talent.ID)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 	return c.JSON(http.StatusOK, records)
 }
@@ -48,6 +52,10 @@ func (h *V1WorkExperienceHandler) ReadByID(c echo.Context) error {
 }
 
 func (h *V1WorkExperienceHandler) CreateOne(c echo.Context) error {
+	err := VerifyTalentUUID(c)
+	if err != nil {
+		return c.String(http.StatusUnauthorized, err.Error())
+	}
 	params := new(repo.WorkExperienceParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -60,6 +68,10 @@ func (h *V1WorkExperienceHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *V1WorkExperienceHandler) UpdateByID(c echo.Context) error {
+	err := VerifyTalentUUID(c)
+	if err != nil {
+		return c.String(http.StatusUnauthorized, err.Error())
+	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())

@@ -10,6 +10,15 @@ import (
 	"github.com/google/uuid"
 )
 
+type PortfolioLinkQuerier interface {
+	GetAllForTalent(talentID int) ([]*ent.PortfolioLink, error)
+	GetAll() ([]*ent.PortfolioLink, error)
+	GetByUUID(id uuid.UUID) (*ent.PortfolioLink, error)
+	Create(p PortfolioLinkParams) (*ent.PortfolioLink, error)
+	Update(id uuid.UUID, p PortfolioLinkParams) (*ent.PortfolioLink, []error)
+	DeleteByUUID(id uuid.UUID) error
+}
+
 type PortfolioLinkRepository struct{}
 
 type PortfolioLinkParams struct {
@@ -30,6 +39,18 @@ func (*PortfolioLinkRepository) Filter(prd ...predicate.PortfolioLink) ([]*ent.P
 		return nil, err
 	}
 	return pfLinks, nil
+}
+
+func (*PortfolioLinkRepository) GetAllForTalent(talentID int) ([]*ent.PortfolioLink, error) {
+	records, err := dBConn.PortfolioLink.Query().
+		Where(portfoliolink.And(
+			portfoliolink.TalentID(talentID),
+			portfoliolink.DeletedAtIsNil())).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return records, nil
 }
 
 func (*PortfolioLinkRepository) GetAll() ([]*ent.PortfolioLink, error) {
@@ -139,4 +160,16 @@ func (r *PortfolioLinkRepository) DeleteByUUID(id uuid.UUID) error {
 		return err
 	}
 	return nil
+}
+
+func (r *PortfolioLinkRepository) GetPortfolioLinkByTalentUUID(talentID int) (*ent.PortfolioLink, error) {
+	record, err := dBConn.PortfolioLink.Query().
+		Where(portfoliolink.And(
+			portfoliolink.TalentID(talentID),
+			portfoliolink.DeletedAtIsNil())).
+		Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return record, nil
 }

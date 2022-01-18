@@ -13,13 +13,13 @@ import (
 
 type V1PortfolioLinkHandler struct {
 	PortfolioLinkService    *service.PortfolioLinkService
-	PortfolioLinkRepository *repo.PortfolioLinkRepository
+	PortfolioLinkRepository repo.PortfolioLinkQuerier
 }
 
-func NewV1PortfolioLinkHandler() *V1PortfolioLinkHandler {
+func NewV1PortfolioLinkHandler(pfLinkQuerier repo.PortfolioLinkQuerier) *V1PortfolioLinkHandler {
 	return &V1PortfolioLinkHandler{
 		PortfolioLinkService:    service.NewPortfolioLinkService(),
-		PortfolioLinkRepository: repo.NewPortfolioLinkRepository(),
+		PortfolioLinkRepository: pfLinkQuerier,
 	}
 }
 
@@ -28,9 +28,13 @@ func (h *V1PortfolioLinkHandler) Search(c echo.Context) error {
 }
 
 func (h *V1PortfolioLinkHandler) ReadAll(c echo.Context) error {
-	records, err := h.PortfolioLinkRepository.GetAll()
+	talent, err := GetCurrentTalent(c)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, err.Error())
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	records, err := h.PortfolioLinkRepository.GetAllForTalent(talent.ID)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 	return c.JSON(http.StatusOK, records)
 }
@@ -48,11 +52,15 @@ func (h *V1PortfolioLinkHandler) ReadByID(c echo.Context) error {
 }
 
 func (h *V1PortfolioLinkHandler) CreateOne(c echo.Context) error {
+	err := VerifyTalentUUID(c)
+	if err != nil {
+		return c.String(http.StatusUnauthorized, err.Error())
+	}
 	params := new(repo.PortfolioLinkParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := h.PortfolioLinkRepository.Create(*params)
+	record, err := h.PortfolioLinkService.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -60,6 +68,10 @@ func (h *V1PortfolioLinkHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *V1PortfolioLinkHandler) UpdateByID(c echo.Context) error {
+	err := VerifyTalentUUID(c)
+	if err != nil {
+		return c.String(http.StatusUnauthorized, err.Error())
+	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())

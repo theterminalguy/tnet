@@ -22,6 +22,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
+	// FieldUserID holds the string denoting the user_id field in the database.
+	FieldUserID = "user_id"
 	// FieldHiring holds the string denoting the hiring field in the database.
 	FieldHiring = "hiring"
 	// FieldTitle holds the string denoting the title field in the database.
@@ -44,10 +46,19 @@ const (
 	FieldRequirements = "requirements"
 	// FieldYouHave holds the string denoting the you_have field in the database.
 	FieldYouHave = "you_have"
+	// EdgeUser holds the string denoting the user edge name in mutations.
+	EdgeUser = "user"
 	// EdgeApplications holds the string denoting the applications edge name in mutations.
 	EdgeApplications = "applications"
 	// Table holds the table name of the job in the database.
 	Table = "jobs"
+	// UserTable is the table that holds the user relation/edge.
+	UserTable = "jobs"
+	// UserInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UserInverseTable = "users"
+	// UserColumn is the table column denoting the user relation/edge.
+	UserColumn = "user_id"
 	// ApplicationsTable is the table that holds the applications relation/edge.
 	ApplicationsTable = "job_applications"
 	// ApplicationsInverseTable is the table name for the JobApplication entity.
@@ -64,6 +75,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
+	FieldUserID,
 	FieldHiring,
 	FieldTitle,
 	FieldSlug,

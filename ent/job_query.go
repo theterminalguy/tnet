@@ -15,6 +15,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/user"
 )
 
 // JobQuery is the builder for querying Job entities.
@@ -27,6 +28,7 @@ type JobQuery struct {
 	fields     []string
 	predicates []predicate.Job
 	// eager-loading edges.
+	withUser         *UserQuery
 	withApplications *JobApplicationQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -62,6 +64,28 @@ func (jq *JobQuery) Unique(unique bool) *JobQuery {
 func (jq *JobQuery) Order(o ...OrderFunc) *JobQuery {
 	jq.order = append(jq.order, o...)
 	return jq
+}
+
+// QueryUser chains the current query on the "user" edge.
+func (jq *JobQuery) QueryUser() *UserQuery {
+	query := &UserQuery{config: jq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := jq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := jq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(job.Table, job.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, job.UserTable, job.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(jq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryApplications chains the current query on the "applications" edge.
@@ -267,11 +291,23 @@ func (jq *JobQuery) Clone() *JobQuery {
 		offset:           jq.offset,
 		order:            append([]OrderFunc{}, jq.order...),
 		predicates:       append([]predicate.Job{}, jq.predicates...),
+		withUser:         jq.withUser.Clone(),
 		withApplications: jq.withApplications.Clone(),
 		// clone intermediate query.
 		sql:  jq.sql.Clone(),
 		path: jq.path,
 	}
+}
+
+// WithUser tells the query-builder to eager-load the nodes that are connected to
+// the "user" edge. The optional arguments are used to configure the query builder of the edge.
+func (jq *JobQuery) WithUser(opts ...func(*UserQuery)) *JobQuery {
+	query := &UserQuery{config: jq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	jq.withUser = query
+	return jq
 }
 
 // WithApplications tells the query-builder to eager-load the nodes that are connected to
@@ -350,7 +386,8 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 	var (
 		nodes       = []*Job{}
 		_spec       = jq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
+			jq.withUser != nil,
 			jq.withApplications != nil,
 		}
 	)
@@ -372,6 +409,32 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+
+	if query := jq.withUser; query != nil {
+		ids := make([]int, 0, len(nodes))
+		nodeids := make(map[int][]*Job)
+		for i := range nodes {
+			fk := nodes[i].UserID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(user.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "user_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.User = n
+			}
+		}
 	}
 
 	if query := jq.withApplications; query != nil {

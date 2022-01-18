@@ -14,13 +14,13 @@ import (
 
 type V1SkillHandler struct {
 	SkillService    *service.SkillService
-	SkillRepository *repo.SkillRepository
+	SkillRepository repo.SkillQuerier
 }
 
-func NewV1SkillHandler() *V1SkillHandler {
+func NewV1SkillHandler(skillQuerier repo.SkillQuerier) *V1SkillHandler {
 	return &V1SkillHandler{
 		SkillService:    service.NewSkillService(),
-		SkillRepository: repo.NewSkillRepository(),
+		SkillRepository: skillQuerier,
 	}
 }
 
@@ -35,9 +35,13 @@ func (h *V1SkillHandler) Search(c echo.Context) error {
 }
 
 func (h *V1SkillHandler) ReadAll(c echo.Context) error {
-	records, err := h.SkillRepository.GetAll()
+	talent, err := GetCurrentTalent(c)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, err.Error())
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	records, err := h.SkillRepository.GetAllForTalent(talent.ID)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 	return c.JSON(http.StatusOK, records)
 }
@@ -55,6 +59,10 @@ func (h *V1SkillHandler) ReadByID(c echo.Context) error {
 }
 
 func (h *V1SkillHandler) CreateOne(c echo.Context) error {
+	err := VerifyTalentUUID(c)
+	if err != nil {
+		return c.String(http.StatusUnauthorized, err.Error())
+	}
 	params := new(repo.SkillParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -67,6 +75,10 @@ func (h *V1SkillHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *V1SkillHandler) UpdateByID(c echo.Context) error {
+	err := VerifyTalentUUID(c)
+	if err != nil {
+		return c.String(http.StatusUnauthorized, err.Error())
+	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())

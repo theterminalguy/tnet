@@ -11,6 +11,15 @@ import (
 	"github.com/google/uuid"
 )
 
+type JobApplicationQuerier interface {
+	GetAllForTalent(talentID int) ([]*ent.JobApplication, error)
+	GetAll() ([]*ent.JobApplication, error)
+	GetByUUID(id uuid.UUID) (*ent.JobApplication, error)
+	Create(p JobApplicationParams) (*ent.JobApplication, error)
+	Update(id uuid.UUID, p JobApplicationParams) (*ent.JobApplication, []error)
+	DeleteByUUID(id uuid.UUID) error
+}
+
 type JobApplicationRepository struct{}
 
 type JobApplicationParams struct {
@@ -37,6 +46,18 @@ func (*JobApplicationRepository) Filter(prd ...predicate.JobApplication) ([]*ent
 		return nil, err
 	}
 	return jobApplications, nil
+}
+
+func (*JobApplicationRepository) GetAllForTalent(talentID int) ([]*ent.JobApplication, error) {
+	records, err := dBConn.JobApplication.Query().
+		Where(jobapplication.And(
+			jobapplication.TalentID(talentID),
+			jobapplication.DeletedAtIsNil())).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return records, nil
 }
 
 func (*JobApplicationRepository) GetAll() ([]*ent.JobApplication, error) {
@@ -74,17 +95,6 @@ func (*JobApplicationRepository) Create(p JobApplicationParams) (*ent.JobApplica
 	j, err := NewJobRepository().GetByUUID(p.JobUUID)
 	if err != nil {
 		return nil, err
-	}
-	records, err := dBConn.JobApplication.Query().Where(
-		jobapplication.And(
-			jobapplication.JobID(j.ID),
-			jobapplication.TalentID(a.ID),
-		)).All(dBContext)
-	if err != nil {
-		return nil, err
-	}
-	if collection.HasAny(records) {
-		return nil, errors.New("talent already applied for this job")
 	}
 	record, err := dBConn.JobApplication.
 		Create().
@@ -163,5 +173,21 @@ func (r *JobApplicationRepository) DeleteByUUID(id uuid.UUID) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (*JobApplicationRepository) AlreadyApplied(jobID, talentID int) error {
+	records, err := dBConn.JobApplication.Query().Where(
+		jobapplication.And(
+			jobapplication.JobID(jobID),
+			jobapplication.TalentID(talentID),
+		)).All(dBContext)
+	if err != nil {
+		return err
+	}
+	if collection.HasAny(records) {
+		return errors.New("talent already applied for this job")
+	}
+
 	return nil
 }

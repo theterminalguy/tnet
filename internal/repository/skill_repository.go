@@ -10,6 +10,15 @@ import (
 	"github.com/google/uuid"
 )
 
+type SkillQuerier interface {
+	GetAll() ([]*ent.Skill, error)
+	GetAllForTalent(talentID int) ([]*ent.Skill, error)
+	GetByUUID(id uuid.UUID) (*ent.Skill, error)
+	Create(p SkillParams) (*ent.Skill, error)
+	Update(id uuid.UUID, p SkillParams) (*ent.Skill, []error)
+	DeleteByUUID(id uuid.UUID) error
+}
+
 type SkillRepository struct{}
 
 type SkillParams struct {
@@ -56,6 +65,18 @@ func (*SkillRepository) GetAllByTalentUUID(TalentUUID uuid.UUID) ([]*ent.Skill, 
 		return nil, err
 	}
 	records, err := a.QuerySkills().All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return records, nil
+}
+
+func (*SkillRepository) GetAllForTalent(talentID int) ([]*ent.Skill, error) {
+	records, err := dBConn.Skill.Query().
+		Where(skill.And(
+			skill.TalentID(talentID),
+			skill.DeletedAtIsNil())).
+		All(dBContext)
 	if err != nil {
 		return nil, err
 	}

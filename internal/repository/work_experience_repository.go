@@ -11,6 +11,15 @@ import (
 	"github.com/google/uuid"
 )
 
+type WorkExperienceQuerier interface {
+	GetAll() ([]*ent.WorkExperience, error)
+	GetAllForTalent(talentID int) ([]*ent.WorkExperience, error)
+	GetByUUID(id uuid.UUID) (*ent.WorkExperience, error)
+	Create(p WorkExperienceParams) (*ent.WorkExperience, error)
+	Update(id uuid.UUID, p WorkExperienceParams) (*ent.WorkExperience, []error)
+	DeleteByUUID(id uuid.UUID) error
+}
+
 type WorkExperienceRepository struct{}
 
 type WorkExperienceParams struct {
@@ -46,6 +55,18 @@ func (*WorkExperienceRepository) Filter(prd ...predicate.WorkExperience) ([]*ent
 		return nil, err
 	}
 	return wkExps, nil
+}
+
+func (*WorkExperienceRepository) GetAllForTalent(talentID int) ([]*ent.WorkExperience, error) {
+	records, err := dBConn.WorkExperience.Query().
+		Where(workexperience.And(
+			workexperience.TalentID(talentID),
+			workexperience.DeletedAtIsNil())).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return records, nil
 }
 
 func (*WorkExperienceRepository) GetByUUID(id uuid.UUID) (*ent.WorkExperience, error) {
@@ -225,4 +246,16 @@ func (r *WorkExperienceRepository) DeleteByUUID(id uuid.UUID) error {
 		return err
 	}
 	return nil
+}
+
+func (r *WorkExperienceRepository) GetWorkExperienceByTalentUUID(talentID int) (*ent.WorkExperience, error) {
+	record, err := dBConn.WorkExperience.Query().
+		Where(workexperience.And(
+			workexperience.TalentID(talentID),
+			workexperience.DeletedAtIsNil())).
+		Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return record, nil
 }

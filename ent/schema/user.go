@@ -48,5 +48,6 @@ func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("talents", Talent.Type),
 		edge.To("slack_app_installs", SlackAppInstall.Type),
+		edge.To("jobs", Job.Type),
 	}
 }

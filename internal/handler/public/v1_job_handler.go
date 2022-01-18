@@ -10,12 +10,12 @@ import (
 )
 
 type V1PublicJobHandler struct {
-	JobRepository *repo.JobRepository
+	JobRepository repo.JobQuerier
 }
 
-func NewV1PublicJobHandler() *V1PublicJobHandler {
+func NewV1PublicJobHandler(jobQuerier repo.JobQuerier) *V1PublicJobHandler {
 	return &V1PublicJobHandler{
-		JobRepository: repo.NewJobRepository(),
+		JobRepository: jobQuerier,
 	}
 }
 
@@ -26,8 +26,6 @@ func (*V1PublicJobHandler) Search(c echo.Context) error {
 // ReadAlll return all jobs scopd to a paritcular talent
 // i.e. all jobs for which the talent has a job application
 func (h *V1PublicJobHandler) ReadAll(c echo.Context) error {
-	// TODO: implement pagination
-	// most likely cursor based
 	jobs, err := h.JobRepository.GetAll()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())

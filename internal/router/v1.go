@@ -4,6 +4,7 @@ import (
 	public_handler "github.com/10hourlabs/tentn/internal/handler/public"
 	recruiter_handler "github.com/10hourlabs/tentn/internal/handler/recruiter"
 	talent_handler "github.com/10hourlabs/tentn/internal/handler/talent"
+	repo "github.com/10hourlabs/tentn/internal/repository"
 
 	"github.com/10hourlabs/tentn/internal/middleware"
 	"github.com/labstack/echo/v4"
@@ -16,7 +17,7 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 			{
 				Path:        "jobs",
 				Only:        []Request{READ_ALL},
-				Handler:     public_handler.NewV1PublicJobHandler(),
+				Handler:     public_handler.NewV1PublicJobHandler(repo.NewJobRepository()),
 				Middlewares: nil,
 			},
 			{
@@ -43,39 +44,39 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 		},
 		handlers: []RouteHandler{
 			{
-				Path:        "jobs",
-				Only:        []Request{READ_ALL},
-				Handler:     talent_handler.NewV1TalentJobHandler(),
-				Middlewares: nil,
-			},
-			{
 				Path:        "skills",
 				Except:      []Request{SEARCH},
-				Handler:     talent_handler.NewV1SkillHandler(),
+				Handler:     talent_handler.NewV1SkillHandler(repo.NewSkillRepository()),
 				Middlewares: nil,
 			},
 			{
 				Path:        "profile",
 				Except:      []Request{SEARCH},
-				Handler:     talent_handler.NewV1TalentProfileHandler(),
+				Handler:     talent_handler.NewV1TalentProfileHandler(repo.NewTalentRepository()),
 				Middlewares: nil,
 			},
 			{
 				Path:        "portfolio-links",
 				Except:      []Request{SEARCH, READ, UPDATE},
-				Handler:     talent_handler.NewV1PortfolioLinkHandler(),
+				Handler:     talent_handler.NewV1PortfolioLinkHandler(repo.NewPortfolioLinkRepository()),
 				Middlewares: nil,
 			},
 			{
 				Path:        "work-experiences",
 				Except:      []Request{SEARCH, READ, UPDATE},
-				Handler:     talent_handler.NewV1WorkExperienceHandler(),
+				Handler:     talent_handler.NewV1WorkExperienceHandler(repo.NewWorkExperienceRepository()),
 				Middlewares: nil,
 			},
 			{
 				Path:        "educations",
 				Except:      []Request{SEARCH, READ, UPDATE},
-				Handler:     talent_handler.NewV1EducationHandler(),
+				Handler:     talent_handler.NewV1EducationHandler(repo.NewEducationRepository()),
+				Middlewares: nil,
+			},
+			{
+				Path:        "job-applications",
+				Except:      []Request{READ, UPDATE},
+				Handler:     talent_handler.NewV1JobApplicationHandler(repo.NewJobApplicationRepository()),
 				Middlewares: nil,
 			},
 		},
@@ -91,7 +92,7 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 		handlers: []RouteHandler{
 			{
 				Path:        "jobs",
-				Handler:     recruiter_handler.NewV1RecruiterJobHandler(),
+				Handler:     recruiter_handler.NewV1RecruiterJobHandler(repo.NewJobRepository()),
 				Middlewares: nil,
 			},
 			{

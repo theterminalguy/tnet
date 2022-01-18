@@ -13,6 +13,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -58,6 +59,26 @@ func (ju *JobUpdate) SetNillableDeletedAt(t *time.Time) *JobUpdate {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (ju *JobUpdate) ClearDeletedAt() *JobUpdate {
 	ju.mutation.ClearDeletedAt()
+	return ju
+}
+
+// SetUserID sets the "user_id" field.
+func (ju *JobUpdate) SetUserID(i int) *JobUpdate {
+	ju.mutation.SetUserID(i)
+	return ju
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (ju *JobUpdate) SetNillableUserID(i *int) *JobUpdate {
+	if i != nil {
+		ju.SetUserID(*i)
+	}
+	return ju
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (ju *JobUpdate) ClearUserID() *JobUpdate {
+	ju.mutation.ClearUserID()
 	return ju
 }
 
@@ -137,6 +158,11 @@ func (ju *JobUpdate) SetYouHave(s []string) *JobUpdate {
 	return ju
 }
 
+// SetUser sets the "user" edge to the User entity.
+func (ju *JobUpdate) SetUser(u *User) *JobUpdate {
+	return ju.SetUserID(u.ID)
+}
+
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
 func (ju *JobUpdate) AddApplicationIDs(ids ...int) *JobUpdate {
 	ju.mutation.AddApplicationIDs(ids...)
@@ -155,6 +181,12 @@ func (ju *JobUpdate) AddApplications(j ...*JobApplication) *JobUpdate {
 // Mutation returns the JobMutation object of the builder.
 func (ju *JobUpdate) Mutation() *JobMutation {
 	return ju.mutation
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (ju *JobUpdate) ClearUser() *JobUpdate {
+	ju.mutation.ClearUser()
+	return ju
 }
 
 // ClearApplications clears all "applications" edges to the JobApplication entity.
@@ -377,6 +409,41 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: job.FieldYouHave,
 		})
 	}
+	if ju.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   job.UserTable,
+			Columns: []string{job.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ju.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   job.UserTable,
+			Columns: []string{job.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if ju.mutation.ApplicationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -482,6 +549,26 @@ func (juo *JobUpdateOne) ClearDeletedAt() *JobUpdateOne {
 	return juo
 }
 
+// SetUserID sets the "user_id" field.
+func (juo *JobUpdateOne) SetUserID(i int) *JobUpdateOne {
+	juo.mutation.SetUserID(i)
+	return juo
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (juo *JobUpdateOne) SetNillableUserID(i *int) *JobUpdateOne {
+	if i != nil {
+		juo.SetUserID(*i)
+	}
+	return juo
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (juo *JobUpdateOne) ClearUserID() *JobUpdateOne {
+	juo.mutation.ClearUserID()
+	return juo
+}
+
 // SetHiring sets the "hiring" field.
 func (juo *JobUpdateOne) SetHiring(b bool) *JobUpdateOne {
 	juo.mutation.SetHiring(b)
@@ -558,6 +645,11 @@ func (juo *JobUpdateOne) SetYouHave(s []string) *JobUpdateOne {
 	return juo
 }
 
+// SetUser sets the "user" edge to the User entity.
+func (juo *JobUpdateOne) SetUser(u *User) *JobUpdateOne {
+	return juo.SetUserID(u.ID)
+}
+
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
 func (juo *JobUpdateOne) AddApplicationIDs(ids ...int) *JobUpdateOne {
 	juo.mutation.AddApplicationIDs(ids...)
@@ -576,6 +668,12 @@ func (juo *JobUpdateOne) AddApplications(j ...*JobApplication) *JobUpdateOne {
 // Mutation returns the JobMutation object of the builder.
 func (juo *JobUpdateOne) Mutation() *JobMutation {
 	return juo.mutation
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (juo *JobUpdateOne) ClearUser() *JobUpdateOne {
+	juo.mutation.ClearUser()
+	return juo
 }
 
 // ClearApplications clears all "applications" edges to the JobApplication entity.
@@ -821,6 +919,41 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 			Value:  value,
 			Column: job.FieldYouHave,
 		})
+	}
+	if juo.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   job.UserTable,
+			Columns: []string{job.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := juo.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   job.UserTable,
+			Columns: []string{job.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if juo.mutation.ApplicationsCleared() {
 		edge := &sqlgraph.EdgeSpec{

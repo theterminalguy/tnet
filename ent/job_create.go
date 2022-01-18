@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -66,6 +67,20 @@ func (jc *JobCreate) SetDeletedAt(t time.Time) *JobCreate {
 func (jc *JobCreate) SetNillableDeletedAt(t *time.Time) *JobCreate {
 	if t != nil {
 		jc.SetDeletedAt(*t)
+	}
+	return jc
+}
+
+// SetUserID sets the "user_id" field.
+func (jc *JobCreate) SetUserID(i int) *JobCreate {
+	jc.mutation.SetUserID(i)
+	return jc
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (jc *JobCreate) SetNillableUserID(i *int) *JobCreate {
+	if i != nil {
+		jc.SetUserID(*i)
 	}
 	return jc
 }
@@ -156,6 +171,11 @@ func (jc *JobCreate) SetYouHave(s []string) *JobCreate {
 func (jc *JobCreate) SetID(i int) *JobCreate {
 	jc.mutation.SetID(i)
 	return jc
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (jc *JobCreate) SetUser(u *User) *JobCreate {
+	return jc.SetUserID(u.ID)
 }
 
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
@@ -472,6 +492,26 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 			Column: job.FieldYouHave,
 		})
 		_node.YouHave = value
+	}
+	if nodes := jc.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   job.UserTable,
+			Columns: []string{job.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.UserID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := jc.mutation.ApplicationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

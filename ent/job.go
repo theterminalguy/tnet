@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -26,6 +27,8 @@ type Job struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
+	// UserID holds the value of the "user_id" field.
+	UserID int `json:"-"`
 	// Hiring holds the value of the "hiring" field.
 	Hiring bool `json:"hiring"`
 	// Title holds the value of the "title" field.
@@ -55,17 +58,33 @@ type Job struct {
 
 // JobEdges holds the relations/edges for other nodes in the graph.
 type JobEdges struct {
+	// User holds the value of the user edge.
+	User *User `json:"user,omitempty"`
 	// Applications holds the value of the applications edge.
 	Applications []*JobApplication `json:"applications,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
+}
+
+// UserOrErr returns the User value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e JobEdges) UserOrErr() (*User, error) {
+	if e.loadedTypes[0] {
+		if e.User == nil {
+			// The edge user was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.User, nil
+	}
+	return nil, &NotLoadedError{edge: "user"}
 }
 
 // ApplicationsOrErr returns the Applications value or an error if the edge
 // was not loaded in eager-loading.
 func (e JobEdges) ApplicationsOrErr() ([]*JobApplication, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		return e.Applications, nil
 	}
 	return nil, &NotLoadedError{edge: "applications"}
@@ -80,7 +99,7 @@ func (*Job) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case job.FieldHiring:
 			values[i] = new(sql.NullBool)
-		case job.FieldID:
+		case job.FieldID, job.FieldUserID:
 			values[i] = new(sql.NullInt64)
 		case job.FieldTitle, job.FieldSlug, job.FieldLocation, job.FieldSummary, job.FieldEmployment, job.FieldCategory, job.FieldThumbnail:
 			values[i] = new(sql.NullString)
@@ -133,6 +152,12 @@ func (j *Job) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				j.DeletedAt = new(time.Time)
 				*j.DeletedAt = value.Time
+			}
+		case job.FieldUserID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+			} else if value.Valid {
+				j.UserID = int(value.Int64)
 			}
 		case job.FieldHiring:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -211,6 +236,11 @@ func (j *Job) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
+// QueryUser queries the "user" edge of the Job entity.
+func (j *Job) QueryUser() *UserQuery {
+	return (&JobClient{config: j.config}).QueryUser(j)
+}
+
 // QueryApplications queries the "applications" edge of the Job entity.
 func (j *Job) QueryApplications() *JobApplicationQuery {
 	return (&JobClient{config: j.config}).QueryApplications(j)
@@ -249,6 +279,8 @@ func (j *Job) String() string {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", user_id=")
+	builder.WriteString(fmt.Sprintf("%v", j.UserID))
 	builder.WriteString(", hiring=")
 	builder.WriteString(fmt.Sprintf("%v", j.Hiring))
 	builder.WriteString(", title=")

@@ -1,4 +1,4 @@
-package handler
+package talent
 
 import (
 	"fmt"
@@ -12,19 +12,19 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type JobApplicationHandler struct {
+type V1JobApplicationHandler struct {
 	JobApplicationService    *service.JobApplicationService
-	JobApplicationRepository *repo.JobApplicationRepository
+	JobApplicationRepository repo.JobApplicationQuerier
 }
 
-func NewJobApplicationHandler() *JobApplicationHandler {
-	return &JobApplicationHandler{
+func NewV1JobApplicationHandler(jobAppQuerier repo.JobApplicationQuerier) *V1JobApplicationHandler {
+	return &V1JobApplicationHandler{
 		JobApplicationService:    service.NewJobApplicationService(),
-		JobApplicationRepository: repo.NewJobApplicationRepository(),
+		JobApplicationRepository: jobAppQuerier,
 	}
 }
 
-func (h *JobApplicationHandler) Search(c echo.Context) error {
+func (h *V1JobApplicationHandler) Search(c echo.Context) error {
 	jobApplicationSearch := new(search.JobApplicationSearch)
 	query := c.QueryString()
 	records, vldErrs := jobApplicationSearch.Search(query)
@@ -34,15 +34,19 @@ func (h *JobApplicationHandler) Search(c echo.Context) error {
 	return c.JSON(http.StatusOK, records)
 }
 
-func (h *JobApplicationHandler) ReadAll(c echo.Context) error {
-	records, err := h.JobApplicationRepository.GetAll()
+func (h *V1JobApplicationHandler) ReadAll(c echo.Context) error {
+	talent, err := GetCurrentTalent(c)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, err.Error())
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	records, err := h.JobApplicationRepository.GetAllForTalent(talent.ID)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 	return c.JSON(http.StatusOK, records)
 }
 
-func (h *JobApplicationHandler) ReadByID(c echo.Context) error {
+func (h *V1JobApplicationHandler) ReadByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -54,19 +58,27 @@ func (h *JobApplicationHandler) ReadByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, record)
 }
 
-func (h *JobApplicationHandler) CreateOne(c echo.Context) error {
+func (h *V1JobApplicationHandler) CreateOne(c echo.Context) error {
+	err := VerifyTalentUUID(c)
+	if err != nil {
+		return c.String(http.StatusUnauthorized, err.Error())
+	}
 	params := new(repo.JobApplicationParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := h.JobApplicationRepository.Create(*params)
+	record, err := h.JobApplicationService.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	return c.JSON(http.StatusCreated, record)
 }
 
-func (h *JobApplicationHandler) UpdateByID(c echo.Context) error {
+func (h *V1JobApplicationHandler) UpdateByID(c echo.Context) error {
+	err := VerifyTalentUUID(c)
+	if err != nil {
+		return c.String(http.StatusUnauthorized, err.Error())
+	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -82,7 +94,7 @@ func (h *JobApplicationHandler) UpdateByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, record)
 }
 
-func (h *JobApplicationHandler) DeleteOne(c echo.Context) error {
+func (h *V1JobApplicationHandler) DeleteOne(c echo.Context) error {
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())

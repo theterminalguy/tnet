@@ -14,13 +14,13 @@ import (
 
 type V1TalentProfileHandler struct {
 	TalentService    *service.TalentService
-	TalentRepository *repo.TalentRepository
+	TalentRepository repo.TalentQuerier
 }
 
-func NewV1TalentProfileHandler() *V1TalentProfileHandler {
+func NewV1TalentProfileHandler(talentQuerier repo.TalentQuerier) *V1TalentProfileHandler {
 	return &V1TalentProfileHandler{
 		TalentService:    service.NewTalentService(),
-		TalentRepository: repo.NewTalentRepository(),
+		TalentRepository: talentQuerier,
 	}
 }
 
@@ -45,7 +45,7 @@ func (h *V1TalentProfileHandler) ReadByID(c echo.Context) error {
 }
 
 func (h *V1TalentProfileHandler) CreateOne(c echo.Context) error {
-	params := repo.TalentParams{}
+	params := new(repo.TalentParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -54,7 +54,7 @@ func (h *V1TalentProfileHandler) CreateOne(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	a, err := h.TalentService.CreateProfile(user, params)
+	a, err := h.TalentService.CreateProfile(user, *params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

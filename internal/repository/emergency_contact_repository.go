@@ -9,6 +9,15 @@ import (
 	"github.com/google/uuid"
 )
 
+type EmergencyContactQuerier interface {
+	GetAllForTalent(talentID int) ([]*ent.EmergencyContact, error)
+	GetAll() ([]*ent.EmergencyContact, error)
+	GetByUUID(id uuid.UUID) (*ent.EmergencyContact, error)
+	Create(p EmergencyContactParams) (*ent.EmergencyContact, error)
+	Update(id uuid.UUID, p EmergencyContactParams) (*ent.EmergencyContact, []error)
+	DeleteByUUID(id uuid.UUID) error
+}
+
 type EmergencyContactRepository struct{}
 
 type EmergencyContactParams struct {

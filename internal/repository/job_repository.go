@@ -10,6 +10,14 @@ import (
 	"github.com/google/uuid"
 )
 
+type JobQuerier interface {
+	GetAll() ([]*ent.Job, error)
+	GetByUUID(id uuid.UUID) (*ent.Job, error)
+	Create(p JobParams) (*ent.Job, error)
+	Update(id uuid.UUID, p JobParams) (*ent.Job, []error)
+	DeleteByUUID(id uuid.UUID) error
+}
+
 type JobRepository struct{}
 
 type JobParams struct {

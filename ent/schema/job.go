@@ -18,6 +18,12 @@ func (Job) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		UUIDMixin{},
 		TimeStampMixin{},
+		BelongsToMixin{
+			ParentName: "user",
+			ParentType: User.Type,
+			Ref:        "jobs",
+			ForeignKey: "user_id",
+		},
 	}
 }
 

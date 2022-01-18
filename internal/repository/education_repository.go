@@ -11,6 +11,15 @@ import (
 	"github.com/google/uuid"
 )
 
+type EducationQuerier interface {
+	GetAllForTalent(talentID int) ([]*ent.Education, error)
+	GetAll() ([]*ent.Education, error)
+	GetByUUID(id uuid.UUID) (*ent.Education, error)
+	Create(p EducationParams) (*ent.Education, error)
+	Update(id uuid.UUID, p EducationParams) (*ent.Education, []error)
+	DeleteByUUID(id uuid.UUID) error
+}
+
 type EducationRepository struct{}
 
 type EducationParams struct {
@@ -36,6 +45,18 @@ func (*EducationRepository) Filter(prd ...predicate.Education) ([]*ent.Education
 		return nil, err
 	}
 	return educations, nil
+}
+
+func (*EducationRepository) GetAllForTalent(talentID int) ([]*ent.Education, error) {
+	records, err := dBConn.Education.Query().
+		Where(education.And(
+			education.TalentID(talentID),
+			education.DeletedAtIsNil())).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return records, nil
 }
 
 func (*EducationRepository) GetAll() ([]*ent.Education, error) {
@@ -224,4 +245,16 @@ func (r *EducationRepository) DeleteByUUID(id uuid.UUID) error {
 		return err
 	}
 	return nil
+}
+
+func (r *EducationRepository) GetEducationByTalentUUID(talentID int) (*ent.Education, error) {
+	record, err := dBConn.Education.Query().
+		Where(education.And(
+			education.TalentID(talentID),
+			education.DeletedAtIsNil())).
+		Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return record, nil
 }

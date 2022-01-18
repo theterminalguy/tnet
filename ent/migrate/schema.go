@@ -108,17 +108,31 @@ var (
 		{Name: "we_have", Type: field.TypeJSON},
 		{Name: "requirements", Type: field.TypeJSON},
 		{Name: "you_have", Type: field.TypeJSON},
+		{Name: "user_id", Type: field.TypeInt, Nullable: true},
 	}
 	// JobsTable holds the schema information for the "jobs" table.
 	JobsTable = &schema.Table{
 		Name:       "jobs",
 		Columns:    JobsColumns,
 		PrimaryKey: []*schema.Column{JobsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "jobs_users_jobs",
+				Columns:    []*schema.Column{JobsColumns[16]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "job_uuid",
 				Unique:  true,
 				Columns: []*schema.Column{JobsColumns[1]},
+			},
+			{
+				Name:    "job_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{JobsColumns[16]},
 			},
 			{
 				Name:    "job_title",
@@ -557,6 +571,7 @@ var (
 func init() {
 	EducationsTable.ForeignKeys[0].RefTable = TalentsTable
 	EmergencyContactsTable.ForeignKeys[0].RefTable = TalentsTable
+	JobsTable.ForeignKeys[0].RefTable = UsersTable
 	JobApplicationsTable.ForeignKeys[0].RefTable = JobsTable
 	JobApplicationsTable.ForeignKeys[1].RefTable = TalentsTable
 	MissionsTable.ForeignKeys[0].RefTable = PartnersTable
