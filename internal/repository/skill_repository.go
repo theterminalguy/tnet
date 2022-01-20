@@ -25,7 +25,7 @@ type SkillParams struct {
 	TalentUUID uuid.UUID `json:"talent_uuid" validate:"required"`
 
 	// Talent can specify years of experience in decimal where 1.5 equals 1 and a half year
-	YearsOfExperience *float32 `json:"years_of_experience" validate:"gte=1.0"`
+	YearsOfExperience float32 `json:"years_of_experience" validate:"gte=1.0"`
 	Preferred         bool     `json:"preferred"`
 
 	// Talent should add details on this specific skills
@@ -110,7 +110,7 @@ func (*SkillRepository) Create(p SkillParams) (*ent.Skill, error) {
 		SetTalentID(a.ID).
 		SetName(p.Name).
 		SetPreferred(p.Preferred).
-		SetYearsOfExperience(*p.YearsOfExperience).
+		SetYearsOfExperience(p.YearsOfExperience).
 		SetNote(p.Note).
 		Save(dBContext)
 	if err != nil {
@@ -133,12 +133,12 @@ func (r *SkillRepository) Update(id uuid.UUID, p SkillParams) (*ent.Skill, []err
 	bldr := record.Update()
 
 	// Set and Validate YearsOfExperience if provided
-	if vldErr := setNillableYearsOfExperience(p.YearsOfExperience, func(v *float32) error {
+	if vldErr := setNillableYearsOfExperience(&p.YearsOfExperience, func(v *float32) error {
 		err := validateParams(p, "YearsOfExperience")
 		if err != nil {
 			return err
 		}
-		bldr.SetYearsOfExperience(*p.YearsOfExperience)
+		bldr.SetYearsOfExperience(p.YearsOfExperience)
 		return nil
 	}); vldErr != nil {
 		vldErrs = append(vldErrs, vldErr)

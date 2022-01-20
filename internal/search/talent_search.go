@@ -3,10 +3,12 @@ package search
 import (
 	"fmt"
 	"net/url"
+	"strings"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/talent"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/util/collection"
@@ -25,6 +27,7 @@ func (*TalentSearch) PossibleFilters() map[string]Filter {
 		"country":                COUNTRY,
 		"years_of_experience":    YEARS_OF_EXPERIENCE,
 		"years_of_experience_eq": YEARS_OF_EXPERIENCE_EQ,
+		"skills_in":              SKILLS_IN,
 	}
 }
 
@@ -72,6 +75,11 @@ func (s *TalentSearch) Search(qs string) ([]*ent.Talent, []error) {
 					})
 				}
 				ps = append(ps, filter())
+			case SKILLS_IN:
+				// TODO: check if name on skills table is indexed
+				sks := strings.Split(v, ",")
+				sksPred := skill.NameIn(sks...)
+				ps = append(ps, talent.HasSkillsWith(sksPred))
 			}
 		}
 	}

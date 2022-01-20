@@ -35,4 +35,6 @@ var (
 
 	YEARS_OF_EXPERIENCE    Filter = "years_of_experience"
 	YEARS_OF_EXPERIENCE_EQ Filter = "years_of_experience_eq"
+
+	SKILLS_IN Filter = "skills_in"
 )
