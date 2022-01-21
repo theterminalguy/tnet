@@ -28,6 +28,7 @@ func (*TalentSearch) PossibleFilters() map[string]Filter {
 		"years_of_experience":    YEARS_OF_EXPERIENCE,
 		"years_of_experience_eq": YEARS_OF_EXPERIENCE_EQ,
 		"skills_in":              SKILLS_IN,
+		"preferred_title_like":   PREFERRED_TITLE_LIKE,
 	}
 }
 
@@ -80,6 +81,8 @@ func (s *TalentSearch) Search(qs string) ([]*ent.Talent, []error) {
 				sks := strings.Split(v, ",")
 				sksPred := skill.NameIn(sks...)
 				ps = append(ps, talent.HasSkillsWith(sksPred))
+			case PREFERRED_TITLE_LIKE:
+				ps = append(ps, talent.PreferredJobTitleContainsFold("%"+v+"%"))
 			}
 		}
 	}
