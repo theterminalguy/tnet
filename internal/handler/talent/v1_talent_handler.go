@@ -31,7 +31,7 @@ func GetCurrentTalent(c echo.Context) (*ent.Talent, error) {
 	return talent, nil
 }
 
-func VerifyTalentUUID(c echo.Context) (error) {
+func VerifyTalentUUID(c echo.Context) error {
 	talent, err := GetCurrentTalent(c)
 	if err != nil {
 		return err

@@ -50,10 +50,10 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 				Middlewares: nil,
 			},
 			{
-				Path:        "profile",
-				Except:      []Request{SEARCH},
-				Handler:     talent_handler.NewV1TalentProfileHandler(repo.NewTalentRepository()),
-				Middlewares: nil,
+				SingularPath: "profile",
+				Except:       []Request{SEARCH},
+				Handler:      talent_handler.NewV1TalentProfileHandler(repo.NewTalentRepository()),
+				Middlewares:  nil,
 			},
 			{
 				Path:        "portfolio-links",
@@ -92,6 +92,7 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 		handlers: []RouteHandler{
 			{
 				Path:        "jobs",
+				Except:      []Request{READ_BY_ID},
 				Handler:     recruiter_handler.NewV1RecruiterJobHandler(repo.NewJobRepository()),
 				Middlewares: nil,
 			},

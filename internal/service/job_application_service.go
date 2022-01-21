@@ -151,3 +151,7 @@ func (j *JobApplicationService) Validate(talentUUID, jobUUID uuid.UUID) error {
 	}
 	return nil
 }
+
+func (j *JobApplicationService) UpdateStatus(p repo.JobApplicationParams) (*ent.JobApplication, error) {
+	return nil, nil
+}

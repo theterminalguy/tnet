@@ -15,7 +15,7 @@ func EnforceApprovedRecruiter() echo.MiddlewareFunc {
 				return echo.ErrUnauthorized
 			}
 			// TODO: I noticed that after I manually approved a recruiter, I was still getting an unauthorized error.
-			// This is because the previous jwt token had a approved field set to false. 
+			// This is because the previous jwt token had a approved field set to false.
 			// So users will have to obtain a new token after they have been approved.
 			// We fix this by removing the approved field from the jwt token and making a database call to get the approved field.
 			if claims["approved"] == false {

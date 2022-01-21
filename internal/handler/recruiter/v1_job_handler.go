@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/10hourlabs/tentn/internal/handler"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/search"
 	"github.com/10hourlabs/tentn/oneword"
@@ -18,7 +19,7 @@ type V1RecruiterJobHandler struct {
 
 func NewV1RecruiterJobHandler(jobQuerier repo.JobQuerier) *V1RecruiterJobHandler {
 	return &V1RecruiterJobHandler{
-		JobRepository: 	jobQuerier,
+		JobRepository: jobQuerier,
 	}
 }
 
@@ -61,6 +62,10 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
+	params, err := AppendUserID(c, params)
+	if err != nil {
+		return err
+	}
 	j, err := h.JobRepository.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -76,6 +81,10 @@ func (h *V1RecruiterJobHandler) UpdateByID(c echo.Context) error {
 	}
 	params := new(repo.JobParams)
 	if err := c.Bind(params); err != nil {
+		return err
+	}
+	params, err = AppendUserID(c, params)
+	if err != nil {
 		return err
 	}
 	j, vldErrs := h.JobRepository.Update(id, *params)
@@ -96,4 +105,13 @@ func (h *V1RecruiterJobHandler) DeleteOne(c echo.Context) error {
 		return c.String(http.StatusNotFound, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
+}
+
+func AppendUserID(c echo.Context, jobParams *repo.JobParams) (*repo.JobParams, error) {
+	user, err := handler.GetCurrentUser(c)
+	if err != nil {
+		return nil, c.String(http.StatusBadRequest, err.Error())
+	}
+	jobParams.UserID = user.ID
+	return jobParams, nil
 }

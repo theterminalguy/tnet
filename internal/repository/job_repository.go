@@ -21,6 +21,7 @@ type JobQuerier interface {
 type JobRepository struct{}
 
 type JobParams struct {
+	UserID     int    `json:"user_id" validate:"required"`
 	Hiring     bool   `json:"hiring"`
 	Title      string `json:"title" validate:"required"`
 	Summary    string `json:"summary" validate:"required"`

@@ -26,7 +26,7 @@ type SkillParams struct {
 
 	// Talent can specify years of experience in decimal where 1.5 equals 1 and a half year
 	YearsOfExperience float32 `json:"years_of_experience" validate:"gte=1.0"`
-	Preferred         bool     `json:"preferred"`
+	Preferred         bool    `json:"preferred"`
 
 	// Talent should add details on this specific skills
 	// how they have used them in the past, things they've built or done with it

@@ -1,6 +1,7 @@
 package task
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 
@@ -18,7 +19,7 @@ func NewCreateFakeJob() *CreateFakeJob {
 	}
 }
 
-func (j *CreateFakeJob) CreateFakeJob() error {
+func (j *CreateFakeJob) CreateFakeJob(userID int) error {
 	jobParams := repo.JobParams{
 		Hiring: true,
 		Title: (func() string {
@@ -56,27 +57,36 @@ func (j *CreateFakeJob) CreateFakeJob() error {
 				"You enjoy writing tests",
 			}}[rand.Intn(1)]
 		})(),
+		UserID: userID,
 	}
 	_, err := j.JobRepo.Create(jobParams)
 	if err != nil {
 		return err
 	}
 	return nil
-
 }
 
 func (j *CreateFakeJob) Run(_ string) error {
 	var errs []error
 	// TODO: make the max configurable
 	// Also the inserts is not optimized, it works fine for now but should be improved
-	for i := 0; i < 20; i++ {
-		err := j.CreateFakeJob()
-		if err != nil {
-			errs = append(errs, err)
-		}
+	jobs, err := j.JobRepo.GetAll()
+	if err != nil {
+		return err
 	}
-	if collection.HasAny(errs) {
-		return fmt.Errorf("%d errors, %v", len(errs), errs)
+	if len(jobs) == 0 {
+		return errors.New("no jobs found")
+	}
+	for _, job := range jobs {
+		for i := 0; i < 3; i++ {
+			err := j.CreateFakeJob(job.ID)
+			if err != nil {
+				errs = append(errs, err)
+			}
+			if collection.HasAny(errs) {
+				return fmt.Errorf("%d errors, %v", len(errs), errs)
+			}
+		}
 	}
 	return nil
 }

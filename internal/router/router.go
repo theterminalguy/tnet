@@ -45,32 +45,32 @@ const (
 var RequestsAllowedByDefault []Request = []Request{
 	SEARCH,
 	READ_ALL,
-	READ,
 	READ_BY_ID,
 	CREATE_ONE,
-	UPDATE,
 	UPDATE_BY_ID,
 	DELETE_BY_ID,
 }
 
 type RouteHandler struct {
-	Path        string
-	Only        []Request
-	Except      []Request
-	Handler     RequestHandler
-	Middlewares []echo.MiddlewareFunc
+	Path         string
+	SingularPath string
+	Only         []Request
+	Except       []Request
+	Handler      RequestHandler
+	Middlewares  []echo.MiddlewareFunc
 }
 
 func (rh *RouteHandler) Restify(g *echo.Group) {
 	resourcePath := "/" + rh.Path
 	resourceByIDPath := resourcePath + "/:uuid"
+	singularResourcePath := "/" + rh.SingularPath
 	searchPath := resourcePath + "/search"
 	endpoints := make(map[Request]func())
 	endpoints[READ_ALL] = func() {
 		g.GET(resourcePath, rh.Handler.ReadAll, rh.Middlewares...)
 	}
 	endpoints[READ] = func() {
-		g.GET(resourcePath, rh.Handler.ReadByID, rh.Middlewares...)
+		g.GET(singularResourcePath, rh.Handler.ReadByID, rh.Middlewares...)
 	}
 	endpoints[READ_BY_ID] = func() {
 		g.GET(resourceByIDPath, rh.Handler.ReadByID, rh.Middlewares...)
@@ -82,7 +82,7 @@ func (rh *RouteHandler) Restify(g *echo.Group) {
 		g.POST(resourcePath, rh.Handler.CreateOne, rh.Middlewares...)
 	}
 	endpoints[UPDATE] = func() {
-		g.PUT(resourcePath, rh.Handler.UpdateByID, rh.Middlewares...)
+		g.PUT(singularResourcePath, rh.Handler.UpdateByID, rh.Middlewares...)
 	}
 	endpoints[UPDATE_BY_ID] = func() {
 		g.PUT(resourceByIDPath, rh.Handler.UpdateByID, rh.Middlewares...)
@@ -90,27 +90,44 @@ func (rh *RouteHandler) Restify(g *echo.Group) {
 	endpoints[DELETE_BY_ID] = func() {
 		g.DELETE(resourceByIDPath, rh.Handler.DeleteOne, rh.Middlewares...)
 	}
+	if rh.SingularPath != "" {
+		// define all singular verbs
+		resourcePath = singularResourcePath
+		resourceByIDPath = singularResourcePath
+		endpoints[READ]()
+		endpoints[UPDATE]()
+		endpoints[CREATE_ONE]()
+		endpoints[DELETE_BY_ID]()
+		return
+	}
 	if len(rh.Only) > 0 {
 		for _, method := range rh.Only {
 			endpoints[method]()
 		}
 		return
 	}
-	diff := func(a, b []Request) []Request {
-		mb := make(map[Request]bool, len(b))
-		for _, m := range b {
-			mb[m] = true
+	if len(rh.Except) > 0 {
+		reqs := diff(RequestsAllowedByDefault, rh.Except)
+		for _, req := range reqs {
+			endpoints[req]()
 		}
-		var ms []Request
-		for _, m := range a {
-			if _, ok := mb[m]; !ok {
-				ms = append(ms, m)
-			}
+		return
+	}
+	for _, endpoint := range endpoints {
+		endpoint()
+	}
+}
+
+func diff(r1, r2 []Request) []Request {
+	mb := make(map[Request]bool, len(r2))
+	for _, m := range r2 {
+		mb[m] = true
+	}
+	var ms []Request
+	for _, m := range r1 {
+		if _, ok := mb[m]; !ok {
+			ms = append(ms, m)
 		}
-		return ms
 	}
-	reqs := diff(RequestsAllowedByDefault, rh.Except)
-	for _, req := range reqs {
-		endpoints[req]()
-	}
+	return ms
 }

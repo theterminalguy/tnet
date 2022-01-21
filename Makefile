@@ -44,3 +44,6 @@ go-format: ## Run go fmt ./... on all go files
 
 task: ## Run a task
 	ENV=dev go run cmd/task/main.go $(name) $(params)
+
+routes:
+	ENV=dev go run cmd/web/routes/main.go && cat routes.json
