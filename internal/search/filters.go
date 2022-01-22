@@ -43,4 +43,7 @@ var (
 	SKILLS_IN Filter = "skills_in"
 
 	PREFERRED_TITLE_LIKE Filter = "preferred_title_like"
+
+	FIRST_NAME_EQ Filter = "first_name_eq"
+	LAST_NAME_EQ  Filter = "last_name_eq"
 )

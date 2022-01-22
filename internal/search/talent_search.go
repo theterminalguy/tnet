@@ -30,6 +30,8 @@ func (*TalentSearch) PossibleFilters() map[string]Filter {
 		"country":                  COUNTRY,
 		"country_eq":               COUNTRY_EQ,
 		"skills_in":                SKILLS_IN,
+		"first_name_eq":            FIRST_NAME_EQ,
+		"last_name_eq":             LAST_NAME_EQ,
 		"preferred_title_like":     PREFERRED_TITLE_LIKE,
 		"years_of_experience_eq":   YEARS_OF_EXPERIENCE_EQ,
 		"years_of_experience_lt":   YEARS_OF_EXPERIENCE_LT,
@@ -132,6 +134,10 @@ func (s *TalentSearch) Search(qs string) ([]*ent.Talent, []error) {
 				ps = append(ps, talent.HasSkillsWith(sksPred))
 			case PREFERRED_TITLE_LIKE:
 				ps = append(ps, talent.PreferredJobTitleContainsFold("%"+v+"%"))
+			case FIRST_NAME_EQ:
+				ps = append(ps, talent.FirstNameEqualFold(v))
+			case LAST_NAME_EQ:
+				ps = append(ps, talent.LastNameEqualFold(v))
 			}
 		}
 	}
