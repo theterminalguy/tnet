@@ -24,7 +24,8 @@ var (
 	CITY    Filter = "city"
 	CITY_EQ Filter = "city_eq"
 
-	COUNTRY Filter = "country"
+	COUNTRY    Filter = "country"
+	COUNTRY_EQ Filter = "country_eq"
 
 	TENTN_CODE_EQ Filter = "tentn_code_eq"
 
@@ -33,8 +34,11 @@ var (
 
 	REFRERRAL_CODE_EQ Filter = "referral_code_eq"
 
-	YEARS_OF_EXPERIENCE    Filter = "years_of_experience"
-	YEARS_OF_EXPERIENCE_EQ Filter = "years_of_experience_eq"
+	YEARS_OF_EXPERIENCE_EQ   Filter = "years_of_experience_eq"
+	YEARS_OF_EXPERIENCE_LT   Filter = "years_of_experience_lt"
+	YEARS_OF_EXPERIENCE_GT   Filter = "years_of_experience_gt"
+	YEARS_OF_EXPERIENCE_GTEQ Filter = "years_of_experience_gteq"
+	YEARS_OF_EXPERIENCE_LTEQ Filter = "years_of_experience_lteq"
 
 	SKILLS_IN Filter = "skills_in"
 

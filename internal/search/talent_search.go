@@ -2,7 +2,9 @@ package search
 
 import (
 	"fmt"
+	"log"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
@@ -11,6 +13,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/talent"
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/util"
 	"github.com/10hourlabs/tentn/util/collection"
 )
 
@@ -20,16 +23,49 @@ type TalentSearch struct {
 
 func (*TalentSearch) PossibleFilters() map[string]Filter {
 	return map[string]Filter{
-		"email":                  EMAIL,
-		"email_eq":               EMAIL_EQ,
-		"city":                   CITY,
-		"city_eq":                CITY_EQ,
-		"country":                COUNTRY,
-		"years_of_experience":    YEARS_OF_EXPERIENCE,
-		"years_of_experience_eq": YEARS_OF_EXPERIENCE_EQ,
-		"skills_in":              SKILLS_IN,
-		"preferred_title_like":   PREFERRED_TITLE_LIKE,
+		"email":                    EMAIL,
+		"email_eq":                 EMAIL_EQ,
+		"city":                     CITY,
+		"city_eq":                  CITY_EQ,
+		"country":                  COUNTRY,
+		"country_eq":               COUNTRY_EQ,
+		"skills_in":                SKILLS_IN,
+		"preferred_title_like":     PREFERRED_TITLE_LIKE,
+		"years_of_experience_eq":   YEARS_OF_EXPERIENCE_EQ,
+		"years_of_experience_lt":   YEARS_OF_EXPERIENCE_LT,
+		"years_of_experience_gt":   YEARS_OF_EXPERIENCE_GT,
+		"years_of_experience_gteq": YEARS_OF_EXPERIENCE_GTEQ,
+		"years_of_experience_lteq": YEARS_OF_EXPERIENCE_LTEQ,
 	}
+}
+
+func (*TalentSearch) yearsOfExpereinceFilter(s string, op Operator) (predicate.Talent, error) {
+	// TODO: this is should be a blog post
+	s = util.ExtractFirstNumbers(s)
+	if s == "" {
+		return nil, fmt.Errorf("provide a valid years of experience")
+	}
+	v, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		log.Println("error converting years of experience to float64", err)
+		return nil, err
+	}
+	expr := ""
+	switch op {
+	case EQ:
+		expr = "DATE_PART('year', AGE(CURRENT_DATE, professional_start_date)) = $1"
+	case LT:
+		expr = "DATE_PART('year', AGE(CURRENT_DATE, professional_start_date)) < $1"
+	case GT:
+		expr = "DATE_PART('year', AGE(CURRENT_DATE, professional_start_date)) > $1"
+	case GTEQ:
+		expr = "DATE_PART('year', AGE(CURRENT_DATE, professional_start_date)) >= $1"
+	case LTEQ:
+		expr = "DATE_PART('year', AGE(CURRENT_DATE, professional_start_date)) <= $1"
+	}
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.ExprP(expr, v))
+	}), nil
 }
 
 func (s *TalentSearch) Search(qs string) ([]*ent.Talent, []error) {
@@ -59,23 +95,36 @@ func (s *TalentSearch) Search(qs string) ([]*ent.Talent, []error) {
 				ps = append(ps, talent.CityEqualFold(v))
 			case EMAIL, EMAIL_EQ:
 				ps = append(ps, talent.EmailEqualFold(v))
-			case COUNTRY:
+			case COUNTRY, COUNTRY_EQ:
 				ps = append(ps, talent.CountryCodeEqualFold(v))
-			case YEARS_OF_EXPERIENCE:
-				//TODO: This should be a blog post
-				filter := func() predicate.Talent {
-					return predicate.Talent(func(s *sql.Selector) {
-						s.Where(sql.ExprP("DATE_PART('year', AGE(CURRENT_DATE, professional_start_date)) >= $1", v))
-					})
+			case YEARS_OF_EXPERIENCE_GTEQ:
+				filter, err := s.yearsOfExpereinceFilter(v, GTEQ)
+				if err != nil {
+					errors = append(errors, err)
+					continue
 				}
-				ps = append(ps, filter())
+				ps = append(ps, filter)
 			case YEARS_OF_EXPERIENCE_EQ:
-				filter := func() predicate.Talent {
-					return predicate.Talent(func(s *sql.Selector) {
-						s.Where(sql.ExprP("DATE_PART('year', AGE(CURRENT_DATE, professional_start_date)) = $1", v))
-					})
+				filter, err := s.yearsOfExpereinceFilter(v, EQ)
+				if err != nil {
+					errors = append(errors, err)
+					continue
 				}
-				ps = append(ps, filter())
+				ps = append(ps, filter)
+			case YEARS_OF_EXPERIENCE_LT:
+				filter, err := s.yearsOfExpereinceFilter(v, LT)
+				if err != nil {
+					errors = append(errors, err)
+					continue
+				}
+				ps = append(ps, filter)
+			case YEARS_OF_EXPERIENCE_LTEQ:
+				filter, err := s.yearsOfExpereinceFilter(v, LTEQ)
+				if err != nil {
+					errors = append(errors, err)
+					continue
+				}
+				ps = append(ps, filter)
 			case SKILLS_IN:
 				// TODO: check if name on skills table is indexed
 				sks := strings.Split(v, ",")

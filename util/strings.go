@@ -37,3 +37,15 @@ func RandomStringElement(s []string) string {
 	randPos := rand.Intn(len(s))
 	return s[randPos]
 }
+
+func ExtractFirstNumbers(s string) string {
+	var nums []string
+	for _, r := range s {
+		if r >= '0' && r <= '9' {
+			nums = append(nums, string(r))
+			continue
+		}
+		break
+	}
+	return strings.Join(nums, "")
+}
