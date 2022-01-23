@@ -21,23 +21,25 @@ type TalentSearch struct {
 	TalentRepository repo.TalentRepository
 }
 
-func (*TalentSearch) PossibleFilters() map[string]Filter {
-	return map[string]Filter{
-		"email":                    EMAIL,
-		"email_eq":                 EMAIL_EQ,
-		"city":                     CITY,
-		"city_eq":                  CITY_EQ,
-		"country":                  COUNTRY,
-		"country_eq":               COUNTRY_EQ,
-		"skills_in":                SKILLS_IN,
-		"first_name_eq":            FIRST_NAME_EQ,
-		"last_name_eq":             LAST_NAME_EQ,
-		"preferred_title_like":     PREFERRED_TITLE_LIKE,
-		"years_of_experience_eq":   YEARS_OF_EXPERIENCE_EQ,
-		"years_of_experience_lt":   YEARS_OF_EXPERIENCE_LT,
-		"years_of_experience_gt":   YEARS_OF_EXPERIENCE_GT,
-		"years_of_experience_gteq": YEARS_OF_EXPERIENCE_GTEQ,
-		"years_of_experience_lteq": YEARS_OF_EXPERIENCE_LTEQ,
+func (*TalentSearch) PossibleFilters() map[Filter]Filter {
+	return map[Filter]Filter{
+		EMAIL:                    EMAIL,
+		EMAIL_EQ:                 EMAIL_EQ,
+		CITY:                     CITY,
+		CITY_EQ:                  CITY_EQ,
+		COUNTRY:                  COUNTRY,
+		COUNTRY_EQ:               COUNTRY_EQ,
+		SKILLS_EQ:                SKILLS_EQ,
+		SKILLS_IN:                SKILLS_IN,
+		LOCATED_IN:               LOCATED_IN,
+		FIRST_NAME_EQ:            FIRST_NAME_EQ,
+		LAST_NAME_EQ:             LAST_NAME_EQ,
+		JOB_TITLE_EQ:             JOB_TITLE_EQ,
+		YEARS_OF_EXPERIENCE_EQ:   YEARS_OF_EXPERIENCE_EQ,
+		YEARS_OF_EXPERIENCE_LT:   YEARS_OF_EXPERIENCE_LT,
+		YEARS_OF_EXPERIENCE_GT:   YEARS_OF_EXPERIENCE_GT,
+		YEARS_OF_EXPERIENCE_GTEQ: YEARS_OF_EXPERIENCE_GTEQ,
+		YEARS_OF_EXPERIENCE_LTEQ: YEARS_OF_EXPERIENCE_LTEQ,
 	}
 }
 
@@ -82,16 +84,17 @@ func (s *TalentSearch) Search(qs string) ([]*ent.Talent, []error) {
 	}
 	// loop through all user provided filters
 	for f := range query {
-		if s.PossibleFilters()[f] == "" {
+		filter := Filter(f)
+		if s.PossibleFilters()[filter] == "" {
 			errors = append(errors, fmt.Errorf("%s is not a valid filter", f))
 			continue
 		}
 	}
-	for _, filter := range s.PossibleFilters() {
-		f := string(filter)
-		if values, ok := query[f]; ok {
+	for _, possibleFilter := range s.PossibleFilters() {
+		queryFilter := string(possibleFilter)
+		if values, ok := query[queryFilter]; ok {
 			v := values[0]
-			switch filter {
+			switch possibleFilter {
 			case CITY, CITY_EQ:
 				// TODO: this should be a blog post
 				ps = append(ps, talent.CityEqualFold(v))
@@ -127,17 +130,29 @@ func (s *TalentSearch) Search(qs string) ([]*ent.Talent, []error) {
 					continue
 				}
 				ps = append(ps, filter)
+			case SKILLS_EQ:
+				ps = append(ps, talent.HasSkillsWith(skill.NameEqualFold(v)))
 			case SKILLS_IN:
 				// TODO: check if name on skills table is indexed
-				sks := strings.Split(v, ",")
+				sks := strings.Split(strings.ToLower(v), ",")
 				sksPred := skill.NameIn(sks...)
 				ps = append(ps, talent.HasSkillsWith(sksPred))
-			case PREFERRED_TITLE_LIKE:
+			case JOB_TITLE_EQ:
 				ps = append(ps, talent.PreferredJobTitleContainsFold("%"+v+"%"))
 			case FIRST_NAME_EQ:
 				ps = append(ps, talent.FirstNameEqualFold(v))
 			case LAST_NAME_EQ:
 				ps = append(ps, talent.LastNameEqualFold(v))
+			case LOCATED_IN:
+				var city, country string
+				values := strings.Split(v, ",")
+				if len(values) == 2 {
+					city = values[0]
+					country = values[1]
+					cityPred := talent.CityEqualFold(city)
+					countryPred := talent.CountryCodeEqualFold(country)
+					ps = append(ps, cityPred, countryPred)
+				}
 			}
 		}
 	}

@@ -40,10 +40,13 @@ var (
 	YEARS_OF_EXPERIENCE_GTEQ Filter = "years_of_experience_gteq"
 	YEARS_OF_EXPERIENCE_LTEQ Filter = "years_of_experience_lteq"
 
+	SKILLS_EQ Filter = "skills_eq"
 	SKILLS_IN Filter = "skills_in"
 
-	PREFERRED_TITLE_LIKE Filter = "preferred_title_like"
+	JOB_TITLE_EQ Filter = "job_title_eq"
 
 	FIRST_NAME_EQ Filter = "first_name_eq"
 	LAST_NAME_EQ  Filter = "last_name_eq"
+
+	LOCATED_IN Filter = "located_in"
 )

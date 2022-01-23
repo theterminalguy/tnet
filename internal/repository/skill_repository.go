@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"strings"
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
@@ -108,7 +109,7 @@ func (*SkillRepository) Create(p SkillParams) (*ent.Skill, error) {
 	record, err := dBConn.Skill.
 		Create().
 		SetTalentID(a.ID).
-		SetName(p.Name).
+		SetName(strings.ToLower(p.Name)).
 		SetPreferred(p.Preferred).
 		SetYearsOfExperience(p.YearsOfExperience).
 		SetNote(p.Note).
@@ -150,7 +151,7 @@ func (r *SkillRepository) Update(id uuid.UUID, p SkillParams) (*ent.Skill, []err
 		if err != nil {
 			return err
 		}
-		bldr.SetName(v)
+		bldr.SetName(strings.ToLower(v))
 		return nil
 	}); vldErr != nil {
 		vldErrs = append(vldErrs, vldErr)
