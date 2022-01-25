@@ -97,3 +97,7 @@ func setNillableBoolField(val bool, cb func(v bool) error) error {
 	}
 	return nil
 }
+
+func GetDBContext() context.Context {
+	return dBContext
+}

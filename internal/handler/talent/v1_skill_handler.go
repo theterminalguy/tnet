@@ -39,7 +39,7 @@ func (h *V1SkillHandler) ReadAll(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	records, err := h.SkillRepository.GetAllForTalent(talent.ID)
+	records, err := talent.GetSkills()
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -47,11 +47,15 @@ func (h *V1SkillHandler) ReadAll(c echo.Context) error {
 }
 
 func (h *V1SkillHandler) ReadByID(c echo.Context) error {
+	talent, err := GetCurrentTalent(c)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := h.SkillRepository.GetByUUID(id)
+	record, err := talent.GetSkillByUUID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -59,14 +63,15 @@ func (h *V1SkillHandler) ReadByID(c echo.Context) error {
 }
 
 func (h *V1SkillHandler) CreateOne(c echo.Context) error {
-	err := VerifyTalentUUID(c)
+	talent, err := GetCurrentTalent(c)
 	if err != nil {
-		return c.String(http.StatusUnauthorized, err.Error())
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 	params := new(repo.SkillParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
+	params.TalentUUID = talent.Talent.UUID
 	record, err := h.SkillRepository.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -75,9 +80,9 @@ func (h *V1SkillHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *V1SkillHandler) UpdateByID(c echo.Context) error {
-	err := VerifyTalentUUID(c)
+	talent, err := GetCurrentTalent(c)
 	if err != nil {
-		return c.String(http.StatusUnauthorized, err.Error())
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
@@ -87,7 +92,7 @@ func (h *V1SkillHandler) UpdateByID(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	record, vldErrs := h.SkillRepository.Update(id, *params)
+	record, vldErrs := talent.UpdateSkill(id, *params)
 	if vldErrs != nil {
 		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
 	}
@@ -95,11 +100,15 @@ func (h *V1SkillHandler) UpdateByID(c echo.Context) error {
 }
 
 func (h *V1SkillHandler) DeleteOne(c echo.Context) error {
+	talent, err := GetCurrentTalent(c)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.SkillRepository.DeleteByUUID(id)
+	err = talent.DeleteSkill(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

@@ -11,6 +11,7 @@ import (
 )
 
 type JobQuerier interface {
+	GetAllForRecruiter(id int) ([]*ent.Job, error)
 	GetAll() ([]*ent.Job, error)
 	GetByUUID(id uuid.UUID) (*ent.Job, error)
 	Create(p JobParams) (*ent.Job, error)
@@ -44,6 +45,17 @@ func NewJobRepository() *JobRepository {
 func (*JobRepository) Filter(prd ...predicate.Job) ([]*ent.Job, error) {
 	jobs, err := dBConn.Job.Query().
 		Where(prd...).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return jobs, nil
+}
+
+func (*JobRepository) GetAllForRecruiter(id int) ([]*ent.Job, error) {
+	jobs, err := dBConn.Job.Query().
+		Where(job.UserID(id),
+			job.DeletedAtIsNil()).
 		All(dBContext)
 	if err != nil {
 		return nil, err
@@ -93,6 +105,7 @@ func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
 		SetWeHave(p.WeHave).
 		SetRequirements(p.Requirements).
 		SetYouHave(p.YouHave).
+		SetUserID(p.UserID).
 		Save(dBContext)
 	if err != nil {
 		return nil, err

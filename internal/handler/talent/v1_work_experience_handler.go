@@ -32,7 +32,7 @@ func (h *V1WorkExperienceHandler) ReadAll(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	records, err := h.WorkExperienceRepository.GetAllForTalent(talent.ID)
+	records, err := talent.GetWorkExperiences()
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -40,11 +40,15 @@ func (h *V1WorkExperienceHandler) ReadAll(c echo.Context) error {
 }
 
 func (h *V1WorkExperienceHandler) ReadByID(c echo.Context) error {
+	talent, err := GetCurrentTalent(c)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := h.WorkExperienceRepository.GetByUUID(id)
+	record, err := talent.GetWorkExperienceByUUID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -52,14 +56,15 @@ func (h *V1WorkExperienceHandler) ReadByID(c echo.Context) error {
 }
 
 func (h *V1WorkExperienceHandler) CreateOne(c echo.Context) error {
-	err := VerifyTalentUUID(c)
+	talent, err := GetCurrentTalent(c)
 	if err != nil {
-		return c.String(http.StatusUnauthorized, err.Error())
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 	params := new(repo.WorkExperienceParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
+	params.TalentUUID = talent.Talent.UUID
 	record, err := h.WorkExperienceRepository.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -68,9 +73,9 @@ func (h *V1WorkExperienceHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *V1WorkExperienceHandler) UpdateByID(c echo.Context) error {
-	err := VerifyTalentUUID(c)
+	talent, err := GetCurrentTalent(c)
 	if err != nil {
-		return c.String(http.StatusUnauthorized, err.Error())
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
@@ -80,7 +85,7 @@ func (h *V1WorkExperienceHandler) UpdateByID(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	record, vldErrs := h.WorkExperienceRepository.Update(id, *params)
+	record, vldErrs := talent.UpdateWorkExperience(id, *params)
 	if vldErrs != nil {
 		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
 	}
@@ -88,11 +93,15 @@ func (h *V1WorkExperienceHandler) UpdateByID(c echo.Context) error {
 }
 
 func (h *V1WorkExperienceHandler) DeleteOne(c echo.Context) error {
+	talent, err := GetCurrentTalent(c)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.WorkExperienceRepository.DeleteByUUID(id)
+	err = talent.DeleteWorkExperience(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
