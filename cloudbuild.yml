@@ -2,7 +2,19 @@
 steps:
   - name: "gcr.io/cloud-builders/docker"
     id: "Building image for running test"
-    args: ["build", "-t", "${_TEST_IMAGE}", "--target", "test", "."]
+    args:
+      [
+        "build",
+        "-t",
+        "${_TEST_IMAGE}",
+        "--target",
+        "test",
+        ".",
+        "--build-arg",
+        "GITHUB_USER=$_GITHUB_USER",
+        "--build-arg",
+        "GITHUB_PERSONAL_TOKEN=$_GITHUB_PERSONAL_TOKEN",
+      ]
     env:
       - "DOCKER_BUILDKIT=1"
 
@@ -31,7 +43,19 @@ steps:
 
   - name: "gcr.io/cloud-builders/docker"
     id: "Building image for staging"
-    args: ["build", "-t", "${_STG_IMAGE}", "--target", "prod", "."]
+    args:
+      [
+        "build",
+        "-t",
+        "${_STG_IMAGE}",
+        "--target",
+        "prod",
+        ".",
+        "--build-arg",
+        "GITHUB_USER=$_GITHUB_USER",
+        "--build-arg",
+        "GITHUB_PERSONAL_TOKEN=$_GITHUB_PERSONAL_TOKEN",
+      ]
     env:
       - "DOCKER_BUILDKIT=1"
 

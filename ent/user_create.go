@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
@@ -154,6 +155,21 @@ func (uc *UserCreate) AddJobs(j ...*Job) *UserCreate {
 		ids[i] = j[i].ID
 	}
 	return uc.AddJobIDs(ids...)
+}
+
+// AddEmailTemplateIDs adds the "email_templates" edge to the EmailTemplate entity by IDs.
+func (uc *UserCreate) AddEmailTemplateIDs(ids ...int) *UserCreate {
+	uc.mutation.AddEmailTemplateIDs(ids...)
+	return uc
+}
+
+// AddEmailTemplates adds the "email_templates" edges to the EmailTemplate entity.
+func (uc *UserCreate) AddEmailTemplates(e ...*EmailTemplate) *UserCreate {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return uc.AddEmailTemplateIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -419,6 +435,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: job.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.EmailTemplatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.EmailTemplatesTable,
+			Columns: []string{user.EmailTemplatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: emailtemplate.FieldID,
 				},
 			},
 		}

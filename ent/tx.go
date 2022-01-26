@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// Education is the client for interacting with the Education builders.
 	Education *EducationClient
+	// EmailTemplate is the client for interacting with the EmailTemplate builders.
+	EmailTemplate *EmailTemplateClient
 	// EmergencyContact is the client for interacting with the EmergencyContact builders.
 	EmergencyContact *EmergencyContactClient
 	// Job is the client for interacting with the Job builders.
@@ -172,6 +174,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Education = NewEducationClient(tx.config)
+	tx.EmailTemplate = NewEmailTemplateClient(tx.config)
 	tx.EmergencyContact = NewEmergencyContactClient(tx.config)
 	tx.Job = NewJobClient(tx.config)
 	tx.JobApplication = NewJobApplicationClient(tx.config)

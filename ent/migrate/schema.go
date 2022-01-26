@@ -50,6 +50,47 @@ var (
 			},
 		},
 	}
+	// EmailTemplatesColumns holds the columns for the "email_templates" table.
+	EmailTemplatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "from", Type: field.TypeString},
+		{Name: "subject", Type: field.TypeString},
+		{Name: "body", Type: field.TypeString, Size: 2147483647},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"screening", "shortlisted", "interviewing", "hired", "rejected"}, Default: "screening"},
+		{Name: "cc", Type: field.TypeJSON},
+		{Name: "bcc", Type: field.TypeJSON},
+		{Name: "user_id", Type: field.TypeInt, Nullable: true},
+	}
+	// EmailTemplatesTable holds the schema information for the "email_templates" table.
+	EmailTemplatesTable = &schema.Table{
+		Name:       "email_templates",
+		Columns:    EmailTemplatesColumns,
+		PrimaryKey: []*schema.Column{EmailTemplatesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "email_templates_users_email_templates",
+				Columns:    []*schema.Column{EmailTemplatesColumns[11]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "emailtemplate_uuid",
+				Unique:  true,
+				Columns: []*schema.Column{EmailTemplatesColumns[1]},
+			},
+			{
+				Name:    "emailtemplate_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{EmailTemplatesColumns[11]},
+			},
+		},
+	}
 	// EmergencyContactsColumns holds the columns for the "emergency_contacts" table.
 	EmergencyContactsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -138,6 +179,11 @@ var (
 				Name:    "job_title",
 				Unique:  false,
 				Columns: []*schema.Column{JobsColumns[6]},
+			},
+			{
+				Name:    "job_category",
+				Unique:  false,
+				Columns: []*schema.Column{JobsColumns[11]},
 			},
 			{
 				Name:    "job_slug",
@@ -554,6 +600,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		EducationsTable,
+		EmailTemplatesTable,
 		EmergencyContactsTable,
 		JobsTable,
 		JobApplicationsTable,
@@ -570,6 +617,7 @@ var (
 
 func init() {
 	EducationsTable.ForeignKeys[0].RefTable = TalentsTable
+	EmailTemplatesTable.ForeignKeys[0].RefTable = UsersTable
 	EmergencyContactsTable.ForeignKeys[0].RefTable = TalentsTable
 	JobsTable.ForeignKeys[0].RefTable = UsersTable
 	JobApplicationsTable.ForeignKeys[0].RefTable = JobsTable

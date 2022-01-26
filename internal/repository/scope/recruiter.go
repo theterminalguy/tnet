@@ -39,7 +39,3 @@ func (r *RecruiterScope) GetJobApplicationByUUID(uuid uuid.UUID) (*ent.JobApplic
 		Where(jobapplication.UUIDEQ(uuid)).
 		First(repo.GetDBContext())
 }
-
-func (r *RecruiterScope) UpdateJobApplication(uuid uuid.UUID, params repo.JobApplicationParams) (*ent.JobApplication, []error) {
-	return repo.NewJobApplicationRepository().Update(uuid, params)
-}

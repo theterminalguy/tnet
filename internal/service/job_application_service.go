@@ -2,10 +2,14 @@ package service
 
 import (
 	"errors"
+	"os"
 
+	"github.com/10hourlabs/email"
+	"github.com/10hourlabs/tenlog"
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/job"
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/internal/repository/scope"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
 )
@@ -17,6 +21,7 @@ type JobApplicationService struct {
 	PortfolioLinkRepository  *repo.PortfolioLinkRepository
 	EducationRepository      *repo.EducationRepository
 	WorkExperienceRepository *repo.WorkExperienceRepository
+	EmailTemplateRepository  *repo.EmailTemplateRepository
 }
 
 func NewJobApplicationService() *JobApplicationService {
@@ -27,6 +32,7 @@ func NewJobApplicationService() *JobApplicationService {
 		PortfolioLinkRepository:  repo.NewPortfolioLinkRepository(),
 		EducationRepository:      repo.NewEducationRepository(),
 		WorkExperienceRepository: repo.NewWorkExperienceRepository(),
+		EmailTemplateRepository:  repo.NewEmailTemplateRepository(),
 	}
 }
 
@@ -152,6 +158,36 @@ func (j *JobApplicationService) Validate(talentUUID, jobUUID uuid.UUID) error {
 	return nil
 }
 
-func (j *JobApplicationService) UpdateStatus(p repo.JobApplicationParams) (*ent.JobApplication, error) {
-	return nil, nil
+func (j *JobApplicationService) UpdateStatus(user *scope.RecruiterScope, uuid uuid.UUID, params repo.JobApplicationParams) (*ent.JobApplication, []error) {
+	//update the status
+	record, err := user.GetJobApplicationByUUID(uuid)
+	if err != nil {
+		return nil, []error{err}
+	}
+	jobApplication, queryErr := j.JobApplicationRepository.Update(record.UUID, params)
+	if err != nil {
+		return nil, queryErr
+	}
+	// get the email the recruiter has saved for given status
+	rctEmail, emailErr := j.EmailTemplateRepository.GetEmailForRecruiter(user.Recruiter.ID, params.Status)
+	if emailErr != nil {
+		return nil, []error{emailErr}
+	}
+	// call email sending api in the background
+	go func() {
+		_, err = email.SendMail(
+			rctEmail.From,
+			rctEmail.Subject,
+			rctEmail.Body,
+			record.Edges.Talent.Email,
+			os.Getenv("DOMAIN"),
+			os.Getenv("EMAIL_PRIVATE_API_KEY"),
+			rctEmail.Cc,
+			rctEmail.Bcc,
+		)
+		if err != nil {
+			tenlog.Error(err)
+		}
+	}()
+	return jobApplication, nil
 }

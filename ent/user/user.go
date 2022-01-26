@@ -37,6 +37,8 @@ const (
 	EdgeSlackAppInstalls = "slack_app_installs"
 	// EdgeJobs holds the string denoting the jobs edge name in mutations.
 	EdgeJobs = "jobs"
+	// EdgeEmailTemplates holds the string denoting the email_templates edge name in mutations.
+	EdgeEmailTemplates = "email_templates"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// TalentsTable is the table that holds the talents relation/edge.
@@ -60,6 +62,13 @@ const (
 	JobsInverseTable = "jobs"
 	// JobsColumn is the table column denoting the jobs relation/edge.
 	JobsColumn = "user_id"
+	// EmailTemplatesTable is the table that holds the email_templates relation/edge.
+	EmailTemplatesTable = "email_templates"
+	// EmailTemplatesInverseTable is the table name for the EmailTemplate entity.
+	// It exists in this package in order to avoid circular dependency with the "emailtemplate" package.
+	EmailTemplatesInverseTable = "email_templates"
+	// EmailTemplatesColumn is the table column denoting the email_templates relation/edge.
+	EmailTemplatesColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.

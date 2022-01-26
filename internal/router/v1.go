@@ -106,6 +106,11 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 				Handler:     recruiter_handler.NewV1RecruiterJobApplicationHandler(repo.NewJobApplicationRepository()),
 				Middlewares: nil,
 			},
+			{
+				Path:        "email-templates",
+				Handler:     recruiter_handler.NewV1RecruiterEmailTemplateHandler(),
+				Middlewares: nil,
+			},
 		},
 	}
 	recruiterRouter.BuildRoutes()

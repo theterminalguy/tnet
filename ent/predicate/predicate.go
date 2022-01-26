@@ -9,6 +9,9 @@ import (
 // Education is the predicate function for education builders.
 type Education func(*sql.Selector)
 
+// EmailTemplate is the predicate function for emailtemplate builders.
+type EmailTemplate func(*sql.Selector)
+
 // EmergencyContact is the predicate function for emergencycontact builders.
 type EmergencyContact func(*sql.Selector)
 

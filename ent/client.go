@@ -10,6 +10,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/migrate"
 
 	"github.com/10hourlabs/tentn/ent/education"
+	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
@@ -34,6 +35,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Education is the client for interacting with the Education builders.
 	Education *EducationClient
+	// EmailTemplate is the client for interacting with the EmailTemplate builders.
+	EmailTemplate *EmailTemplateClient
 	// EmergencyContact is the client for interacting with the EmergencyContact builders.
 	EmergencyContact *EmergencyContactClient
 	// Job is the client for interacting with the Job builders.
@@ -70,6 +73,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Education = NewEducationClient(c.config)
+	c.EmailTemplate = NewEmailTemplateClient(c.config)
 	c.EmergencyContact = NewEmergencyContactClient(c.config)
 	c.Job = NewJobClient(c.config)
 	c.JobApplication = NewJobApplicationClient(c.config)
@@ -115,6 +119,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:              ctx,
 		config:           cfg,
 		Education:        NewEducationClient(cfg),
+		EmailTemplate:    NewEmailTemplateClient(cfg),
 		EmergencyContact: NewEmergencyContactClient(cfg),
 		Job:              NewJobClient(cfg),
 		JobApplication:   NewJobApplicationClient(cfg),
@@ -145,6 +150,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		config:           cfg,
 		Education:        NewEducationClient(cfg),
+		EmailTemplate:    NewEmailTemplateClient(cfg),
 		EmergencyContact: NewEmergencyContactClient(cfg),
 		Job:              NewJobClient(cfg),
 		JobApplication:   NewJobApplicationClient(cfg),
@@ -186,6 +192,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Education.Use(hooks...)
+	c.EmailTemplate.Use(hooks...)
 	c.EmergencyContact.Use(hooks...)
 	c.Job.Use(hooks...)
 	c.JobApplication.Use(hooks...)
@@ -303,6 +310,112 @@ func (c *EducationClient) QueryTalent(e *Education) *TalentQuery {
 // Hooks returns the client hooks.
 func (c *EducationClient) Hooks() []Hook {
 	return c.hooks.Education
+}
+
+// EmailTemplateClient is a client for the EmailTemplate schema.
+type EmailTemplateClient struct {
+	config
+}
+
+// NewEmailTemplateClient returns a client for the EmailTemplate from the given config.
+func NewEmailTemplateClient(c config) *EmailTemplateClient {
+	return &EmailTemplateClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `emailtemplate.Hooks(f(g(h())))`.
+func (c *EmailTemplateClient) Use(hooks ...Hook) {
+	c.hooks.EmailTemplate = append(c.hooks.EmailTemplate, hooks...)
+}
+
+// Create returns a create builder for EmailTemplate.
+func (c *EmailTemplateClient) Create() *EmailTemplateCreate {
+	mutation := newEmailTemplateMutation(c.config, OpCreate)
+	return &EmailTemplateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EmailTemplate entities.
+func (c *EmailTemplateClient) CreateBulk(builders ...*EmailTemplateCreate) *EmailTemplateCreateBulk {
+	return &EmailTemplateCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EmailTemplate.
+func (c *EmailTemplateClient) Update() *EmailTemplateUpdate {
+	mutation := newEmailTemplateMutation(c.config, OpUpdate)
+	return &EmailTemplateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EmailTemplateClient) UpdateOne(et *EmailTemplate) *EmailTemplateUpdateOne {
+	mutation := newEmailTemplateMutation(c.config, OpUpdateOne, withEmailTemplate(et))
+	return &EmailTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EmailTemplateClient) UpdateOneID(id int) *EmailTemplateUpdateOne {
+	mutation := newEmailTemplateMutation(c.config, OpUpdateOne, withEmailTemplateID(id))
+	return &EmailTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EmailTemplate.
+func (c *EmailTemplateClient) Delete() *EmailTemplateDelete {
+	mutation := newEmailTemplateMutation(c.config, OpDelete)
+	return &EmailTemplateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *EmailTemplateClient) DeleteOne(et *EmailTemplate) *EmailTemplateDeleteOne {
+	return c.DeleteOneID(et.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *EmailTemplateClient) DeleteOneID(id int) *EmailTemplateDeleteOne {
+	builder := c.Delete().Where(emailtemplate.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EmailTemplateDeleteOne{builder}
+}
+
+// Query returns a query builder for EmailTemplate.
+func (c *EmailTemplateClient) Query() *EmailTemplateQuery {
+	return &EmailTemplateQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a EmailTemplate entity by its id.
+func (c *EmailTemplateClient) Get(ctx context.Context, id int) (*EmailTemplate, error) {
+	return c.Query().Where(emailtemplate.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EmailTemplateClient) GetX(ctx context.Context, id int) *EmailTemplate {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a EmailTemplate.
+func (c *EmailTemplateClient) QueryUser(et *EmailTemplate) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := et.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(emailtemplate.Table, emailtemplate.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, emailtemplate.UserTable, emailtemplate.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(et.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EmailTemplateClient) Hooks() []Hook {
+	return c.hooks.EmailTemplate
 }
 
 // EmergencyContactClient is a client for the EmergencyContact schema.
@@ -1577,6 +1690,22 @@ func (c *UserClient) QueryJobs(u *User) *JobQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(job.Table, job.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.JobsTable, user.JobsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEmailTemplates queries the email_templates edge of a User.
+func (c *UserClient) QueryEmailTemplates(u *User) *EmailTemplateQuery {
+	query := &EmailTemplateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(emailtemplate.Table, emailtemplate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.EmailTemplatesTable, user.EmailTemplatesColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

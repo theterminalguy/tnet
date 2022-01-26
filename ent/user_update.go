@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
@@ -141,6 +142,21 @@ func (uu *UserUpdate) AddJobs(j ...*Job) *UserUpdate {
 	return uu.AddJobIDs(ids...)
 }
 
+// AddEmailTemplateIDs adds the "email_templates" edge to the EmailTemplate entity by IDs.
+func (uu *UserUpdate) AddEmailTemplateIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddEmailTemplateIDs(ids...)
+	return uu
+}
+
+// AddEmailTemplates adds the "email_templates" edges to the EmailTemplate entity.
+func (uu *UserUpdate) AddEmailTemplates(e ...*EmailTemplate) *UserUpdate {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return uu.AddEmailTemplateIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -207,6 +223,27 @@ func (uu *UserUpdate) RemoveJobs(j ...*Job) *UserUpdate {
 		ids[i] = j[i].ID
 	}
 	return uu.RemoveJobIDs(ids...)
+}
+
+// ClearEmailTemplates clears all "email_templates" edges to the EmailTemplate entity.
+func (uu *UserUpdate) ClearEmailTemplates() *UserUpdate {
+	uu.mutation.ClearEmailTemplates()
+	return uu
+}
+
+// RemoveEmailTemplateIDs removes the "email_templates" edge to EmailTemplate entities by IDs.
+func (uu *UserUpdate) RemoveEmailTemplateIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveEmailTemplateIDs(ids...)
+	return uu
+}
+
+// RemoveEmailTemplates removes "email_templates" edges to EmailTemplate entities.
+func (uu *UserUpdate) RemoveEmailTemplates(e ...*EmailTemplate) *UserUpdate {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return uu.RemoveEmailTemplateIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -523,6 +560,60 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.EmailTemplatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.EmailTemplatesTable,
+			Columns: []string{user.EmailTemplatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: emailtemplate.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedEmailTemplatesIDs(); len(nodes) > 0 && !uu.mutation.EmailTemplatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.EmailTemplatesTable,
+			Columns: []string{user.EmailTemplatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: emailtemplate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.EmailTemplatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.EmailTemplatesTable,
+			Columns: []string{user.EmailTemplatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: emailtemplate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -651,6 +742,21 @@ func (uuo *UserUpdateOne) AddJobs(j ...*Job) *UserUpdateOne {
 	return uuo.AddJobIDs(ids...)
 }
 
+// AddEmailTemplateIDs adds the "email_templates" edge to the EmailTemplate entity by IDs.
+func (uuo *UserUpdateOne) AddEmailTemplateIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddEmailTemplateIDs(ids...)
+	return uuo
+}
+
+// AddEmailTemplates adds the "email_templates" edges to the EmailTemplate entity.
+func (uuo *UserUpdateOne) AddEmailTemplates(e ...*EmailTemplate) *UserUpdateOne {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return uuo.AddEmailTemplateIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -717,6 +823,27 @@ func (uuo *UserUpdateOne) RemoveJobs(j ...*Job) *UserUpdateOne {
 		ids[i] = j[i].ID
 	}
 	return uuo.RemoveJobIDs(ids...)
+}
+
+// ClearEmailTemplates clears all "email_templates" edges to the EmailTemplate entity.
+func (uuo *UserUpdateOne) ClearEmailTemplates() *UserUpdateOne {
+	uuo.mutation.ClearEmailTemplates()
+	return uuo
+}
+
+// RemoveEmailTemplateIDs removes the "email_templates" edge to EmailTemplate entities by IDs.
+func (uuo *UserUpdateOne) RemoveEmailTemplateIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveEmailTemplateIDs(ids...)
+	return uuo
+}
+
+// RemoveEmailTemplates removes "email_templates" edges to EmailTemplate entities.
+func (uuo *UserUpdateOne) RemoveEmailTemplates(e ...*EmailTemplate) *UserUpdateOne {
+	ids := make([]int, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return uuo.RemoveEmailTemplateIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1049,6 +1176,60 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: job.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.EmailTemplatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.EmailTemplatesTable,
+			Columns: []string{user.EmailTemplatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: emailtemplate.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedEmailTemplatesIDs(); len(nodes) > 0 && !uuo.mutation.EmailTemplatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.EmailTemplatesTable,
+			Columns: []string{user.EmailTemplatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: emailtemplate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.EmailTemplatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.EmailTemplatesTable,
+			Columns: []string{user.EmailTemplatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: emailtemplate.FieldID,
 				},
 			},
 		}

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
@@ -32,6 +33,7 @@ type UserQuery struct {
 	withTalents          *TalentQuery
 	withSlackAppInstalls *SlackAppInstallQuery
 	withJobs             *JobQuery
+	withEmailTemplates   *EmailTemplateQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -127,6 +129,28 @@ func (uq *UserQuery) QueryJobs() *JobQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(job.Table, job.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.JobsTable, user.JobsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEmailTemplates chains the current query on the "email_templates" edge.
+func (uq *UserQuery) QueryEmailTemplates() *EmailTemplateQuery {
+	query := &EmailTemplateQuery{config: uq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(emailtemplate.Table, emailtemplate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.EmailTemplatesTable, user.EmailTemplatesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -318,6 +342,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		withTalents:          uq.withTalents.Clone(),
 		withSlackAppInstalls: uq.withSlackAppInstalls.Clone(),
 		withJobs:             uq.withJobs.Clone(),
+		withEmailTemplates:   uq.withEmailTemplates.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -354,6 +379,17 @@ func (uq *UserQuery) WithJobs(opts ...func(*JobQuery)) *UserQuery {
 		opt(query)
 	}
 	uq.withJobs = query
+	return uq
+}
+
+// WithEmailTemplates tells the query-builder to eager-load the nodes that are connected to
+// the "email_templates" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithEmailTemplates(opts ...func(*EmailTemplateQuery)) *UserQuery {
+	query := &EmailTemplateQuery{config: uq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withEmailTemplates = query
 	return uq
 }
 
@@ -422,10 +458,11 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			uq.withTalents != nil,
 			uq.withSlackAppInstalls != nil,
 			uq.withJobs != nil,
+			uq.withEmailTemplates != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -520,6 +557,31 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Jobs = append(node.Edges.Jobs, n)
+		}
+	}
+
+	if query := uq.withEmailTemplates; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*User)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.EmailTemplates = []*EmailTemplate{}
+		}
+		query.Where(predicate.EmailTemplate(func(s *sql.Selector) {
+			s.Where(sql.InValues(user.EmailTemplatesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.UserID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.EmailTemplates = append(node.Edges.EmailTemplates, n)
 		}
 	}
 

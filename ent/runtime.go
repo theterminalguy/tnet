@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/10hourlabs/tentn/ent/education"
+	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
@@ -46,6 +47,27 @@ func init() {
 	education.DefaultUpdatedAt = educationDescUpdatedAt.Default.(func() time.Time)
 	// education.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	education.UpdateDefaultUpdatedAt = educationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	emailtemplateMixin := schema.EmailTemplate{}.Mixin()
+	emailtemplateMixinFields0 := emailtemplateMixin[0].Fields()
+	_ = emailtemplateMixinFields0
+	emailtemplateMixinFields1 := emailtemplateMixin[1].Fields()
+	_ = emailtemplateMixinFields1
+	emailtemplateFields := schema.EmailTemplate{}.Fields()
+	_ = emailtemplateFields
+	// emailtemplateDescUUID is the schema descriptor for uuid field.
+	emailtemplateDescUUID := emailtemplateMixinFields0[1].Descriptor()
+	// emailtemplate.DefaultUUID holds the default value on creation for the uuid field.
+	emailtemplate.DefaultUUID = emailtemplateDescUUID.Default.(func() uuid.UUID)
+	// emailtemplateDescCreatedAt is the schema descriptor for created_at field.
+	emailtemplateDescCreatedAt := emailtemplateMixinFields1[0].Descriptor()
+	// emailtemplate.DefaultCreatedAt holds the default value on creation for the created_at field.
+	emailtemplate.DefaultCreatedAt = emailtemplateDescCreatedAt.Default.(func() time.Time)
+	// emailtemplateDescUpdatedAt is the schema descriptor for updated_at field.
+	emailtemplateDescUpdatedAt := emailtemplateMixinFields1[1].Descriptor()
+	// emailtemplate.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	emailtemplate.DefaultUpdatedAt = emailtemplateDescUpdatedAt.Default.(func() time.Time)
+	// emailtemplate.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	emailtemplate.UpdateDefaultUpdatedAt = emailtemplateDescUpdatedAt.UpdateDefault.(func() time.Time)
 	emergencycontactMixin := schema.EmergencyContact{}.Mixin()
 	emergencycontactMixinFields0 := emergencycontactMixin[0].Fields()
 	_ = emergencycontactMixinFields0

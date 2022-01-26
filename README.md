@@ -118,3 +118,9 @@ $ mkcert -key-file cert-key.pem -cert-file cert.pem localhost
 ```
 
 Now head over to https://localhost:`<YOUR_HTTP_PORT>` and you should be able to see the app.
+
+## Private Repo Dependency
+
+docker build . -t tenweb --target prod --build-arg GITHUB_USER=<your_username> --build-arg GITHUB_PERSONAL_TOKEN=<your_token>
+
+STAGE=prod docker-compose build --build-arg GITHUB_USER=<your_username> --build-arg GITHUB_PERSONAL_TOKEN=<your_token> web

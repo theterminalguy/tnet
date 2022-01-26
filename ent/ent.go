@@ -9,6 +9,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/10hourlabs/tentn/ent/education"
+	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
@@ -41,6 +42,7 @@ type OrderFunc func(*sql.Selector)
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		education.Table:        education.ValidColumn,
+		emailtemplate.Table:    emailtemplate.ValidColumn,
 		emergencycontact.Table: emergencycontact.ValidColumn,
 		job.Table:              job.ValidColumn,
 		jobapplication.Table:   jobapplication.ValidColumn,

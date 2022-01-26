@@ -832,6 +832,34 @@ func HasJobsWith(preds ...predicate.Job) predicate.User {
 	})
 }
 
+// HasEmailTemplates applies the HasEdge predicate on the "email_templates" edge.
+func HasEmailTemplates() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EmailTemplatesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, EmailTemplatesTable, EmailTemplatesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEmailTemplatesWith applies the HasEdge predicate on the "email_templates" edge with a given conditions (other predicates).
+func HasEmailTemplatesWith(preds ...predicate.EmailTemplate) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EmailTemplatesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, EmailTemplatesTable, EmailTemplatesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(func(s *sql.Selector) {

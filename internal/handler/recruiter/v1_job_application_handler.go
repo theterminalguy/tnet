@@ -71,7 +71,7 @@ func (h *V1RecruiterJobApplicationHandler) UpdateByID(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	record, vldErrs := user.UpdateJobApplication(id, *params)
+	record, vldErrs := h.JobApplicationService.UpdateStatus(user, id,  *params)
 	if vldErrs != nil {
 		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
 	}

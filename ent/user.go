@@ -47,9 +47,11 @@ type UserEdges struct {
 	SlackAppInstalls []*SlackAppInstall `json:"slack_app_installs,omitempty"`
 	// Jobs holds the value of the jobs edge.
 	Jobs []*Job `json:"jobs,omitempty"`
+	// EmailTemplates holds the value of the email_templates edge.
+	EmailTemplates []*EmailTemplate `json:"email_templates,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // TalentsOrErr returns the Talents value or an error if the edge
@@ -77,6 +79,15 @@ func (e UserEdges) JobsOrErr() ([]*Job, error) {
 		return e.Jobs, nil
 	}
 	return nil, &NotLoadedError{edge: "jobs"}
+}
+
+// EmailTemplatesOrErr returns the EmailTemplates value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) EmailTemplatesOrErr() ([]*EmailTemplate, error) {
+	if e.loadedTypes[3] {
+		return e.EmailTemplates, nil
+	}
+	return nil, &NotLoadedError{edge: "email_templates"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -182,6 +193,11 @@ func (u *User) QuerySlackAppInstalls() *SlackAppInstallQuery {
 // QueryJobs queries the "jobs" edge of the User entity.
 func (u *User) QueryJobs() *JobQuery {
 	return (&UserClient{config: u.config}).QueryJobs(u)
+}
+
+// QueryEmailTemplates queries the "email_templates" edge of the User entity.
+func (u *User) QueryEmailTemplates() *EmailTemplateQuery {
+	return (&UserClient{config: u.config}).QueryEmailTemplates(u)
 }
 
 // Update returns a builder for updating this User.
