@@ -75,7 +75,7 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 			},
 			{
 				Path:        "job-applications",
-				Except:      []Request{READ, UPDATE},
+				Except:      []Request{READ, UPDATE, UPDATE_BY_ID, DELETE_BY_ID},
 				Handler:     talent_handler.NewV1JobApplicationHandler(repo.NewJobApplicationRepository()),
 				Middlewares: nil,
 			},
@@ -92,7 +92,6 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 		handlers: []RouteHandler{
 			{
 				Path:        "jobs",
-				Except:      []Request{READ_BY_ID},
 				Handler:     recruiter_handler.NewV1RecruiterJobHandler(repo.NewJobRepository()),
 				Middlewares: nil,
 			},
@@ -101,6 +100,11 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 				Handler:     recruiter_handler.NewV1TalentSearchFilterHandler(),
 				Middlewares: nil,
 				Only:        []Request{SEARCH},
+			},
+			{
+				Path:        "job-applications",
+				Handler:     recruiter_handler.NewV1RecruiterJobApplicationHandler(repo.NewJobApplicationRepository()),
+				Middlewares: nil,
 			},
 		},
 	}

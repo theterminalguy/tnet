@@ -80,37 +80,9 @@ func (h *V1JobApplicationHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *V1JobApplicationHandler) UpdateByID(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
-	id, err := uuid.Parse(c.Param(oneword.UUID))
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
-	params := new(repo.JobApplicationParams)
-	if err := c.Bind(params); err != nil {
-		return err
-	}
-	record, vldErrs := talent.UpdateJobApplication(id, *params)
-	if vldErrs != nil {
-		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
-	}
-	return c.JSON(http.StatusOK, record)
+	return nil
 }
 
 func (h *V1JobApplicationHandler) DeleteOne(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
-	id, err := uuid.Parse(c.Param(oneword.UUID))
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
-	err = talent.DeleteJobApplication(id)
-	if err != nil {
-		return c.String(http.StatusNotFound, err.Error())
-	}
-	return c.NoContent(http.StatusNoContent)
+	return nil
 }

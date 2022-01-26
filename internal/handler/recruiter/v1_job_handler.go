@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/10hourlabs/tentn/internal/handler"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/search"
 	"github.com/10hourlabs/tentn/oneword"
@@ -34,9 +33,11 @@ func (h *V1RecruiterJobHandler) Search(c echo.Context) error {
 }
 
 func (h *V1RecruiterJobHandler) ReadAll(c echo.Context) error {
-	// TODO: implement pagination
-	// most likely cursor based
-	jobs, err := h.JobRepository.GetAll()
+	user, err := GetCurrentRecruiter(c)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	jobs, err := user.GetJobs()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
@@ -45,11 +46,15 @@ func (h *V1RecruiterJobHandler) ReadAll(c echo.Context) error {
 
 // ReadByID return a job by its id. The job must be created by the recruiter
 func (h *V1RecruiterJobHandler) ReadByID(c echo.Context) error {
+	user, err := GetCurrentRecruiter(c)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	j, err := h.JobRepository.GetByUUID(id)
+	j, err := user.GetJobByUUID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -58,14 +63,15 @@ func (h *V1RecruiterJobHandler) ReadByID(c echo.Context) error {
 
 // CreateOne creates a new job for the recruiter
 func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
+	user, err := GetCurrentRecruiter(c)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
 	params := new(repo.JobParams)
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	params, err := AppendUserID(c, params)
-	if err != nil {
-		return err
-	}
+	params.UserID = user.Recruiter.ID
 	j, err := h.JobRepository.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -75,6 +81,10 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 
 // UpdateByID updates a job by its id. The job must be created by the recruiter
 func (h *V1RecruiterJobHandler) UpdateByID(c echo.Context) error {
+	user, err := GetCurrentRecruiter(c)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -83,11 +93,11 @@ func (h *V1RecruiterJobHandler) UpdateByID(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	params, err = AppendUserID(c, params)
+	job, err := user.GetJobByUUID(id)
 	if err != nil {
-		return err
+		return c.String(http.StatusBadRequest, err.Error())
 	}
-	j, vldErrs := h.JobRepository.Update(id, *params)
+	j, vldErrs := h.JobRepository.Update(job.UUID, *params)
 	if vldErrs != nil {
 		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
 	}
@@ -96,22 +106,21 @@ func (h *V1RecruiterJobHandler) UpdateByID(c echo.Context) error {
 
 // DeleteByID deletes a job by its id. The job must be created by the recruiter
 func (h *V1RecruiterJobHandler) DeleteOne(c echo.Context) error {
+	user, err := GetCurrentRecruiter(c)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.JobRepository.DeleteByUUID(id)
+	job, err := user.GetJobByUUID(id)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	err = h.JobRepository.DeleteByUUID(job.UUID)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
 	return c.NoContent(http.StatusNoContent)
-}
-
-func AppendUserID(c echo.Context, jobParams *repo.JobParams) (*repo.JobParams, error) {
-	user, err := handler.GetCurrentUser(c)
-	if err != nil {
-		return nil, c.String(http.StatusBadRequest, err.Error())
-	}
-	jobParams.UserID = user.ID
-	return jobParams, nil
 }

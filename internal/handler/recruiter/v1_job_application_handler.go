@@ -35,19 +35,19 @@ func (h *V1RecruiterJobApplicationHandler) Search(c echo.Context) error {
 }
 
 func (h *V1RecruiterJobApplicationHandler) ReadAll(c echo.Context) error {
-	// records, err := h.JobApplicationRepository.GetAllForTalent(talent.ID)
-	// if err != nil {
-	// 	return c.String(http.StatusBadRequest, err.Error())
-	// }
-	return c.JSON(http.StatusOK, nil)
+	return nil
 }
 
 func (h *V1RecruiterJobApplicationHandler) ReadByID(c echo.Context) error {
+	user, err := GetCurrentRecruiter(c)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := h.JobApplicationRepository.GetByUUID(id)
+	record, err := user.GetJobApplicationByUUID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -59,6 +59,10 @@ func (h *V1RecruiterJobApplicationHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *V1RecruiterJobApplicationHandler) UpdateByID(c echo.Context) error {
+	user, err := GetCurrentRecruiter(c)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -67,7 +71,7 @@ func (h *V1RecruiterJobApplicationHandler) UpdateByID(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	record, vldErrs := h.JobApplicationRepository.Update(id, *params)
+	record, vldErrs := user.UpdateJobApplication(id, *params)
 	if vldErrs != nil {
 		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
 	}

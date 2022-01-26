@@ -5,13 +5,8 @@ import (
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/repository/scope"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
-
-type TalUUID struct {
-	TalentUUID uuid.UUID `json:"talent_uuid" validate:"required"`
-}
 
 func GetCurrentTalent(c echo.Context) (*scope.TalentScope, error) {
 	user, err := handler.GetCurrentUser(c)

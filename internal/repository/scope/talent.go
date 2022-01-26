@@ -112,23 +112,6 @@ func (t *TalentScope) GetJobApplicationByUUID(uuid uuid.UUID) (*ent.JobApplicati
 		First(repo.GetDBContext())
 }
 
-func (t *TalentScope) UpdateJobApplication(uuid uuid.UUID, params repo.JobApplicationParams) (*ent.JobApplication, []error) {
-	params.TalentUUID = t.Talent.UUID
-	record, err := t.GetJobApplicationByUUID(uuid)
-	if err != nil {
-		return nil, []error{err}
-	}
-	return repo.NewJobApplicationRepository().Update(record.UUID, params)
-}
-
-func (t *TalentScope) DeleteJobApplication(uuid uuid.UUID) error {
-	record, err := t.GetJobApplicationByUUID(uuid)
-	if err != nil {
-		return err
-	}
-	return repo.NewJobApplicationRepository().DeleteByUUID(record.UUID)
-}
-
 func (t *TalentScope) GetEducations() ([]*ent.Education, error) {
 	return t.Talent.QueryEducations().All(repo.GetDBContext())
 }
