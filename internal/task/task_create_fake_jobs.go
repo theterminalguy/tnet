@@ -11,11 +11,13 @@ import (
 
 type CreateFakeJob struct {
 	JobRepo *repo.JobRepository
+	UserRepo *repo.UserRepository
 }
 
 func NewCreateFakeJob() *CreateFakeJob {
 	return &CreateFakeJob{
 		JobRepo: repo.NewJobRepository(),
+		UserRepo: repo.NewUserRepository(),
 	}
 }
 
@@ -70,16 +72,16 @@ func (j *CreateFakeJob) Run(_ string) error {
 	var errs []error
 	// TODO: make the max configurable
 	// Also the inserts is not optimized, it works fine for now but should be improved
-	jobs, err := j.JobRepo.GetAll()
+	users, err := j.UserRepo.GetAll()
 	if err != nil {
 		return err
 	}
-	if len(jobs) == 0 {
-		return errors.New("no jobs found")
+	if len(users) == 0 {
+		return errors.New("no users found")
 	}
-	for _, job := range jobs {
+	for _, user := range users {
 		for i := 0; i < 3; i++ {
-			err := j.CreateFakeJob(job.ID)
+			err := j.CreateFakeJob(user.ID)
 			if err != nil {
 				errs = append(errs, err)
 			}

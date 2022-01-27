@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/10hourlabs/tenlog"
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/internal/database"
 	"github.com/10hourlabs/tentn/util/osutil"
@@ -27,6 +28,9 @@ var (
 func init() {
 	// TODO: should we have this here or in main?
 	osutil.CheckEnv()
+
+	tenlog.SetAppName("jobs_api")
+	tenlog.SetEnvName(os.Getenv("ENV"))
 
 	var client *ent.Client
 	var err error
