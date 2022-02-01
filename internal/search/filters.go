@@ -49,4 +49,6 @@ var (
 	LAST_NAME_EQ  Filter = "last_name_eq"
 
 	LOCATED_IN Filter = "located_in"
+
+	IS_AVAILABLE Filter = "is_available"
 )

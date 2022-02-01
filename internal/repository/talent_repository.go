@@ -43,6 +43,7 @@ type TalentParams struct {
 	CountryCode           string   `json:"country_code" validate:"required,iso3166_1_alpha2"`
 	City                  string   `json:"city" validate:"required"`
 	JobPreference         []string `json:"job_preference" validate:"required"`
+	Available             bool     `json:"available" validate:"required"`
 }
 
 func NewTalentRepository() *TalentRepository {
@@ -152,7 +153,8 @@ func (r *TalentRepository) Create(p TalentParams) (*ent.Talent, error) {
 		SetTentnCode(r.genTenTNCode(p)).
 		SetCity(p.City).
 		SetUserID(p.UserID).
-		SetJobPreference(p.JobPreference)
+		SetJobPreference(p.JobPreference).
+		SetIsAvailable(p.Available)
 	if len(p.ReferralCode) > 1 {
 		ref, err := dBConn.Talent.Query().
 			Where(talent.TentnCodeEQ(p.ReferralCode)).
@@ -289,6 +291,18 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*ent.Talent, []
 			return err
 		}
 		bldr.SetJobPreference(p.JobPreference)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate IsAvailable if provided
+	if vldErr := setNillableBoolField(p.Available, func(v bool) error {
+		err := validateParams(p, "IsAvailable")
+		if err != nil {
+			return err
+		}
+		bldr.SetIsAvailable(v)
 		return nil
 	}); vldErr != nil {
 		vldErrs = append(vldErrs, vldErr)

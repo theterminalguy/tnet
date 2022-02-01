@@ -40,6 +40,7 @@ func (*TalentSearch) PossibleFilters() map[Filter]Filter {
 		YEARS_OF_EXPERIENCE_GT:   YEARS_OF_EXPERIENCE_GT,
 		YEARS_OF_EXPERIENCE_GTEQ: YEARS_OF_EXPERIENCE_GTEQ,
 		YEARS_OF_EXPERIENCE_LTEQ: YEARS_OF_EXPERIENCE_LTEQ,
+		IS_AVAILABLE:             IS_AVAILABLE,
 	}
 }
 
@@ -153,6 +154,12 @@ func (s *TalentSearch) Search(qs string) ([]*ent.Talent, []error) {
 					countryPred := talent.CountryCodeEqualFold(country)
 					ps = append(ps, cityPred, countryPred)
 				}
+			case IS_AVAILABLE:
+				booleanField, err := strconv.ParseBool(v)
+				if err != nil {
+					errors = append(errors, err)
+				}
+				ps = append(ps, talent.IsAvailableEQ(booleanField))
 			}
 		}
 	}

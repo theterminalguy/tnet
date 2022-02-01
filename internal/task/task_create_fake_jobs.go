@@ -10,13 +10,13 @@ import (
 )
 
 type CreateFakeJob struct {
-	JobRepo *repo.JobRepository
+	JobRepo  *repo.JobRepository
 	UserRepo *repo.UserRepository
 }
 
 func NewCreateFakeJob() *CreateFakeJob {
 	return &CreateFakeJob{
-		JobRepo: repo.NewJobRepository(),
+		JobRepo:  repo.NewJobRepository(),
 		UserRepo: repo.NewUserRepository(),
 	}
 }
