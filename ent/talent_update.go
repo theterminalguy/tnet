@@ -118,6 +118,12 @@ func (tu *TalentUpdate) SetPreferredJobTitle(s string) *TalentUpdate {
 	return tu
 }
 
+// SetIsAvailable sets the "is_available" field.
+func (tu *TalentUpdate) SetIsAvailable(b bool) *TalentUpdate {
+	tu.mutation.SetIsAvailable(b)
+	return tu
+}
+
 // SetReferrerID sets the "referrer_id" field.
 func (tu *TalentUpdate) SetReferrerID(i int) *TalentUpdate {
 	tu.mutation.SetReferrerID(i)
@@ -666,6 +672,13 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: talent.FieldPreferredJobTitle,
+		})
+	}
+	if value, ok := tu.mutation.IsAvailable(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: talent.FieldIsAvailable,
 		})
 	}
 	if tu.mutation.ReferralCodeCleared() {
@@ -1332,6 +1345,12 @@ func (tuo *TalentUpdateOne) SetPreferredJobTitle(s string) *TalentUpdateOne {
 	return tuo
 }
 
+// SetIsAvailable sets the "is_available" field.
+func (tuo *TalentUpdateOne) SetIsAvailable(b bool) *TalentUpdateOne {
+	tuo.mutation.SetIsAvailable(b)
+	return tuo
+}
+
 // SetReferrerID sets the "referrer_id" field.
 func (tuo *TalentUpdateOne) SetReferrerID(i int) *TalentUpdateOne {
 	tuo.mutation.SetReferrerID(i)
@@ -1904,6 +1923,13 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Type:   field.TypeString,
 			Value:  value,
 			Column: talent.FieldPreferredJobTitle,
+		})
+	}
+	if value, ok := tuo.mutation.IsAvailable(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: talent.FieldIsAvailable,
 		})
 	}
 	if tuo.mutation.ReferralCodeCleared() {

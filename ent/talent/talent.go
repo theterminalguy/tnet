@@ -33,6 +33,8 @@ const (
 	FieldPronoun = "pronoun"
 	// FieldPreferredJobTitle holds the string denoting the preferred_job_title field in the database.
 	FieldPreferredJobTitle = "preferred_job_title"
+	// FieldIsAvailable holds the string denoting the is_available field in the database.
+	FieldIsAvailable = "is_available"
 	// FieldReferrerID holds the string denoting the referrer_id field in the database.
 	FieldReferrerID = "referrer_id"
 	// FieldReferralCode holds the string denoting the referral_code field in the database.
@@ -154,6 +156,7 @@ var Columns = []string{
 	FieldPreferredName,
 	FieldPronoun,
 	FieldPreferredJobTitle,
+	FieldIsAvailable,
 	FieldReferrerID,
 	FieldReferralCode,
 	FieldTentnCode,

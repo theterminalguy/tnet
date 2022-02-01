@@ -121,6 +121,12 @@ func (tc *TalentCreate) SetPreferredJobTitle(s string) *TalentCreate {
 	return tc
 }
 
+// SetIsAvailable sets the "is_available" field.
+func (tc *TalentCreate) SetIsAvailable(b bool) *TalentCreate {
+	tc.mutation.SetIsAvailable(b)
+	return tc
+}
+
 // SetReferrerID sets the "referrer_id" field.
 func (tc *TalentCreate) SetReferrerID(i int) *TalentCreate {
 	tc.mutation.SetReferrerID(i)
@@ -456,6 +462,9 @@ func (tc *TalentCreate) check() error {
 	if _, ok := tc.mutation.PreferredJobTitle(); !ok {
 		return &ValidationError{Name: "preferred_job_title", err: errors.New(`ent: missing required field "preferred_job_title"`)}
 	}
+	if _, ok := tc.mutation.IsAvailable(); !ok {
+		return &ValidationError{Name: "is_available", err: errors.New(`ent: missing required field "is_available"`)}
+	}
 	if _, ok := tc.mutation.TentnCode(); !ok {
 		return &ValidationError{Name: "tentn_code", err: errors.New(`ent: missing required field "tentn_code"`)}
 	}
@@ -586,6 +595,14 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Column: talent.FieldPreferredJobTitle,
 		})
 		_node.PreferredJobTitle = value
+	}
+	if value, ok := tc.mutation.IsAvailable(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: talent.FieldIsAvailable,
+		})
+		_node.IsAvailable = value
 	}
 	if value, ok := tc.mutation.ReferralCode(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

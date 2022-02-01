@@ -164,6 +164,13 @@ func PreferredJobTitle(v string) predicate.Talent {
 	})
 }
 
+// IsAvailable applies equality check predicate on the "is_available" field. It's identical to IsAvailableEQ.
+func IsAvailable(v bool) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsAvailable), v))
+	})
+}
+
 // ReferrerID applies equality check predicate on the "referrer_id" field. It's identical to ReferrerIDEQ.
 func ReferrerID(v int) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
@@ -1159,6 +1166,20 @@ func PreferredJobTitleEqualFold(v string) predicate.Talent {
 func PreferredJobTitleContainsFold(v string) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldPreferredJobTitle), v))
+	})
+}
+
+// IsAvailableEQ applies the EQ predicate on the "is_available" field.
+func IsAvailableEQ(v bool) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsAvailable), v))
+	})
+}
+
+// IsAvailableNEQ applies the NEQ predicate on the "is_available" field.
+func IsAvailableNEQ(v bool) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldIsAvailable), v))
 	})
 }
 

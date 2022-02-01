@@ -9646,6 +9646,7 @@ type TalentMutation struct {
 	preferred_name            *string
 	pronoun                   *string
 	preferred_job_title       *string
+	is_available              *bool
 	referral_code             *string
 	tentn_code                *string
 	professional_start_date   *time.Time
@@ -10158,6 +10159,42 @@ func (m *TalentMutation) OldPreferredJobTitle(ctx context.Context) (v string, er
 // ResetPreferredJobTitle resets all changes to the "preferred_job_title" field.
 func (m *TalentMutation) ResetPreferredJobTitle() {
 	m.preferred_job_title = nil
+}
+
+// SetIsAvailable sets the "is_available" field.
+func (m *TalentMutation) SetIsAvailable(b bool) {
+	m.is_available = &b
+}
+
+// IsAvailable returns the value of the "is_available" field in the mutation.
+func (m *TalentMutation) IsAvailable() (r bool, exists bool) {
+	v := m.is_available
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsAvailable returns the old "is_available" field's value of the Talent entity.
+// If the Talent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TalentMutation) OldIsAvailable(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIsAvailable is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIsAvailable requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsAvailable: %w", err)
+	}
+	return oldValue.IsAvailable, nil
+}
+
+// ResetIsAvailable resets all changes to the "is_available" field.
+func (m *TalentMutation) ResetIsAvailable() {
+	m.is_available = nil
 }
 
 // SetReferrerID sets the "referrer_id" field.
@@ -11093,6 +11130,9 @@ func (m *TalentMutation) Fields() []string {
 	if m.preferred_job_title != nil {
 		fields = append(fields, talent.FieldPreferredJobTitle)
 	}
+	if m.is_available != nil {
+		fields = append(fields, talent.FieldIsAvailable)
+	}
 	if m.referrer != nil {
 		fields = append(fields, talent.FieldReferrerID)
 	}
@@ -11151,6 +11191,8 @@ func (m *TalentMutation) Field(name string) (ent.Value, bool) {
 		return m.Pronoun()
 	case talent.FieldPreferredJobTitle:
 		return m.PreferredJobTitle()
+	case talent.FieldIsAvailable:
+		return m.IsAvailable()
 	case talent.FieldReferrerID:
 		return m.ReferrerID()
 	case talent.FieldReferralCode:
@@ -11200,6 +11242,8 @@ func (m *TalentMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldPronoun(ctx)
 	case talent.FieldPreferredJobTitle:
 		return m.OldPreferredJobTitle(ctx)
+	case talent.FieldIsAvailable:
+		return m.OldIsAvailable(ctx)
 	case talent.FieldReferrerID:
 		return m.OldReferrerID(ctx)
 	case talent.FieldReferralCode:
@@ -11298,6 +11342,13 @@ func (m *TalentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPreferredJobTitle(v)
+		return nil
+	case talent.FieldIsAvailable:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsAvailable(v)
 		return nil
 	case talent.FieldReferrerID:
 		v, ok := value.(int)
@@ -11483,6 +11534,9 @@ func (m *TalentMutation) ResetField(name string) error {
 		return nil
 	case talent.FieldPreferredJobTitle:
 		m.ResetPreferredJobTitle()
+		return nil
+	case talent.FieldIsAvailable:
+		m.ResetIsAvailable()
 		return nil
 	case talent.FieldReferrerID:
 		m.ResetReferrerID()

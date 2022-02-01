@@ -39,6 +39,8 @@ func (Talent) Fields() []ent.Field {
 
 		field.String(oneword.PreferredJobTitle),
 
+		field.Bool("is_available"),
+
 		// Set on create.
 		// This is the Talent referrer database id
 		field.Int(oneword.ReferrerID).

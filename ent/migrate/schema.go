@@ -467,6 +467,7 @@ var (
 		{Name: "preferred_name", Type: field.TypeString},
 		{Name: "pronoun", Type: field.TypeString},
 		{Name: "preferred_job_title", Type: field.TypeString},
+		{Name: "is_available", Type: field.TypeBool},
 		{Name: "referral_code", Type: field.TypeString, Nullable: true, Default: "NULL"},
 		{Name: "tentn_code", Type: field.TypeString, Unique: true},
 		{Name: "professional_start_date", Type: field.TypeTime},
@@ -512,12 +513,12 @@ var (
 			{
 				Name:    "talent_referral_code_referrer_id",
 				Unique:  false,
-				Columns: []*schema.Column{TalentsColumns[10], TalentsColumns[19]},
+				Columns: []*schema.Column{TalentsColumns[11], TalentsColumns[19]},
 			},
 			{
 				Name:    "talent_tentn_code_email_phone",
 				Unique:  true,
-				Columns: []*schema.Column{TalentsColumns[11], TalentsColumns[13], TalentsColumns[14]},
+				Columns: []*schema.Column{TalentsColumns[12], TalentsColumns[14], TalentsColumns[15]},
 			},
 		},
 	}

@@ -39,6 +39,8 @@ type Talent struct {
 	Pronoun string `json:"pronoun,omitempty"`
 	// PreferredJobTitle holds the value of the "preferred_job_title" field.
 	PreferredJobTitle string `json:"preferred_job_title,omitempty"`
+	// IsAvailable holds the value of the "is_available" field.
+	IsAvailable bool `json:"is_available,omitempty"`
 	// ReferrerID holds the value of the "referrer_id" field.
 	ReferrerID int `json:"-"`
 	// ReferralCode holds the value of the "referral_code" field.
@@ -198,6 +200,8 @@ func (*Talent) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case talent.FieldJobPreference:
 			values[i] = new([]byte)
+		case talent.FieldIsAvailable:
+			values[i] = new(sql.NullBool)
 		case talent.FieldID, talent.FieldUserID, talent.FieldReferrerID:
 			values[i] = new(sql.NullInt64)
 		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldReferralCode, talent.FieldTentnCode, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity:
@@ -287,6 +291,12 @@ func (t *Talent) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field preferred_job_title", values[i])
 			} else if value.Valid {
 				t.PreferredJobTitle = value.String
+			}
+		case talent.FieldIsAvailable:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_available", values[i])
+			} else if value.Valid {
+				t.IsAvailable = value.Bool
 			}
 		case talent.FieldReferrerID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -451,6 +461,8 @@ func (t *Talent) String() string {
 	builder.WriteString(t.Pronoun)
 	builder.WriteString(", preferred_job_title=")
 	builder.WriteString(t.PreferredJobTitle)
+	builder.WriteString(", is_available=")
+	builder.WriteString(fmt.Sprintf("%v", t.IsAvailable))
 	builder.WriteString(", referrer_id=")
 	builder.WriteString(fmt.Sprintf("%v", t.ReferrerID))
 	builder.WriteString(", referral_code=")

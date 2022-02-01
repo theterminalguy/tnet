@@ -274,11 +274,11 @@ func init() {
 	// talent.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	talent.UpdateDefaultUpdatedAt = talentDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// talentDescReferralCode is the schema descriptor for referral_code field.
-	talentDescReferralCode := talentFields[6].Descriptor()
+	talentDescReferralCode := talentFields[7].Descriptor()
 	// talent.DefaultReferralCode holds the default value on creation for the referral_code field.
 	talent.DefaultReferralCode = talentDescReferralCode.Default.(string)
 	// talentDescCountryCode is the schema descriptor for country_code field.
-	talentDescCountryCode := talentFields[11].Descriptor()
+	talentDescCountryCode := talentFields[12].Descriptor()
 	// talent.CountryCodeValidator is a validator for the "country_code" field. It is called by the builders before save.
 	talent.CountryCodeValidator = func() func(string) error {
 		validators := talentDescCountryCode.Validators
