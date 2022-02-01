@@ -8,6 +8,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/schema"
 	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/randutil"
 	"github.com/10hourlabs/tentn/util/collection"
@@ -29,18 +30,19 @@ type TalentQuerier interface {
 type TalentRepository struct{}
 
 type TalentParams struct {
-	UserID                int    `json:"user_id" validate:"required"`
-	FirstName             string `json:"first_name" validate:"required"`
-	LastName              string `json:"last_name" validate:"required"`
-	Email                 string `json:"email" validate:"required"`
-	PreferredName         string `json:"preferred_name" validate:"required"`
-	Pronoun               string `json:"pronoun" validate:"required"`
-	PreferredJobTitle     string `json:"preferred_job_title" validate:"required"`
-	ReferralCode          string `json:"referral_code"`
-	ProfessionalStartDate string `json:"professional_start_date" validate:"required"` // YYYY-MM-DD
-	Phone                 string `json:"phone" validate:"required"`
-	CountryCode           string `json:"country_code" validate:"required,iso3166_1_alpha2"`
-	City                  string `json:"city" validate:"required"`
+	UserID                int      `json:"user_id" validate:"required"`
+	FirstName             string   `json:"first_name" validate:"required"`
+	LastName              string   `json:"last_name" validate:"required"`
+	Email                 string   `json:"email" validate:"required"`
+	PreferredName         string   `json:"preferred_name" validate:"required"`
+	Pronoun               string   `json:"pronoun" validate:"required"`
+	PreferredJobTitle     string   `json:"preferred_job_title" validate:"required"`
+	ReferralCode          string   `json:"referral_code"`
+	ProfessionalStartDate string   `json:"professional_start_date" validate:"required"` // YYYY-MM-DD
+	Phone                 string   `json:"phone" validate:"required"`
+	CountryCode           string   `json:"country_code" validate:"required,iso3166_1_alpha2"`
+	City                  string   `json:"city" validate:"required"`
+	JobPreference         []string `json:"job_preference" validate:"required"`
 }
 
 func NewTalentRepository() *TalentRepository {
@@ -131,6 +133,10 @@ func (r *TalentRepository) Create(p TalentParams) (*ent.Talent, error) {
 	if err != nil {
 		return nil, err
 	}
+	res := LinearCheckElemArray(p.JobPreference, schema.EmploymentTypes())
+	if !res {
+		return nil, errors.New("unknown job preference")
+	}
 	q := dBConn.Talent.
 		Create().
 		SetFirstName(p.FirstName).
@@ -145,7 +151,8 @@ func (r *TalentRepository) Create(p TalentParams) (*ent.Talent, error) {
 		SetCountryCode(p.CountryCode).
 		SetTentnCode(r.genTenTNCode(p)).
 		SetCity(p.City).
-		SetUserID(p.UserID)
+		SetUserID(p.UserID).
+		SetJobPreference(p.JobPreference)
 	if len(p.ReferralCode) > 1 {
 		ref, err := dBConn.Talent.Query().
 			Where(talent.TentnCodeEQ(p.ReferralCode)).
@@ -266,6 +273,22 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*ent.Talent, []
 			return err
 		}
 		bldr.SetCity(v)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate JobPreference if provided
+	if vldErr := setNillableJSONArrayField(p.JobPreference, func(v []string) error {
+		res := LinearCheckElemArray(p.JobPreference, schema.EmploymentTypes())
+		if !res {
+			return errors.New("unknown job preference")
+		}
+		err := validateParams(p, "JobPreference")
+		if err != nil {
+			return err
+		}
+		bldr.SetJobPreference(p.JobPreference)
 		return nil
 	}); vldErr != nil {
 		vldErrs = append(vldErrs, vldErr)

@@ -199,6 +199,12 @@ func (tc *TalentCreate) SetNillableJoinedTentnAt(t *time.Time) *TalentCreate {
 	return tc
 }
 
+// SetJobPreference sets the "job_preference" field.
+func (tc *TalentCreate) SetJobPreference(s []string) *TalentCreate {
+	tc.mutation.SetJobPreference(s)
+	return tc
+}
+
 // SetID sets the "id" field.
 func (tc *TalentCreate) SetID(i int) *TalentCreate {
 	tc.mutation.SetID(i)
@@ -473,6 +479,9 @@ func (tc *TalentCreate) check() error {
 	if _, ok := tc.mutation.City(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required field "city"`)}
 	}
+	if _, ok := tc.mutation.JobPreference(); !ok {
+		return &ValidationError{Name: "job_preference", err: errors.New(`ent: missing required field "job_preference"`)}
+	}
 	return nil
 }
 
@@ -641,6 +650,14 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Column: talent.FieldJoinedTentnAt,
 		})
 		_node.JoinedTentnAt = &value
+	}
+	if value, ok := tc.mutation.JobPreference(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: talent.FieldJobPreference,
+		})
+		_node.JobPreference = value
 	}
 	if nodes := tc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

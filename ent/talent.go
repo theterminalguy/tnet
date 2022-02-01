@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -56,6 +57,8 @@ type Talent struct {
 	City string `json:"city,omitempty"`
 	// JoinedTentnAt holds the value of the "joined_tentn_at" field.
 	JoinedTentnAt *time.Time `json:"joined_tentn_at,omitempty"`
+	// JobPreference holds the value of the "job_preference" field.
+	JobPreference []string `json:"job_preference,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TalentQuery when eager-loading is set.
 	Edges TalentEdges `json:"edges"`
@@ -193,6 +196,8 @@ func (*Talent) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case talent.FieldJobPreference:
+			values[i] = new([]byte)
 		case talent.FieldID, talent.FieldUserID, talent.FieldReferrerID:
 			values[i] = new(sql.NullInt64)
 		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldReferralCode, talent.FieldTentnCode, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity:
@@ -338,6 +343,14 @@ func (t *Talent) assignValues(columns []string, values []interface{}) error {
 				t.JoinedTentnAt = new(time.Time)
 				*t.JoinedTentnAt = value.Time
 			}
+		case talent.FieldJobPreference:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field job_preference", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &t.JobPreference); err != nil {
+					return fmt.Errorf("unmarshal field job_preference: %w", err)
+				}
+			}
 		}
 	}
 	return nil
@@ -458,6 +471,8 @@ func (t *Talent) String() string {
 		builder.WriteString(", joined_tentn_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", job_preference=")
+	builder.WriteString(fmt.Sprintf("%v", t.JobPreference))
 	builder.WriteByte(')')
 	return builder.String()
 }

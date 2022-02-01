@@ -76,6 +76,8 @@ func (Talent) Fields() []ent.Field {
 		field.Time(oneword.JoinedTenTNAt).
 			Nillable().
 			Optional(),
+
+		field.JSON("job_preference", []string{}), // also can be seen as employment_preference
 	}
 }
 

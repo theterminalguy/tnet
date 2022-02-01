@@ -105,3 +105,19 @@ func setNillableBoolField(val bool, cb func(v bool) error) error {
 func GetDBContext() context.Context {
 	return dBContext
 }
+
+//TODO: This is a linear implementation and should be optimized
+func LinearCheckElemArray(a, b []string) bool {
+	if len(a) > len(b) {
+		return false
+	}
+	m, n := 0, len(a)
+	for i := 0; i < len(b); i++ {
+		for j := 0; j < n; j++ {
+			if a[j] == b[i] {
+				m++
+			}
+		}
+	}
+	return m >= n
+}

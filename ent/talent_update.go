@@ -188,6 +188,12 @@ func (tu *TalentUpdate) ClearJoinedTentnAt() *TalentUpdate {
 	return tu
 }
 
+// SetJobPreference sets the "job_preference" field.
+func (tu *TalentUpdate) SetJobPreference(s []string) *TalentUpdate {
+	tu.mutation.SetJobPreference(s)
+	return tu
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (tu *TalentUpdate) SetUser(u *User) *TalentUpdate {
 	return tu.SetUserID(u.ID)
@@ -714,6 +720,13 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: talent.FieldJoinedTentnAt,
+		})
+	}
+	if value, ok := tu.mutation.JobPreference(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: talent.FieldJobPreference,
 		})
 	}
 	if tu.mutation.UserCleared() {
@@ -1389,6 +1402,12 @@ func (tuo *TalentUpdateOne) ClearJoinedTentnAt() *TalentUpdateOne {
 	return tuo
 }
 
+// SetJobPreference sets the "job_preference" field.
+func (tuo *TalentUpdateOne) SetJobPreference(s []string) *TalentUpdateOne {
+	tuo.mutation.SetJobPreference(s)
+	return tuo
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (tuo *TalentUpdateOne) SetUser(u *User) *TalentUpdateOne {
 	return tuo.SetUserID(u.ID)
@@ -1939,6 +1958,13 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: talent.FieldJoinedTentnAt,
+		})
+	}
+	if value, ok := tuo.mutation.JobPreference(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: talent.FieldJobPreference,
 		})
 	}
 	if tuo.mutation.UserCleared() {

@@ -475,6 +475,7 @@ var (
 		{Name: "country_code", Type: field.TypeString, Size: 2},
 		{Name: "city", Type: field.TypeString},
 		{Name: "joined_tentn_at", Type: field.TypeTime, Nullable: true},
+		{Name: "job_preference", Type: field.TypeJSON},
 		{Name: "referrer_id", Type: field.TypeInt, Nullable: true},
 		{Name: "user_id", Type: field.TypeInt, Nullable: true},
 	}
@@ -486,13 +487,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "talents_talents_referees",
-				Columns:    []*schema.Column{TalentsColumns[18]},
+				Columns:    []*schema.Column{TalentsColumns[19]},
 				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "talents_users_talents",
-				Columns:    []*schema.Column{TalentsColumns[19]},
+				Columns:    []*schema.Column{TalentsColumns[20]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -506,12 +507,12 @@ var (
 			{
 				Name:    "talent_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{TalentsColumns[19]},
+				Columns: []*schema.Column{TalentsColumns[20]},
 			},
 			{
 				Name:    "talent_referral_code_referrer_id",
 				Unique:  false,
-				Columns: []*schema.Column{TalentsColumns[10], TalentsColumns[18]},
+				Columns: []*schema.Column{TalentsColumns[10], TalentsColumns[19]},
 			},
 			{
 				Name:    "talent_tentn_code_email_phone",

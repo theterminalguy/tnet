@@ -9654,6 +9654,7 @@ type TalentMutation struct {
 	country_code              *string
 	city                      *string
 	joined_tentn_at           *time.Time
+	job_preference            *[]string
 	clearedFields             map[string]struct{}
 	user                      *int
 	cleareduser               bool
@@ -10522,6 +10523,42 @@ func (m *TalentMutation) ResetJoinedTentnAt() {
 	delete(m.clearedFields, talent.FieldJoinedTentnAt)
 }
 
+// SetJobPreference sets the "job_preference" field.
+func (m *TalentMutation) SetJobPreference(s []string) {
+	m.job_preference = &s
+}
+
+// JobPreference returns the value of the "job_preference" field in the mutation.
+func (m *TalentMutation) JobPreference() (r []string, exists bool) {
+	v := m.job_preference
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldJobPreference returns the old "job_preference" field's value of the Talent entity.
+// If the Talent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TalentMutation) OldJobPreference(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldJobPreference is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldJobPreference requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldJobPreference: %w", err)
+	}
+	return oldValue.JobPreference, nil
+}
+
+// ResetJobPreference resets all changes to the "job_preference" field.
+func (m *TalentMutation) ResetJobPreference() {
+	m.job_preference = nil
+}
+
 // ClearUser clears the "user" edge to the User entity.
 func (m *TalentMutation) ClearUser() {
 	m.cleareduser = true
@@ -11025,7 +11062,7 @@ func (m *TalentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TalentMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 20)
 	if m.uuid != nil {
 		fields = append(fields, talent.FieldUUID)
 	}
@@ -11083,6 +11120,9 @@ func (m *TalentMutation) Fields() []string {
 	if m.joined_tentn_at != nil {
 		fields = append(fields, talent.FieldJoinedTentnAt)
 	}
+	if m.job_preference != nil {
+		fields = append(fields, talent.FieldJobPreference)
+	}
 	return fields
 }
 
@@ -11129,6 +11169,8 @@ func (m *TalentMutation) Field(name string) (ent.Value, bool) {
 		return m.City()
 	case talent.FieldJoinedTentnAt:
 		return m.JoinedTentnAt()
+	case talent.FieldJobPreference:
+		return m.JobPreference()
 	}
 	return nil, false
 }
@@ -11176,6 +11218,8 @@ func (m *TalentMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldCity(ctx)
 	case talent.FieldJoinedTentnAt:
 		return m.OldJoinedTentnAt(ctx)
+	case talent.FieldJobPreference:
+		return m.OldJobPreference(ctx)
 	}
 	return nil, fmt.Errorf("unknown Talent field %s", name)
 }
@@ -11318,6 +11362,13 @@ func (m *TalentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetJoinedTentnAt(v)
 		return nil
+	case talent.FieldJobPreference:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetJobPreference(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Talent field %s", name)
 }
@@ -11459,6 +11510,9 @@ func (m *TalentMutation) ResetField(name string) error {
 		return nil
 	case talent.FieldJoinedTentnAt:
 		m.ResetJoinedTentnAt()
+		return nil
+	case talent.FieldJobPreference:
+		m.ResetJobPreference()
 		return nil
 	}
 	return fmt.Errorf("unknown Talent field %s", name)
