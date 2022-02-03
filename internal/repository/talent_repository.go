@@ -43,7 +43,7 @@ type TalentParams struct {
 	CountryCode           string   `json:"country_code" validate:"required,iso3166_1_alpha2"`
 	City                  string   `json:"city" validate:"required"`
 	JobPreference         []string `json:"job_preference" validate:"required"`
-	Available             bool     `json:"available" validate:"required"`
+	Available             bool     `json:"available"`
 }
 
 func NewTalentRepository() *TalentRepository {

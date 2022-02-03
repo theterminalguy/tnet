@@ -50,6 +50,11 @@ func (t *CreateFakeTalents) CreateFakeTalent() error {
 		Phone:                 faker.Phone(),
 		CountryCode:           faker.CountryAbr(),
 		City:                  faker.City(),
+		JobPreference: (func() []string {
+			return [][]string{{"full_time", "part_time", "contract"}, {"full_time", "part_time"}, {"full_time"},
+				{"contract"}, {"part_time"}, {"part_time", "contract"}, {"full_time", "contract"}}[rand.Intn(5)]
+		})(),
+		Available: faker.Bool(),
 	}
 	_, err = t.TalentService.CreateProfile(user, talentParams)
 	if err != nil {

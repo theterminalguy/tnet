@@ -488,13 +488,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "talents_talents_referees",
-				Columns:    []*schema.Column{TalentsColumns[19]},
+				Columns:    []*schema.Column{TalentsColumns[20]},
 				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "talents_users_talents",
-				Columns:    []*schema.Column{TalentsColumns[20]},
+				Columns:    []*schema.Column{TalentsColumns[21]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -508,12 +508,12 @@ var (
 			{
 				Name:    "talent_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{TalentsColumns[20]},
+				Columns: []*schema.Column{TalentsColumns[21]},
 			},
 			{
 				Name:    "talent_referral_code_referrer_id",
 				Unique:  false,
-				Columns: []*schema.Column{TalentsColumns[11], TalentsColumns[19]},
+				Columns: []*schema.Column{TalentsColumns[11], TalentsColumns[20]},
 			},
 			{
 				Name:    "talent_tentn_code_email_phone",

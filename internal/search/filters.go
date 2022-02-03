@@ -51,4 +51,6 @@ var (
 	LOCATED_IN Filter = "located_in"
 
 	IS_AVAILABLE Filter = "is_available"
+
+	JOB_PREFERENCE Filter = "job_preference"
 )

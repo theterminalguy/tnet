@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/skill"
@@ -41,6 +42,7 @@ func (*TalentSearch) PossibleFilters() map[Filter]Filter {
 		YEARS_OF_EXPERIENCE_GTEQ: YEARS_OF_EXPERIENCE_GTEQ,
 		YEARS_OF_EXPERIENCE_LTEQ: YEARS_OF_EXPERIENCE_LTEQ,
 		IS_AVAILABLE:             IS_AVAILABLE,
+		JOB_PREFERENCE:           JOB_PREFERENCE,
 	}
 }
 
@@ -70,6 +72,12 @@ func (*TalentSearch) yearsOfExpereinceFilter(s string, op Operator) (predicate.T
 	}
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.ExprP(expr, v))
+	}), nil
+}
+
+func (*TalentSearch) jobPreferenceFilter(v string) (predicate.Talent, error) {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sqljson.ValueContains(talent.FieldJobPreference, v))
 	}), nil
 }
 
@@ -160,6 +168,13 @@ func (s *TalentSearch) Search(qs string) ([]*ent.Talent, []error) {
 					errors = append(errors, err)
 				}
 				ps = append(ps, talent.IsAvailableEQ(booleanField))
+			case JOB_PREFERENCE:
+				filter, err := s.jobPreferenceFilter(v)
+				if err != nil {
+					errors = append(errors, err)
+					continue
+				}
+				ps = append(ps, filter)
 			}
 		}
 	}
