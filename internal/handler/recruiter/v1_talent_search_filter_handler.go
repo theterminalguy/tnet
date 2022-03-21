@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/10hourlabs/rql/parser"
+	"github.com/10hourlabs/tentn/ent"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/search"
 	"github.com/labstack/echo/v4"
@@ -21,8 +23,25 @@ func NewV1TalentSearchFilterHandler() *V1TalentSearchFilterHandler {
 
 func (h *V1TalentSearchFilterHandler) Search(c echo.Context) error {
 	talentSearch := new(search.TalentSearch)
+	fmt.Println(c.QueryParams())
 	query := c.QueryString()
-	records, vldErrs := talentSearch.Search(query)
+	if query == "" {
+		// TODO: I am not sure if this should be the correct thing to do
+		return c.JSON(http.StatusBadRequest, "Provide at least one filter")
+	}
+	var records []*ent.Talent
+	var vldErrs []error
+
+	if c.QueryParams().Has("q") {
+		// use the RQL parser here
+		query, err := parser.Eval(c.QueryParam("q"))
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err)
+		}
+		records, vldErrs = talentSearch.Search(query)
+	} else {
+		records, vldErrs = talentSearch.Search(query)
+	}
 	if vldErrs != nil {
 		return c.JSON(
 			http.StatusBadRequest,
