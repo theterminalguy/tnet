@@ -9,6 +9,7 @@ import (
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/10hourlabs/tentn/internal/paginator"
 	"github.com/10hourlabs/tentn/randutil"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/10hourlabs/tentn/util/date"
@@ -49,15 +50,25 @@ func NewTalentRepository() *TalentRepository {
 	return &TalentRepository{}
 }
 
-func (*TalentRepository) Filter(prd ...predicate.Talent) ([]*ent.Talent, error) {
+func (*TalentRepository) Filter(page string, prd ...predicate.Talent) (*paginator.OffsetPaginater, error) {
 	// TODO: remove debug
+	pager, err := paginator.NewOffsetPaginater(page)
+	if err != nil {
+		return nil, err
+	}
 	talents, err := dBConn.Debug().Talent.Query().
 		Where(prd...).
+		Limit(paginator.MaxResults).
+		Offset(pager.GetOffset()).
 		All(dBContext)
 	if err != nil {
 		return nil, err
 	}
-	return talents, nil
+	var talentList []interface{}
+	for _, t := range talents {
+		talentList = append(talentList, t)
+	}
+	return pager.Paginate(talentList), nil
 }
 
 func (*TalentRepository) GetAll() ([]*ent.Talent, error) {

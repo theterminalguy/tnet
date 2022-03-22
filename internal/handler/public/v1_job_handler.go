@@ -26,7 +26,7 @@ func (*V1PublicJobHandler) Search(c echo.Context) error {
 // ReadAlll return all jobs scopd to a paritcular talent
 // i.e. all jobs for which the talent has a job application
 func (h *V1PublicJobHandler) ReadAll(c echo.Context) error {
-	jobs, err := h.JobRepository.GetAll()
+	jobs, err := h.JobRepository.GetAll(c.QueryParam("cursor"))
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}

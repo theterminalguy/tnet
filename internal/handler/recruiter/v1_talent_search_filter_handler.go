@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/10hourlabs/rql/parser"
-	"github.com/10hourlabs/tentn/ent"
+	"github.com/10hourlabs/tentn/internal/paginator"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/search"
 	"github.com/10hourlabs/tentn/oneword"
@@ -25,24 +25,20 @@ func NewV1TalentSearchFilterHandler() *V1TalentSearchFilterHandler {
 
 func (h *V1TalentSearchFilterHandler) Search(c echo.Context) error {
 	talentSearch := new(search.TalentSearch)
-	fmt.Println(c.QueryParams())
 	query := c.QueryString()
-	if query == "" {
-		// TODO: I am not sure if this should be the correct thing to do
-		return c.JSON(http.StatusBadRequest, "Provide at least one filter")
-	}
-	var records []*ent.Talent
+	var records *paginator.OffsetPaginater
 	var vldErrs []error
 
-	if c.QueryParams().Has("q") {
+	page := c.QueryParam("cursor")
+	if c.QueryParams().Has("q") && c.QueryParams().Get("q") != "" {
 		// use the RQL parser here
 		query, err := parser.Eval(c.QueryParam("q"))
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, err)
 		}
-		records, vldErrs = talentSearch.Search(query)
+		records, vldErrs = talentSearch.Search(page, query)
 	} else {
-		records, vldErrs = talentSearch.Search(query)
+		records, vldErrs = talentSearch.Search(page, query)
 	}
 	if vldErrs != nil {
 		return c.JSON(

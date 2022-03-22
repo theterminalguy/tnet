@@ -6,13 +6,14 @@ import (
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/internal/paginator"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
 )
 
 type JobQuerier interface {
 	GetAllForRecruiter(id int) ([]*ent.Job, error)
-	GetAll() ([]*ent.Job, error)
+	GetAll(page string) (*paginator.OffsetPaginater, error)
 	GetByUUID(id uuid.UUID) (*ent.Job, error)
 	Create(p JobParams) (*ent.Job, error)
 	Update(id uuid.UUID, p JobParams) (*ent.Job, []error)
@@ -63,14 +64,25 @@ func (*JobRepository) GetAllForRecruiter(id int) ([]*ent.Job, error) {
 	return jobs, nil
 }
 
-func (*JobRepository) GetAll() ([]*ent.Job, error) {
+func (*JobRepository) GetAll(page string) (*paginator.OffsetPaginater, error) {
+	pager, err := paginator.NewOffsetPaginater(page)
+	if err != nil {
+		return nil, err
+	}
 	jobs, err := dBConn.Job.Query().
+		Limit(paginator.MaxResults).
+		Offset(pager.GetOffset()).
 		Where(job.DeletedAtIsNil()).
 		All(dBContext)
 	if err != nil {
 		return nil, err
 	}
-	return jobs, nil
+	// convert jobs to an interface array
+	var jobList []interface{}
+	for _, j := range jobs {
+		jobList = append(jobList, j)
+	}
+	return pager.Paginate(jobList), nil
 }
 
 func (*JobRepository) GetByUUID(id uuid.UUID) (*ent.Job, error) {

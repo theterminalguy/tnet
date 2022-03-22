@@ -9,10 +9,10 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqljson"
-	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/10hourlabs/tentn/internal/paginator"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/util"
 	"github.com/10hourlabs/tentn/util/collection"
@@ -81,7 +81,7 @@ func (*TalentSearch) jobPreferenceFilter(v string) (predicate.Talent, error) {
 	}), nil
 }
 
-func (s *TalentSearch) Search(qs string) ([]*ent.Talent, []error) {
+func (s *TalentSearch) Search(cursor, qs string) (*paginator.OffsetPaginater, []error) {
 	// TODO: this implementation of search and filters is not reusable but works really well for now
 	// and makes it easy for us to decide what can be searchable and what can't.
 	// We should probably define a Searchable interface and implement it for each searchable entity
@@ -94,6 +94,9 @@ func (s *TalentSearch) Search(qs string) ([]*ent.Talent, []error) {
 	// loop through all user provided filters
 	for f := range query {
 		filter := Filter(f)
+		if filter == "cursor" {
+			continue
+		}
 		if s.PossibleFilters()[filter] == "" {
 			errors = append(errors, fmt.Errorf("%s is not a valid filter", f))
 			continue
@@ -181,7 +184,7 @@ func (s *TalentSearch) Search(qs string) ([]*ent.Talent, []error) {
 	if collection.HasAny(errors) {
 		return nil, errors
 	}
-	records, err := s.TalentRepository.Filter(ps...)
+	records, err := s.TalentRepository.Filter(cursor, ps...)
 	if err != nil {
 		errors = append(errors, err)
 		return nil, errors
