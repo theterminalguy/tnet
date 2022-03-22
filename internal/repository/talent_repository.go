@@ -89,6 +89,11 @@ func (*TalentRepository) GetByUUID(id uuid.UUID) (*ent.Talent, error) {
 	if err != nil {
 		return nil, err
 	}
+	skills, err := a.QuerySkills().All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	//a.Edges.Skills = append(a.Edges.Skills, skills...)
 	// TODO: this code serves as a how to on how to
 	// add edges to a node
 	//```
@@ -106,6 +111,7 @@ func (*TalentRepository) GetByUUID(id uuid.UUID) (*ent.Talent, error) {
 		Portfoliolinks:  pLinks,
 		Educations:      eduLinks,
 		WorkExperiences: wrkExpLinks,
+		Skills:          skills,
 	}
 	if a.DeletedAt != nil {
 		return nil, ErrRecordDeleted
