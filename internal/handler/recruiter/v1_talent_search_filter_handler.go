@@ -8,6 +8,8 @@ import (
 	"github.com/10hourlabs/tentn/ent"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/search"
+	"github.com/10hourlabs/tentn/oneword"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -54,8 +56,16 @@ func (*V1TalentSearchFilterHandler) ReadAll(c echo.Context) error {
 	return nil
 }
 
-func (*V1TalentSearchFilterHandler) ReadByID(c echo.Context) error {
-	return nil
+func (v *V1TalentSearchFilterHandler) ReadByID(c echo.Context) error {
+	id, err := uuid.Parse(c.Param(oneword.UUID))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	record, err := v.TalentRepo.GetByUUID(id)
+	if err != nil {
+		return c.String(http.StatusNotFound, err.Error())
+	}
+	return c.JSON(http.StatusOK, record)
 }
 
 func (*V1TalentSearchFilterHandler) CreateOne(c echo.Context) error {

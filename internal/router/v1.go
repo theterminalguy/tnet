@@ -99,7 +99,7 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 				Path:        "talents",
 				Handler:     recruiter_handler.NewV1TalentSearchFilterHandler(),
 				Middlewares: nil,
-				Only:        []Request{SEARCH},
+				Only:        []Request{SEARCH, READ_BY_ID},
 			},
 			{
 				Path:        "job-applications",

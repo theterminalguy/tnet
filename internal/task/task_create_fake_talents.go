@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/10hourlabs/tentn/ent/schema"
+	"github.com/10hourlabs/tentn/ent/talent"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/util/collection"
@@ -50,9 +52,10 @@ func (t *CreateFakeTalents) CreateFakeTalent() error {
 		Phone:                 faker.Phone(),
 		CountryCode:           faker.CountryAbr(),
 		City:                  faker.City(),
-		JobPreference: (func() []string {
-			return [][]string{{"full_time", "part_time", "contract"}, {"full_time", "part_time"}, {"full_time"},
-				{"contract"}, {"part_time"}, {"part_time", "contract"}, {"full_time", "contract"}}[rand.Intn(5)]
+		JobPreference: (func() talent.JobPreference {
+			count := len(schema.JobPreferences())
+			randomTalent := schema.JobPreferences()[rand.Intn(count)]
+			return talent.JobPreference(randomTalent)
 		})(),
 		Available: faker.Bool(),
 	}
