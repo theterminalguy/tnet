@@ -195,8 +195,8 @@ func (tu *TalentUpdate) ClearJoinedTentnAt() *TalentUpdate {
 }
 
 // SetJobPreference sets the "job_preference" field.
-func (tu *TalentUpdate) SetJobPreference(s []string) *TalentUpdate {
-	tu.mutation.SetJobPreference(s)
+func (tu *TalentUpdate) SetJobPreference(tp talent.JobPreference) *TalentUpdate {
+	tu.mutation.SetJobPreference(tp)
 	return tu
 }
 
@@ -591,6 +591,11 @@ func (tu *TalentUpdate) check() error {
 			return &ValidationError{Name: "country_code", err: fmt.Errorf("ent: validator failed for field \"country_code\": %w", err)}
 		}
 	}
+	if v, ok := tu.mutation.JobPreference(); ok {
+		if err := talent.JobPreferenceValidator(v); err != nil {
+			return &ValidationError{Name: "job_preference", err: fmt.Errorf("ent: validator failed for field \"job_preference\": %w", err)}
+		}
+	}
 	return nil
 }
 
@@ -737,7 +742,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := tu.mutation.JobPreference(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
+			Type:   field.TypeEnum,
 			Value:  value,
 			Column: talent.FieldJobPreference,
 		})
@@ -1422,8 +1427,8 @@ func (tuo *TalentUpdateOne) ClearJoinedTentnAt() *TalentUpdateOne {
 }
 
 // SetJobPreference sets the "job_preference" field.
-func (tuo *TalentUpdateOne) SetJobPreference(s []string) *TalentUpdateOne {
-	tuo.mutation.SetJobPreference(s)
+func (tuo *TalentUpdateOne) SetJobPreference(tp talent.JobPreference) *TalentUpdateOne {
+	tuo.mutation.SetJobPreference(tp)
 	return tuo
 }
 
@@ -1825,6 +1830,11 @@ func (tuo *TalentUpdateOne) check() error {
 			return &ValidationError{Name: "country_code", err: fmt.Errorf("ent: validator failed for field \"country_code\": %w", err)}
 		}
 	}
+	if v, ok := tuo.mutation.JobPreference(); ok {
+		if err := talent.JobPreferenceValidator(v); err != nil {
+			return &ValidationError{Name: "job_preference", err: fmt.Errorf("ent: validator failed for field \"job_preference\": %w", err)}
+		}
+	}
 	return nil
 }
 
@@ -1988,7 +1998,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 	}
 	if value, ok := tuo.mutation.JobPreference(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
+			Type:   field.TypeEnum,
 			Value:  value,
 			Column: talent.FieldJobPreference,
 		})

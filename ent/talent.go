@@ -3,7 +3,6 @@
 package ent
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -60,7 +59,7 @@ type Talent struct {
 	// JoinedTentnAt holds the value of the "joined_tentn_at" field.
 	JoinedTentnAt *time.Time `json:"joined_tentn_at,omitempty"`
 	// JobPreference holds the value of the "job_preference" field.
-	JobPreference []string `json:"job_preference,omitempty"`
+	JobPreference talent.JobPreference `json:"job_preference,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TalentQuery when eager-loading is set.
 	Edges TalentEdges `json:"edges"`
@@ -198,13 +197,11 @@ func (*Talent) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case talent.FieldJobPreference:
-			values[i] = new([]byte)
 		case talent.FieldIsAvailable:
 			values[i] = new(sql.NullBool)
 		case talent.FieldID, talent.FieldUserID, talent.FieldReferrerID:
 			values[i] = new(sql.NullInt64)
-		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldReferralCode, talent.FieldTentnCode, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity:
+		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldReferralCode, talent.FieldTentnCode, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity, talent.FieldJobPreference:
 			values[i] = new(sql.NullString)
 		case talent.FieldCreatedAt, talent.FieldUpdatedAt, talent.FieldDeletedAt, talent.FieldProfessionalStartDate, talent.FieldJoinedTentnAt:
 			values[i] = new(sql.NullTime)
@@ -354,12 +351,10 @@ func (t *Talent) assignValues(columns []string, values []interface{}) error {
 				*t.JoinedTentnAt = value.Time
 			}
 		case talent.FieldJobPreference:
-			if value, ok := values[i].(*[]byte); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field job_preference", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &t.JobPreference); err != nil {
-					return fmt.Errorf("unmarshal field job_preference: %w", err)
-				}
+			} else if value.Valid {
+				t.JobPreference = talent.JobPreference(value.String)
 			}
 		}
 	}

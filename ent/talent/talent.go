@@ -3,6 +3,7 @@
 package talent
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -193,3 +194,27 @@ var (
 	// CountryCodeValidator is a validator for the "country_code" field. It is called by the builders before save.
 	CountryCodeValidator func(string) error
 )
+
+// JobPreference defines the type for the "job_preference" enum field.
+type JobPreference string
+
+// JobPreference values.
+const (
+	JobPreferenceRemote   JobPreference = "remote"
+	JobPreferenceOnsite   JobPreference = "onsite"
+	JobPreferenceFlexible JobPreference = "flexible"
+)
+
+func (jp JobPreference) String() string {
+	return string(jp)
+}
+
+// JobPreferenceValidator is a validator for the "job_preference" field enum values. It is called by the builders before save.
+func JobPreferenceValidator(jp JobPreference) error {
+	switch jp {
+	case JobPreferenceRemote, JobPreferenceOnsite, JobPreferenceFlexible:
+		return nil
+	default:
+		return fmt.Errorf("talent: invalid enum value for job_preference field: %q", jp)
+	}
+}

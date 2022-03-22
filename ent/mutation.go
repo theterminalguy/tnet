@@ -9655,7 +9655,7 @@ type TalentMutation struct {
 	country_code              *string
 	city                      *string
 	joined_tentn_at           *time.Time
-	job_preference            *[]string
+	job_preference            *talent.JobPreference
 	clearedFields             map[string]struct{}
 	user                      *int
 	cleareduser               bool
@@ -10561,12 +10561,12 @@ func (m *TalentMutation) ResetJoinedTentnAt() {
 }
 
 // SetJobPreference sets the "job_preference" field.
-func (m *TalentMutation) SetJobPreference(s []string) {
-	m.job_preference = &s
+func (m *TalentMutation) SetJobPreference(tp talent.JobPreference) {
+	m.job_preference = &tp
 }
 
 // JobPreference returns the value of the "job_preference" field in the mutation.
-func (m *TalentMutation) JobPreference() (r []string, exists bool) {
+func (m *TalentMutation) JobPreference() (r talent.JobPreference, exists bool) {
 	v := m.job_preference
 	if v == nil {
 		return
@@ -10577,7 +10577,7 @@ func (m *TalentMutation) JobPreference() (r []string, exists bool) {
 // OldJobPreference returns the old "job_preference" field's value of the Talent entity.
 // If the Talent object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TalentMutation) OldJobPreference(ctx context.Context) (v []string, err error) {
+func (m *TalentMutation) OldJobPreference(ctx context.Context) (v talent.JobPreference, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldJobPreference is only allowed on UpdateOne operations")
 	}
@@ -11414,7 +11414,7 @@ func (m *TalentMutation) SetField(name string, value ent.Value) error {
 		m.SetJoinedTentnAt(v)
 		return nil
 	case talent.FieldJobPreference:
-		v, ok := value.([]string)
+		v, ok := value.(talent.JobPreference)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

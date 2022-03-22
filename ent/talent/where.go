@@ -2091,6 +2091,54 @@ func JoinedTentnAtNotNil() predicate.Talent {
 	})
 }
 
+// JobPreferenceEQ applies the EQ predicate on the "job_preference" field.
+func JobPreferenceEQ(v JobPreference) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldJobPreference), v))
+	})
+}
+
+// JobPreferenceNEQ applies the NEQ predicate on the "job_preference" field.
+func JobPreferenceNEQ(v JobPreference) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldJobPreference), v))
+	})
+}
+
+// JobPreferenceIn applies the In predicate on the "job_preference" field.
+func JobPreferenceIn(vs ...JobPreference) predicate.Talent {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Talent(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldJobPreference), v...))
+	})
+}
+
+// JobPreferenceNotIn applies the NotIn predicate on the "job_preference" field.
+func JobPreferenceNotIn(vs ...JobPreference) predicate.Talent {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Talent(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldJobPreference), v...))
+	})
+}
+
 // HasUser applies the HasEdge predicate on the "user" edge.
 func HasUser() predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {

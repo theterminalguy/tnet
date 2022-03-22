@@ -476,7 +476,7 @@ var (
 		{Name: "country_code", Type: field.TypeString, Size: 2},
 		{Name: "city", Type: field.TypeString},
 		{Name: "joined_tentn_at", Type: field.TypeTime, Nullable: true},
-		{Name: "job_preference", Type: field.TypeJSON},
+		{Name: "job_preference", Type: field.TypeEnum, Enums: []string{"remote", "onsite", "flexible"}},
 		{Name: "referrer_id", Type: field.TypeInt, Nullable: true},
 		{Name: "user_id", Type: field.TypeInt, Nullable: true},
 	}

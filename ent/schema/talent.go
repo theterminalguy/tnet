@@ -79,7 +79,7 @@ func (Talent) Fields() []ent.Field {
 			Nillable().
 			Optional(),
 
-		field.JSON("job_preference", []string{}), // also can be seen as employment_preference
+		field.Enum("job_preference").Values(JobPreferences()...),
 	}
 }
 
@@ -115,4 +115,8 @@ func (Talent) Edges() []ent.Edge {
 
 		edge.To("missions", Mission.Type),
 	}
+}
+
+func JobPreferences() []string {
+	return []string{"remote", "onsite", "flexible"}
 }

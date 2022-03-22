@@ -206,8 +206,8 @@ func (tc *TalentCreate) SetNillableJoinedTentnAt(t *time.Time) *TalentCreate {
 }
 
 // SetJobPreference sets the "job_preference" field.
-func (tc *TalentCreate) SetJobPreference(s []string) *TalentCreate {
-	tc.mutation.SetJobPreference(s)
+func (tc *TalentCreate) SetJobPreference(tp talent.JobPreference) *TalentCreate {
+	tc.mutation.SetJobPreference(tp)
 	return tc
 }
 
@@ -491,6 +491,11 @@ func (tc *TalentCreate) check() error {
 	if _, ok := tc.mutation.JobPreference(); !ok {
 		return &ValidationError{Name: "job_preference", err: errors.New(`ent: missing required field "job_preference"`)}
 	}
+	if v, ok := tc.mutation.JobPreference(); ok {
+		if err := talent.JobPreferenceValidator(v); err != nil {
+			return &ValidationError{Name: "job_preference", err: fmt.Errorf(`ent: validator failed for field "job_preference": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -670,7 +675,7 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := tc.mutation.JobPreference(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
+			Type:   field.TypeEnum,
 			Value:  value,
 			Column: talent.FieldJobPreference,
 		})
