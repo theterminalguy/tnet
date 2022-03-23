@@ -77,7 +77,11 @@ func (h *V1TalentCollectionHandler) DeleteOne(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.TalentCollectionRepo.DeleteByUUID(id)
+	currentRecruiter, err := GetCurrentRecruiter(c)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	err = currentRecruiter.DeleteCollection(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

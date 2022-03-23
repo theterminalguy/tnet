@@ -4,6 +4,7 @@ import (
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/talentcollection"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/google/uuid"
 )
@@ -42,4 +43,16 @@ func (r *RecruiterScope) GetJobApplicationByUUID(uuid uuid.UUID) (*ent.JobApplic
 
 func (r *RecruiterScope) GetTalentCollections() ([]*ent.TalentCollection, error) {
 	return r.Recruiter.QueryTalentCollections().All(repo.GetDBContext())
+}
+
+func (r *RecruiterScope) DeleteCollection(id uuid.UUID) error {
+	record, err := r.Recruiter.QueryTalentCollections().Where(
+		talentcollection.UserIDEQ(r.Recruiter.ID),
+		talentcollection.UUIDEQ(id),
+	).First(repo.GetDBContext())
+	if err != nil {
+		return err
+	}
+	tRepo := repo.NewTalentCollectionRepository()
+	return tRepo.DeleteByUUID(record.UUID)
 }
