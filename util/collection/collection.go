@@ -2,6 +2,8 @@ package collection
 
 import (
 	"reflect"
+
+	"github.com/google/uuid"
 )
 
 // HasAny returns true if the slice has more than one element
@@ -29,4 +31,14 @@ func Contains(t interface{}, element interface{}) bool {
 	default:
 		return false
 	}
+}
+
+func UUIDDiffs(prevIDs []uuid.UUID, currentIDs []uuid.UUID) []uuid.UUID {
+	var diffs []uuid.UUID
+	for _, currentID := range currentIDs {
+		if !Contains(prevIDs, currentID) {
+			diffs = append(diffs, currentID)
+		}
+	}
+	return diffs
 }

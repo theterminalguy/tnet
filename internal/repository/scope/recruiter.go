@@ -26,23 +26,32 @@ func (r *RecruiterScope) GetJobs() ([]*ent.Job, error) {
 		}).All(repo.GetDBContext())
 }
 
-func (r *RecruiterScope) GetJobByUUID(uuid uuid.UUID) (*ent.Job, error) {
+func (r *RecruiterScope) GetJobByUUID(id uuid.UUID) (*ent.Job, error) {
 	return r.Recruiter.QueryJobs().
-		Where(job.UUIDEQ(uuid)).
+		Where(job.UUIDEQ(id)).
 		WithApplications(func(jaq *ent.JobApplicationQuery) {
 			jaq.WithTalent()
 		}).
 		First(repo.GetDBContext())
 }
 
-func (r *RecruiterScope) GetJobApplicationByUUID(uuid uuid.UUID) (*ent.JobApplication, error) {
+func (r *RecruiterScope) GetJobApplicationByUUID(id uuid.UUID) (*ent.JobApplication, error) {
 	return r.Recruiter.QueryJobs().QueryApplications().WithTalent().WithJob().
-		Where(jobapplication.UUIDEQ(uuid)).
+		Where(jobapplication.UUIDEQ(id)).
 		First(repo.GetDBContext())
 }
 
 func (r *RecruiterScope) GetTalentCollections() ([]*ent.TalentCollection, error) {
 	return r.Recruiter.QueryTalentCollections().All(repo.GetDBContext())
+}
+
+func (r *RecruiterScope) GetTalentCollectionByUUID(id uuid.UUID) (*ent.TalentCollection, error) {
+	return r.Recruiter.QueryTalentCollections().
+		Where(
+			talentcollection.And(
+				talentcollection.UserIDEQ(r.Recruiter.ID),
+				talentcollection.UUIDEQ(id),
+			)).First(repo.GetDBContext())
 }
 
 func (r *RecruiterScope) DeleteCollection(id uuid.UUID) error {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/talentcollection"
+	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
 )
 
@@ -43,24 +44,14 @@ func (*TalentCollectionRepository) GetByUUID(id uuid.UUID) (*ent.TalentCollectio
 	return record, nil
 }
 
-func (*TalentCollectionRepository) Create(p TalentCollectionParams) (*ent.TalentCollection, error) {
+func (t *TalentCollectionRepository) Create(p TalentCollectionParams) (*ent.TalentCollection, error) {
 	err := validateParams(p)
 	if err != nil {
 		return nil, err
 	}
-	// check if a collection with the same name already exists
-	records, err := dBConn.TalentCollection.Query().
-		Where(
-			talentcollection.And(
-				talentcollection.NameEQ(p.Name),
-				talentcollection.UserIDEQ(p.UserID),
-			)).
-		All(dBContext)
+	err = t.validateScopedUniquenessOfName(p.Name, p.UserID)
 	if err != nil {
 		return nil, err
-	}
-	if len(records) > 0 {
-		return nil, errors.New("a collection with the same name already exists")
 	}
 
 	// convert uuids to strings
@@ -85,12 +76,18 @@ func (r *TalentCollectionRepository) Update(id uuid.UUID, p TalentCollectionPara
 	if err != nil {
 		return nil, err
 	}
+	err = r.validateScopedUniquenessOfName(p.Name, p.UserID)
+	if err != nil {
+		return nil, err
+	}
 	record, err := r.GetByUUID(id)
 	if err != nil {
 		return nil, err
 	}
+	setUUIDsForUpdate(record, p.TalentUUIDS)
 	_, err = record.Update().
-		// TODO: set other fields here
+		SetName(p.Name).
+		SetTalentUuids(record.TalentUuids).
 		Save(dBContext)
 	if err != nil {
 		return nil, err
@@ -107,4 +104,41 @@ func (r *TalentCollectionRepository) DeleteByUUID(id uuid.UUID) error {
 		return err
 	}
 	return nil
+}
+
+func (t *TalentCollectionRepository) validateScopedUniquenessOfName(name string, userID int) error {
+	records, err := dBConn.TalentCollection.Query().
+		Where(
+			talentcollection.And(
+				talentcollection.NameEQ(name),
+				talentcollection.UserIDEQ(userID),
+			)).
+		All(dBContext)
+	if err != nil {
+		return err
+	}
+	if len(records) > 0 {
+		return errors.New("a collection with the same name already exists")
+	}
+	return nil
+}
+
+func setUUIDsForUpdate(t *ent.TalentCollection, newUUIDs []uuid.UUID) {
+	// convert uuids to strings
+	oldUUIDs := make([]uuid.UUID, len(t.TalentUuids))
+	for i, talentUUID := range t.TalentUuids {
+		oldUUIDs[i] = uuid.MustParse(talentUUID)
+	}
+
+	// find the uuids from the new list that are not in the old list
+	newTalentUUIDs := collection.UUIDDiffs(oldUUIDs, newUUIDs)
+
+	// if we found any new uuids, add them to the old list
+	if len(newTalentUUIDs) > 0 {
+		newTalentUUIDsStr := make([]string, len(newTalentUUIDs))
+		for i, uuid := range newTalentUUIDs {
+			newTalentUUIDsStr[i] = uuid.String()
+		}
+		t.TalentUuids = append(t.TalentUuids, newTalentUUIDsStr...)
+	}
 }

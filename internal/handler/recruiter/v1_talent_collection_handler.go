@@ -36,7 +36,19 @@ func (h *V1TalentCollectionHandler) ReadAll(c echo.Context) error {
 }
 
 func (h *V1TalentCollectionHandler) ReadByID(c echo.Context) error {
-	return nil
+	currentRecruiter, err := GetCurrentRecruiter(c)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	id, err := uuid.Parse(c.Param(oneword.UUID))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	record, err := currentRecruiter.GetTalentCollectionByUUID(id)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, record)
 }
 
 func (h *V1TalentCollectionHandler) CreateOne(c echo.Context) error {
