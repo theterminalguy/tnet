@@ -11,6 +11,7 @@ import (
 )
 
 func DefineV1Routes(e *echo.Echo) *echo.Echo {
+	// TODOS: Look into what route verb should be allowed for each endpoint.
 	publicV1Router := &Router{
 		group: e.Group("/v1/public"),
 		handlers: []RouteHandler{
@@ -109,6 +110,11 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 			{
 				Path:        "email-templates",
 				Handler:     recruiter_handler.NewV1RecruiterEmailTemplateHandler(),
+				Middlewares: nil,
+			},
+			{
+				Path:        "talent-collections",
+				Handler:     recruiter_handler.NewV1TalentCollectionHandler(),
 				Middlewares: nil,
 			},
 		},

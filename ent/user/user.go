@@ -39,6 +39,8 @@ const (
 	EdgeJobs = "jobs"
 	// EdgeEmailTemplates holds the string denoting the email_templates edge name in mutations.
 	EdgeEmailTemplates = "email_templates"
+	// EdgeTalentCollections holds the string denoting the talent_collections edge name in mutations.
+	EdgeTalentCollections = "talent_collections"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// TalentsTable is the table that holds the talents relation/edge.
@@ -69,6 +71,13 @@ const (
 	EmailTemplatesInverseTable = "email_templates"
 	// EmailTemplatesColumn is the table column denoting the email_templates relation/edge.
 	EmailTemplatesColumn = "user_id"
+	// TalentCollectionsTable is the table that holds the talent_collections relation/edge.
+	TalentCollectionsTable = "talent_collections"
+	// TalentCollectionsInverseTable is the table name for the TalentCollection entity.
+	// It exists in this package in order to avoid circular dependency with the "talentcollection" package.
+	TalentCollectionsInverseTable = "talent_collections"
+	// TalentCollectionsColumn is the table column denoting the talent_collections relation/edge.
+	TalentCollectionsColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.

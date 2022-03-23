@@ -17,6 +17,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/10hourlabs/tentn/ent/talentcollection"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/10hourlabs/tentn/ent/workexperience"
 	"github.com/google/uuid"
@@ -295,6 +296,27 @@ func init() {
 			return nil
 		}
 	}()
+	talentcollectionMixin := schema.TalentCollection{}.Mixin()
+	talentcollectionMixinFields0 := talentcollectionMixin[0].Fields()
+	_ = talentcollectionMixinFields0
+	talentcollectionMixinFields1 := talentcollectionMixin[1].Fields()
+	_ = talentcollectionMixinFields1
+	talentcollectionFields := schema.TalentCollection{}.Fields()
+	_ = talentcollectionFields
+	// talentcollectionDescUUID is the schema descriptor for uuid field.
+	talentcollectionDescUUID := talentcollectionMixinFields0[1].Descriptor()
+	// talentcollection.DefaultUUID holds the default value on creation for the uuid field.
+	talentcollection.DefaultUUID = talentcollectionDescUUID.Default.(func() uuid.UUID)
+	// talentcollectionDescCreatedAt is the schema descriptor for created_at field.
+	talentcollectionDescCreatedAt := talentcollectionMixinFields1[0].Descriptor()
+	// talentcollection.DefaultCreatedAt holds the default value on creation for the created_at field.
+	talentcollection.DefaultCreatedAt = talentcollectionDescCreatedAt.Default.(func() time.Time)
+	// talentcollectionDescUpdatedAt is the schema descriptor for updated_at field.
+	talentcollectionDescUpdatedAt := talentcollectionMixinFields1[1].Descriptor()
+	// talentcollection.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	talentcollection.DefaultUpdatedAt = talentcollectionDescUpdatedAt.Default.(func() time.Time)
+	// talentcollection.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	talentcollection.UpdateDefaultUpdatedAt = talentcollectionDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0

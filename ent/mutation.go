@@ -21,6 +21,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/10hourlabs/tentn/ent/talentcollection"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/10hourlabs/tentn/ent/workexperience"
 	"github.com/google/uuid"
@@ -48,6 +49,7 @@ const (
 	TypeSkill            = "Skill"
 	TypeSlackAppInstall  = "SlackAppInstall"
 	TypeTalent           = "Talent"
+	TypeTalentCollection = "TalentCollection"
 	TypeUser             = "User"
 	TypeWorkExperience   = "WorkExperience"
 )
@@ -11874,6 +11876,727 @@ func (m *TalentMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Talent edge %s", name)
 }
 
+// TalentCollectionMutation represents an operation that mutates the TalentCollection nodes in the graph.
+type TalentCollectionMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int
+	uuid          *uuid.UUID
+	created_at    *time.Time
+	updated_at    *time.Time
+	deleted_at    *time.Time
+	name          *string
+	talent_uuids  *[]string
+	clearedFields map[string]struct{}
+	user          *int
+	cleareduser   bool
+	done          bool
+	oldValue      func(context.Context) (*TalentCollection, error)
+	predicates    []predicate.TalentCollection
+}
+
+var _ ent.Mutation = (*TalentCollectionMutation)(nil)
+
+// talentcollectionOption allows management of the mutation configuration using functional options.
+type talentcollectionOption func(*TalentCollectionMutation)
+
+// newTalentCollectionMutation creates new mutation for the TalentCollection entity.
+func newTalentCollectionMutation(c config, op Op, opts ...talentcollectionOption) *TalentCollectionMutation {
+	m := &TalentCollectionMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTalentCollection,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTalentCollectionID sets the ID field of the mutation.
+func withTalentCollectionID(id int) talentcollectionOption {
+	return func(m *TalentCollectionMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TalentCollection
+		)
+		m.oldValue = func(ctx context.Context) (*TalentCollection, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TalentCollection.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTalentCollection sets the old TalentCollection of the mutation.
+func withTalentCollection(node *TalentCollection) talentcollectionOption {
+	return func(m *TalentCollectionMutation) {
+		m.oldValue = func(context.Context) (*TalentCollection, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TalentCollectionMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TalentCollectionMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TalentCollection entities.
+func (m *TalentCollectionMutation) SetID(id int) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TalentCollectionMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetUUID sets the "uuid" field.
+func (m *TalentCollectionMutation) SetUUID(u uuid.UUID) {
+	m.uuid = &u
+}
+
+// UUID returns the value of the "uuid" field in the mutation.
+func (m *TalentCollectionMutation) UUID() (r uuid.UUID, exists bool) {
+	v := m.uuid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUUID returns the old "uuid" field's value of the TalentCollection entity.
+// If the TalentCollection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TalentCollectionMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUUID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUUID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
+	}
+	return oldValue.UUID, nil
+}
+
+// ResetUUID resets all changes to the "uuid" field.
+func (m *TalentCollectionMutation) ResetUUID() {
+	m.uuid = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *TalentCollectionMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TalentCollectionMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the TalentCollection entity.
+// If the TalentCollection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TalentCollectionMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TalentCollectionMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *TalentCollectionMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *TalentCollectionMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the TalentCollection entity.
+// If the TalentCollection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TalentCollectionMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *TalentCollectionMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *TalentCollectionMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *TalentCollectionMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the TalentCollection entity.
+// If the TalentCollection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TalentCollectionMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *TalentCollectionMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[talentcollection.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *TalentCollectionMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[talentcollection.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *TalentCollectionMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, talentcollection.FieldDeletedAt)
+}
+
+// SetUserID sets the "user_id" field.
+func (m *TalentCollectionMutation) SetUserID(i int) {
+	m.user = &i
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *TalentCollectionMutation) UserID() (r int, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the TalentCollection entity.
+// If the TalentCollection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TalentCollectionMutation) OldUserID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (m *TalentCollectionMutation) ClearUserID() {
+	m.user = nil
+	m.clearedFields[talentcollection.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *TalentCollectionMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[talentcollection.FieldUserID]
+	return ok
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *TalentCollectionMutation) ResetUserID() {
+	m.user = nil
+	delete(m.clearedFields, talentcollection.FieldUserID)
+}
+
+// SetName sets the "name" field.
+func (m *TalentCollectionMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *TalentCollectionMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the TalentCollection entity.
+// If the TalentCollection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TalentCollectionMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *TalentCollectionMutation) ResetName() {
+	m.name = nil
+}
+
+// SetTalentUuids sets the "talent_uuids" field.
+func (m *TalentCollectionMutation) SetTalentUuids(s []string) {
+	m.talent_uuids = &s
+}
+
+// TalentUuids returns the value of the "talent_uuids" field in the mutation.
+func (m *TalentCollectionMutation) TalentUuids() (r []string, exists bool) {
+	v := m.talent_uuids
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTalentUuids returns the old "talent_uuids" field's value of the TalentCollection entity.
+// If the TalentCollection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TalentCollectionMutation) OldTalentUuids(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTalentUuids is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTalentUuids requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTalentUuids: %w", err)
+	}
+	return oldValue.TalentUuids, nil
+}
+
+// ResetTalentUuids resets all changes to the "talent_uuids" field.
+func (m *TalentCollectionMutation) ResetTalentUuids() {
+	m.talent_uuids = nil
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *TalentCollectionMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *TalentCollectionMutation) UserCleared() bool {
+	return m.UserIDCleared() || m.cleareduser
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *TalentCollectionMutation) UserIDs() (ids []int) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *TalentCollectionMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// Where appends a list predicates to the TalentCollectionMutation builder.
+func (m *TalentCollectionMutation) Where(ps ...predicate.TalentCollection) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *TalentCollectionMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (TalentCollection).
+func (m *TalentCollectionMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TalentCollectionMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.uuid != nil {
+		fields = append(fields, talentcollection.FieldUUID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, talentcollection.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, talentcollection.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, talentcollection.FieldDeletedAt)
+	}
+	if m.user != nil {
+		fields = append(fields, talentcollection.FieldUserID)
+	}
+	if m.name != nil {
+		fields = append(fields, talentcollection.FieldName)
+	}
+	if m.talent_uuids != nil {
+		fields = append(fields, talentcollection.FieldTalentUuids)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TalentCollectionMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case talentcollection.FieldUUID:
+		return m.UUID()
+	case talentcollection.FieldCreatedAt:
+		return m.CreatedAt()
+	case talentcollection.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case talentcollection.FieldDeletedAt:
+		return m.DeletedAt()
+	case talentcollection.FieldUserID:
+		return m.UserID()
+	case talentcollection.FieldName:
+		return m.Name()
+	case talentcollection.FieldTalentUuids:
+		return m.TalentUuids()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TalentCollectionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case talentcollection.FieldUUID:
+		return m.OldUUID(ctx)
+	case talentcollection.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case talentcollection.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case talentcollection.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case talentcollection.FieldUserID:
+		return m.OldUserID(ctx)
+	case talentcollection.FieldName:
+		return m.OldName(ctx)
+	case talentcollection.FieldTalentUuids:
+		return m.OldTalentUuids(ctx)
+	}
+	return nil, fmt.Errorf("unknown TalentCollection field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TalentCollectionMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case talentcollection.FieldUUID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUUID(v)
+		return nil
+	case talentcollection.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case talentcollection.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case talentcollection.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case talentcollection.FieldUserID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case talentcollection.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case talentcollection.FieldTalentUuids:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTalentUuids(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TalentCollection field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TalentCollectionMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TalentCollectionMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TalentCollectionMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown TalentCollection numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TalentCollectionMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(talentcollection.FieldDeletedAt) {
+		fields = append(fields, talentcollection.FieldDeletedAt)
+	}
+	if m.FieldCleared(talentcollection.FieldUserID) {
+		fields = append(fields, talentcollection.FieldUserID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TalentCollectionMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TalentCollectionMutation) ClearField(name string) error {
+	switch name {
+	case talentcollection.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case talentcollection.FieldUserID:
+		m.ClearUserID()
+		return nil
+	}
+	return fmt.Errorf("unknown TalentCollection nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TalentCollectionMutation) ResetField(name string) error {
+	switch name {
+	case talentcollection.FieldUUID:
+		m.ResetUUID()
+		return nil
+	case talentcollection.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case talentcollection.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case talentcollection.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case talentcollection.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case talentcollection.FieldName:
+		m.ResetName()
+		return nil
+	case talentcollection.FieldTalentUuids:
+		m.ResetTalentUuids()
+		return nil
+	}
+	return fmt.Errorf("unknown TalentCollection field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TalentCollectionMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.user != nil {
+		edges = append(edges, talentcollection.EdgeUser)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TalentCollectionMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case talentcollection.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TalentCollectionMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TalentCollectionMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TalentCollectionMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.cleareduser {
+		edges = append(edges, talentcollection.EdgeUser)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TalentCollectionMutation) EdgeCleared(name string) bool {
+	switch name {
+	case talentcollection.EdgeUser:
+		return m.cleareduser
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TalentCollectionMutation) ClearEdge(name string) error {
+	switch name {
+	case talentcollection.EdgeUser:
+		m.ClearUser()
+		return nil
+	}
+	return fmt.Errorf("unknown TalentCollection unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TalentCollectionMutation) ResetEdge(name string) error {
+	switch name {
+	case talentcollection.EdgeUser:
+		m.ResetUser()
+		return nil
+	}
+	return fmt.Errorf("unknown TalentCollection edge %s", name)
+}
+
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
@@ -11901,6 +12624,9 @@ type UserMutation struct {
 	email_templates           map[int]struct{}
 	removedemail_templates    map[int]struct{}
 	clearedemail_templates    bool
+	talent_collections        map[int]struct{}
+	removedtalent_collections map[int]struct{}
+	clearedtalent_collections bool
 	done                      bool
 	oldValue                  func(context.Context) (*User, error)
 	predicates                []predicate.User
@@ -12508,6 +13234,60 @@ func (m *UserMutation) ResetEmailTemplates() {
 	m.removedemail_templates = nil
 }
 
+// AddTalentCollectionIDs adds the "talent_collections" edge to the TalentCollection entity by ids.
+func (m *UserMutation) AddTalentCollectionIDs(ids ...int) {
+	if m.talent_collections == nil {
+		m.talent_collections = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.talent_collections[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTalentCollections clears the "talent_collections" edge to the TalentCollection entity.
+func (m *UserMutation) ClearTalentCollections() {
+	m.clearedtalent_collections = true
+}
+
+// TalentCollectionsCleared reports if the "talent_collections" edge to the TalentCollection entity was cleared.
+func (m *UserMutation) TalentCollectionsCleared() bool {
+	return m.clearedtalent_collections
+}
+
+// RemoveTalentCollectionIDs removes the "talent_collections" edge to the TalentCollection entity by IDs.
+func (m *UserMutation) RemoveTalentCollectionIDs(ids ...int) {
+	if m.removedtalent_collections == nil {
+		m.removedtalent_collections = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.talent_collections, ids[i])
+		m.removedtalent_collections[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTalentCollections returns the removed IDs of the "talent_collections" edge to the TalentCollection entity.
+func (m *UserMutation) RemovedTalentCollectionsIDs() (ids []int) {
+	for id := range m.removedtalent_collections {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TalentCollectionsIDs returns the "talent_collections" edge IDs in the mutation.
+func (m *UserMutation) TalentCollectionsIDs() (ids []int) {
+	for id := range m.talent_collections {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTalentCollections resets all changes to the "talent_collections" edge.
+func (m *UserMutation) ResetTalentCollections() {
+	m.talent_collections = nil
+	m.clearedtalent_collections = false
+	m.removedtalent_collections = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -12754,7 +13534,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.talents != nil {
 		edges = append(edges, user.EdgeTalents)
 	}
@@ -12766,6 +13546,9 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.email_templates != nil {
 		edges = append(edges, user.EdgeEmailTemplates)
+	}
+	if m.talent_collections != nil {
+		edges = append(edges, user.EdgeTalentCollections)
 	}
 	return edges
 }
@@ -12798,13 +13581,19 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeTalentCollections:
+		ids := make([]ent.Value, 0, len(m.talent_collections))
+		for id := range m.talent_collections {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedtalents != nil {
 		edges = append(edges, user.EdgeTalents)
 	}
@@ -12816,6 +13605,9 @@ func (m *UserMutation) RemovedEdges() []string {
 	}
 	if m.removedemail_templates != nil {
 		edges = append(edges, user.EdgeEmailTemplates)
+	}
+	if m.removedtalent_collections != nil {
+		edges = append(edges, user.EdgeTalentCollections)
 	}
 	return edges
 }
@@ -12848,13 +13640,19 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeTalentCollections:
+		ids := make([]ent.Value, 0, len(m.removedtalent_collections))
+		for id := range m.removedtalent_collections {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedtalents {
 		edges = append(edges, user.EdgeTalents)
 	}
@@ -12866,6 +13664,9 @@ func (m *UserMutation) ClearedEdges() []string {
 	}
 	if m.clearedemail_templates {
 		edges = append(edges, user.EdgeEmailTemplates)
+	}
+	if m.clearedtalent_collections {
+		edges = append(edges, user.EdgeTalentCollections)
 	}
 	return edges
 }
@@ -12882,6 +13683,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedjobs
 	case user.EdgeEmailTemplates:
 		return m.clearedemail_templates
+	case user.EdgeTalentCollections:
+		return m.clearedtalent_collections
 	}
 	return false
 }
@@ -12909,6 +13712,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeEmailTemplates:
 		m.ResetEmailTemplates()
+		return nil
+	case user.EdgeTalentCollections:
+		m.ResetTalentCollections()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

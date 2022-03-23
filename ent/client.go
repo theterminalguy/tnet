@@ -20,6 +20,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/10hourlabs/tentn/ent/talentcollection"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/10hourlabs/tentn/ent/workexperience"
 
@@ -55,6 +56,8 @@ type Client struct {
 	SlackAppInstall *SlackAppInstallClient
 	// Talent is the client for interacting with the Talent builders.
 	Talent *TalentClient
+	// TalentCollection is the client for interacting with the TalentCollection builders.
+	TalentCollection *TalentCollectionClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// WorkExperience is the client for interacting with the WorkExperience builders.
@@ -83,6 +86,7 @@ func (c *Client) init() {
 	c.Skill = NewSkillClient(c.config)
 	c.SlackAppInstall = NewSlackAppInstallClient(c.config)
 	c.Talent = NewTalentClient(c.config)
+	c.TalentCollection = NewTalentCollectionClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.WorkExperience = NewWorkExperienceClient(c.config)
 }
@@ -129,6 +133,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Skill:            NewSkillClient(cfg),
 		SlackAppInstall:  NewSlackAppInstallClient(cfg),
 		Talent:           NewTalentClient(cfg),
+		TalentCollection: NewTalentCollectionClient(cfg),
 		User:             NewUserClient(cfg),
 		WorkExperience:   NewWorkExperienceClient(cfg),
 	}, nil
@@ -160,6 +165,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Skill:            NewSkillClient(cfg),
 		SlackAppInstall:  NewSlackAppInstallClient(cfg),
 		Talent:           NewTalentClient(cfg),
+		TalentCollection: NewTalentCollectionClient(cfg),
 		User:             NewUserClient(cfg),
 		WorkExperience:   NewWorkExperienceClient(cfg),
 	}, nil
@@ -202,6 +208,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Skill.Use(hooks...)
 	c.SlackAppInstall.Use(hooks...)
 	c.Talent.Use(hooks...)
+	c.TalentCollection.Use(hooks...)
 	c.User.Use(hooks...)
 	c.WorkExperience.Use(hooks...)
 }
@@ -1564,6 +1571,112 @@ func (c *TalentClient) Hooks() []Hook {
 	return c.hooks.Talent
 }
 
+// TalentCollectionClient is a client for the TalentCollection schema.
+type TalentCollectionClient struct {
+	config
+}
+
+// NewTalentCollectionClient returns a client for the TalentCollection from the given config.
+func NewTalentCollectionClient(c config) *TalentCollectionClient {
+	return &TalentCollectionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `talentcollection.Hooks(f(g(h())))`.
+func (c *TalentCollectionClient) Use(hooks ...Hook) {
+	c.hooks.TalentCollection = append(c.hooks.TalentCollection, hooks...)
+}
+
+// Create returns a create builder for TalentCollection.
+func (c *TalentCollectionClient) Create() *TalentCollectionCreate {
+	mutation := newTalentCollectionMutation(c.config, OpCreate)
+	return &TalentCollectionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TalentCollection entities.
+func (c *TalentCollectionClient) CreateBulk(builders ...*TalentCollectionCreate) *TalentCollectionCreateBulk {
+	return &TalentCollectionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TalentCollection.
+func (c *TalentCollectionClient) Update() *TalentCollectionUpdate {
+	mutation := newTalentCollectionMutation(c.config, OpUpdate)
+	return &TalentCollectionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TalentCollectionClient) UpdateOne(tc *TalentCollection) *TalentCollectionUpdateOne {
+	mutation := newTalentCollectionMutation(c.config, OpUpdateOne, withTalentCollection(tc))
+	return &TalentCollectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TalentCollectionClient) UpdateOneID(id int) *TalentCollectionUpdateOne {
+	mutation := newTalentCollectionMutation(c.config, OpUpdateOne, withTalentCollectionID(id))
+	return &TalentCollectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TalentCollection.
+func (c *TalentCollectionClient) Delete() *TalentCollectionDelete {
+	mutation := newTalentCollectionMutation(c.config, OpDelete)
+	return &TalentCollectionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TalentCollectionClient) DeleteOne(tc *TalentCollection) *TalentCollectionDeleteOne {
+	return c.DeleteOneID(tc.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TalentCollectionClient) DeleteOneID(id int) *TalentCollectionDeleteOne {
+	builder := c.Delete().Where(talentcollection.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TalentCollectionDeleteOne{builder}
+}
+
+// Query returns a query builder for TalentCollection.
+func (c *TalentCollectionClient) Query() *TalentCollectionQuery {
+	return &TalentCollectionQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a TalentCollection entity by its id.
+func (c *TalentCollectionClient) Get(ctx context.Context, id int) (*TalentCollection, error) {
+	return c.Query().Where(talentcollection.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TalentCollectionClient) GetX(ctx context.Context, id int) *TalentCollection {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a TalentCollection.
+func (c *TalentCollectionClient) QueryUser(tc *TalentCollection) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(talentcollection.Table, talentcollection.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, talentcollection.UserTable, talentcollection.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(tc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TalentCollectionClient) Hooks() []Hook {
+	return c.hooks.TalentCollection
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -1706,6 +1819,22 @@ func (c *UserClient) QueryEmailTemplates(u *User) *EmailTemplateQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(emailtemplate.Table, emailtemplate.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.EmailTemplatesTable, user.EmailTemplatesColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTalentCollections queries the talent_collections edge of a User.
+func (c *UserClient) QueryTalentCollections(u *User) *TalentCollectionQuery {
+	query := &TalentCollectionQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(talentcollection.Table, talentcollection.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TalentCollectionsTable, user.TalentCollectionsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

@@ -522,6 +522,43 @@ var (
 			},
 		},
 	}
+	// TalentCollectionsColumns holds the columns for the "talent_collections" table.
+	TalentCollectionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "talent_uuids", Type: field.TypeJSON},
+		{Name: "user_id", Type: field.TypeInt, Nullable: true},
+	}
+	// TalentCollectionsTable holds the schema information for the "talent_collections" table.
+	TalentCollectionsTable = &schema.Table{
+		Name:       "talent_collections",
+		Columns:    TalentCollectionsColumns,
+		PrimaryKey: []*schema.Column{TalentCollectionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "talent_collections_users_talent_collections",
+				Columns:    []*schema.Column{TalentCollectionsColumns[7]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "talentcollection_uuid",
+				Unique:  true,
+				Columns: []*schema.Column{TalentCollectionsColumns[1]},
+			},
+			{
+				Name:    "talentcollection_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{TalentCollectionsColumns[7]},
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -612,6 +649,7 @@ var (
 		SkillsTable,
 		SlackAppInstallsTable,
 		TalentsTable,
+		TalentCollectionsTable,
 		UsersTable,
 		WorkExperiencesTable,
 	}
@@ -631,5 +669,6 @@ func init() {
 	SlackAppInstallsTable.ForeignKeys[0].RefTable = UsersTable
 	TalentsTable.ForeignKeys[0].RefTable = TalentsTable
 	TalentsTable.ForeignKeys[1].RefTable = UsersTable
+	TalentCollectionsTable.ForeignKeys[0].RefTable = UsersTable
 	WorkExperiencesTable.ForeignKeys[0].RefTable = TalentsTable
 }

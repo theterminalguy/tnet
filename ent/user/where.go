@@ -860,6 +860,34 @@ func HasEmailTemplatesWith(preds ...predicate.EmailTemplate) predicate.User {
 	})
 }
 
+// HasTalentCollections applies the HasEdge predicate on the "talent_collections" edge.
+func HasTalentCollections() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TalentCollectionsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TalentCollectionsTable, TalentCollectionsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTalentCollectionsWith applies the HasEdge predicate on the "talent_collections" edge with a given conditions (other predicates).
+func HasTalentCollectionsWith(preds ...predicate.TalentCollection) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TalentCollectionsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TalentCollectionsTable, TalentCollectionsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
