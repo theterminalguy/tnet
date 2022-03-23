@@ -36,7 +36,7 @@ func (t *TalentService) RegisterTalent(up *repo.UserParams) (*ent.User, error) {
 	return nil, err
 }
 
-func (t *TalentService) CreateProfile(user *ent.User, p repo.TalentParams) (*ent.Talent, error) {
+func (t *TalentService) CreateProfile(user *ent.User, p repo.TalentParams) (*repo.TalentResponse, error) {
 	p.Email = user.Email
 	p.UserID = user.ID
 
@@ -47,7 +47,7 @@ func (t *TalentService) CreateProfile(user *ent.User, p repo.TalentParams) (*ent
 	return a, nil
 }
 
-func (t *TalentService) UpdateProfile(user *ent.User, p *repo.TalentParams) (*ent.Talent, []error) {
+func (t *TalentService) UpdateProfile(user *ent.User, p *repo.TalentParams) (*repo.TalentResponse, []error) {
 	p.Email = user.Email
 	talent, err := t.TalentRepo.GetTalentByUserID(user.ID)
 	if err != nil {

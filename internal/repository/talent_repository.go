@@ -22,8 +22,8 @@ type TalentQuerier interface {
 	GetAll() ([]*ent.Talent, error)
 	GetByUUID(id uuid.UUID) (*ent.Talent, error)
 	GetTalentByUserID(userId int) (*ent.Talent, error)
-	Create(p TalentParams) (*ent.Talent, error)
-	Update(id uuid.UUID, p TalentParams) (*ent.Talent, []error)
+	Create(p TalentParams) (*TalentResponse, error)
+	Update(id uuid.UUID, p TalentParams) (*TalentResponse, []error)
 	DeleteByUUID(id uuid.UUID) error
 }
 
@@ -66,7 +66,8 @@ func (*TalentRepository) Filter(page string, prd ...predicate.Talent) (*paginato
 	}
 	var talentList []interface{}
 	for _, t := range talents {
-		talentList = append(talentList, t)
+		response := BuildTalentResponse(t)
+		talentList = append(talentList, response)
 	}
 	return pager.Paginate(talentList), nil
 }
@@ -81,7 +82,7 @@ func (*TalentRepository) GetAll() ([]*ent.Talent, error) {
 	return Talents, nil
 }
 
-func (*TalentRepository) GetByEmail(email string) (*ent.Talent, error) {
+func (*TalentRepository) GetByEmail(email string) (*TalentResponse, error) {
 	record, err := dBConn.Talent.Query().
 		Where(talent.And(
 			talent.EmailEQ(email),
@@ -90,7 +91,45 @@ func (*TalentRepository) GetByEmail(email string) (*ent.Talent, error) {
 	if err != nil {
 		return nil, err
 	}
-	return record, nil
+	response := BuildTalentResponse(record)
+	return response, nil
+}
+
+func (*TalentRepository) GetTalentByUUID(id uuid.UUID) (*ent.Talent, error) {
+	a, err := dBConn.Talent.Query().
+		Where(talent.UUIDEQ(id)).
+		Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	if a.DeletedAt != nil {
+		return nil, ErrRecordDeleted
+	}
+	skills, err := a.QuerySkills().All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	//a.Edges.Skills = append(a.Edges.Skills, skills...)
+	// TODO: this code serves as a how to on how to
+	// add edges to a node
+	//```
+	// peeps, _ := a.QueryReferees().All(dBContext)
+	// log.Println("Peeps", peeps)
+	// a.Edges = ent.ApplicantEdges{
+	// 	Referees: peeps,
+	// }
+
+	pLinks, _ := a.QueryPortfoliolinks().All(dBContext)
+	eduLinks, _ := a.QueryEducations().All(dBContext)
+	wrkExpLinks, _ := a.QueryWorkExperiences().All(dBContext)
+
+	a.Edges = ent.TalentEdges{
+		Portfoliolinks:  pLinks,
+		Educations:      eduLinks,
+		WorkExperiences: wrkExpLinks,
+		Skills:          skills,
+	}
+	return a, nil
 }
 
 func (*TalentRepository) GetByUUID(id uuid.UUID) (*ent.Talent, error) {
@@ -130,7 +169,7 @@ func (*TalentRepository) GetByUUID(id uuid.UUID) (*ent.Talent, error) {
 	return a, nil
 }
 
-func (r *TalentRepository) Create(p TalentParams) (*ent.Talent, error) {
+func (r *TalentRepository) Create(p TalentParams) (*TalentResponse, error) {
 	err := validateParams(p)
 	if err != nil {
 		return nil, err
@@ -170,10 +209,11 @@ func (r *TalentRepository) Create(p TalentParams) (*ent.Talent, error) {
 	if err != nil {
 		return nil, err
 	}
-	return a, err
+	response := BuildTalentResponse(a)
+	return response, nil
 }
 
-func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*ent.Talent, []error) {
+func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*TalentResponse, []error) {
 	err := validateParams(p, "TalentUUID")
 	if err != nil {
 		return nil, []error{err}
@@ -331,7 +371,8 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*ent.Talent, []
 	if err != nil {
 		return nil, []error{err}
 	}
-	return record, nil
+	response := BuildTalentResponse(record)
+	return response, nil
 }
 
 func (r *TalentRepository) DeleteByUUID(id uuid.UUID) error {
@@ -381,4 +422,61 @@ func (r *TalentRepository) GetTalentByUserID(userId int) (*ent.Talent, error) {
 		return nil, err
 	}
 	return record, nil
+}
+
+type TalentResponse struct {
+	UUID                  uuid.UUID            `json:"uuid"`
+	CreatedAt             time.Time            `json:"created_at"`
+	UpdatedAt             time.Time            `json:"updated_at"`
+	DeletedAt             *time.Time           `json:"deleted_at"`
+	FirstName             string               `json:"first_name"`
+	LastName              string               `json:"last_name"`
+	PreferredName         string               `json:"preferred_name"`
+	Pronoun               string               `json:"pronoun"`
+	PreferredJobTitle     string               `json:"preferred_job_title"`
+	IsAvailable           bool                 `json:"is_available"`
+	ReferrerID            int                  `json:"-"`
+	ReferralCode          string               `json:"referral_code"`
+	TentnCode             string               `json:"tentn_code"`
+	ProfessionalStartDate time.Time            `json:"professional_start_date"`
+	Email                 string               `json:"email"`
+	Phone                 string               `json:"phone"`
+	Country               Country              `json:"country"`
+	JoinedTentnAt         *time.Time           `json:"joined_tentn_at"`
+	JobPreference         talent.JobPreference `json:"job_preference"`
+	Edges                 *ent.TalentEdges     `json:"edges"`
+}
+
+type Country struct {
+	Code string `json:"code"`
+	Name string `json:"name"`
+	City string `json:"city"`
+}
+
+func BuildTalentResponse(talent *ent.Talent) *TalentResponse {
+	return &TalentResponse{
+		UUID:                  talent.UUID,
+		CreatedAt:             talent.CreatedAt,
+		DeletedAt:             talent.DeletedAt,
+		FirstName:             talent.FirstName,
+		LastName:              talent.LastName,
+		PreferredName:         talent.PreferredName,
+		Pronoun:               talent.Pronoun,
+		PreferredJobTitle:     talent.PreferredJobTitle,
+		IsAvailable:           talent.IsAvailable,
+		ReferrerID:            talent.ReferrerID,
+		ReferralCode:          talent.ReferralCode,
+		TentnCode:             talent.TentnCode,
+		ProfessionalStartDate: talent.ProfessionalStartDate,
+		Email:                 talent.Email,
+		Phone:                 talent.Phone,
+		Country: Country{
+			Code: talent.CountryCode,
+			Name: countryRepo[talent.CountryCode],
+			City: talent.City,
+		},
+		JoinedTentnAt: talent.JoinedTentnAt,
+		JobPreference: talent.JobPreference,
+		Edges:         &talent.Edges,
+	}
 }
