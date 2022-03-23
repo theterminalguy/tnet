@@ -65,3 +65,27 @@ func (r *RecruiterScope) DeleteCollection(id uuid.UUID) error {
 	tRepo := repo.NewTalentCollectionRepository()
 	return tRepo.DeleteByUUID(record.UUID)
 }
+
+func (r *RecruiterScope) DeleteTalentsFromCollection(collectionID uuid.UUID, talentIDs []uuid.UUID) (*ent.TalentCollection, error) {
+	talentCollection, err := r.Recruiter.QueryTalentCollections().Where(
+		talentcollection.UserIDEQ(r.Recruiter.ID),
+		talentcollection.UUIDEQ(collectionID),
+	).First(repo.GetDBContext())
+	if err != nil {
+		return nil, err
+	}
+	tRepo := repo.NewTalentCollectionRepository()
+	return tRepo.RemoveTalents(talentCollection, talentIDs)
+}
+
+func (r *RecruiterScope) UpdateTalentCollection(collectionID uuid.UUID, params repo.TalentCollectionParams) (*ent.TalentCollection, error) {
+	talentCollection, err := r.Recruiter.QueryTalentCollections().Where(
+		talentcollection.UserIDEQ(r.Recruiter.ID),
+		talentcollection.UUIDEQ(collectionID),
+	).First(repo.GetDBContext())
+	if err != nil {
+		return nil, err
+	}
+	tRepo := repo.NewTalentCollectionRepository()
+	return tRepo.Update(talentCollection.UUID, params)
+}
