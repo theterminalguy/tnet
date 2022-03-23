@@ -39,3 +39,7 @@ func (r *RecruiterScope) GetJobApplicationByUUID(uuid uuid.UUID) (*ent.JobApplic
 		Where(jobapplication.UUIDEQ(uuid)).
 		First(repo.GetDBContext())
 }
+
+func (r *RecruiterScope) GetTalentCollections() ([]*ent.TalentCollection, error) {
+	return r.Recruiter.QueryTalentCollections().All(repo.GetDBContext())
+}

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"time"
+	"errors"
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/talentcollection"
@@ -11,6 +11,9 @@ import (
 type TalentCollectionRepository struct{}
 
 type TalentCollectionParams struct {
+	UserID      int
+	Name        string      `json:"name"`
+	TalentUUIDS []uuid.UUID `json:"talent_uuids"`
 }
 
 func NewTalentCollectionRepository() *TalentCollectionRepository {
@@ -45,9 +48,31 @@ func (*TalentCollectionRepository) Create(p TalentCollectionParams) (*ent.Talent
 	if err != nil {
 		return nil, err
 	}
+	// check if a collection with the same name already exists
+	records, err := dBConn.TalentCollection.Query().
+		Where(
+			talentcollection.And(
+				talentcollection.NameEQ(p.Name),
+				talentcollection.UserIDEQ(p.UserID),
+			)).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) > 0 {
+		return nil, errors.New("a collection with the same name already exists")
+	}
+
+	// convert uuids to strings
+	talentUUIDs := make([]string, len(p.TalentUUIDS))
+	for i, uuid := range p.TalentUUIDS {
+		talentUUIDs[i] = uuid.String()
+	}
 	record, err := dBConn.TalentCollection.
 		Create().
-		// TODO: set other fields here
+		SetName(p.Name).
+		SetUserID(p.UserID).
+		SetTalentUuids(talentUUIDs).
 		Save(dBContext)
 	if err != nil {
 		return nil, err
@@ -78,10 +103,7 @@ func (r *TalentCollectionRepository) DeleteByUUID(id uuid.UUID) error {
 	if err != nil {
 		return err
 	}
-	_, err = record.Update().
-		SetDeletedAt(time.Now()).
-		Save(dBContext)
-	if err != nil {
+	if err := dBConn.TalentCollection.DeleteOne(record).Exec(dBContext); err != nil {
 		return err
 	}
 	return nil

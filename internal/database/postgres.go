@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent/dialect"
 	"github.com/10hourlabs/tentn/ent"
+	"github.com/10hourlabs/tentn/ent/migrate"
 	_ "github.com/lib/pq"
 )
 
@@ -43,7 +44,11 @@ func (d *DBPostgres) Open() (*ent.Client, error) {
 }
 
 func (d *DBPostgres) RunMigration() error {
-	if err := d.client.Schema.Create(context.Background()); err != nil {
+	if err := d.client.Schema.Create(
+		context.Background(), // TODO: avoid Background context
+		migrate.WithDropIndex(true),
+		migrate.WithDropColumn(true),
+	); err != nil {
 		return NewCreateSchemaError(err)
 	}
 	return nil

@@ -27,9 +27,7 @@ func (TalentCollection) Mixin() []ent.Mixin {
 // Fields of the TalentCollection.
 func (TalentCollection) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("name").
-			Unique().
-			Immutable(),
+		field.String("name"),
 
 		field.JSON("talent_uuids", []string{}),
 	}

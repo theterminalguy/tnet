@@ -81,6 +81,12 @@ func (tcu *TalentCollectionUpdate) ClearUserID() *TalentCollectionUpdate {
 	return tcu
 }
 
+// SetName sets the "name" field.
+func (tcu *TalentCollectionUpdate) SetName(s string) *TalentCollectionUpdate {
+	tcu.mutation.SetName(s)
+	return tcu
+}
+
 // SetTalentUuids sets the "talent_uuids" field.
 func (tcu *TalentCollectionUpdate) SetTalentUuids(s []string) *TalentCollectionUpdate {
 	tcu.mutation.SetTalentUuids(s)
@@ -211,6 +217,13 @@ func (tcu *TalentCollectionUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Column: talentcollection.FieldDeletedAt,
 		})
 	}
+	if value, ok := tcu.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: talentcollection.FieldName,
+		})
+	}
 	if value, ok := tcu.mutation.TalentUuids(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -321,6 +334,12 @@ func (tcuo *TalentCollectionUpdateOne) SetNillableUserID(i *int) *TalentCollecti
 // ClearUserID clears the value of the "user_id" field.
 func (tcuo *TalentCollectionUpdateOne) ClearUserID() *TalentCollectionUpdateOne {
 	tcuo.mutation.ClearUserID()
+	return tcuo
+}
+
+// SetName sets the "name" field.
+func (tcuo *TalentCollectionUpdateOne) SetName(s string) *TalentCollectionUpdateOne {
+	tcuo.mutation.SetName(s)
 	return tcuo
 }
 
@@ -476,6 +495,13 @@ func (tcuo *TalentCollectionUpdateOne) sqlSave(ctx context.Context) (_node *Tale
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: talentcollection.FieldDeletedAt,
+		})
+	}
+	if value, ok := tcuo.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: talentcollection.FieldName,
 		})
 	}
 	if value, ok := tcuo.mutation.TalentUuids(); ok {
