@@ -106,6 +106,31 @@ func (r *TalentCollectionRepository) DeleteByUUID(id uuid.UUID) error {
 	return nil
 }
 
+func (r *TalentCollectionRepository) RemoveTalents(t *ent.TalentCollection, talentIDs []uuid.UUID) (*ent.TalentCollection, error) {
+	if len(t.TalentUuids) == 0 {
+		return nil, errors.New("talent collection is empty")
+	}
+	// convert uuids to strings
+	talentUUIDs := make([]string, len(talentIDs))
+	for i, talentUUID := range talentIDs {
+		talentUUIDs[i] = talentUUID.String()
+	}
+	var newTalentUUIDs []string
+	for _, talentUUID := range t.TalentUuids {
+		if !collection.Contains(talentUUIDs, talentUUID) {
+			newTalentUUIDs = append(newTalentUUIDs, talentUUID)
+		}
+	}
+	t.TalentUuids = newTalentUUIDs
+	_, err := t.Update().
+		SetTalentUuids(t.TalentUuids).
+		Save(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return t, nil
+}
+
 func (t *TalentCollectionRepository) validateScopedUniquenessOfName(name string, userID int) error {
 	records, err := dBConn.TalentCollection.Query().
 		Where(

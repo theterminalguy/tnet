@@ -69,6 +69,10 @@ func (h *V1TalentCollectionHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *V1TalentCollectionHandler) UpdateByID(c echo.Context) error {
+	currentRecruiter, err := GetCurrentRecruiter(c)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -77,7 +81,15 @@ func (h *V1TalentCollectionHandler) UpdateByID(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	record, err := h.TalentCollectionRepo.Update(id, *params)
+	if action := c.QueryParam("action"); action == "delete" {
+		// Removes talents from the collection
+		record, err := currentRecruiter.DeleteTalentsFromCollection(id, params.TalentUUIDS)
+		if err != nil {
+			return c.String(http.StatusBadRequest, err.Error())
+		}
+		return c.JSON(http.StatusOK, record)
+	}
+	record, err := currentRecruiter.UpdateTalentCollection(id, *params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
