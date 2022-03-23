@@ -16,6 +16,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/10hourlabs/tentn/ent/talentcollection"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -157,6 +158,21 @@ func (uu *UserUpdate) AddEmailTemplates(e ...*EmailTemplate) *UserUpdate {
 	return uu.AddEmailTemplateIDs(ids...)
 }
 
+// AddTalentCollectionIDs adds the "talent_collections" edge to the TalentCollection entity by IDs.
+func (uu *UserUpdate) AddTalentCollectionIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddTalentCollectionIDs(ids...)
+	return uu
+}
+
+// AddTalentCollections adds the "talent_collections" edges to the TalentCollection entity.
+func (uu *UserUpdate) AddTalentCollections(t ...*TalentCollection) *UserUpdate {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uu.AddTalentCollectionIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -244,6 +260,27 @@ func (uu *UserUpdate) RemoveEmailTemplates(e ...*EmailTemplate) *UserUpdate {
 		ids[i] = e[i].ID
 	}
 	return uu.RemoveEmailTemplateIDs(ids...)
+}
+
+// ClearTalentCollections clears all "talent_collections" edges to the TalentCollection entity.
+func (uu *UserUpdate) ClearTalentCollections() *UserUpdate {
+	uu.mutation.ClearTalentCollections()
+	return uu
+}
+
+// RemoveTalentCollectionIDs removes the "talent_collections" edge to TalentCollection entities by IDs.
+func (uu *UserUpdate) RemoveTalentCollectionIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveTalentCollectionIDs(ids...)
+	return uu
+}
+
+// RemoveTalentCollections removes "talent_collections" edges to TalentCollection entities.
+func (uu *UserUpdate) RemoveTalentCollections(t ...*TalentCollection) *UserUpdate {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uu.RemoveTalentCollectionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -614,6 +651,60 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.TalentCollectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TalentCollectionsTable,
+			Columns: []string{user.TalentCollectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: talentcollection.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedTalentCollectionsIDs(); len(nodes) > 0 && !uu.mutation.TalentCollectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TalentCollectionsTable,
+			Columns: []string{user.TalentCollectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: talentcollection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.TalentCollectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TalentCollectionsTable,
+			Columns: []string{user.TalentCollectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: talentcollection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -757,6 +848,21 @@ func (uuo *UserUpdateOne) AddEmailTemplates(e ...*EmailTemplate) *UserUpdateOne 
 	return uuo.AddEmailTemplateIDs(ids...)
 }
 
+// AddTalentCollectionIDs adds the "talent_collections" edge to the TalentCollection entity by IDs.
+func (uuo *UserUpdateOne) AddTalentCollectionIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddTalentCollectionIDs(ids...)
+	return uuo
+}
+
+// AddTalentCollections adds the "talent_collections" edges to the TalentCollection entity.
+func (uuo *UserUpdateOne) AddTalentCollections(t ...*TalentCollection) *UserUpdateOne {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uuo.AddTalentCollectionIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -844,6 +950,27 @@ func (uuo *UserUpdateOne) RemoveEmailTemplates(e ...*EmailTemplate) *UserUpdateO
 		ids[i] = e[i].ID
 	}
 	return uuo.RemoveEmailTemplateIDs(ids...)
+}
+
+// ClearTalentCollections clears all "talent_collections" edges to the TalentCollection entity.
+func (uuo *UserUpdateOne) ClearTalentCollections() *UserUpdateOne {
+	uuo.mutation.ClearTalentCollections()
+	return uuo
+}
+
+// RemoveTalentCollectionIDs removes the "talent_collections" edge to TalentCollection entities by IDs.
+func (uuo *UserUpdateOne) RemoveTalentCollectionIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveTalentCollectionIDs(ids...)
+	return uuo
+}
+
+// RemoveTalentCollections removes "talent_collections" edges to TalentCollection entities.
+func (uuo *UserUpdateOne) RemoveTalentCollections(t ...*TalentCollection) *UserUpdateOne {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uuo.RemoveTalentCollectionIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1230,6 +1357,60 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: emailtemplate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.TalentCollectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TalentCollectionsTable,
+			Columns: []string{user.TalentCollectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: talentcollection.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedTalentCollectionsIDs(); len(nodes) > 0 && !uuo.mutation.TalentCollectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TalentCollectionsTable,
+			Columns: []string{user.TalentCollectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: talentcollection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.TalentCollectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TalentCollectionsTable,
+			Columns: []string{user.TalentCollectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: talentcollection.FieldID,
 				},
 			},
 		}

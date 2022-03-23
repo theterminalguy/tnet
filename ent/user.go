@@ -49,9 +49,11 @@ type UserEdges struct {
 	Jobs []*Job `json:"jobs,omitempty"`
 	// EmailTemplates holds the value of the email_templates edge.
 	EmailTemplates []*EmailTemplate `json:"email_templates,omitempty"`
+	// TalentCollections holds the value of the talent_collections edge.
+	TalentCollections []*TalentCollection `json:"talent_collections,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // TalentsOrErr returns the Talents value or an error if the edge
@@ -88,6 +90,15 @@ func (e UserEdges) EmailTemplatesOrErr() ([]*EmailTemplate, error) {
 		return e.EmailTemplates, nil
 	}
 	return nil, &NotLoadedError{edge: "email_templates"}
+}
+
+// TalentCollectionsOrErr returns the TalentCollections value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) TalentCollectionsOrErr() ([]*TalentCollection, error) {
+	if e.loadedTypes[4] {
+		return e.TalentCollections, nil
+	}
+	return nil, &NotLoadedError{edge: "talent_collections"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -198,6 +209,11 @@ func (u *User) QueryJobs() *JobQuery {
 // QueryEmailTemplates queries the "email_templates" edge of the User entity.
 func (u *User) QueryEmailTemplates() *EmailTemplateQuery {
 	return (&UserClient{config: u.config}).QueryEmailTemplates(u)
+}
+
+// QueryTalentCollections queries the "talent_collections" edge of the User entity.
+func (u *User) QueryTalentCollections() *TalentCollectionQuery {
+	return (&UserClient{config: u.config}).QueryTalentCollections(u)
 }
 
 // Update returns a builder for updating this User.

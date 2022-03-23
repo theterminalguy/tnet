@@ -39,6 +39,9 @@ type SlackAppInstall func(*sql.Selector)
 // Talent is the predicate function for talent builders.
 type Talent func(*sql.Selector)
 
+// TalentCollection is the predicate function for talentcollection builders.
+type TalentCollection func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
 
