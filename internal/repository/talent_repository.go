@@ -95,7 +95,7 @@ func (*TalentRepository) GetByEmail(email string) (*TalentResponse, error) {
 	return response, nil
 }
 
-func (*TalentRepository) GetTalentByUUID(id uuid.UUID) (*ent.Talent, error) {
+func (*TalentRepository) GetTalentByUUID(id uuid.UUID) (*TalentResponse, error) {
 	a, err := dBConn.Talent.Query().
 		Where(talent.UUIDEQ(id)).
 		Only(dBContext)
@@ -129,7 +129,9 @@ func (*TalentRepository) GetTalentByUUID(id uuid.UUID) (*ent.Talent, error) {
 		WorkExperiences: wrkExpLinks,
 		Skills:          skills,
 	}
-	return a, nil
+	response := BuildTalentResponse(a)
+
+	return response, nil
 }
 
 func (*TalentRepository) GetByUUID(id uuid.UUID) (*ent.Talent, error) {
