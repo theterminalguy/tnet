@@ -44,7 +44,8 @@ type TalentParams struct {
 	City                  string               `json:"city" validate:"required"`
 	JobPreference         talent.JobPreference `json:"job_preference" validate:"required"`
 	Available             bool                 `json:"available"`
-	TimeZone              string               `json:"timezone_id" validate:"required"`
+	TimeZone              string               `json:"timezone" validate:"required"`
+	State                 string               `json:"state" validate:"required"`
 }
 
 func NewTalentRepository() *TalentRepository {
@@ -182,7 +183,7 @@ func (r *TalentRepository) Create(p TalentParams) (*TalentResponse, error) {
 		return nil, err
 	}
 	timeZoneName := TimeZoneRepo[p.TimeZone]
-	if timeZoneName[1] == "" {
+	if timeZoneName == nil {
 		return nil, errors.New("timezone not allowed")
 	}
 	q := dBConn.Talent.
@@ -202,7 +203,8 @@ func (r *TalentRepository) Create(p TalentParams) (*TalentResponse, error) {
 		SetUserID(p.UserID).
 		SetJobPreference(p.JobPreference).
 		SetIsAvailable(p.Available).
-		SetTimezone(timeZoneName[1])
+		SetTimezone(timeZoneName[1]).
+		SetState(p.State)
 	if len(p.ReferralCode) > 1 {
 		ref, err := dBConn.Talent.Query().
 			Where(talent.TentnCodeEQ(p.ReferralCode)).
@@ -342,7 +344,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*TalentResponse
 	}
 
 	// Set and Validate TimeZone if provided
-	if vldErr := setNillableStringField(string(p.TimeZone), func(v string) error {
+	if vldErr := setNillableStringField(p.TimeZone, func(v string) error {
 		err := validateParams(p, "TimeZone")
 		if err != nil {
 			return err
@@ -352,6 +354,18 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*TalentResponse
 			return errors.New("timezone not allowed")
 		}
 		bldr.SetTimezone(p.TimeZone)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate State if provided
+	if vldErr := setNillableStringField(p.State, func(v string) error {
+		err := validateParams(p, "State")
+		if err != nil {
+			return err
+		}
+		bldr.SetTimezone(p.State)
 		return nil
 	}); vldErr != nil {
 		vldErrs = append(vldErrs, vldErr)
@@ -473,9 +487,10 @@ type TalentResponse struct {
 }
 
 type Country struct {
-	Code string `json:"code"`
-	Name string `json:"name"`
-	City string `json:"city"`
+	Code  string `json:"code"`
+	Name  string `json:"name"`
+	City  string `json:"city"`
+	State string `json:"state"`
 }
 
 func BuildTalentResponse(talent *ent.Talent) *TalentResponse {
@@ -496,9 +511,10 @@ func BuildTalentResponse(talent *ent.Talent) *TalentResponse {
 		Email:                 talent.Email,
 		Phone:                 talent.Phone,
 		Country: Country{
-			Code: talent.CountryCode,
-			Name: countryRepo[talent.CountryCode],
-			City: talent.City,
+			Code:  talent.CountryCode,
+			Name:  countryRepo[talent.CountryCode],
+			City:  talent.City,
+			State: talent.State,
 		},
 		JoinedTentnAt: talent.JoinedTentnAt,
 		JobPreference: talent.JobPreference,

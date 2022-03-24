@@ -82,6 +82,8 @@ func (Talent) Fields() []ent.Field {
 		field.Enum("job_preference").Values(JobPreferences()...),
 
 		field.String("timezone"),
+
+		field.String("state"),
 	}
 }
 

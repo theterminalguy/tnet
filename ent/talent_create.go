@@ -225,6 +225,12 @@ func (tc *TalentCreate) SetTimezone(s string) *TalentCreate {
 	return tc
 }
 
+// SetState sets the "state" field.
+func (tc *TalentCreate) SetState(s string) *TalentCreate {
+	tc.mutation.SetState(s)
+	return tc
+}
+
 // SetID sets the "id" field.
 func (tc *TalentCreate) SetID(i int) *TalentCreate {
 	tc.mutation.SetID(i)
@@ -513,6 +519,9 @@ func (tc *TalentCreate) check() error {
 	if _, ok := tc.mutation.Timezone(); !ok {
 		return &ValidationError{Name: "timezone", err: errors.New(`ent: missing required field "Talent.timezone"`)}
 	}
+	if _, ok := tc.mutation.State(); !ok {
+		return &ValidationError{Name: "state", err: errors.New(`ent: missing required field "Talent.state"`)}
+	}
 	return nil
 }
 
@@ -705,6 +714,14 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Column: talent.FieldTimezone,
 		})
 		_node.Timezone = value
+	}
+	if value, ok := tc.mutation.State(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: talent.FieldState,
+		})
+		_node.State = value
 	}
 	if nodes := tc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

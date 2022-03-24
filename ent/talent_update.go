@@ -215,6 +215,12 @@ func (tu *TalentUpdate) SetTimezone(s string) *TalentUpdate {
 	return tu
 }
 
+// SetState sets the "state" field.
+func (tu *TalentUpdate) SetState(s string) *TalentUpdate {
+	tu.mutation.SetState(s)
+	return tu
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (tu *TalentUpdate) SetUser(u *User) *TalentUpdate {
 	return tu.SetUserID(u.ID)
@@ -767,6 +773,13 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: talent.FieldTimezone,
+		})
+	}
+	if value, ok := tu.mutation.State(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: talent.FieldState,
 		})
 	}
 	if tu.mutation.UserCleared() {
@@ -1468,6 +1481,12 @@ func (tuo *TalentUpdateOne) SetTimezone(s string) *TalentUpdateOne {
 	return tuo
 }
 
+// SetState sets the "state" field.
+func (tuo *TalentUpdateOne) SetState(s string) *TalentUpdateOne {
+	tuo.mutation.SetState(s)
+	return tuo
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (tuo *TalentUpdateOne) SetUser(u *User) *TalentUpdateOne {
 	return tuo.SetUserID(u.ID)
@@ -2044,6 +2063,13 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Type:   field.TypeString,
 			Value:  value,
 			Column: talent.FieldTimezone,
+		})
+	}
+	if value, ok := tuo.mutation.State(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: talent.FieldState,
 		})
 	}
 	if tuo.mutation.UserCleared() {

@@ -57,7 +57,11 @@ func (t *CreateFakeTalents) CreateFakeTalent() error {
 			randomTalent := schema.JobPreferences()[rand.Intn(count)]
 			return talent.JobPreference(randomTalent)
 		})(),
+		TimeZone: (func() string {
+			return []string{"UTC", "WAT", "EET", "AET"}[rand.Intn(2)]
+		})(),
 		Available: faker.Bool(),
+		State: faker.State(),
 	}
 	_, err = t.TalentService.CreateProfile(user, talentParams)
 	if err != nil {

@@ -9904,6 +9904,7 @@ type TalentMutation struct {
 	joined_tentn_at           *time.Time
 	job_preference            *talent.JobPreference
 	timezone                  *string
+	state                     *string
 	clearedFields             map[string]struct{}
 	user                      *int
 	cleareduser               bool
@@ -10899,6 +10900,42 @@ func (m *TalentMutation) ResetTimezone() {
 	m.timezone = nil
 }
 
+// SetState sets the "state" field.
+func (m *TalentMutation) SetState(s string) {
+	m.state = &s
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *TalentMutation) State() (r string, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the Talent entity.
+// If the Talent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TalentMutation) OldState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *TalentMutation) ResetState() {
+	m.state = nil
+}
+
 // ClearUser clears the "user" edge to the User entity.
 func (m *TalentMutation) ClearUser() {
 	m.cleareduser = true
@@ -11402,7 +11439,7 @@ func (m *TalentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TalentMutation) Fields() []string {
-	fields := make([]string, 0, 22)
+	fields := make([]string, 0, 23)
 	if m.uuid != nil {
 		fields = append(fields, talent.FieldUUID)
 	}
@@ -11469,6 +11506,9 @@ func (m *TalentMutation) Fields() []string {
 	if m.timezone != nil {
 		fields = append(fields, talent.FieldTimezone)
 	}
+	if m.state != nil {
+		fields = append(fields, talent.FieldState)
+	}
 	return fields
 }
 
@@ -11521,6 +11561,8 @@ func (m *TalentMutation) Field(name string) (ent.Value, bool) {
 		return m.JobPreference()
 	case talent.FieldTimezone:
 		return m.Timezone()
+	case talent.FieldState:
+		return m.State()
 	}
 	return nil, false
 }
@@ -11574,6 +11616,8 @@ func (m *TalentMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldJobPreference(ctx)
 	case talent.FieldTimezone:
 		return m.OldTimezone(ctx)
+	case talent.FieldState:
+		return m.OldState(ctx)
 	}
 	return nil, fmt.Errorf("unknown Talent field %s", name)
 }
@@ -11737,6 +11781,13 @@ func (m *TalentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTimezone(v)
 		return nil
+	case talent.FieldState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Talent field %s", name)
 }
@@ -11887,6 +11938,9 @@ func (m *TalentMutation) ResetField(name string) error {
 		return nil
 	case talent.FieldTimezone:
 		m.ResetTimezone()
+		return nil
+	case talent.FieldState:
+		m.ResetState()
 		return nil
 	}
 	return fmt.Errorf("unknown Talent field %s", name)

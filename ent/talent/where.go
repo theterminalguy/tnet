@@ -241,6 +241,13 @@ func Timezone(v string) predicate.Talent {
 	})
 }
 
+// State applies equality check predicate on the "state" field. It's identical to StateEQ.
+func State(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldState), v))
+	})
+}
+
 // UUIDEQ applies the EQ predicate on the "uuid" field.
 func UUIDEQ(v uuid.UUID) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
@@ -2254,6 +2261,117 @@ func TimezoneEqualFold(v string) predicate.Talent {
 func TimezoneContainsFold(v string) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldTimezone), v))
+	})
+}
+
+// StateEQ applies the EQ predicate on the "state" field.
+func StateEQ(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldState), v))
+	})
+}
+
+// StateNEQ applies the NEQ predicate on the "state" field.
+func StateNEQ(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldState), v))
+	})
+}
+
+// StateIn applies the In predicate on the "state" field.
+func StateIn(vs ...string) predicate.Talent {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Talent(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldState), v...))
+	})
+}
+
+// StateNotIn applies the NotIn predicate on the "state" field.
+func StateNotIn(vs ...string) predicate.Talent {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Talent(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldState), v...))
+	})
+}
+
+// StateGT applies the GT predicate on the "state" field.
+func StateGT(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldState), v))
+	})
+}
+
+// StateGTE applies the GTE predicate on the "state" field.
+func StateGTE(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldState), v))
+	})
+}
+
+// StateLT applies the LT predicate on the "state" field.
+func StateLT(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldState), v))
+	})
+}
+
+// StateLTE applies the LTE predicate on the "state" field.
+func StateLTE(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldState), v))
+	})
+}
+
+// StateContains applies the Contains predicate on the "state" field.
+func StateContains(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldState), v))
+	})
+}
+
+// StateHasPrefix applies the HasPrefix predicate on the "state" field.
+func StateHasPrefix(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldState), v))
+	})
+}
+
+// StateHasSuffix applies the HasSuffix predicate on the "state" field.
+func StateHasSuffix(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldState), v))
+	})
+}
+
+// StateEqualFold applies the EqualFold predicate on the "state" field.
+func StateEqualFold(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldState), v))
+	})
+}
+
+// StateContainsFold applies the ContainsFold predicate on the "state" field.
+func StateContainsFold(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldState), v))
 	})
 }
 
