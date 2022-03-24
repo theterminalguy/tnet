@@ -57,7 +57,7 @@ func (v *V1TalentSearchFilterHandler) ReadByID(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := v.TalentRepo.GetByUUID(id)
+	record, err := v.TalentRepo.GetTalentByUUID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
