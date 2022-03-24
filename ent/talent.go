@@ -60,6 +60,8 @@ type Talent struct {
 	JoinedTentnAt *time.Time `json:"joined_tentn_at,omitempty"`
 	// JobPreference holds the value of the "job_preference" field.
 	JobPreference talent.JobPreference `json:"job_preference,omitempty"`
+	// Timezone holds the value of the "timezone" field.
+	Timezone string `json:"timezone,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TalentQuery when eager-loading is set.
 	Edges TalentEdges `json:"edges"`
@@ -201,7 +203,7 @@ func (*Talent) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case talent.FieldID, talent.FieldUserID, talent.FieldReferrerID:
 			values[i] = new(sql.NullInt64)
-		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldReferralCode, talent.FieldTentnCode, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity, talent.FieldJobPreference:
+		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldReferralCode, talent.FieldTentnCode, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity, talent.FieldJobPreference, talent.FieldTimezone:
 			values[i] = new(sql.NullString)
 		case talent.FieldCreatedAt, talent.FieldUpdatedAt, talent.FieldDeletedAt, talent.FieldProfessionalStartDate, talent.FieldJoinedTentnAt:
 			values[i] = new(sql.NullTime)
@@ -356,6 +358,12 @@ func (t *Talent) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				t.JobPreference = talent.JobPreference(value.String)
 			}
+		case talent.FieldTimezone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field timezone", values[i])
+			} else if value.Valid {
+				t.Timezone = value.String
+			}
 		}
 	}
 	return nil
@@ -480,6 +488,8 @@ func (t *Talent) String() string {
 	}
 	builder.WriteString(", job_preference=")
 	builder.WriteString(fmt.Sprintf("%v", t.JobPreference))
+	builder.WriteString(", timezone=")
+	builder.WriteString(t.Timezone)
 	builder.WriteByte(')')
 	return builder.String()
 }

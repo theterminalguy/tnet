@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -32,6 +33,14 @@ func (ecu *EmergencyContactUpdate) Where(ps ...predicate.EmergencyContact) *Emer
 // SetUUID sets the "uuid" field.
 func (ecu *EmergencyContactUpdate) SetUUID(u uuid.UUID) *EmergencyContactUpdate {
 	ecu.mutation.SetUUID(u)
+	return ecu
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (ecu *EmergencyContactUpdate) SetNillableUUID(u *uuid.UUID) *EmergencyContactUpdate {
+	if u != nil {
+		ecu.SetUUID(*u)
+	}
 	return ecu
 }
 
@@ -330,6 +339,14 @@ func (ecuo *EmergencyContactUpdateOne) SetUUID(u uuid.UUID) *EmergencyContactUpd
 	return ecuo
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (ecuo *EmergencyContactUpdateOne) SetNillableUUID(u *uuid.UUID) *EmergencyContactUpdateOne {
+	if u != nil {
+		ecuo.SetUUID(*u)
+	}
+	return ecuo
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (ecuo *EmergencyContactUpdateOne) SetUpdatedAt(t time.Time) *EmergencyContactUpdateOne {
 	ecuo.mutation.SetUpdatedAt(t)
@@ -505,7 +522,7 @@ func (ecuo *EmergencyContactUpdateOne) sqlSave(ctx context.Context) (_node *Emer
 	}
 	id, ok := ecuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing EmergencyContact.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "EmergencyContact.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ecuo.fields; len(fields) > 0 {

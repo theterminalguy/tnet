@@ -131,7 +131,7 @@ func (weq *WorkExperienceQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single WorkExperience entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one WorkExperience entity is not found.
+// Returns a *NotSingularError when more than one WorkExperience entity is found.
 // Returns a *NotFoundError when no WorkExperience entities are found.
 func (weq *WorkExperienceQuery) Only(ctx context.Context) (*WorkExperience, error) {
 	nodes, err := weq.Limit(2).All(ctx)
@@ -158,7 +158,7 @@ func (weq *WorkExperienceQuery) OnlyX(ctx context.Context) *WorkExperience {
 }
 
 // OnlyID is like Only, but returns the only WorkExperience ID in the query.
-// Returns a *NotSingularError when exactly one WorkExperience ID is not found.
+// Returns a *NotSingularError when more than one WorkExperience ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (weq *WorkExperienceQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -268,8 +268,9 @@ func (weq *WorkExperienceQuery) Clone() *WorkExperienceQuery {
 		predicates: append([]predicate.WorkExperience{}, weq.predicates...),
 		withTalent: weq.withTalent.Clone(),
 		// clone intermediate query.
-		sql:  weq.sql.Clone(),
-		path: weq.path,
+		sql:    weq.sql.Clone(),
+		path:   weq.path,
+		unique: weq.unique,
 	}
 }
 
@@ -404,6 +405,10 @@ func (weq *WorkExperienceQuery) sqlAll(ctx context.Context) ([]*WorkExperience, 
 
 func (weq *WorkExperienceQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := weq.querySpec()
+	_spec.Node.Columns = weq.fields
+	if len(weq.fields) > 0 {
+		_spec.Unique = weq.unique != nil && *weq.unique
+	}
 	return sqlgraph.CountNodes(ctx, weq.driver, _spec)
 }
 
@@ -474,6 +479,9 @@ func (weq *WorkExperienceQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if weq.sql != nil {
 		selector = weq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if weq.unique != nil && *weq.unique {
+		selector.Distinct()
 	}
 	for _, p := range weq.predicates {
 		p(selector)
@@ -753,9 +761,7 @@ func (wegb *WorkExperienceGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range wegb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(wegb.fields...)...)

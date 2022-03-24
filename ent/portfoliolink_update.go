@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -32,6 +33,14 @@ func (plu *PortfolioLinkUpdate) Where(ps ...predicate.PortfolioLink) *PortfolioL
 // SetUUID sets the "uuid" field.
 func (plu *PortfolioLinkUpdate) SetUUID(u uuid.UUID) *PortfolioLinkUpdate {
 	plu.mutation.SetUUID(u)
+	return plu
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (plu *PortfolioLinkUpdate) SetNillableUUID(u *uuid.UUID) *PortfolioLinkUpdate {
+	if u != nil {
+		plu.SetUUID(*u)
+	}
 	return plu
 }
 
@@ -291,6 +300,14 @@ func (pluo *PortfolioLinkUpdateOne) SetUUID(u uuid.UUID) *PortfolioLinkUpdateOne
 	return pluo
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (pluo *PortfolioLinkUpdateOne) SetNillableUUID(u *uuid.UUID) *PortfolioLinkUpdateOne {
+	if u != nil {
+		pluo.SetUUID(*u)
+	}
+	return pluo
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (pluo *PortfolioLinkUpdateOne) SetUpdatedAt(t time.Time) *PortfolioLinkUpdateOne {
 	pluo.mutation.SetUpdatedAt(t)
@@ -448,7 +465,7 @@ func (pluo *PortfolioLinkUpdateOne) sqlSave(ctx context.Context) (_node *Portfol
 	}
 	id, ok := pluo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing PortfolioLink.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "PortfolioLink.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := pluo.fields; len(fields) > 0 {

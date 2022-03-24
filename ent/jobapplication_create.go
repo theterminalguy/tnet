@@ -29,6 +29,14 @@ func (jac *JobApplicationCreate) SetUUID(u uuid.UUID) *JobApplicationCreate {
 	return jac
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (jac *JobApplicationCreate) SetNillableUUID(u *uuid.UUID) *JobApplicationCreate {
+	if u != nil {
+		jac.SetUUID(*u)
+	}
+	return jac
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (jac *JobApplicationCreate) SetCreatedAt(t time.Time) *JobApplicationCreate {
 	jac.mutation.SetCreatedAt(t)
@@ -241,23 +249,23 @@ func (jac *JobApplicationCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (jac *JobApplicationCreate) check() error {
 	if _, ok := jac.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "uuid"`)}
+		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "JobApplication.uuid"`)}
 	}
 	if _, ok := jac.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "JobApplication.created_at"`)}
 	}
 	if _, ok := jac.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "JobApplication.updated_at"`)}
 	}
 	if _, ok := jac.mutation.ReferralSource(); !ok {
-		return &ValidationError{Name: "referral_source", err: errors.New(`ent: missing required field "referral_source"`)}
+		return &ValidationError{Name: "referral_source", err: errors.New(`ent: missing required field "JobApplication.referral_source"`)}
 	}
 	if _, ok := jac.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "status"`)}
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "JobApplication.status"`)}
 	}
 	if v, ok := jac.mutation.Status(); ok {
 		if err := jobapplication.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "status": %w`, err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "JobApplication.status": %w`, err)}
 		}
 	}
 	return nil

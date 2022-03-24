@@ -132,7 +132,7 @@ func (pq *PartnerQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single Partner entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Partner entity is not found.
+// Returns a *NotSingularError when more than one Partner entity is found.
 // Returns a *NotFoundError when no Partner entities are found.
 func (pq *PartnerQuery) Only(ctx context.Context) (*Partner, error) {
 	nodes, err := pq.Limit(2).All(ctx)
@@ -159,7 +159,7 @@ func (pq *PartnerQuery) OnlyX(ctx context.Context) *Partner {
 }
 
 // OnlyID is like Only, but returns the only Partner ID in the query.
-// Returns a *NotSingularError when exactly one Partner ID is not found.
+// Returns a *NotSingularError when more than one Partner ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (pq *PartnerQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -269,8 +269,9 @@ func (pq *PartnerQuery) Clone() *PartnerQuery {
 		predicates:   append([]predicate.Partner{}, pq.predicates...),
 		withMissions: pq.withMissions.Clone(),
 		// clone intermediate query.
-		sql:  pq.sql.Clone(),
-		path: pq.path,
+		sql:    pq.sql.Clone(),
+		path:   pq.path,
+		unique: pq.unique,
 	}
 }
 
@@ -404,6 +405,10 @@ func (pq *PartnerQuery) sqlAll(ctx context.Context) ([]*Partner, error) {
 
 func (pq *PartnerQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := pq.querySpec()
+	_spec.Node.Columns = pq.fields
+	if len(pq.fields) > 0 {
+		_spec.Unique = pq.unique != nil && *pq.unique
+	}
 	return sqlgraph.CountNodes(ctx, pq.driver, _spec)
 }
 
@@ -474,6 +479,9 @@ func (pq *PartnerQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if pq.sql != nil {
 		selector = pq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if pq.unique != nil && *pq.unique {
+		selector.Distinct()
 	}
 	for _, p := range pq.predicates {
 		p(selector)
@@ -753,9 +761,7 @@ func (pgb *PartnerGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range pgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(pgb.fields...)...)

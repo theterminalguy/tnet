@@ -28,6 +28,14 @@ func (ec *EducationCreate) SetUUID(u uuid.UUID) *EducationCreate {
 	return ec
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (ec *EducationCreate) SetNillableUUID(u *uuid.UUID) *EducationCreate {
+	if u != nil {
+		ec.SetUUID(*u)
+	}
+	return ec
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (ec *EducationCreate) SetCreatedAt(t time.Time) *EducationCreate {
 	ec.mutation.SetCreatedAt(t)
@@ -233,31 +241,31 @@ func (ec *EducationCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ec *EducationCreate) check() error {
 	if _, ok := ec.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "uuid"`)}
+		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "Education.uuid"`)}
 	}
 	if _, ok := ec.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Education.created_at"`)}
 	}
 	if _, ok := ec.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Education.updated_at"`)}
 	}
 	if _, ok := ec.mutation.InstitutionName(); !ok {
-		return &ValidationError{Name: "institution_name", err: errors.New(`ent: missing required field "institution_name"`)}
+		return &ValidationError{Name: "institution_name", err: errors.New(`ent: missing required field "Education.institution_name"`)}
 	}
 	if _, ok := ec.mutation.Location(); !ok {
-		return &ValidationError{Name: "location", err: errors.New(`ent: missing required field "location"`)}
+		return &ValidationError{Name: "location", err: errors.New(`ent: missing required field "Education.location"`)}
 	}
 	if _, ok := ec.mutation.Degree(); !ok {
-		return &ValidationError{Name: "degree", err: errors.New(`ent: missing required field "degree"`)}
+		return &ValidationError{Name: "degree", err: errors.New(`ent: missing required field "Education.degree"`)}
 	}
 	if _, ok := ec.mutation.Program(); !ok {
-		return &ValidationError{Name: "program", err: errors.New(`ent: missing required field "program"`)}
+		return &ValidationError{Name: "program", err: errors.New(`ent: missing required field "Education.program"`)}
 	}
 	if _, ok := ec.mutation.Overview(); !ok {
-		return &ValidationError{Name: "overview", err: errors.New(`ent: missing required field "overview"`)}
+		return &ValidationError{Name: "overview", err: errors.New(`ent: missing required field "Education.overview"`)}
 	}
 	if _, ok := ec.mutation.StartDate(); !ok {
-		return &ValidationError{Name: "start_date", err: errors.New(`ent: missing required field "start_date"`)}
+		return &ValidationError{Name: "start_date", err: errors.New(`ent: missing required field "Education.start_date"`)}
 	}
 	return nil
 }

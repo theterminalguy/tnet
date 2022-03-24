@@ -149,6 +149,7 @@ var (
 		{Name: "we_have", Type: field.TypeJSON},
 		{Name: "requirements", Type: field.TypeJSON},
 		{Name: "you_have", Type: field.TypeJSON},
+		{Name: "timezone", Type: field.TypeString},
 		{Name: "user_id", Type: field.TypeInt, Nullable: true},
 	}
 	// JobsTable holds the schema information for the "jobs" table.
@@ -159,7 +160,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "jobs_users_jobs",
-				Columns:    []*schema.Column{JobsColumns[16]},
+				Columns:    []*schema.Column{JobsColumns[17]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -173,7 +174,7 @@ var (
 			{
 				Name:    "job_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{JobsColumns[16]},
+				Columns: []*schema.Column{JobsColumns[17]},
 			},
 			{
 				Name:    "job_title",
@@ -477,6 +478,7 @@ var (
 		{Name: "city", Type: field.TypeString},
 		{Name: "joined_tentn_at", Type: field.TypeTime, Nullable: true},
 		{Name: "job_preference", Type: field.TypeEnum, Enums: []string{"remote", "onsite", "flexible"}},
+		{Name: "timezone", Type: field.TypeString},
 		{Name: "referrer_id", Type: field.TypeInt, Nullable: true},
 		{Name: "user_id", Type: field.TypeInt, Nullable: true},
 	}
@@ -488,13 +490,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "talents_talents_referees",
-				Columns:    []*schema.Column{TalentsColumns[20]},
+				Columns:    []*schema.Column{TalentsColumns[21]},
 				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "talents_users_talents",
-				Columns:    []*schema.Column{TalentsColumns[21]},
+				Columns:    []*schema.Column{TalentsColumns[22]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -508,12 +510,12 @@ var (
 			{
 				Name:    "talent_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{TalentsColumns[21]},
+				Columns: []*schema.Column{TalentsColumns[22]},
 			},
 			{
 				Name:    "talent_referral_code_referrer_id",
 				Unique:  false,
-				Columns: []*schema.Column{TalentsColumns[11], TalentsColumns[20]},
+				Columns: []*schema.Column{TalentsColumns[11], TalentsColumns[21]},
 			},
 			{
 				Name:    "talent_tentn_code_email_phone",

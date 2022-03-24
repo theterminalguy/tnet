@@ -46,6 +46,8 @@ const (
 	FieldRequirements = "requirements"
 	// FieldYouHave holds the string denoting the you_have field in the database.
 	FieldYouHave = "you_have"
+	// FieldTimezone holds the string denoting the timezone field in the database.
+	FieldTimezone = "timezone"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeApplications holds the string denoting the applications edge name in mutations.
@@ -87,6 +89,7 @@ var Columns = []string{
 	FieldWeHave,
 	FieldRequirements,
 	FieldYouHave,
+	FieldTimezone,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

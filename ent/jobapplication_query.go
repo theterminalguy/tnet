@@ -155,7 +155,7 @@ func (jaq *JobApplicationQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single JobApplication entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one JobApplication entity is not found.
+// Returns a *NotSingularError when more than one JobApplication entity is found.
 // Returns a *NotFoundError when no JobApplication entities are found.
 func (jaq *JobApplicationQuery) Only(ctx context.Context) (*JobApplication, error) {
 	nodes, err := jaq.Limit(2).All(ctx)
@@ -182,7 +182,7 @@ func (jaq *JobApplicationQuery) OnlyX(ctx context.Context) *JobApplication {
 }
 
 // OnlyID is like Only, but returns the only JobApplication ID in the query.
-// Returns a *NotSingularError when exactly one JobApplication ID is not found.
+// Returns a *NotSingularError when more than one JobApplication ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (jaq *JobApplicationQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -293,8 +293,9 @@ func (jaq *JobApplicationQuery) Clone() *JobApplicationQuery {
 		withTalent: jaq.withTalent.Clone(),
 		withJob:    jaq.withJob.Clone(),
 		// clone intermediate query.
-		sql:  jaq.sql.Clone(),
-		path: jaq.path,
+		sql:    jaq.sql.Clone(),
+		path:   jaq.path,
+		unique: jaq.unique,
 	}
 }
 
@@ -467,6 +468,10 @@ func (jaq *JobApplicationQuery) sqlAll(ctx context.Context) ([]*JobApplication, 
 
 func (jaq *JobApplicationQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := jaq.querySpec()
+	_spec.Node.Columns = jaq.fields
+	if len(jaq.fields) > 0 {
+		_spec.Unique = jaq.unique != nil && *jaq.unique
+	}
 	return sqlgraph.CountNodes(ctx, jaq.driver, _spec)
 }
 
@@ -537,6 +542,9 @@ func (jaq *JobApplicationQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if jaq.sql != nil {
 		selector = jaq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if jaq.unique != nil && *jaq.unique {
+		selector.Distinct()
 	}
 	for _, p := range jaq.predicates {
 		p(selector)
@@ -816,9 +824,7 @@ func (jagb *JobApplicationGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range jagb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(jagb.fields...)...)

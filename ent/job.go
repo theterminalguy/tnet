@@ -51,6 +51,8 @@ type Job struct {
 	Requirements []string `json:"requirements,omitempty"`
 	// YouHave holds the value of the "you_have" field.
 	YouHave []string `json:"you_have,omitempty"`
+	// Timezone holds the value of the "timezone" field.
+	Timezone string `json:"timezone,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the JobQuery when eager-loading is set.
 	Edges JobEdges `json:"edges"`
@@ -101,7 +103,7 @@ func (*Job) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case job.FieldID, job.FieldUserID:
 			values[i] = new(sql.NullInt64)
-		case job.FieldTitle, job.FieldSlug, job.FieldLocation, job.FieldSummary, job.FieldEmployment, job.FieldCategory, job.FieldThumbnail:
+		case job.FieldTitle, job.FieldSlug, job.FieldLocation, job.FieldSummary, job.FieldEmployment, job.FieldCategory, job.FieldThumbnail, job.FieldTimezone:
 			values[i] = new(sql.NullString)
 		case job.FieldCreatedAt, job.FieldUpdatedAt, job.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -231,6 +233,12 @@ func (j *Job) assignValues(columns []string, values []interface{}) error {
 					return fmt.Errorf("unmarshal field you_have: %w", err)
 				}
 			}
+		case job.FieldTimezone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field timezone", values[i])
+			} else if value.Valid {
+				j.Timezone = value.String
+			}
 		}
 	}
 	return nil
@@ -303,6 +311,8 @@ func (j *Job) String() string {
 	builder.WriteString(fmt.Sprintf("%v", j.Requirements))
 	builder.WriteString(", you_have=")
 	builder.WriteString(fmt.Sprintf("%v", j.YouHave))
+	builder.WriteString(", timezone=")
+	builder.WriteString(j.Timezone)
 	builder.WriteByte(')')
 	return builder.String()
 }

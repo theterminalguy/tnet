@@ -131,7 +131,7 @@ func (saiq *SlackAppInstallQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single SlackAppInstall entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one SlackAppInstall entity is not found.
+// Returns a *NotSingularError when more than one SlackAppInstall entity is found.
 // Returns a *NotFoundError when no SlackAppInstall entities are found.
 func (saiq *SlackAppInstallQuery) Only(ctx context.Context) (*SlackAppInstall, error) {
 	nodes, err := saiq.Limit(2).All(ctx)
@@ -158,7 +158,7 @@ func (saiq *SlackAppInstallQuery) OnlyX(ctx context.Context) *SlackAppInstall {
 }
 
 // OnlyID is like Only, but returns the only SlackAppInstall ID in the query.
-// Returns a *NotSingularError when exactly one SlackAppInstall ID is not found.
+// Returns a *NotSingularError when more than one SlackAppInstall ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (saiq *SlackAppInstallQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -268,8 +268,9 @@ func (saiq *SlackAppInstallQuery) Clone() *SlackAppInstallQuery {
 		predicates: append([]predicate.SlackAppInstall{}, saiq.predicates...),
 		withUser:   saiq.withUser.Clone(),
 		// clone intermediate query.
-		sql:  saiq.sql.Clone(),
-		path: saiq.path,
+		sql:    saiq.sql.Clone(),
+		path:   saiq.path,
+		unique: saiq.unique,
 	}
 }
 
@@ -404,6 +405,10 @@ func (saiq *SlackAppInstallQuery) sqlAll(ctx context.Context) ([]*SlackAppInstal
 
 func (saiq *SlackAppInstallQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := saiq.querySpec()
+	_spec.Node.Columns = saiq.fields
+	if len(saiq.fields) > 0 {
+		_spec.Unique = saiq.unique != nil && *saiq.unique
+	}
 	return sqlgraph.CountNodes(ctx, saiq.driver, _spec)
 }
 
@@ -474,6 +479,9 @@ func (saiq *SlackAppInstallQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if saiq.sql != nil {
 		selector = saiq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if saiq.unique != nil && *saiq.unique {
+		selector.Distinct()
 	}
 	for _, p := range saiq.predicates {
 		p(selector)
@@ -753,9 +761,7 @@ func (saigb *SlackAppInstallGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range saigb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(saigb.fields...)...)

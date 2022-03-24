@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -32,6 +33,14 @@ func (tcu *TalentCollectionUpdate) Where(ps ...predicate.TalentCollection) *Tale
 // SetUUID sets the "uuid" field.
 func (tcu *TalentCollectionUpdate) SetUUID(u uuid.UUID) *TalentCollectionUpdate {
 	tcu.mutation.SetUUID(u)
+	return tcu
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (tcu *TalentCollectionUpdate) SetNillableUUID(u *uuid.UUID) *TalentCollectionUpdate {
+	if u != nil {
+		tcu.SetUUID(*u)
+	}
 	return tcu
 }
 
@@ -291,6 +300,14 @@ func (tcuo *TalentCollectionUpdateOne) SetUUID(u uuid.UUID) *TalentCollectionUpd
 	return tcuo
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (tcuo *TalentCollectionUpdateOne) SetNillableUUID(u *uuid.UUID) *TalentCollectionUpdateOne {
+	if u != nil {
+		tcuo.SetUUID(*u)
+	}
+	return tcuo
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (tcuo *TalentCollectionUpdateOne) SetUpdatedAt(t time.Time) *TalentCollectionUpdateOne {
 	tcuo.mutation.SetUpdatedAt(t)
@@ -448,7 +465,7 @@ func (tcuo *TalentCollectionUpdateOne) sqlSave(ctx context.Context) (_node *Tale
 	}
 	id, ok := tcuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TalentCollection.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TalentCollection.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := tcuo.fields; len(fields) > 0 {

@@ -28,6 +28,14 @@ func (saic *SlackAppInstallCreate) SetUUID(u uuid.UUID) *SlackAppInstallCreate {
 	return saic
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (saic *SlackAppInstallCreate) SetNillableUUID(u *uuid.UUID) *SlackAppInstallCreate {
+	if u != nil {
+		saic.SetUUID(*u)
+	}
+	return saic
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (saic *SlackAppInstallCreate) SetCreatedAt(t time.Time) *SlackAppInstallCreate {
 	saic.mutation.SetCreatedAt(t)
@@ -243,43 +251,43 @@ func (saic *SlackAppInstallCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (saic *SlackAppInstallCreate) check() error {
 	if _, ok := saic.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "uuid"`)}
+		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "SlackAppInstall.uuid"`)}
 	}
 	if _, ok := saic.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "SlackAppInstall.created_at"`)}
 	}
 	if _, ok := saic.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "SlackAppInstall.updated_at"`)}
 	}
 	if _, ok := saic.mutation.TeamID(); !ok {
-		return &ValidationError{Name: "team_id", err: errors.New(`ent: missing required field "team_id"`)}
+		return &ValidationError{Name: "team_id", err: errors.New(`ent: missing required field "SlackAppInstall.team_id"`)}
 	}
 	if _, ok := saic.mutation.TeamName(); !ok {
-		return &ValidationError{Name: "team_name", err: errors.New(`ent: missing required field "team_name"`)}
+		return &ValidationError{Name: "team_name", err: errors.New(`ent: missing required field "SlackAppInstall.team_name"`)}
 	}
 	if _, ok := saic.mutation.AuthedUserID(); !ok {
-		return &ValidationError{Name: "authed_user_id", err: errors.New(`ent: missing required field "authed_user_id"`)}
+		return &ValidationError{Name: "authed_user_id", err: errors.New(`ent: missing required field "SlackAppInstall.authed_user_id"`)}
 	}
 	if _, ok := saic.mutation.AuthedUserEmail(); !ok {
-		return &ValidationError{Name: "authed_user_email", err: errors.New(`ent: missing required field "authed_user_email"`)}
+		return &ValidationError{Name: "authed_user_email", err: errors.New(`ent: missing required field "SlackAppInstall.authed_user_email"`)}
 	}
 	if _, ok := saic.mutation.AppID(); !ok {
-		return &ValidationError{Name: "app_id", err: errors.New(`ent: missing required field "app_id"`)}
+		return &ValidationError{Name: "app_id", err: errors.New(`ent: missing required field "SlackAppInstall.app_id"`)}
 	}
 	if _, ok := saic.mutation.BotUserID(); !ok {
-		return &ValidationError{Name: "bot_user_id", err: errors.New(`ent: missing required field "bot_user_id"`)}
+		return &ValidationError{Name: "bot_user_id", err: errors.New(`ent: missing required field "SlackAppInstall.bot_user_id"`)}
 	}
 	if _, ok := saic.mutation.AccessToken(); !ok {
-		return &ValidationError{Name: "access_token", err: errors.New(`ent: missing required field "access_token"`)}
+		return &ValidationError{Name: "access_token", err: errors.New(`ent: missing required field "SlackAppInstall.access_token"`)}
 	}
 	if _, ok := saic.mutation.TokenType(); !ok {
-		return &ValidationError{Name: "token_type", err: errors.New(`ent: missing required field "token_type"`)}
+		return &ValidationError{Name: "token_type", err: errors.New(`ent: missing required field "SlackAppInstall.token_type"`)}
 	}
 	if _, ok := saic.mutation.Scope(); !ok {
-		return &ValidationError{Name: "scope", err: errors.New(`ent: missing required field "scope"`)}
+		return &ValidationError{Name: "scope", err: errors.New(`ent: missing required field "SlackAppInstall.scope"`)}
 	}
 	if _, ok := saic.mutation.IsEnterpriseInstall(); !ok {
-		return &ValidationError{Name: "is_enterprise_install", err: errors.New(`ent: missing required field "is_enterprise_install"`)}
+		return &ValidationError{Name: "is_enterprise_install", err: errors.New(`ent: missing required field "SlackAppInstall.is_enterprise_install"`)}
 	}
 	return nil
 }

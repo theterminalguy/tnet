@@ -29,6 +29,14 @@ func (mc *MissionCreate) SetUUID(u uuid.UUID) *MissionCreate {
 	return mc
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (mc *MissionCreate) SetNillableUUID(u *uuid.UUID) *MissionCreate {
+	if u != nil {
+		mc.SetUUID(*u)
+	}
+	return mc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (mc *MissionCreate) SetCreatedAt(t time.Time) *MissionCreate {
 	mc.mutation.SetCreatedAt(t)
@@ -229,24 +237,24 @@ func (mc *MissionCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (mc *MissionCreate) check() error {
 	if _, ok := mc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "uuid"`)}
+		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "Mission.uuid"`)}
 	}
 	if _, ok := mc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Mission.created_at"`)}
 	}
 	if _, ok := mc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Mission.updated_at"`)}
 	}
 	if _, ok := mc.mutation.MissionType(); !ok {
-		return &ValidationError{Name: "mission_type", err: errors.New(`ent: missing required field "mission_type"`)}
+		return &ValidationError{Name: "mission_type", err: errors.New(`ent: missing required field "Mission.mission_type"`)}
 	}
 	if v, ok := mc.mutation.MissionType(); ok {
 		if err := mission.MissionTypeValidator(v); err != nil {
-			return &ValidationError{Name: "mission_type", err: fmt.Errorf(`ent: validator failed for field "mission_type": %w`, err)}
+			return &ValidationError{Name: "mission_type", err: fmt.Errorf(`ent: validator failed for field "Mission.mission_type": %w`, err)}
 		}
 	}
 	if _, ok := mc.mutation.StartDate(); !ok {
-		return &ValidationError{Name: "start_date", err: errors.New(`ent: missing required field "start_date"`)}
+		return &ValidationError{Name: "start_date", err: errors.New(`ent: missing required field "Mission.start_date"`)}
 	}
 	return nil
 }

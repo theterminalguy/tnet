@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -32,6 +33,14 @@ func (saiu *SlackAppInstallUpdate) Where(ps ...predicate.SlackAppInstall) *Slack
 // SetUUID sets the "uuid" field.
 func (saiu *SlackAppInstallUpdate) SetUUID(u uuid.UUID) *SlackAppInstallUpdate {
 	saiu.mutation.SetUUID(u)
+	return saiu
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (saiu *SlackAppInstallUpdate) SetNillableUUID(u *uuid.UUID) *SlackAppInstallUpdate {
+	if u != nil {
+		saiu.SetUUID(*u)
+	}
 	return saiu
 }
 
@@ -395,6 +404,14 @@ func (saiuo *SlackAppInstallUpdateOne) SetUUID(u uuid.UUID) *SlackAppInstallUpda
 	return saiuo
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (saiuo *SlackAppInstallUpdateOne) SetNillableUUID(u *uuid.UUID) *SlackAppInstallUpdateOne {
+	if u != nil {
+		saiuo.SetUUID(*u)
+	}
+	return saiuo
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (saiuo *SlackAppInstallUpdateOne) SetUpdatedAt(t time.Time) *SlackAppInstallUpdateOne {
 	saiuo.mutation.SetUpdatedAt(t)
@@ -600,7 +617,7 @@ func (saiuo *SlackAppInstallUpdateOne) sqlSave(ctx context.Context) (_node *Slac
 	}
 	id, ok := saiuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing SlackAppInstall.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "SlackAppInstall.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := saiuo.fields; len(fields) > 0 {

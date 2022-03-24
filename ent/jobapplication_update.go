@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -33,6 +34,14 @@ func (jau *JobApplicationUpdate) Where(ps ...predicate.JobApplication) *JobAppli
 // SetUUID sets the "uuid" field.
 func (jau *JobApplicationUpdate) SetUUID(u uuid.UUID) *JobApplicationUpdate {
 	jau.mutation.SetUUID(u)
+	return jau
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (jau *JobApplicationUpdate) SetNillableUUID(u *uuid.UUID) *JobApplicationUpdate {
+	if u != nil {
+		jau.SetUUID(*u)
+	}
 	return jau
 }
 
@@ -242,7 +251,7 @@ func (jau *JobApplicationUpdate) defaults() {
 func (jau *JobApplicationUpdate) check() error {
 	if v, ok := jau.mutation.Status(); ok {
 		if err := jobapplication.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "JobApplication.status": %w`, err)}
 		}
 	}
 	return nil
@@ -412,6 +421,14 @@ type JobApplicationUpdateOne struct {
 // SetUUID sets the "uuid" field.
 func (jauo *JobApplicationUpdateOne) SetUUID(u uuid.UUID) *JobApplicationUpdateOne {
 	jauo.mutation.SetUUID(u)
+	return jauo
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (jauo *JobApplicationUpdateOne) SetNillableUUID(u *uuid.UUID) *JobApplicationUpdateOne {
+	if u != nil {
+		jauo.SetUUID(*u)
+	}
 	return jauo
 }
 
@@ -628,7 +645,7 @@ func (jauo *JobApplicationUpdateOne) defaults() {
 func (jauo *JobApplicationUpdateOne) check() error {
 	if v, ok := jauo.mutation.Status(); ok {
 		if err := jobapplication.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "JobApplication.status": %w`, err)}
 		}
 	}
 	return nil
@@ -647,7 +664,7 @@ func (jauo *JobApplicationUpdateOne) sqlSave(ctx context.Context) (_node *JobApp
 	}
 	id, ok := jauo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing JobApplication.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "JobApplication.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := jauo.fields; len(fields) > 0 {

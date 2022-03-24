@@ -28,6 +28,14 @@ func (pc *PartnerCreate) SetUUID(u uuid.UUID) *PartnerCreate {
 	return pc
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (pc *PartnerCreate) SetNillableUUID(u *uuid.UUID) *PartnerCreate {
+	if u != nil {
+		pc.SetUUID(*u)
+	}
+	return pc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pc *PartnerCreate) SetCreatedAt(t time.Time) *PartnerCreate {
 	pc.mutation.SetCreatedAt(t)
@@ -215,31 +223,31 @@ func (pc *PartnerCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (pc *PartnerCreate) check() error {
 	if _, ok := pc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "uuid"`)}
+		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "Partner.uuid"`)}
 	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Partner.created_at"`)}
 	}
 	if _, ok := pc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Partner.updated_at"`)}
 	}
 	if _, ok := pc.mutation.CompanyName(); !ok {
-		return &ValidationError{Name: "CompanyName", err: errors.New(`ent: missing required field "CompanyName"`)}
+		return &ValidationError{Name: "CompanyName", err: errors.New(`ent: missing required field "Partner.CompanyName"`)}
 	}
 	if _, ok := pc.mutation.CompanyLocation(); !ok {
-		return &ValidationError{Name: "CompanyLocation", err: errors.New(`ent: missing required field "CompanyLocation"`)}
+		return &ValidationError{Name: "CompanyLocation", err: errors.New(`ent: missing required field "Partner.CompanyLocation"`)}
 	}
 	if _, ok := pc.mutation.ContactPersonName(); !ok {
-		return &ValidationError{Name: "ContactPersonName", err: errors.New(`ent: missing required field "ContactPersonName"`)}
+		return &ValidationError{Name: "ContactPersonName", err: errors.New(`ent: missing required field "Partner.ContactPersonName"`)}
 	}
 	if _, ok := pc.mutation.ContactPersonPhoneNumber(); !ok {
-		return &ValidationError{Name: "ContactPersonPhoneNumber", err: errors.New(`ent: missing required field "ContactPersonPhoneNumber"`)}
+		return &ValidationError{Name: "ContactPersonPhoneNumber", err: errors.New(`ent: missing required field "Partner.ContactPersonPhoneNumber"`)}
 	}
 	if _, ok := pc.mutation.ContactPersonEmail(); !ok {
-		return &ValidationError{Name: "ContactPersonEmail", err: errors.New(`ent: missing required field "ContactPersonEmail"`)}
+		return &ValidationError{Name: "ContactPersonEmail", err: errors.New(`ent: missing required field "Partner.ContactPersonEmail"`)}
 	}
 	if _, ok := pc.mutation.WebsiteUrl(); !ok {
-		return &ValidationError{Name: "WebsiteUrl", err: errors.New(`ent: missing required field "WebsiteUrl"`)}
+		return &ValidationError{Name: "WebsiteUrl", err: errors.New(`ent: missing required field "Partner.WebsiteUrl"`)}
 	}
 	return nil
 }

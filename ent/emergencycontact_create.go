@@ -28,6 +28,14 @@ func (ecc *EmergencyContactCreate) SetUUID(u uuid.UUID) *EmergencyContactCreate 
 	return ecc
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (ecc *EmergencyContactCreate) SetNillableUUID(u *uuid.UUID) *EmergencyContactCreate {
+	if u != nil {
+		ecc.SetUUID(*u)
+	}
+	return ecc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (ecc *EmergencyContactCreate) SetCreatedAt(t time.Time) *EmergencyContactCreate {
 	ecc.mutation.SetCreatedAt(t)
@@ -213,28 +221,28 @@ func (ecc *EmergencyContactCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ecc *EmergencyContactCreate) check() error {
 	if _, ok := ecc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "uuid"`)}
+		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "EmergencyContact.uuid"`)}
 	}
 	if _, ok := ecc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "EmergencyContact.created_at"`)}
 	}
 	if _, ok := ecc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "EmergencyContact.updated_at"`)}
 	}
 	if _, ok := ecc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "EmergencyContact.name"`)}
 	}
 	if _, ok := ecc.mutation.PhoneNumber(); !ok {
-		return &ValidationError{Name: "phone_number", err: errors.New(`ent: missing required field "phone_number"`)}
+		return &ValidationError{Name: "phone_number", err: errors.New(`ent: missing required field "EmergencyContact.phone_number"`)}
 	}
 	if _, ok := ecc.mutation.Address(); !ok {
-		return &ValidationError{Name: "address", err: errors.New(`ent: missing required field "address"`)}
+		return &ValidationError{Name: "address", err: errors.New(`ent: missing required field "EmergencyContact.address"`)}
 	}
 	if _, ok := ecc.mutation.Relationship(); !ok {
-		return &ValidationError{Name: "relationship", err: errors.New(`ent: missing required field "relationship"`)}
+		return &ValidationError{Name: "relationship", err: errors.New(`ent: missing required field "EmergencyContact.relationship"`)}
 	}
 	if _, ok := ecc.mutation.Email(); !ok {
-		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "email"`)}
+		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "EmergencyContact.email"`)}
 	}
 	return nil
 }

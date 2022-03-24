@@ -33,6 +33,12 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 				Handler:     public_handler.NewV1JobTypeHandler(),
 				Middlewares: nil,
 			},
+			{
+				Path:        "timezone-types",
+				Only:        []Request{READ_ALL},
+				Handler:     public_handler.NewV1TimezoneHandler(),
+				Middlewares: nil,
+			},
 		},
 	}
 	publicV1Router.BuildRoutes()

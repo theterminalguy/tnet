@@ -156,7 +156,7 @@ func (jq *JobQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single Job entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Job entity is not found.
+// Returns a *NotSingularError when more than one Job entity is found.
 // Returns a *NotFoundError when no Job entities are found.
 func (jq *JobQuery) Only(ctx context.Context) (*Job, error) {
 	nodes, err := jq.Limit(2).All(ctx)
@@ -183,7 +183,7 @@ func (jq *JobQuery) OnlyX(ctx context.Context) *Job {
 }
 
 // OnlyID is like Only, but returns the only Job ID in the query.
-// Returns a *NotSingularError when exactly one Job ID is not found.
+// Returns a *NotSingularError when more than one Job ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (jq *JobQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -294,8 +294,9 @@ func (jq *JobQuery) Clone() *JobQuery {
 		withUser:         jq.withUser.Clone(),
 		withApplications: jq.withApplications.Clone(),
 		// clone intermediate query.
-		sql:  jq.sql.Clone(),
-		path: jq.path,
+		sql:    jq.sql.Clone(),
+		path:   jq.path,
+		unique: jq.unique,
 	}
 }
 
@@ -467,6 +468,10 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 
 func (jq *JobQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := jq.querySpec()
+	_spec.Node.Columns = jq.fields
+	if len(jq.fields) > 0 {
+		_spec.Unique = jq.unique != nil && *jq.unique
+	}
 	return sqlgraph.CountNodes(ctx, jq.driver, _spec)
 }
 
@@ -537,6 +542,9 @@ func (jq *JobQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if jq.sql != nil {
 		selector = jq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if jq.unique != nil && *jq.unique {
+		selector.Distinct()
 	}
 	for _, p := range jq.predicates {
 		p(selector)
@@ -816,9 +824,7 @@ func (jgb *JobGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range jgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(jgb.fields...)...)

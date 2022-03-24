@@ -234,6 +234,13 @@ func JoinedTentnAt(v time.Time) predicate.Talent {
 	})
 }
 
+// Timezone applies equality check predicate on the "timezone" field. It's identical to TimezoneEQ.
+func Timezone(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTimezone), v))
+	})
+}
+
 // UUIDEQ applies the EQ predicate on the "uuid" field.
 func UUIDEQ(v uuid.UUID) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
@@ -2136,6 +2143,117 @@ func JobPreferenceNotIn(vs ...JobPreference) predicate.Talent {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldJobPreference), v...))
+	})
+}
+
+// TimezoneEQ applies the EQ predicate on the "timezone" field.
+func TimezoneEQ(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTimezone), v))
+	})
+}
+
+// TimezoneNEQ applies the NEQ predicate on the "timezone" field.
+func TimezoneNEQ(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTimezone), v))
+	})
+}
+
+// TimezoneIn applies the In predicate on the "timezone" field.
+func TimezoneIn(vs ...string) predicate.Talent {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Talent(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldTimezone), v...))
+	})
+}
+
+// TimezoneNotIn applies the NotIn predicate on the "timezone" field.
+func TimezoneNotIn(vs ...string) predicate.Talent {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Talent(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldTimezone), v...))
+	})
+}
+
+// TimezoneGT applies the GT predicate on the "timezone" field.
+func TimezoneGT(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldTimezone), v))
+	})
+}
+
+// TimezoneGTE applies the GTE predicate on the "timezone" field.
+func TimezoneGTE(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldTimezone), v))
+	})
+}
+
+// TimezoneLT applies the LT predicate on the "timezone" field.
+func TimezoneLT(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldTimezone), v))
+	})
+}
+
+// TimezoneLTE applies the LTE predicate on the "timezone" field.
+func TimezoneLTE(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldTimezone), v))
+	})
+}
+
+// TimezoneContains applies the Contains predicate on the "timezone" field.
+func TimezoneContains(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldTimezone), v))
+	})
+}
+
+// TimezoneHasPrefix applies the HasPrefix predicate on the "timezone" field.
+func TimezoneHasPrefix(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldTimezone), v))
+	})
+}
+
+// TimezoneHasSuffix applies the HasSuffix predicate on the "timezone" field.
+func TimezoneHasSuffix(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldTimezone), v))
+	})
+}
+
+// TimezoneEqualFold applies the EqualFold predicate on the "timezone" field.
+func TimezoneEqualFold(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldTimezone), v))
+	})
+}
+
+// TimezoneContainsFold applies the ContainsFold predicate on the "timezone" field.
+func TimezoneContainsFold(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldTimezone), v))
 	})
 }
 

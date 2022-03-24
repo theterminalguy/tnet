@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -39,6 +40,14 @@ func (tu *TalentUpdate) Where(ps ...predicate.Talent) *TalentUpdate {
 // SetUUID sets the "uuid" field.
 func (tu *TalentUpdate) SetUUID(u uuid.UUID) *TalentUpdate {
 	tu.mutation.SetUUID(u)
+	return tu
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (tu *TalentUpdate) SetNillableUUID(u *uuid.UUID) *TalentUpdate {
+	if u != nil {
+		tu.SetUUID(*u)
+	}
 	return tu
 }
 
@@ -197,6 +206,12 @@ func (tu *TalentUpdate) ClearJoinedTentnAt() *TalentUpdate {
 // SetJobPreference sets the "job_preference" field.
 func (tu *TalentUpdate) SetJobPreference(tp talent.JobPreference) *TalentUpdate {
 	tu.mutation.SetJobPreference(tp)
+	return tu
+}
+
+// SetTimezone sets the "timezone" field.
+func (tu *TalentUpdate) SetTimezone(s string) *TalentUpdate {
+	tu.mutation.SetTimezone(s)
 	return tu
 }
 
@@ -588,12 +603,12 @@ func (tu *TalentUpdate) defaults() {
 func (tu *TalentUpdate) check() error {
 	if v, ok := tu.mutation.CountryCode(); ok {
 		if err := talent.CountryCodeValidator(v); err != nil {
-			return &ValidationError{Name: "country_code", err: fmt.Errorf("ent: validator failed for field \"country_code\": %w", err)}
+			return &ValidationError{Name: "country_code", err: fmt.Errorf(`ent: validator failed for field "Talent.country_code": %w`, err)}
 		}
 	}
 	if v, ok := tu.mutation.JobPreference(); ok {
 		if err := talent.JobPreferenceValidator(v); err != nil {
-			return &ValidationError{Name: "job_preference", err: fmt.Errorf("ent: validator failed for field \"job_preference\": %w", err)}
+			return &ValidationError{Name: "job_preference", err: fmt.Errorf(`ent: validator failed for field "Talent.job_preference": %w`, err)}
 		}
 	}
 	return nil
@@ -745,6 +760,13 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeEnum,
 			Value:  value,
 			Column: talent.FieldJobPreference,
+		})
+	}
+	if value, ok := tu.mutation.Timezone(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: talent.FieldTimezone,
 		})
 	}
 	if tu.mutation.UserCleared() {
@@ -1274,6 +1296,14 @@ func (tuo *TalentUpdateOne) SetUUID(u uuid.UUID) *TalentUpdateOne {
 	return tuo
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (tuo *TalentUpdateOne) SetNillableUUID(u *uuid.UUID) *TalentUpdateOne {
+	if u != nil {
+		tuo.SetUUID(*u)
+	}
+	return tuo
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (tuo *TalentUpdateOne) SetUpdatedAt(t time.Time) *TalentUpdateOne {
 	tuo.mutation.SetUpdatedAt(t)
@@ -1429,6 +1459,12 @@ func (tuo *TalentUpdateOne) ClearJoinedTentnAt() *TalentUpdateOne {
 // SetJobPreference sets the "job_preference" field.
 func (tuo *TalentUpdateOne) SetJobPreference(tp talent.JobPreference) *TalentUpdateOne {
 	tuo.mutation.SetJobPreference(tp)
+	return tuo
+}
+
+// SetTimezone sets the "timezone" field.
+func (tuo *TalentUpdateOne) SetTimezone(s string) *TalentUpdateOne {
+	tuo.mutation.SetTimezone(s)
 	return tuo
 }
 
@@ -1827,12 +1863,12 @@ func (tuo *TalentUpdateOne) defaults() {
 func (tuo *TalentUpdateOne) check() error {
 	if v, ok := tuo.mutation.CountryCode(); ok {
 		if err := talent.CountryCodeValidator(v); err != nil {
-			return &ValidationError{Name: "country_code", err: fmt.Errorf("ent: validator failed for field \"country_code\": %w", err)}
+			return &ValidationError{Name: "country_code", err: fmt.Errorf(`ent: validator failed for field "Talent.country_code": %w`, err)}
 		}
 	}
 	if v, ok := tuo.mutation.JobPreference(); ok {
 		if err := talent.JobPreferenceValidator(v); err != nil {
-			return &ValidationError{Name: "job_preference", err: fmt.Errorf("ent: validator failed for field \"job_preference\": %w", err)}
+			return &ValidationError{Name: "job_preference", err: fmt.Errorf(`ent: validator failed for field "Talent.job_preference": %w`, err)}
 		}
 	}
 	return nil
@@ -1851,7 +1887,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 	}
 	id, ok := tuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Talent.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Talent.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := tuo.fields; len(fields) > 0 {
@@ -2001,6 +2037,13 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Type:   field.TypeEnum,
 			Value:  value,
 			Column: talent.FieldJobPreference,
+		})
+	}
+	if value, ok := tuo.mutation.Timezone(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: talent.FieldTimezone,
 		})
 	}
 	if tuo.mutation.UserCleared() {

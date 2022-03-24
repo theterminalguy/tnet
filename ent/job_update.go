@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -33,6 +34,14 @@ func (ju *JobUpdate) Where(ps ...predicate.Job) *JobUpdate {
 // SetUUID sets the "uuid" field.
 func (ju *JobUpdate) SetUUID(u uuid.UUID) *JobUpdate {
 	ju.mutation.SetUUID(u)
+	return ju
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (ju *JobUpdate) SetNillableUUID(u *uuid.UUID) *JobUpdate {
+	if u != nil {
+		ju.SetUUID(*u)
+	}
 	return ju
 }
 
@@ -155,6 +164,12 @@ func (ju *JobUpdate) SetRequirements(s []string) *JobUpdate {
 // SetYouHave sets the "you_have" field.
 func (ju *JobUpdate) SetYouHave(s []string) *JobUpdate {
 	ju.mutation.SetYouHave(s)
+	return ju
+}
+
+// SetTimezone sets the "timezone" field.
+func (ju *JobUpdate) SetTimezone(s string) *JobUpdate {
+	ju.mutation.SetTimezone(s)
 	return ju
 }
 
@@ -283,12 +298,12 @@ func (ju *JobUpdate) defaults() {
 func (ju *JobUpdate) check() error {
 	if v, ok := ju.mutation.Employment(); ok {
 		if err := job.EmploymentValidator(v); err != nil {
-			return &ValidationError{Name: "employment", err: fmt.Errorf("ent: validator failed for field \"employment\": %w", err)}
+			return &ValidationError{Name: "employment", err: fmt.Errorf(`ent: validator failed for field "Job.employment": %w`, err)}
 		}
 	}
 	if v, ok := ju.mutation.Category(); ok {
 		if err := job.CategoryValidator(v); err != nil {
-			return &ValidationError{Name: "category", err: fmt.Errorf("ent: validator failed for field \"category\": %w", err)}
+			return &ValidationError{Name: "category", err: fmt.Errorf(`ent: validator failed for field "Job.category": %w`, err)}
 		}
 	}
 	return nil
@@ -409,6 +424,13 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: job.FieldYouHave,
 		})
 	}
+	if value, ok := ju.mutation.Timezone(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: job.FieldTimezone,
+		})
+	}
 	if ju.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -520,6 +542,14 @@ type JobUpdateOne struct {
 // SetUUID sets the "uuid" field.
 func (juo *JobUpdateOne) SetUUID(u uuid.UUID) *JobUpdateOne {
 	juo.mutation.SetUUID(u)
+	return juo
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (juo *JobUpdateOne) SetNillableUUID(u *uuid.UUID) *JobUpdateOne {
+	if u != nil {
+		juo.SetUUID(*u)
+	}
 	return juo
 }
 
@@ -642,6 +672,12 @@ func (juo *JobUpdateOne) SetRequirements(s []string) *JobUpdateOne {
 // SetYouHave sets the "you_have" field.
 func (juo *JobUpdateOne) SetYouHave(s []string) *JobUpdateOne {
 	juo.mutation.SetYouHave(s)
+	return juo
+}
+
+// SetTimezone sets the "timezone" field.
+func (juo *JobUpdateOne) SetTimezone(s string) *JobUpdateOne {
+	juo.mutation.SetTimezone(s)
 	return juo
 }
 
@@ -777,12 +813,12 @@ func (juo *JobUpdateOne) defaults() {
 func (juo *JobUpdateOne) check() error {
 	if v, ok := juo.mutation.Employment(); ok {
 		if err := job.EmploymentValidator(v); err != nil {
-			return &ValidationError{Name: "employment", err: fmt.Errorf("ent: validator failed for field \"employment\": %w", err)}
+			return &ValidationError{Name: "employment", err: fmt.Errorf(`ent: validator failed for field "Job.employment": %w`, err)}
 		}
 	}
 	if v, ok := juo.mutation.Category(); ok {
 		if err := job.CategoryValidator(v); err != nil {
-			return &ValidationError{Name: "category", err: fmt.Errorf("ent: validator failed for field \"category\": %w", err)}
+			return &ValidationError{Name: "category", err: fmt.Errorf(`ent: validator failed for field "Job.category": %w`, err)}
 		}
 	}
 	return nil
@@ -801,7 +837,7 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 	}
 	id, ok := juo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Job.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Job.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := juo.fields; len(fields) > 0 {
@@ -918,6 +954,13 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 			Type:   field.TypeJSON,
 			Value:  value,
 			Column: job.FieldYouHave,
+		})
+	}
+	if value, ok := juo.mutation.Timezone(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: job.FieldTimezone,
 		})
 	}
 	if juo.mutation.UserCleared() {

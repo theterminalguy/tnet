@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
@@ -39,12 +40,13 @@ type JobParams struct {
 	WeHave       []string `json:"we_have" validate:"required"`
 	Requirements []string `json:"requirements" validate:"required"`
 	YouHave      []string `json:"you_have" validate:"required"`
+	TimeZone     string   `json:"timezone_id" validate:"required"`
 
 	/*
-	TODO: Add support for slary range
-	StartingSalary decimal.Decimal `json:"starting_salary" validate:"required"`
-	Currency       string          `json:"currency" validate:"required"`
-	EndingSalary   decimal.Decimal `json:"ending_salary" validate:"required"`
+		TODO: Add support for slary range
+		StartingSalary decimal.Decimal `json:"starting_salary" validate:"required"`
+		Currency       string          `json:"currency" validate:"required"`
+		EndingSalary   decimal.Decimal `json:"ending_salary" validate:"required"`
 	*/
 }
 
@@ -112,6 +114,10 @@ func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
 	if err != nil {
 		return nil, err
 	}
+	timeZoneName := TimeZoneRepo[p.TimeZone]
+	if timeZoneName[1] == "" {
+		return nil, errors.New("timezone not allowed")
+	}
 	jobUUID := uuid.New()
 	j, err := dBConn.Job.
 		Create().
@@ -127,6 +133,7 @@ func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
 		SetRequirements(p.Requirements).
 		SetYouHave(p.YouHave).
 		SetUserID(p.UserID).
+		SetTimezone(timeZoneName[1]).
 		Save(dBContext)
 	if err != nil {
 		return nil, err
@@ -246,6 +253,22 @@ func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
 			return err
 		}
 		bldr.SetYouHave(p.YouHave)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	// Set and Validate TimeZone if provided
+	if vldErr := setNillableStringField(string(p.TimeZone), func(v string) error {
+		err := validateParams(p, "TimeZone")
+		if err != nil {
+			return err
+		}
+		timeZoneName := TimeZoneRepo[p.TimeZone]
+		if timeZoneName[1] == "" {
+			return errors.New("timezone not allowed")
+		}
+		bldr.SetTimezone(p.TimeZone)
 		return nil
 	}); vldErr != nil {
 		vldErrs = append(vldErrs, vldErr)

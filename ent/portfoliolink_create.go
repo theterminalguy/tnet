@@ -28,6 +28,14 @@ func (plc *PortfolioLinkCreate) SetUUID(u uuid.UUID) *PortfolioLinkCreate {
 	return plc
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (plc *PortfolioLinkCreate) SetNillableUUID(u *uuid.UUID) *PortfolioLinkCreate {
+	if u != nil {
+		plc.SetUUID(*u)
+	}
+	return plc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (plc *PortfolioLinkCreate) SetCreatedAt(t time.Time) *PortfolioLinkCreate {
 	plc.mutation.SetCreatedAt(t)
@@ -195,19 +203,19 @@ func (plc *PortfolioLinkCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (plc *PortfolioLinkCreate) check() error {
 	if _, ok := plc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "uuid"`)}
+		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "PortfolioLink.uuid"`)}
 	}
 	if _, ok := plc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "PortfolioLink.created_at"`)}
 	}
 	if _, ok := plc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "PortfolioLink.updated_at"`)}
 	}
 	if _, ok := plc.mutation.URL(); !ok {
-		return &ValidationError{Name: "url", err: errors.New(`ent: missing required field "url"`)}
+		return &ValidationError{Name: "url", err: errors.New(`ent: missing required field "PortfolioLink.url"`)}
 	}
 	if _, ok := plc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "PortfolioLink.name"`)}
 	}
 	return nil
 }

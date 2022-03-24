@@ -78,6 +78,8 @@ func (Job) Fields() []ent.Field {
 		field.JSON(oneword.Requirements, []string{}),
 
 		field.JSON(oneword.YouHave, []string{}),
+
+		field.String("timezone"),
 	}
 }
 

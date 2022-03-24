@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -32,6 +33,14 @@ func (weu *WorkExperienceUpdate) Where(ps ...predicate.WorkExperience) *WorkExpe
 // SetUUID sets the "uuid" field.
 func (weu *WorkExperienceUpdate) SetUUID(u uuid.UUID) *WorkExperienceUpdate {
 	weu.mutation.SetUUID(u)
+	return weu
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (weu *WorkExperienceUpdate) SetNillableUUID(u *uuid.UUID) *WorkExperienceUpdate {
+	if u != nil {
+		weu.SetUUID(*u)
+	}
 	return weu
 }
 
@@ -376,6 +385,14 @@ func (weuo *WorkExperienceUpdateOne) SetUUID(u uuid.UUID) *WorkExperienceUpdateO
 	return weuo
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (weuo *WorkExperienceUpdateOne) SetNillableUUID(u *uuid.UUID) *WorkExperienceUpdateOne {
+	if u != nil {
+		weuo.SetUUID(*u)
+	}
+	return weuo
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (weuo *WorkExperienceUpdateOne) SetUpdatedAt(t time.Time) *WorkExperienceUpdateOne {
 	weuo.mutation.SetUpdatedAt(t)
@@ -577,7 +594,7 @@ func (weuo *WorkExperienceUpdateOne) sqlSave(ctx context.Context) (_node *WorkEx
 	}
 	id, ok := weuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing WorkExperience.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "WorkExperience.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := weuo.fields; len(fields) > 0 {

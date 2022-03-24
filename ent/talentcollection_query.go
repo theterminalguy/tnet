@@ -131,7 +131,7 @@ func (tcq *TalentCollectionQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single TalentCollection entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one TalentCollection entity is not found.
+// Returns a *NotSingularError when more than one TalentCollection entity is found.
 // Returns a *NotFoundError when no TalentCollection entities are found.
 func (tcq *TalentCollectionQuery) Only(ctx context.Context) (*TalentCollection, error) {
 	nodes, err := tcq.Limit(2).All(ctx)
@@ -158,7 +158,7 @@ func (tcq *TalentCollectionQuery) OnlyX(ctx context.Context) *TalentCollection {
 }
 
 // OnlyID is like Only, but returns the only TalentCollection ID in the query.
-// Returns a *NotSingularError when exactly one TalentCollection ID is not found.
+// Returns a *NotSingularError when more than one TalentCollection ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (tcq *TalentCollectionQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -268,8 +268,9 @@ func (tcq *TalentCollectionQuery) Clone() *TalentCollectionQuery {
 		predicates: append([]predicate.TalentCollection{}, tcq.predicates...),
 		withUser:   tcq.withUser.Clone(),
 		// clone intermediate query.
-		sql:  tcq.sql.Clone(),
-		path: tcq.path,
+		sql:    tcq.sql.Clone(),
+		path:   tcq.path,
+		unique: tcq.unique,
 	}
 }
 
@@ -404,6 +405,10 @@ func (tcq *TalentCollectionQuery) sqlAll(ctx context.Context) ([]*TalentCollecti
 
 func (tcq *TalentCollectionQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := tcq.querySpec()
+	_spec.Node.Columns = tcq.fields
+	if len(tcq.fields) > 0 {
+		_spec.Unique = tcq.unique != nil && *tcq.unique
+	}
 	return sqlgraph.CountNodes(ctx, tcq.driver, _spec)
 }
 
@@ -474,6 +479,9 @@ func (tcq *TalentCollectionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if tcq.sql != nil {
 		selector = tcq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if tcq.unique != nil && *tcq.unique {
+		selector.Distinct()
 	}
 	for _, p := range tcq.predicates {
 		p(selector)
@@ -753,9 +761,7 @@ func (tcgb *TalentCollectionGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range tcgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(tcgb.fields...)...)

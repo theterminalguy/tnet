@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -32,6 +33,14 @@ func (su *SkillUpdate) Where(ps ...predicate.Skill) *SkillUpdate {
 // SetUUID sets the "uuid" field.
 func (su *SkillUpdate) SetUUID(u uuid.UUID) *SkillUpdate {
 	su.mutation.SetUUID(u)
+	return su
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (su *SkillUpdate) SetNillableUUID(u *uuid.UUID) *SkillUpdate {
+	if u != nil {
+		su.SetUUID(*u)
+	}
 	return su
 }
 
@@ -209,7 +218,7 @@ func (su *SkillUpdate) defaults() {
 func (su *SkillUpdate) check() error {
 	if v, ok := su.mutation.YearsOfExperience(); ok {
 		if err := skill.YearsOfExperienceValidator(v); err != nil {
-			return &ValidationError{Name: "years_of_experience", err: fmt.Errorf("ent: validator failed for field \"years_of_experience\": %w", err)}
+			return &ValidationError{Name: "years_of_experience", err: fmt.Errorf(`ent: validator failed for field "Skill.years_of_experience": %w`, err)}
 		}
 	}
 	return nil
@@ -352,6 +361,14 @@ type SkillUpdateOne struct {
 // SetUUID sets the "uuid" field.
 func (suo *SkillUpdateOne) SetUUID(u uuid.UUID) *SkillUpdateOne {
 	suo.mutation.SetUUID(u)
+	return suo
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (suo *SkillUpdateOne) SetNillableUUID(u *uuid.UUID) *SkillUpdateOne {
+	if u != nil {
+		suo.SetUUID(*u)
+	}
 	return suo
 }
 
@@ -536,7 +553,7 @@ func (suo *SkillUpdateOne) defaults() {
 func (suo *SkillUpdateOne) check() error {
 	if v, ok := suo.mutation.YearsOfExperience(); ok {
 		if err := skill.YearsOfExperienceValidator(v); err != nil {
-			return &ValidationError{Name: "years_of_experience", err: fmt.Errorf("ent: validator failed for field \"years_of_experience\": %w", err)}
+			return &ValidationError{Name: "years_of_experience", err: fmt.Errorf(`ent: validator failed for field "Skill.years_of_experience": %w`, err)}
 		}
 	}
 	return nil
@@ -555,7 +572,7 @@ func (suo *SkillUpdateOne) sqlSave(ctx context.Context) (_node *Skill, err error
 	}
 	id, ok := suo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Skill.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Skill.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := suo.fields; len(fields) > 0 {

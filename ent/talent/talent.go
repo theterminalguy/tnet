@@ -56,6 +56,8 @@ const (
 	FieldJoinedTentnAt = "joined_tentn_at"
 	// FieldJobPreference holds the string denoting the job_preference field in the database.
 	FieldJobPreference = "job_preference"
+	// FieldTimezone holds the string denoting the timezone field in the database.
+	FieldTimezone = "timezone"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeReferrer holds the string denoting the referrer edge name in mutations.
@@ -168,6 +170,7 @@ var Columns = []string{
 	FieldCity,
 	FieldJoinedTentnAt,
 	FieldJobPreference,
+	FieldTimezone,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

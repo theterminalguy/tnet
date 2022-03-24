@@ -131,7 +131,7 @@ func (etq *EmailTemplateQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single EmailTemplate entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one EmailTemplate entity is not found.
+// Returns a *NotSingularError when more than one EmailTemplate entity is found.
 // Returns a *NotFoundError when no EmailTemplate entities are found.
 func (etq *EmailTemplateQuery) Only(ctx context.Context) (*EmailTemplate, error) {
 	nodes, err := etq.Limit(2).All(ctx)
@@ -158,7 +158,7 @@ func (etq *EmailTemplateQuery) OnlyX(ctx context.Context) *EmailTemplate {
 }
 
 // OnlyID is like Only, but returns the only EmailTemplate ID in the query.
-// Returns a *NotSingularError when exactly one EmailTemplate ID is not found.
+// Returns a *NotSingularError when more than one EmailTemplate ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (etq *EmailTemplateQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -268,8 +268,9 @@ func (etq *EmailTemplateQuery) Clone() *EmailTemplateQuery {
 		predicates: append([]predicate.EmailTemplate{}, etq.predicates...),
 		withUser:   etq.withUser.Clone(),
 		// clone intermediate query.
-		sql:  etq.sql.Clone(),
-		path: etq.path,
+		sql:    etq.sql.Clone(),
+		path:   etq.path,
+		unique: etq.unique,
 	}
 }
 
@@ -404,6 +405,10 @@ func (etq *EmailTemplateQuery) sqlAll(ctx context.Context) ([]*EmailTemplate, er
 
 func (etq *EmailTemplateQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := etq.querySpec()
+	_spec.Node.Columns = etq.fields
+	if len(etq.fields) > 0 {
+		_spec.Unique = etq.unique != nil && *etq.unique
+	}
 	return sqlgraph.CountNodes(ctx, etq.driver, _spec)
 }
 
@@ -474,6 +479,9 @@ func (etq *EmailTemplateQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if etq.sql != nil {
 		selector = etq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if etq.unique != nil && *etq.unique {
+		selector.Distinct()
 	}
 	for _, p := range etq.predicates {
 		p(selector)
@@ -753,9 +761,7 @@ func (etgb *EmailTemplateGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range etgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(etgb.fields...)...)

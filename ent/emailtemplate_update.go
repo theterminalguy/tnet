@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -32,6 +33,14 @@ func (etu *EmailTemplateUpdate) Where(ps ...predicate.EmailTemplate) *EmailTempl
 // SetUUID sets the "uuid" field.
 func (etu *EmailTemplateUpdate) SetUUID(u uuid.UUID) *EmailTemplateUpdate {
 	etu.mutation.SetUUID(u)
+	return etu
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (etu *EmailTemplateUpdate) SetNillableUUID(u *uuid.UUID) *EmailTemplateUpdate {
+	if u != nil {
+		etu.SetUUID(*u)
+	}
 	return etu
 }
 
@@ -214,7 +223,7 @@ func (etu *EmailTemplateUpdate) defaults() {
 func (etu *EmailTemplateUpdate) check() error {
 	if v, ok := etu.mutation.Status(); ok {
 		if err := emailtemplate.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "EmailTemplate.status": %w`, err)}
 		}
 	}
 	return nil
@@ -364,6 +373,14 @@ type EmailTemplateUpdateOne struct {
 // SetUUID sets the "uuid" field.
 func (etuo *EmailTemplateUpdateOne) SetUUID(u uuid.UUID) *EmailTemplateUpdateOne {
 	etuo.mutation.SetUUID(u)
+	return etuo
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (etuo *EmailTemplateUpdateOne) SetNillableUUID(u *uuid.UUID) *EmailTemplateUpdateOne {
+	if u != nil {
+		etuo.SetUUID(*u)
+	}
 	return etuo
 }
 
@@ -553,7 +570,7 @@ func (etuo *EmailTemplateUpdateOne) defaults() {
 func (etuo *EmailTemplateUpdateOne) check() error {
 	if v, ok := etuo.mutation.Status(); ok {
 		if err := emailtemplate.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "EmailTemplate.status": %w`, err)}
 		}
 	}
 	return nil
@@ -572,7 +589,7 @@ func (etuo *EmailTemplateUpdateOne) sqlSave(ctx context.Context) (_node *EmailTe
 	}
 	id, ok := etuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing EmailTemplate.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "EmailTemplate.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := etuo.fields; len(fields) > 0 {

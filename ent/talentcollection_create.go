@@ -28,6 +28,14 @@ func (tcc *TalentCollectionCreate) SetUUID(u uuid.UUID) *TalentCollectionCreate 
 	return tcc
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (tcc *TalentCollectionCreate) SetNillableUUID(u *uuid.UUID) *TalentCollectionCreate {
+	if u != nil {
+		tcc.SetUUID(*u)
+	}
+	return tcc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (tcc *TalentCollectionCreate) SetCreatedAt(t time.Time) *TalentCollectionCreate {
 	tcc.mutation.SetCreatedAt(t)
@@ -195,19 +203,19 @@ func (tcc *TalentCollectionCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (tcc *TalentCollectionCreate) check() error {
 	if _, ok := tcc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "uuid"`)}
+		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "TalentCollection.uuid"`)}
 	}
 	if _, ok := tcc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TalentCollection.created_at"`)}
 	}
 	if _, ok := tcc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "TalentCollection.updated_at"`)}
 	}
 	if _, ok := tcc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "TalentCollection.name"`)}
 	}
 	if _, ok := tcc.mutation.TalentUuids(); !ok {
-		return &ValidationError{Name: "talent_uuids", err: errors.New(`ent: missing required field "talent_uuids"`)}
+		return &ValidationError{Name: "talent_uuids", err: errors.New(`ent: missing required field "TalentCollection.talent_uuids"`)}
 	}
 	return nil
 }

@@ -28,6 +28,14 @@ func (etc *EmailTemplateCreate) SetUUID(u uuid.UUID) *EmailTemplateCreate {
 	return etc
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (etc *EmailTemplateCreate) SetNillableUUID(u *uuid.UUID) *EmailTemplateCreate {
+	if u != nil {
+		etc.SetUUID(*u)
+	}
+	return etc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (etc *EmailTemplateCreate) SetCreatedAt(t time.Time) *EmailTemplateCreate {
 	etc.mutation.SetCreatedAt(t)
@@ -231,36 +239,36 @@ func (etc *EmailTemplateCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (etc *EmailTemplateCreate) check() error {
 	if _, ok := etc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "uuid"`)}
+		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "EmailTemplate.uuid"`)}
 	}
 	if _, ok := etc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "EmailTemplate.created_at"`)}
 	}
 	if _, ok := etc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "EmailTemplate.updated_at"`)}
 	}
 	if _, ok := etc.mutation.From(); !ok {
-		return &ValidationError{Name: "from", err: errors.New(`ent: missing required field "from"`)}
+		return &ValidationError{Name: "from", err: errors.New(`ent: missing required field "EmailTemplate.from"`)}
 	}
 	if _, ok := etc.mutation.Subject(); !ok {
-		return &ValidationError{Name: "subject", err: errors.New(`ent: missing required field "subject"`)}
+		return &ValidationError{Name: "subject", err: errors.New(`ent: missing required field "EmailTemplate.subject"`)}
 	}
 	if _, ok := etc.mutation.Body(); !ok {
-		return &ValidationError{Name: "body", err: errors.New(`ent: missing required field "body"`)}
+		return &ValidationError{Name: "body", err: errors.New(`ent: missing required field "EmailTemplate.body"`)}
 	}
 	if _, ok := etc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "status"`)}
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "EmailTemplate.status"`)}
 	}
 	if v, ok := etc.mutation.Status(); ok {
 		if err := emailtemplate.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "status": %w`, err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "EmailTemplate.status": %w`, err)}
 		}
 	}
 	if _, ok := etc.mutation.Cc(); !ok {
-		return &ValidationError{Name: "cc", err: errors.New(`ent: missing required field "cc"`)}
+		return &ValidationError{Name: "cc", err: errors.New(`ent: missing required field "EmailTemplate.cc"`)}
 	}
 	if _, ok := etc.mutation.Bcc(); !ok {
-		return &ValidationError{Name: "bcc", err: errors.New(`ent: missing required field "bcc"`)}
+		return &ValidationError{Name: "bcc", err: errors.New(`ent: missing required field "EmailTemplate.bcc"`)}
 	}
 	return nil
 }

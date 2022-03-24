@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -33,6 +34,14 @@ func (mu *MissionUpdate) Where(ps ...predicate.Mission) *MissionUpdate {
 // SetUUID sets the "uuid" field.
 func (mu *MissionUpdate) SetUUID(u uuid.UUID) *MissionUpdate {
 	mu.mutation.SetUUID(u)
+	return mu
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (mu *MissionUpdate) SetNillableUUID(u *uuid.UUID) *MissionUpdate {
+	if u != nil {
+		mu.SetUUID(*u)
+	}
 	return mu
 }
 
@@ -234,7 +243,7 @@ func (mu *MissionUpdate) defaults() {
 func (mu *MissionUpdate) check() error {
 	if v, ok := mu.mutation.MissionType(); ok {
 		if err := mission.MissionTypeValidator(v); err != nil {
-			return &ValidationError{Name: "mission_type", err: fmt.Errorf("ent: validator failed for field \"mission_type\": %w", err)}
+			return &ValidationError{Name: "mission_type", err: fmt.Errorf(`ent: validator failed for field "Mission.mission_type": %w`, err)}
 		}
 	}
 	return nil
@@ -404,6 +413,14 @@ type MissionUpdateOne struct {
 // SetUUID sets the "uuid" field.
 func (muo *MissionUpdateOne) SetUUID(u uuid.UUID) *MissionUpdateOne {
 	muo.mutation.SetUUID(u)
+	return muo
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (muo *MissionUpdateOne) SetNillableUUID(u *uuid.UUID) *MissionUpdateOne {
+	if u != nil {
+		muo.SetUUID(*u)
+	}
 	return muo
 }
 
@@ -612,7 +629,7 @@ func (muo *MissionUpdateOne) defaults() {
 func (muo *MissionUpdateOne) check() error {
 	if v, ok := muo.mutation.MissionType(); ok {
 		if err := mission.MissionTypeValidator(v); err != nil {
-			return &ValidationError{Name: "mission_type", err: fmt.Errorf("ent: validator failed for field \"mission_type\": %w", err)}
+			return &ValidationError{Name: "mission_type", err: fmt.Errorf(`ent: validator failed for field "Mission.mission_type": %w`, err)}
 		}
 	}
 	return nil
@@ -631,7 +648,7 @@ func (muo *MissionUpdateOne) sqlSave(ctx context.Context) (_node *Mission, err e
 	}
 	id, ok := muo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Mission.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Mission.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := muo.fields; len(fields) > 0 {

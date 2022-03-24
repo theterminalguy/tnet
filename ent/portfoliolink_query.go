@@ -131,7 +131,7 @@ func (plq *PortfolioLinkQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single PortfolioLink entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one PortfolioLink entity is not found.
+// Returns a *NotSingularError when more than one PortfolioLink entity is found.
 // Returns a *NotFoundError when no PortfolioLink entities are found.
 func (plq *PortfolioLinkQuery) Only(ctx context.Context) (*PortfolioLink, error) {
 	nodes, err := plq.Limit(2).All(ctx)
@@ -158,7 +158,7 @@ func (plq *PortfolioLinkQuery) OnlyX(ctx context.Context) *PortfolioLink {
 }
 
 // OnlyID is like Only, but returns the only PortfolioLink ID in the query.
-// Returns a *NotSingularError when exactly one PortfolioLink ID is not found.
+// Returns a *NotSingularError when more than one PortfolioLink ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (plq *PortfolioLinkQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -268,8 +268,9 @@ func (plq *PortfolioLinkQuery) Clone() *PortfolioLinkQuery {
 		predicates: append([]predicate.PortfolioLink{}, plq.predicates...),
 		withTalent: plq.withTalent.Clone(),
 		// clone intermediate query.
-		sql:  plq.sql.Clone(),
-		path: plq.path,
+		sql:    plq.sql.Clone(),
+		path:   plq.path,
+		unique: plq.unique,
 	}
 }
 
@@ -404,6 +405,10 @@ func (plq *PortfolioLinkQuery) sqlAll(ctx context.Context) ([]*PortfolioLink, er
 
 func (plq *PortfolioLinkQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := plq.querySpec()
+	_spec.Node.Columns = plq.fields
+	if len(plq.fields) > 0 {
+		_spec.Unique = plq.unique != nil && *plq.unique
+	}
 	return sqlgraph.CountNodes(ctx, plq.driver, _spec)
 }
 
@@ -474,6 +479,9 @@ func (plq *PortfolioLinkQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if plq.sql != nil {
 		selector = plq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if plq.unique != nil && *plq.unique {
+		selector.Distinct()
 	}
 	for _, p := range plq.predicates {
 		p(selector)
@@ -753,9 +761,7 @@ func (plgb *PortfolioLinkGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range plgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(plgb.fields...)...)

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -32,6 +33,14 @@ func (eu *EducationUpdate) Where(ps ...predicate.Education) *EducationUpdate {
 // SetUUID sets the "uuid" field.
 func (eu *EducationUpdate) SetUUID(u uuid.UUID) *EducationUpdate {
 	eu.mutation.SetUUID(u)
+	return eu
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (eu *EducationUpdate) SetNillableUUID(u *uuid.UUID) *EducationUpdate {
+	if u != nil {
+		eu.SetUUID(*u)
+	}
 	return eu
 }
 
@@ -376,6 +385,14 @@ func (euo *EducationUpdateOne) SetUUID(u uuid.UUID) *EducationUpdateOne {
 	return euo
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (euo *EducationUpdateOne) SetNillableUUID(u *uuid.UUID) *EducationUpdateOne {
+	if u != nil {
+		euo.SetUUID(*u)
+	}
+	return euo
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (euo *EducationUpdateOne) SetUpdatedAt(t time.Time) *EducationUpdateOne {
 	euo.mutation.SetUpdatedAt(t)
@@ -577,7 +594,7 @@ func (euo *EducationUpdateOne) sqlSave(ctx context.Context) (_node *Education, e
 	}
 	id, ok := euo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Education.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Education.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := euo.fields; len(fields) > 0 {

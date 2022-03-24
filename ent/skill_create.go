@@ -28,6 +28,14 @@ func (sc *SkillCreate) SetUUID(u uuid.UUID) *SkillCreate {
 	return sc
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (sc *SkillCreate) SetNillableUUID(u *uuid.UUID) *SkillCreate {
+	if u != nil {
+		sc.SetUUID(*u)
+	}
+	return sc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (sc *SkillCreate) SetCreatedAt(t time.Time) *SkillCreate {
 	sc.mutation.SetCreatedAt(t)
@@ -219,30 +227,30 @@ func (sc *SkillCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (sc *SkillCreate) check() error {
 	if _, ok := sc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "uuid"`)}
+		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "Skill.uuid"`)}
 	}
 	if _, ok := sc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Skill.created_at"`)}
 	}
 	if _, ok := sc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Skill.updated_at"`)}
 	}
 	if _, ok := sc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Skill.name"`)}
 	}
 	if _, ok := sc.mutation.YearsOfExperience(); !ok {
-		return &ValidationError{Name: "years_of_experience", err: errors.New(`ent: missing required field "years_of_experience"`)}
+		return &ValidationError{Name: "years_of_experience", err: errors.New(`ent: missing required field "Skill.years_of_experience"`)}
 	}
 	if v, ok := sc.mutation.YearsOfExperience(); ok {
 		if err := skill.YearsOfExperienceValidator(v); err != nil {
-			return &ValidationError{Name: "years_of_experience", err: fmt.Errorf(`ent: validator failed for field "years_of_experience": %w`, err)}
+			return &ValidationError{Name: "years_of_experience", err: fmt.Errorf(`ent: validator failed for field "Skill.years_of_experience": %w`, err)}
 		}
 	}
 	if _, ok := sc.mutation.Preferred(); !ok {
-		return &ValidationError{Name: "preferred", err: errors.New(`ent: missing required field "preferred"`)}
+		return &ValidationError{Name: "preferred", err: errors.New(`ent: missing required field "Skill.preferred"`)}
 	}
 	if _, ok := sc.mutation.Note(); !ok {
-		return &ValidationError{Name: "note", err: errors.New(`ent: missing required field "note"`)}
+		return &ValidationError{Name: "note", err: errors.New(`ent: missing required field "Skill.note"`)}
 	}
 	return nil
 }

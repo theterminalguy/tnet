@@ -29,6 +29,14 @@ func (jc *JobCreate) SetUUID(u uuid.UUID) *JobCreate {
 	return jc
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (jc *JobCreate) SetNillableUUID(u *uuid.UUID) *JobCreate {
+	if u != nil {
+		jc.SetUUID(*u)
+	}
+	return jc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (jc *JobCreate) SetCreatedAt(t time.Time) *JobCreate {
 	jc.mutation.SetCreatedAt(t)
@@ -167,6 +175,12 @@ func (jc *JobCreate) SetYouHave(s []string) *JobCreate {
 	return jc
 }
 
+// SetTimezone sets the "timezone" field.
+func (jc *JobCreate) SetTimezone(s string) *JobCreate {
+	jc.mutation.SetTimezone(s)
+	return jc
+}
+
 // SetID sets the "id" field.
 func (jc *JobCreate) SetID(i int) *JobCreate {
 	jc.mutation.SetID(i)
@@ -289,56 +303,59 @@ func (jc *JobCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (jc *JobCreate) check() error {
 	if _, ok := jc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "uuid"`)}
+		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "Job.uuid"`)}
 	}
 	if _, ok := jc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Job.created_at"`)}
 	}
 	if _, ok := jc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Job.updated_at"`)}
 	}
 	if _, ok := jc.mutation.Hiring(); !ok {
-		return &ValidationError{Name: "hiring", err: errors.New(`ent: missing required field "hiring"`)}
+		return &ValidationError{Name: "hiring", err: errors.New(`ent: missing required field "Job.hiring"`)}
 	}
 	if _, ok := jc.mutation.Title(); !ok {
-		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "title"`)}
+		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Job.title"`)}
 	}
 	if _, ok := jc.mutation.Slug(); !ok {
-		return &ValidationError{Name: "slug", err: errors.New(`ent: missing required field "slug"`)}
+		return &ValidationError{Name: "slug", err: errors.New(`ent: missing required field "Job.slug"`)}
 	}
 	if _, ok := jc.mutation.Location(); !ok {
-		return &ValidationError{Name: "location", err: errors.New(`ent: missing required field "location"`)}
+		return &ValidationError{Name: "location", err: errors.New(`ent: missing required field "Job.location"`)}
 	}
 	if _, ok := jc.mutation.Summary(); !ok {
-		return &ValidationError{Name: "summary", err: errors.New(`ent: missing required field "summary"`)}
+		return &ValidationError{Name: "summary", err: errors.New(`ent: missing required field "Job.summary"`)}
 	}
 	if _, ok := jc.mutation.Employment(); !ok {
-		return &ValidationError{Name: "employment", err: errors.New(`ent: missing required field "employment"`)}
+		return &ValidationError{Name: "employment", err: errors.New(`ent: missing required field "Job.employment"`)}
 	}
 	if v, ok := jc.mutation.Employment(); ok {
 		if err := job.EmploymentValidator(v); err != nil {
-			return &ValidationError{Name: "employment", err: fmt.Errorf(`ent: validator failed for field "employment": %w`, err)}
+			return &ValidationError{Name: "employment", err: fmt.Errorf(`ent: validator failed for field "Job.employment": %w`, err)}
 		}
 	}
 	if _, ok := jc.mutation.Category(); !ok {
-		return &ValidationError{Name: "category", err: errors.New(`ent: missing required field "category"`)}
+		return &ValidationError{Name: "category", err: errors.New(`ent: missing required field "Job.category"`)}
 	}
 	if v, ok := jc.mutation.Category(); ok {
 		if err := job.CategoryValidator(v); err != nil {
-			return &ValidationError{Name: "category", err: fmt.Errorf(`ent: validator failed for field "category": %w`, err)}
+			return &ValidationError{Name: "category", err: fmt.Errorf(`ent: validator failed for field "Job.category": %w`, err)}
 		}
 	}
 	if _, ok := jc.mutation.Thumbnail(); !ok {
-		return &ValidationError{Name: "thumbnail", err: errors.New(`ent: missing required field "thumbnail"`)}
+		return &ValidationError{Name: "thumbnail", err: errors.New(`ent: missing required field "Job.thumbnail"`)}
 	}
 	if _, ok := jc.mutation.WeHave(); !ok {
-		return &ValidationError{Name: "we_have", err: errors.New(`ent: missing required field "we_have"`)}
+		return &ValidationError{Name: "we_have", err: errors.New(`ent: missing required field "Job.we_have"`)}
 	}
 	if _, ok := jc.mutation.Requirements(); !ok {
-		return &ValidationError{Name: "requirements", err: errors.New(`ent: missing required field "requirements"`)}
+		return &ValidationError{Name: "requirements", err: errors.New(`ent: missing required field "Job.requirements"`)}
 	}
 	if _, ok := jc.mutation.YouHave(); !ok {
-		return &ValidationError{Name: "you_have", err: errors.New(`ent: missing required field "you_have"`)}
+		return &ValidationError{Name: "you_have", err: errors.New(`ent: missing required field "Job.you_have"`)}
+	}
+	if _, ok := jc.mutation.Timezone(); !ok {
+		return &ValidationError{Name: "timezone", err: errors.New(`ent: missing required field "Job.timezone"`)}
 	}
 	return nil
 }
@@ -492,6 +509,14 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 			Column: job.FieldYouHave,
 		})
 		_node.YouHave = value
+	}
+	if value, ok := jc.mutation.Timezone(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: job.FieldTimezone,
+		})
+		_node.Timezone = value
 	}
 	if nodes := jc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

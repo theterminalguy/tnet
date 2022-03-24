@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -32,6 +33,14 @@ func (pu *PartnerUpdate) Where(ps ...predicate.Partner) *PartnerUpdate {
 // SetUUID sets the "uuid" field.
 func (pu *PartnerUpdate) SetUUID(u uuid.UUID) *PartnerUpdate {
 	pu.mutation.SetUUID(u)
+	return pu
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (pu *PartnerUpdate) SetNillableUUID(u *uuid.UUID) *PartnerUpdate {
+	if u != nil {
+		pu.SetUUID(*u)
+	}
 	return pu
 }
 
@@ -367,6 +376,14 @@ func (puo *PartnerUpdateOne) SetUUID(u uuid.UUID) *PartnerUpdateOne {
 	return puo
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (puo *PartnerUpdateOne) SetNillableUUID(u *uuid.UUID) *PartnerUpdateOne {
+	if u != nil {
+		puo.SetUUID(*u)
+	}
+	return puo
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (puo *PartnerUpdateOne) SetUpdatedAt(t time.Time) *PartnerUpdateOne {
 	puo.mutation.SetUpdatedAt(t)
@@ -553,7 +570,7 @@ func (puo *PartnerUpdateOne) sqlSave(ctx context.Context) (_node *Partner, err e
 	}
 	id, ok := puo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Partner.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Partner.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := puo.fields; len(fields) > 0 {

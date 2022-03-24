@@ -28,6 +28,14 @@ func (wec *WorkExperienceCreate) SetUUID(u uuid.UUID) *WorkExperienceCreate {
 	return wec
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (wec *WorkExperienceCreate) SetNillableUUID(u *uuid.UUID) *WorkExperienceCreate {
+	if u != nil {
+		wec.SetUUID(*u)
+	}
+	return wec
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (wec *WorkExperienceCreate) SetCreatedAt(t time.Time) *WorkExperienceCreate {
 	wec.mutation.SetCreatedAt(t)
@@ -233,31 +241,31 @@ func (wec *WorkExperienceCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (wec *WorkExperienceCreate) check() error {
 	if _, ok := wec.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "uuid"`)}
+		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "WorkExperience.uuid"`)}
 	}
 	if _, ok := wec.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "WorkExperience.created_at"`)}
 	}
 	if _, ok := wec.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "WorkExperience.updated_at"`)}
 	}
 	if _, ok := wec.mutation.CompanyName(); !ok {
-		return &ValidationError{Name: "company_name", err: errors.New(`ent: missing required field "company_name"`)}
+		return &ValidationError{Name: "company_name", err: errors.New(`ent: missing required field "WorkExperience.company_name"`)}
 	}
 	if _, ok := wec.mutation.Location(); !ok {
-		return &ValidationError{Name: "location", err: errors.New(`ent: missing required field "location"`)}
+		return &ValidationError{Name: "location", err: errors.New(`ent: missing required field "WorkExperience.location"`)}
 	}
 	if _, ok := wec.mutation.JobTitle(); !ok {
-		return &ValidationError{Name: "job_title", err: errors.New(`ent: missing required field "job_title"`)}
+		return &ValidationError{Name: "job_title", err: errors.New(`ent: missing required field "WorkExperience.job_title"`)}
 	}
 	if _, ok := wec.mutation.Description(); !ok {
-		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "description"`)}
+		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "WorkExperience.description"`)}
 	}
 	if _, ok := wec.mutation.StartDate(); !ok {
-		return &ValidationError{Name: "start_date", err: errors.New(`ent: missing required field "start_date"`)}
+		return &ValidationError{Name: "start_date", err: errors.New(`ent: missing required field "WorkExperience.start_date"`)}
 	}
 	if _, ok := wec.mutation.PrimaryTechnologies(); !ok {
-		return &ValidationError{Name: "primary_technologies", err: errors.New(`ent: missing required field "primary_technologies"`)}
+		return &ValidationError{Name: "primary_technologies", err: errors.New(`ent: missing required field "WorkExperience.primary_technologies"`)}
 	}
 	return nil
 }

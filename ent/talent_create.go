@@ -35,6 +35,14 @@ func (tc *TalentCreate) SetUUID(u uuid.UUID) *TalentCreate {
 	return tc
 }
 
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (tc *TalentCreate) SetNillableUUID(u *uuid.UUID) *TalentCreate {
+	if u != nil {
+		tc.SetUUID(*u)
+	}
+	return tc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (tc *TalentCreate) SetCreatedAt(t time.Time) *TalentCreate {
 	tc.mutation.SetCreatedAt(t)
@@ -208,6 +216,12 @@ func (tc *TalentCreate) SetNillableJoinedTentnAt(t *time.Time) *TalentCreate {
 // SetJobPreference sets the "job_preference" field.
 func (tc *TalentCreate) SetJobPreference(tp talent.JobPreference) *TalentCreate {
 	tc.mutation.SetJobPreference(tp)
+	return tc
+}
+
+// SetTimezone sets the "timezone" field.
+func (tc *TalentCreate) SetTimezone(s string) *TalentCreate {
+	tc.mutation.SetTimezone(s)
 	return tc
 }
 
@@ -439,62 +453,65 @@ func (tc *TalentCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (tc *TalentCreate) check() error {
 	if _, ok := tc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "uuid"`)}
+		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "Talent.uuid"`)}
 	}
 	if _, ok := tc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Talent.created_at"`)}
 	}
 	if _, ok := tc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Talent.updated_at"`)}
 	}
 	if _, ok := tc.mutation.FirstName(); !ok {
-		return &ValidationError{Name: "first_name", err: errors.New(`ent: missing required field "first_name"`)}
+		return &ValidationError{Name: "first_name", err: errors.New(`ent: missing required field "Talent.first_name"`)}
 	}
 	if _, ok := tc.mutation.LastName(); !ok {
-		return &ValidationError{Name: "last_name", err: errors.New(`ent: missing required field "last_name"`)}
+		return &ValidationError{Name: "last_name", err: errors.New(`ent: missing required field "Talent.last_name"`)}
 	}
 	if _, ok := tc.mutation.PreferredName(); !ok {
-		return &ValidationError{Name: "preferred_name", err: errors.New(`ent: missing required field "preferred_name"`)}
+		return &ValidationError{Name: "preferred_name", err: errors.New(`ent: missing required field "Talent.preferred_name"`)}
 	}
 	if _, ok := tc.mutation.Pronoun(); !ok {
-		return &ValidationError{Name: "pronoun", err: errors.New(`ent: missing required field "pronoun"`)}
+		return &ValidationError{Name: "pronoun", err: errors.New(`ent: missing required field "Talent.pronoun"`)}
 	}
 	if _, ok := tc.mutation.PreferredJobTitle(); !ok {
-		return &ValidationError{Name: "preferred_job_title", err: errors.New(`ent: missing required field "preferred_job_title"`)}
+		return &ValidationError{Name: "preferred_job_title", err: errors.New(`ent: missing required field "Talent.preferred_job_title"`)}
 	}
 	if _, ok := tc.mutation.IsAvailable(); !ok {
-		return &ValidationError{Name: "is_available", err: errors.New(`ent: missing required field "is_available"`)}
+		return &ValidationError{Name: "is_available", err: errors.New(`ent: missing required field "Talent.is_available"`)}
 	}
 	if _, ok := tc.mutation.TentnCode(); !ok {
-		return &ValidationError{Name: "tentn_code", err: errors.New(`ent: missing required field "tentn_code"`)}
+		return &ValidationError{Name: "tentn_code", err: errors.New(`ent: missing required field "Talent.tentn_code"`)}
 	}
 	if _, ok := tc.mutation.ProfessionalStartDate(); !ok {
-		return &ValidationError{Name: "professional_start_date", err: errors.New(`ent: missing required field "professional_start_date"`)}
+		return &ValidationError{Name: "professional_start_date", err: errors.New(`ent: missing required field "Talent.professional_start_date"`)}
 	}
 	if _, ok := tc.mutation.Email(); !ok {
-		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "email"`)}
+		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "Talent.email"`)}
 	}
 	if _, ok := tc.mutation.Phone(); !ok {
-		return &ValidationError{Name: "phone", err: errors.New(`ent: missing required field "phone"`)}
+		return &ValidationError{Name: "phone", err: errors.New(`ent: missing required field "Talent.phone"`)}
 	}
 	if _, ok := tc.mutation.CountryCode(); !ok {
-		return &ValidationError{Name: "country_code", err: errors.New(`ent: missing required field "country_code"`)}
+		return &ValidationError{Name: "country_code", err: errors.New(`ent: missing required field "Talent.country_code"`)}
 	}
 	if v, ok := tc.mutation.CountryCode(); ok {
 		if err := talent.CountryCodeValidator(v); err != nil {
-			return &ValidationError{Name: "country_code", err: fmt.Errorf(`ent: validator failed for field "country_code": %w`, err)}
+			return &ValidationError{Name: "country_code", err: fmt.Errorf(`ent: validator failed for field "Talent.country_code": %w`, err)}
 		}
 	}
 	if _, ok := tc.mutation.City(); !ok {
-		return &ValidationError{Name: "city", err: errors.New(`ent: missing required field "city"`)}
+		return &ValidationError{Name: "city", err: errors.New(`ent: missing required field "Talent.city"`)}
 	}
 	if _, ok := tc.mutation.JobPreference(); !ok {
-		return &ValidationError{Name: "job_preference", err: errors.New(`ent: missing required field "job_preference"`)}
+		return &ValidationError{Name: "job_preference", err: errors.New(`ent: missing required field "Talent.job_preference"`)}
 	}
 	if v, ok := tc.mutation.JobPreference(); ok {
 		if err := talent.JobPreferenceValidator(v); err != nil {
-			return &ValidationError{Name: "job_preference", err: fmt.Errorf(`ent: validator failed for field "job_preference": %w`, err)}
+			return &ValidationError{Name: "job_preference", err: fmt.Errorf(`ent: validator failed for field "Talent.job_preference": %w`, err)}
 		}
+	}
+	if _, ok := tc.mutation.Timezone(); !ok {
+		return &ValidationError{Name: "timezone", err: errors.New(`ent: missing required field "Talent.timezone"`)}
 	}
 	return nil
 }
@@ -680,6 +697,14 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Column: talent.FieldJobPreference,
 		})
 		_node.JobPreference = value
+	}
+	if value, ok := tc.mutation.Timezone(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: talent.FieldTimezone,
+		})
+		_node.Timezone = value
 	}
 	if nodes := tc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

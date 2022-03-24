@@ -131,7 +131,7 @@ func (ecq *EmergencyContactQuery) FirstIDX(ctx context.Context) int {
 }
 
 // Only returns a single EmergencyContact entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one EmergencyContact entity is not found.
+// Returns a *NotSingularError when more than one EmergencyContact entity is found.
 // Returns a *NotFoundError when no EmergencyContact entities are found.
 func (ecq *EmergencyContactQuery) Only(ctx context.Context) (*EmergencyContact, error) {
 	nodes, err := ecq.Limit(2).All(ctx)
@@ -158,7 +158,7 @@ func (ecq *EmergencyContactQuery) OnlyX(ctx context.Context) *EmergencyContact {
 }
 
 // OnlyID is like Only, but returns the only EmergencyContact ID in the query.
-// Returns a *NotSingularError when exactly one EmergencyContact ID is not found.
+// Returns a *NotSingularError when more than one EmergencyContact ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (ecq *EmergencyContactQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
@@ -268,8 +268,9 @@ func (ecq *EmergencyContactQuery) Clone() *EmergencyContactQuery {
 		predicates: append([]predicate.EmergencyContact{}, ecq.predicates...),
 		withTalent: ecq.withTalent.Clone(),
 		// clone intermediate query.
-		sql:  ecq.sql.Clone(),
-		path: ecq.path,
+		sql:    ecq.sql.Clone(),
+		path:   ecq.path,
+		unique: ecq.unique,
 	}
 }
 
@@ -404,6 +405,10 @@ func (ecq *EmergencyContactQuery) sqlAll(ctx context.Context) ([]*EmergencyConta
 
 func (ecq *EmergencyContactQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := ecq.querySpec()
+	_spec.Node.Columns = ecq.fields
+	if len(ecq.fields) > 0 {
+		_spec.Unique = ecq.unique != nil && *ecq.unique
+	}
 	return sqlgraph.CountNodes(ctx, ecq.driver, _spec)
 }
 
@@ -474,6 +479,9 @@ func (ecq *EmergencyContactQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if ecq.sql != nil {
 		selector = ecq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if ecq.unique != nil && *ecq.unique {
+		selector.Distinct()
 	}
 	for _, p := range ecq.predicates {
 		p(selector)
@@ -753,9 +761,7 @@ func (ecgb *EmergencyContactGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range ecgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(ecgb.fields...)...)

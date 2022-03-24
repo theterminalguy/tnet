@@ -44,6 +44,7 @@ type TalentParams struct {
 	City                  string               `json:"city" validate:"required"`
 	JobPreference         talent.JobPreference `json:"job_preference" validate:"required"`
 	Available             bool                 `json:"available"`
+	TimeZone              string               `json:"timezone_id" validate:"required"`
 }
 
 func NewTalentRepository() *TalentRepository {
@@ -180,6 +181,10 @@ func (r *TalentRepository) Create(p TalentParams) (*TalentResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+	timeZoneName := TimeZoneRepo[p.TimeZone]
+	if timeZoneName[1] == "" {
+		return nil, errors.New("timezone not allowed")
+	}
 	q := dBConn.Talent.
 		Create().
 		SetFirstName(p.FirstName).
@@ -196,7 +201,8 @@ func (r *TalentRepository) Create(p TalentParams) (*TalentResponse, error) {
 		SetCity(p.City).
 		SetUserID(p.UserID).
 		SetJobPreference(p.JobPreference).
-		SetIsAvailable(p.Available)
+		SetIsAvailable(p.Available).
+		SetTimezone(timeZoneName[1])
 	if len(p.ReferralCode) > 1 {
 		ref, err := dBConn.Talent.Query().
 			Where(talent.TentnCodeEQ(p.ReferralCode)).
@@ -335,6 +341,22 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*TalentResponse
 		vldErrs = append(vldErrs, vldErr)
 	}
 
+	// Set and Validate TimeZone if provided
+	if vldErr := setNillableStringField(string(p.TimeZone), func(v string) error {
+		err := validateParams(p, "TimeZone")
+		if err != nil {
+			return err
+		}
+		timeZoneName := TimeZoneRepo[p.TimeZone]
+		if timeZoneName[1] == "" {
+			return errors.New("timezone not allowed")
+		}
+		bldr.SetTimezone(p.TimeZone)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
 	// Set and Validate JobPreference if provided
 	/*if vldErr := setNillableJSONArrayField(p.JobPreference, func(v []string) error {
 		res := LinearCheckElemArray(p.JobPreference, schema.EmploymentTypes())
@@ -447,6 +469,7 @@ type TalentResponse struct {
 	JoinedTentnAt         *time.Time           `json:"joined_tentn_at"`
 	JobPreference         talent.JobPreference `json:"job_preference"`
 	Edges                 *ent.TalentEdges     `json:"edges"`
+	TimeZone              string               `json:"timezone"`
 }
 
 type Country struct {
@@ -479,6 +502,7 @@ func BuildTalentResponse(talent *ent.Talent) *TalentResponse {
 		},
 		JoinedTentnAt: talent.JoinedTentnAt,
 		JobPreference: talent.JobPreference,
+		TimeZone:      talent.Timezone,
 		Edges:         &talent.Edges,
 	}
 }
