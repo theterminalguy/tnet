@@ -23,7 +23,9 @@ type JobQuerier interface {
 type JobRepository struct{}
 
 type JobParams struct {
-	UserID     int    `json:"user_id" validate:"required"`
+	UserID int `json:"user_id" validate:"required"`
+
+	// TODO: automatically expire job
 	Hiring     bool   `json:"hiring"`
 	Title      string `json:"title" validate:"required"`
 	Summary    string `json:"summary" validate:"required"`
@@ -37,6 +39,13 @@ type JobParams struct {
 	WeHave       []string `json:"we_have" validate:"required"`
 	Requirements []string `json:"requirements" validate:"required"`
 	YouHave      []string `json:"you_have" validate:"required"`
+
+	/*
+	TODO: Add support for slary range
+	StartingSalary decimal.Decimal `json:"starting_salary" validate:"required"`
+	Currency       string          `json:"currency" validate:"required"`
+	EndingSalary   decimal.Decimal `json:"ending_salary" validate:"required"`
+	*/
 }
 
 func NewJobRepository() *JobRepository {
