@@ -16,9 +16,7 @@ import (
 type Partner struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"-"`
-	// UUID holds the value of the "uuid" field.
-	UUID uuid.UUID `json:"uuid,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -65,13 +63,11 @@ func (*Partner) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case partner.FieldID:
-			values[i] = new(sql.NullInt64)
 		case partner.FieldCompanyName, partner.FieldCompanyLocation, partner.FieldContactPersonName, partner.FieldContactPersonPhoneNumber, partner.FieldContactPersonEmail, partner.FieldWebsiteUrl:
 			values[i] = new(sql.NullString)
 		case partner.FieldCreatedAt, partner.FieldUpdatedAt, partner.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case partner.FieldUUID:
+		case partner.FieldID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Partner", columns[i])
@@ -89,16 +85,10 @@ func (pa *Partner) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case partner.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
-			}
-			pa.ID = int(value.Int64)
-		case partner.FieldUUID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field uuid", values[i])
+				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				pa.UUID = *value
+				pa.ID = *value
 			}
 		case partner.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -188,8 +178,6 @@ func (pa *Partner) String() string {
 	var builder strings.Builder
 	builder.WriteString("Partner(")
 	builder.WriteString(fmt.Sprintf("id=%v", pa.ID))
-	builder.WriteString(", uuid=")
-	builder.WriteString(fmt.Sprintf("%v", pa.UUID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(pa.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

@@ -16,6 +16,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/user"
+	"github.com/google/uuid"
 )
 
 // JobQuery is the builder for querying Job entities.
@@ -134,8 +135,8 @@ func (jq *JobQuery) FirstX(ctx context.Context) *Job {
 
 // FirstID returns the first Job ID from the query.
 // Returns a *NotFoundError when no Job ID was found.
-func (jq *JobQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (jq *JobQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = jq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -147,7 +148,7 @@ func (jq *JobQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (jq *JobQuery) FirstIDX(ctx context.Context) int {
+func (jq *JobQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := jq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -185,8 +186,8 @@ func (jq *JobQuery) OnlyX(ctx context.Context) *Job {
 // OnlyID is like Only, but returns the only Job ID in the query.
 // Returns a *NotSingularError when more than one Job ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (jq *JobQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (jq *JobQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = jq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -202,7 +203,7 @@ func (jq *JobQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (jq *JobQuery) OnlyIDX(ctx context.Context) int {
+func (jq *JobQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := jq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -228,8 +229,8 @@ func (jq *JobQuery) AllX(ctx context.Context) []*Job {
 }
 
 // IDs executes the query and returns a list of Job IDs.
-func (jq *JobQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (jq *JobQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := jq.Select(job.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -237,7 +238,7 @@ func (jq *JobQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (jq *JobQuery) IDsX(ctx context.Context) []int {
+func (jq *JobQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := jq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -328,12 +329,12 @@ func (jq *JobQuery) WithApplications(opts ...func(*JobApplicationQuery)) *JobQue
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Job.Query().
-//		GroupBy(job.FieldUUID).
+//		GroupBy(job.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -355,11 +356,11 @@ func (jq *JobQuery) GroupBy(field string, fields ...string) *JobGroupBy {
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.Job.Query().
-//		Select(job.FieldUUID).
+//		Select(job.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
 func (jq *JobQuery) Select(fields ...string) *JobSelect {
@@ -413,8 +414,8 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 	}
 
 	if query := jq.withUser; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Job)
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*Job)
 		for i := range nodes {
 			fk := nodes[i].UserID
 			if _, ok := nodeids[fk]; !ok {
@@ -440,7 +441,7 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 
 	if query := jq.withApplications; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*Job)
+		nodeids := make(map[uuid.UUID]*Job)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -489,7 +490,7 @@ func (jq *JobQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   job.Table,
 			Columns: job.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: job.FieldID,
 			},
 		},

@@ -72,7 +72,7 @@ func (wed *WorkExperienceDelete) sqlExec(ctx context.Context) (int, error) {
 		Node: &sqlgraph.NodeSpec{
 			Table: workexperience.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: workexperience.FieldID,
 			},
 		},

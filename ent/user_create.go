@@ -27,20 +27,6 @@ type UserCreate struct {
 	hooks    []Hook
 }
 
-// SetUUID sets the "uuid" field.
-func (uc *UserCreate) SetUUID(u uuid.UUID) *UserCreate {
-	uc.mutation.SetUUID(u)
-	return uc
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (uc *UserCreate) SetNillableUUID(u *uuid.UUID) *UserCreate {
-	if u != nil {
-		uc.SetUUID(*u)
-	}
-	return uc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (uc *UserCreate) SetCreatedAt(t time.Time) *UserCreate {
 	uc.mutation.SetCreatedAt(t)
@@ -116,20 +102,28 @@ func (uc *UserCreate) SetNillableApproved(b *bool) *UserCreate {
 }
 
 // SetID sets the "id" field.
-func (uc *UserCreate) SetID(i int) *UserCreate {
-	uc.mutation.SetID(i)
+func (uc *UserCreate) SetID(u uuid.UUID) *UserCreate {
+	uc.mutation.SetID(u)
+	return uc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (uc *UserCreate) SetNillableID(u *uuid.UUID) *UserCreate {
+	if u != nil {
+		uc.SetID(*u)
+	}
 	return uc
 }
 
 // AddTalentIDs adds the "talents" edge to the Talent entity by IDs.
-func (uc *UserCreate) AddTalentIDs(ids ...int) *UserCreate {
+func (uc *UserCreate) AddTalentIDs(ids ...uuid.UUID) *UserCreate {
 	uc.mutation.AddTalentIDs(ids...)
 	return uc
 }
 
 // AddTalents adds the "talents" edges to the Talent entity.
 func (uc *UserCreate) AddTalents(t ...*Talent) *UserCreate {
-	ids := make([]int, len(t))
+	ids := make([]uuid.UUID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -137,14 +131,14 @@ func (uc *UserCreate) AddTalents(t ...*Talent) *UserCreate {
 }
 
 // AddSlackAppInstallIDs adds the "slack_app_installs" edge to the SlackAppInstall entity by IDs.
-func (uc *UserCreate) AddSlackAppInstallIDs(ids ...int) *UserCreate {
+func (uc *UserCreate) AddSlackAppInstallIDs(ids ...uuid.UUID) *UserCreate {
 	uc.mutation.AddSlackAppInstallIDs(ids...)
 	return uc
 }
 
 // AddSlackAppInstalls adds the "slack_app_installs" edges to the SlackAppInstall entity.
 func (uc *UserCreate) AddSlackAppInstalls(s ...*SlackAppInstall) *UserCreate {
-	ids := make([]int, len(s))
+	ids := make([]uuid.UUID, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
@@ -152,14 +146,14 @@ func (uc *UserCreate) AddSlackAppInstalls(s ...*SlackAppInstall) *UserCreate {
 }
 
 // AddJobIDs adds the "jobs" edge to the Job entity by IDs.
-func (uc *UserCreate) AddJobIDs(ids ...int) *UserCreate {
+func (uc *UserCreate) AddJobIDs(ids ...uuid.UUID) *UserCreate {
 	uc.mutation.AddJobIDs(ids...)
 	return uc
 }
 
 // AddJobs adds the "jobs" edges to the Job entity.
 func (uc *UserCreate) AddJobs(j ...*Job) *UserCreate {
-	ids := make([]int, len(j))
+	ids := make([]uuid.UUID, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
@@ -167,14 +161,14 @@ func (uc *UserCreate) AddJobs(j ...*Job) *UserCreate {
 }
 
 // AddEmailTemplateIDs adds the "email_templates" edge to the EmailTemplate entity by IDs.
-func (uc *UserCreate) AddEmailTemplateIDs(ids ...int) *UserCreate {
+func (uc *UserCreate) AddEmailTemplateIDs(ids ...uuid.UUID) *UserCreate {
 	uc.mutation.AddEmailTemplateIDs(ids...)
 	return uc
 }
 
 // AddEmailTemplates adds the "email_templates" edges to the EmailTemplate entity.
 func (uc *UserCreate) AddEmailTemplates(e ...*EmailTemplate) *UserCreate {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -182,14 +176,14 @@ func (uc *UserCreate) AddEmailTemplates(e ...*EmailTemplate) *UserCreate {
 }
 
 // AddTalentCollectionIDs adds the "talent_collections" edge to the TalentCollection entity by IDs.
-func (uc *UserCreate) AddTalentCollectionIDs(ids ...int) *UserCreate {
+func (uc *UserCreate) AddTalentCollectionIDs(ids ...uuid.UUID) *UserCreate {
 	uc.mutation.AddTalentCollectionIDs(ids...)
 	return uc
 }
 
 // AddTalentCollections adds the "talent_collections" edges to the TalentCollection entity.
 func (uc *UserCreate) AddTalentCollections(t ...*TalentCollection) *UserCreate {
-	ids := make([]int, len(t))
+	ids := make([]uuid.UUID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -267,10 +261,6 @@ func (uc *UserCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (uc *UserCreate) defaults() {
-	if _, ok := uc.mutation.UUID(); !ok {
-		v := user.DefaultUUID()
-		uc.mutation.SetUUID(v)
-	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		v := user.DefaultCreatedAt()
 		uc.mutation.SetCreatedAt(v)
@@ -283,13 +273,14 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultApproved
 		uc.mutation.SetApproved(v)
 	}
+	if _, ok := uc.mutation.ID(); !ok {
+		v := user.DefaultID()
+		uc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (uc *UserCreate) check() error {
-	if _, ok := uc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "User.uuid"`)}
-	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
 	}
@@ -324,9 +315,12 @@ func (uc *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -337,22 +331,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: user.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: user.FieldID,
 			},
 		}
 	)
 	if id, ok := uc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
-	}
-	if value, ok := uc.mutation.UUID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: user.FieldUUID,
-		})
-		_node.UUID = value
+		_spec.ID.Value = &id
 	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -419,7 +405,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -438,7 +424,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: slackappinstall.FieldID,
 				},
 			},
@@ -457,7 +443,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: job.FieldID,
 				},
 			},
@@ -476,7 +462,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: emailtemplate.FieldID,
 				},
 			},
@@ -495,7 +481,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talentcollection.FieldID,
 				},
 			},
@@ -550,10 +536,6 @@ func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

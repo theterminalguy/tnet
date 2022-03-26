@@ -34,10 +34,6 @@ func init() {
 	_ = educationMixinFields1
 	educationFields := schema.Education{}.Fields()
 	_ = educationFields
-	// educationDescUUID is the schema descriptor for uuid field.
-	educationDescUUID := educationMixinFields0[1].Descriptor()
-	// education.DefaultUUID holds the default value on creation for the uuid field.
-	education.DefaultUUID = educationDescUUID.Default.(func() uuid.UUID)
 	// educationDescCreatedAt is the schema descriptor for created_at field.
 	educationDescCreatedAt := educationMixinFields1[0].Descriptor()
 	// education.DefaultCreatedAt holds the default value on creation for the created_at field.
@@ -48,6 +44,10 @@ func init() {
 	education.DefaultUpdatedAt = educationDescUpdatedAt.Default.(func() time.Time)
 	// education.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	education.UpdateDefaultUpdatedAt = educationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// educationDescID is the schema descriptor for id field.
+	educationDescID := educationMixinFields0[0].Descriptor()
+	// education.DefaultID holds the default value on creation for the id field.
+	education.DefaultID = educationDescID.Default.(func() uuid.UUID)
 	emailtemplateMixin := schema.EmailTemplate{}.Mixin()
 	emailtemplateMixinFields0 := emailtemplateMixin[0].Fields()
 	_ = emailtemplateMixinFields0
@@ -55,10 +55,6 @@ func init() {
 	_ = emailtemplateMixinFields1
 	emailtemplateFields := schema.EmailTemplate{}.Fields()
 	_ = emailtemplateFields
-	// emailtemplateDescUUID is the schema descriptor for uuid field.
-	emailtemplateDescUUID := emailtemplateMixinFields0[1].Descriptor()
-	// emailtemplate.DefaultUUID holds the default value on creation for the uuid field.
-	emailtemplate.DefaultUUID = emailtemplateDescUUID.Default.(func() uuid.UUID)
 	// emailtemplateDescCreatedAt is the schema descriptor for created_at field.
 	emailtemplateDescCreatedAt := emailtemplateMixinFields1[0].Descriptor()
 	// emailtemplate.DefaultCreatedAt holds the default value on creation for the created_at field.
@@ -69,6 +65,10 @@ func init() {
 	emailtemplate.DefaultUpdatedAt = emailtemplateDescUpdatedAt.Default.(func() time.Time)
 	// emailtemplate.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	emailtemplate.UpdateDefaultUpdatedAt = emailtemplateDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// emailtemplateDescID is the schema descriptor for id field.
+	emailtemplateDescID := emailtemplateMixinFields0[0].Descriptor()
+	// emailtemplate.DefaultID holds the default value on creation for the id field.
+	emailtemplate.DefaultID = emailtemplateDescID.Default.(func() uuid.UUID)
 	emergencycontactMixin := schema.EmergencyContact{}.Mixin()
 	emergencycontactMixinFields0 := emergencycontactMixin[0].Fields()
 	_ = emergencycontactMixinFields0
@@ -76,10 +76,6 @@ func init() {
 	_ = emergencycontactMixinFields1
 	emergencycontactFields := schema.EmergencyContact{}.Fields()
 	_ = emergencycontactFields
-	// emergencycontactDescUUID is the schema descriptor for uuid field.
-	emergencycontactDescUUID := emergencycontactMixinFields0[1].Descriptor()
-	// emergencycontact.DefaultUUID holds the default value on creation for the uuid field.
-	emergencycontact.DefaultUUID = emergencycontactDescUUID.Default.(func() uuid.UUID)
 	// emergencycontactDescCreatedAt is the schema descriptor for created_at field.
 	emergencycontactDescCreatedAt := emergencycontactMixinFields1[0].Descriptor()
 	// emergencycontact.DefaultCreatedAt holds the default value on creation for the created_at field.
@@ -90,6 +86,10 @@ func init() {
 	emergencycontact.DefaultUpdatedAt = emergencycontactDescUpdatedAt.Default.(func() time.Time)
 	// emergencycontact.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	emergencycontact.UpdateDefaultUpdatedAt = emergencycontactDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// emergencycontactDescID is the schema descriptor for id field.
+	emergencycontactDescID := emergencycontactMixinFields0[0].Descriptor()
+	// emergencycontact.DefaultID holds the default value on creation for the id field.
+	emergencycontact.DefaultID = emergencycontactDescID.Default.(func() uuid.UUID)
 	jobMixin := schema.Job{}.Mixin()
 	jobMixinFields0 := jobMixin[0].Fields()
 	_ = jobMixinFields0
@@ -97,10 +97,6 @@ func init() {
 	_ = jobMixinFields1
 	jobFields := schema.Job{}.Fields()
 	_ = jobFields
-	// jobDescUUID is the schema descriptor for uuid field.
-	jobDescUUID := jobMixinFields0[1].Descriptor()
-	// job.DefaultUUID holds the default value on creation for the uuid field.
-	job.DefaultUUID = jobDescUUID.Default.(func() uuid.UUID)
 	// jobDescCreatedAt is the schema descriptor for created_at field.
 	jobDescCreatedAt := jobMixinFields1[0].Descriptor()
 	// job.DefaultCreatedAt holds the default value on creation for the created_at field.
@@ -119,6 +115,10 @@ func init() {
 	jobDescLocation := jobFields[3].Descriptor()
 	// job.DefaultLocation holds the default value on creation for the location field.
 	job.DefaultLocation = jobDescLocation.Default.(string)
+	// jobDescID is the schema descriptor for id field.
+	jobDescID := jobMixinFields0[0].Descriptor()
+	// job.DefaultID holds the default value on creation for the id field.
+	job.DefaultID = jobDescID.Default.(func() uuid.UUID)
 	jobapplicationMixin := schema.JobApplication{}.Mixin()
 	jobapplicationMixinFields0 := jobapplicationMixin[0].Fields()
 	_ = jobapplicationMixinFields0
@@ -126,10 +126,6 @@ func init() {
 	_ = jobapplicationMixinFields1
 	jobapplicationFields := schema.JobApplication{}.Fields()
 	_ = jobapplicationFields
-	// jobapplicationDescUUID is the schema descriptor for uuid field.
-	jobapplicationDescUUID := jobapplicationMixinFields0[1].Descriptor()
-	// jobapplication.DefaultUUID holds the default value on creation for the uuid field.
-	jobapplication.DefaultUUID = jobapplicationDescUUID.Default.(func() uuid.UUID)
 	// jobapplicationDescCreatedAt is the schema descriptor for created_at field.
 	jobapplicationDescCreatedAt := jobapplicationMixinFields1[0].Descriptor()
 	// jobapplication.DefaultCreatedAt holds the default value on creation for the created_at field.
@@ -140,6 +136,10 @@ func init() {
 	jobapplication.DefaultUpdatedAt = jobapplicationDescUpdatedAt.Default.(func() time.Time)
 	// jobapplication.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	jobapplication.UpdateDefaultUpdatedAt = jobapplicationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// jobapplicationDescID is the schema descriptor for id field.
+	jobapplicationDescID := jobapplicationMixinFields0[0].Descriptor()
+	// jobapplication.DefaultID holds the default value on creation for the id field.
+	jobapplication.DefaultID = jobapplicationDescID.Default.(func() uuid.UUID)
 	missionMixin := schema.Mission{}.Mixin()
 	missionMixinFields0 := missionMixin[0].Fields()
 	_ = missionMixinFields0
@@ -147,10 +147,6 @@ func init() {
 	_ = missionMixinFields1
 	missionFields := schema.Mission{}.Fields()
 	_ = missionFields
-	// missionDescUUID is the schema descriptor for uuid field.
-	missionDescUUID := missionMixinFields0[1].Descriptor()
-	// mission.DefaultUUID holds the default value on creation for the uuid field.
-	mission.DefaultUUID = missionDescUUID.Default.(func() uuid.UUID)
 	// missionDescCreatedAt is the schema descriptor for created_at field.
 	missionDescCreatedAt := missionMixinFields1[0].Descriptor()
 	// mission.DefaultCreatedAt holds the default value on creation for the created_at field.
@@ -161,6 +157,10 @@ func init() {
 	mission.DefaultUpdatedAt = missionDescUpdatedAt.Default.(func() time.Time)
 	// mission.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	mission.UpdateDefaultUpdatedAt = missionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// missionDescID is the schema descriptor for id field.
+	missionDescID := missionMixinFields0[0].Descriptor()
+	// mission.DefaultID holds the default value on creation for the id field.
+	mission.DefaultID = missionDescID.Default.(func() uuid.UUID)
 	partnerMixin := schema.Partner{}.Mixin()
 	partnerMixinFields0 := partnerMixin[0].Fields()
 	_ = partnerMixinFields0
@@ -168,10 +168,6 @@ func init() {
 	_ = partnerMixinFields1
 	partnerFields := schema.Partner{}.Fields()
 	_ = partnerFields
-	// partnerDescUUID is the schema descriptor for uuid field.
-	partnerDescUUID := partnerMixinFields0[1].Descriptor()
-	// partner.DefaultUUID holds the default value on creation for the uuid field.
-	partner.DefaultUUID = partnerDescUUID.Default.(func() uuid.UUID)
 	// partnerDescCreatedAt is the schema descriptor for created_at field.
 	partnerDescCreatedAt := partnerMixinFields1[0].Descriptor()
 	// partner.DefaultCreatedAt holds the default value on creation for the created_at field.
@@ -182,6 +178,10 @@ func init() {
 	partner.DefaultUpdatedAt = partnerDescUpdatedAt.Default.(func() time.Time)
 	// partner.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	partner.UpdateDefaultUpdatedAt = partnerDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// partnerDescID is the schema descriptor for id field.
+	partnerDescID := partnerMixinFields0[0].Descriptor()
+	// partner.DefaultID holds the default value on creation for the id field.
+	partner.DefaultID = partnerDescID.Default.(func() uuid.UUID)
 	portfoliolinkMixin := schema.PortfolioLink{}.Mixin()
 	portfoliolinkMixinFields0 := portfoliolinkMixin[0].Fields()
 	_ = portfoliolinkMixinFields0
@@ -189,10 +189,6 @@ func init() {
 	_ = portfoliolinkMixinFields1
 	portfoliolinkFields := schema.PortfolioLink{}.Fields()
 	_ = portfoliolinkFields
-	// portfoliolinkDescUUID is the schema descriptor for uuid field.
-	portfoliolinkDescUUID := portfoliolinkMixinFields0[1].Descriptor()
-	// portfoliolink.DefaultUUID holds the default value on creation for the uuid field.
-	portfoliolink.DefaultUUID = portfoliolinkDescUUID.Default.(func() uuid.UUID)
 	// portfoliolinkDescCreatedAt is the schema descriptor for created_at field.
 	portfoliolinkDescCreatedAt := portfoliolinkMixinFields1[0].Descriptor()
 	// portfoliolink.DefaultCreatedAt holds the default value on creation for the created_at field.
@@ -203,6 +199,10 @@ func init() {
 	portfoliolink.DefaultUpdatedAt = portfoliolinkDescUpdatedAt.Default.(func() time.Time)
 	// portfoliolink.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	portfoliolink.UpdateDefaultUpdatedAt = portfoliolinkDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// portfoliolinkDescID is the schema descriptor for id field.
+	portfoliolinkDescID := portfoliolinkMixinFields0[0].Descriptor()
+	// portfoliolink.DefaultID holds the default value on creation for the id field.
+	portfoliolink.DefaultID = portfoliolinkDescID.Default.(func() uuid.UUID)
 	skillMixin := schema.Skill{}.Mixin()
 	skillMixinFields0 := skillMixin[0].Fields()
 	_ = skillMixinFields0
@@ -210,10 +210,6 @@ func init() {
 	_ = skillMixinFields1
 	skillFields := schema.Skill{}.Fields()
 	_ = skillFields
-	// skillDescUUID is the schema descriptor for uuid field.
-	skillDescUUID := skillMixinFields0[1].Descriptor()
-	// skill.DefaultUUID holds the default value on creation for the uuid field.
-	skill.DefaultUUID = skillDescUUID.Default.(func() uuid.UUID)
 	// skillDescCreatedAt is the schema descriptor for created_at field.
 	skillDescCreatedAt := skillMixinFields1[0].Descriptor()
 	// skill.DefaultCreatedAt holds the default value on creation for the created_at field.
@@ -232,6 +228,10 @@ func init() {
 	skillDescPreferred := skillFields[2].Descriptor()
 	// skill.DefaultPreferred holds the default value on creation for the preferred field.
 	skill.DefaultPreferred = skillDescPreferred.Default.(bool)
+	// skillDescID is the schema descriptor for id field.
+	skillDescID := skillMixinFields0[0].Descriptor()
+	// skill.DefaultID holds the default value on creation for the id field.
+	skill.DefaultID = skillDescID.Default.(func() uuid.UUID)
 	slackappinstallMixin := schema.SlackAppInstall{}.Mixin()
 	slackappinstallMixinFields0 := slackappinstallMixin[0].Fields()
 	_ = slackappinstallMixinFields0
@@ -239,10 +239,6 @@ func init() {
 	_ = slackappinstallMixinFields1
 	slackappinstallFields := schema.SlackAppInstall{}.Fields()
 	_ = slackappinstallFields
-	// slackappinstallDescUUID is the schema descriptor for uuid field.
-	slackappinstallDescUUID := slackappinstallMixinFields0[1].Descriptor()
-	// slackappinstall.DefaultUUID holds the default value on creation for the uuid field.
-	slackappinstall.DefaultUUID = slackappinstallDescUUID.Default.(func() uuid.UUID)
 	// slackappinstallDescCreatedAt is the schema descriptor for created_at field.
 	slackappinstallDescCreatedAt := slackappinstallMixinFields1[0].Descriptor()
 	// slackappinstall.DefaultCreatedAt holds the default value on creation for the created_at field.
@@ -253,6 +249,10 @@ func init() {
 	slackappinstall.DefaultUpdatedAt = slackappinstallDescUpdatedAt.Default.(func() time.Time)
 	// slackappinstall.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	slackappinstall.UpdateDefaultUpdatedAt = slackappinstallDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// slackappinstallDescID is the schema descriptor for id field.
+	slackappinstallDescID := slackappinstallMixinFields0[0].Descriptor()
+	// slackappinstall.DefaultID holds the default value on creation for the id field.
+	slackappinstall.DefaultID = slackappinstallDescID.Default.(func() uuid.UUID)
 	talentMixin := schema.Talent{}.Mixin()
 	talentMixinFields0 := talentMixin[0].Fields()
 	_ = talentMixinFields0
@@ -260,10 +260,6 @@ func init() {
 	_ = talentMixinFields1
 	talentFields := schema.Talent{}.Fields()
 	_ = talentFields
-	// talentDescUUID is the schema descriptor for uuid field.
-	talentDescUUID := talentMixinFields0[1].Descriptor()
-	// talent.DefaultUUID holds the default value on creation for the uuid field.
-	talent.DefaultUUID = talentDescUUID.Default.(func() uuid.UUID)
 	// talentDescCreatedAt is the schema descriptor for created_at field.
 	talentDescCreatedAt := talentMixinFields1[0].Descriptor()
 	// talent.DefaultCreatedAt holds the default value on creation for the created_at field.
@@ -274,12 +270,8 @@ func init() {
 	talent.DefaultUpdatedAt = talentDescUpdatedAt.Default.(func() time.Time)
 	// talent.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	talent.UpdateDefaultUpdatedAt = talentDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// talentDescReferralCode is the schema descriptor for referral_code field.
-	talentDescReferralCode := talentFields[7].Descriptor()
-	// talent.DefaultReferralCode holds the default value on creation for the referral_code field.
-	talent.DefaultReferralCode = talentDescReferralCode.Default.(string)
 	// talentDescCountryCode is the schema descriptor for country_code field.
-	talentDescCountryCode := talentFields[12].Descriptor()
+	talentDescCountryCode := talentFields[9].Descriptor()
 	// talent.CountryCodeValidator is a validator for the "country_code" field. It is called by the builders before save.
 	talent.CountryCodeValidator = func() func(string) error {
 		validators := talentDescCountryCode.Validators
@@ -296,6 +288,10 @@ func init() {
 			return nil
 		}
 	}()
+	// talentDescID is the schema descriptor for id field.
+	talentDescID := talentMixinFields0[0].Descriptor()
+	// talent.DefaultID holds the default value on creation for the id field.
+	talent.DefaultID = talentDescID.Default.(func() uuid.UUID)
 	talentcollectionMixin := schema.TalentCollection{}.Mixin()
 	talentcollectionMixinFields0 := talentcollectionMixin[0].Fields()
 	_ = talentcollectionMixinFields0
@@ -303,10 +299,6 @@ func init() {
 	_ = talentcollectionMixinFields1
 	talentcollectionFields := schema.TalentCollection{}.Fields()
 	_ = talentcollectionFields
-	// talentcollectionDescUUID is the schema descriptor for uuid field.
-	talentcollectionDescUUID := talentcollectionMixinFields0[1].Descriptor()
-	// talentcollection.DefaultUUID holds the default value on creation for the uuid field.
-	talentcollection.DefaultUUID = talentcollectionDescUUID.Default.(func() uuid.UUID)
 	// talentcollectionDescCreatedAt is the schema descriptor for created_at field.
 	talentcollectionDescCreatedAt := talentcollectionMixinFields1[0].Descriptor()
 	// talentcollection.DefaultCreatedAt holds the default value on creation for the created_at field.
@@ -317,6 +309,10 @@ func init() {
 	talentcollection.DefaultUpdatedAt = talentcollectionDescUpdatedAt.Default.(func() time.Time)
 	// talentcollection.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	talentcollection.UpdateDefaultUpdatedAt = talentcollectionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// talentcollectionDescID is the schema descriptor for id field.
+	talentcollectionDescID := talentcollectionMixinFields0[0].Descriptor()
+	// talentcollection.DefaultID holds the default value on creation for the id field.
+	talentcollection.DefaultID = talentcollectionDescID.Default.(func() uuid.UUID)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0
@@ -324,10 +320,6 @@ func init() {
 	_ = userMixinFields1
 	userFields := schema.User{}.Fields()
 	_ = userFields
-	// userDescUUID is the schema descriptor for uuid field.
-	userDescUUID := userMixinFields0[1].Descriptor()
-	// user.DefaultUUID holds the default value on creation for the uuid field.
-	user.DefaultUUID = userDescUUID.Default.(func() uuid.UUID)
 	// userDescCreatedAt is the schema descriptor for created_at field.
 	userDescCreatedAt := userMixinFields1[0].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
@@ -342,6 +334,10 @@ func init() {
 	userDescApproved := userFields[3].Descriptor()
 	// user.DefaultApproved holds the default value on creation for the approved field.
 	user.DefaultApproved = userDescApproved.Default.(bool)
+	// userDescID is the schema descriptor for id field.
+	userDescID := userMixinFields0[0].Descriptor()
+	// user.DefaultID holds the default value on creation for the id field.
+	user.DefaultID = userDescID.Default.(func() uuid.UUID)
 	workexperienceMixin := schema.WorkExperience{}.Mixin()
 	workexperienceMixinFields0 := workexperienceMixin[0].Fields()
 	_ = workexperienceMixinFields0
@@ -349,10 +345,6 @@ func init() {
 	_ = workexperienceMixinFields1
 	workexperienceFields := schema.WorkExperience{}.Fields()
 	_ = workexperienceFields
-	// workexperienceDescUUID is the schema descriptor for uuid field.
-	workexperienceDescUUID := workexperienceMixinFields0[1].Descriptor()
-	// workexperience.DefaultUUID holds the default value on creation for the uuid field.
-	workexperience.DefaultUUID = workexperienceDescUUID.Default.(func() uuid.UUID)
 	// workexperienceDescCreatedAt is the schema descriptor for created_at field.
 	workexperienceDescCreatedAt := workexperienceMixinFields1[0].Descriptor()
 	// workexperience.DefaultCreatedAt holds the default value on creation for the created_at field.
@@ -363,4 +355,8 @@ func init() {
 	workexperience.DefaultUpdatedAt = workexperienceDescUpdatedAt.Default.(func() time.Time)
 	// workexperience.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	workexperience.UpdateDefaultUpdatedAt = workexperienceDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// workexperienceDescID is the schema descriptor for id field.
+	workexperienceDescID := workexperienceMixinFields0[0].Descriptor()
+	// workexperience.DefaultID holds the default value on creation for the id field.
+	workexperience.DefaultID = workexperienceDescID.Default.(func() uuid.UUID)
 }

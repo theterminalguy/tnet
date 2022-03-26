@@ -30,20 +30,6 @@ func (pu *PartnerUpdate) Where(ps ...predicate.Partner) *PartnerUpdate {
 	return pu
 }
 
-// SetUUID sets the "uuid" field.
-func (pu *PartnerUpdate) SetUUID(u uuid.UUID) *PartnerUpdate {
-	pu.mutation.SetUUID(u)
-	return pu
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (pu *PartnerUpdate) SetNillableUUID(u *uuid.UUID) *PartnerUpdate {
-	if u != nil {
-		pu.SetUUID(*u)
-	}
-	return pu
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (pu *PartnerUpdate) SetUpdatedAt(t time.Time) *PartnerUpdate {
 	pu.mutation.SetUpdatedAt(t)
@@ -107,14 +93,14 @@ func (pu *PartnerUpdate) SetWebsiteUrl(s string) *PartnerUpdate {
 }
 
 // AddMissionIDs adds the "missions" edge to the Mission entity by IDs.
-func (pu *PartnerUpdate) AddMissionIDs(ids ...int) *PartnerUpdate {
+func (pu *PartnerUpdate) AddMissionIDs(ids ...uuid.UUID) *PartnerUpdate {
 	pu.mutation.AddMissionIDs(ids...)
 	return pu
 }
 
 // AddMissions adds the "missions" edges to the Mission entity.
 func (pu *PartnerUpdate) AddMissions(m ...*Mission) *PartnerUpdate {
-	ids := make([]int, len(m))
+	ids := make([]uuid.UUID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -133,14 +119,14 @@ func (pu *PartnerUpdate) ClearMissions() *PartnerUpdate {
 }
 
 // RemoveMissionIDs removes the "missions" edge to Mission entities by IDs.
-func (pu *PartnerUpdate) RemoveMissionIDs(ids ...int) *PartnerUpdate {
+func (pu *PartnerUpdate) RemoveMissionIDs(ids ...uuid.UUID) *PartnerUpdate {
 	pu.mutation.RemoveMissionIDs(ids...)
 	return pu
 }
 
 // RemoveMissions removes "missions" edges to Mission entities.
 func (pu *PartnerUpdate) RemoveMissions(m ...*Mission) *PartnerUpdate {
-	ids := make([]int, len(m))
+	ids := make([]uuid.UUID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -216,7 +202,7 @@ func (pu *PartnerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   partner.Table,
 			Columns: partner.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: partner.FieldID,
 			},
 		},
@@ -227,13 +213,6 @@ func (pu *PartnerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := pu.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: partner.FieldUUID,
-		})
 	}
 	if value, ok := pu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -306,7 +285,7 @@ func (pu *PartnerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: mission.FieldID,
 				},
 			},
@@ -322,7 +301,7 @@ func (pu *PartnerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: mission.FieldID,
 				},
 			},
@@ -341,7 +320,7 @@ func (pu *PartnerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: mission.FieldID,
 				},
 			},
@@ -368,20 +347,6 @@ type PartnerUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *PartnerMutation
-}
-
-// SetUUID sets the "uuid" field.
-func (puo *PartnerUpdateOne) SetUUID(u uuid.UUID) *PartnerUpdateOne {
-	puo.mutation.SetUUID(u)
-	return puo
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (puo *PartnerUpdateOne) SetNillableUUID(u *uuid.UUID) *PartnerUpdateOne {
-	if u != nil {
-		puo.SetUUID(*u)
-	}
-	return puo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -447,14 +412,14 @@ func (puo *PartnerUpdateOne) SetWebsiteUrl(s string) *PartnerUpdateOne {
 }
 
 // AddMissionIDs adds the "missions" edge to the Mission entity by IDs.
-func (puo *PartnerUpdateOne) AddMissionIDs(ids ...int) *PartnerUpdateOne {
+func (puo *PartnerUpdateOne) AddMissionIDs(ids ...uuid.UUID) *PartnerUpdateOne {
 	puo.mutation.AddMissionIDs(ids...)
 	return puo
 }
 
 // AddMissions adds the "missions" edges to the Mission entity.
 func (puo *PartnerUpdateOne) AddMissions(m ...*Mission) *PartnerUpdateOne {
-	ids := make([]int, len(m))
+	ids := make([]uuid.UUID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -473,14 +438,14 @@ func (puo *PartnerUpdateOne) ClearMissions() *PartnerUpdateOne {
 }
 
 // RemoveMissionIDs removes the "missions" edge to Mission entities by IDs.
-func (puo *PartnerUpdateOne) RemoveMissionIDs(ids ...int) *PartnerUpdateOne {
+func (puo *PartnerUpdateOne) RemoveMissionIDs(ids ...uuid.UUID) *PartnerUpdateOne {
 	puo.mutation.RemoveMissionIDs(ids...)
 	return puo
 }
 
 // RemoveMissions removes "missions" edges to Mission entities.
 func (puo *PartnerUpdateOne) RemoveMissions(m ...*Mission) *PartnerUpdateOne {
-	ids := make([]int, len(m))
+	ids := make([]uuid.UUID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -563,7 +528,7 @@ func (puo *PartnerUpdateOne) sqlSave(ctx context.Context) (_node *Partner, err e
 			Table:   partner.Table,
 			Columns: partner.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: partner.FieldID,
 			},
 		},
@@ -591,13 +556,6 @@ func (puo *PartnerUpdateOne) sqlSave(ctx context.Context) (_node *Partner, err e
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := puo.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: partner.FieldUUID,
-		})
 	}
 	if value, ok := puo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -670,7 +628,7 @@ func (puo *PartnerUpdateOne) sqlSave(ctx context.Context) (_node *Partner, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: mission.FieldID,
 				},
 			},
@@ -686,7 +644,7 @@ func (puo *PartnerUpdateOne) sqlSave(ctx context.Context) (_node *Partner, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: mission.FieldID,
 				},
 			},
@@ -705,7 +663,7 @@ func (puo *PartnerUpdateOne) sqlSave(ctx context.Context) (_node *Partner, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: mission.FieldID,
 				},
 			},

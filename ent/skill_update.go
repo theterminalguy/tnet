@@ -30,20 +30,6 @@ func (su *SkillUpdate) Where(ps ...predicate.Skill) *SkillUpdate {
 	return su
 }
 
-// SetUUID sets the "uuid" field.
-func (su *SkillUpdate) SetUUID(u uuid.UUID) *SkillUpdate {
-	su.mutation.SetUUID(u)
-	return su
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (su *SkillUpdate) SetNillableUUID(u *uuid.UUID) *SkillUpdate {
-	if u != nil {
-		su.SetUUID(*u)
-	}
-	return su
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (su *SkillUpdate) SetUpdatedAt(t time.Time) *SkillUpdate {
 	su.mutation.SetUpdatedAt(t)
@@ -71,15 +57,15 @@ func (su *SkillUpdate) ClearDeletedAt() *SkillUpdate {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (su *SkillUpdate) SetTalentID(i int) *SkillUpdate {
-	su.mutation.SetTalentID(i)
+func (su *SkillUpdate) SetTalentID(u uuid.UUID) *SkillUpdate {
+	su.mutation.SetTalentID(u)
 	return su
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (su *SkillUpdate) SetNillableTalentID(i *int) *SkillUpdate {
-	if i != nil {
-		su.SetTalentID(*i)
+func (su *SkillUpdate) SetNillableTalentID(u *uuid.UUID) *SkillUpdate {
+	if u != nil {
+		su.SetTalentID(*u)
 	}
 	return su
 }
@@ -230,7 +216,7 @@ func (su *SkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   skill.Table,
 			Columns: skill.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: skill.FieldID,
 			},
 		},
@@ -241,13 +227,6 @@ func (su *SkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := su.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: skill.FieldUUID,
-		})
 	}
 	if value, ok := su.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -313,7 +292,7 @@ func (su *SkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -329,7 +308,7 @@ func (su *SkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -356,20 +335,6 @@ type SkillUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *SkillMutation
-}
-
-// SetUUID sets the "uuid" field.
-func (suo *SkillUpdateOne) SetUUID(u uuid.UUID) *SkillUpdateOne {
-	suo.mutation.SetUUID(u)
-	return suo
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (suo *SkillUpdateOne) SetNillableUUID(u *uuid.UUID) *SkillUpdateOne {
-	if u != nil {
-		suo.SetUUID(*u)
-	}
-	return suo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -399,15 +364,15 @@ func (suo *SkillUpdateOne) ClearDeletedAt() *SkillUpdateOne {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (suo *SkillUpdateOne) SetTalentID(i int) *SkillUpdateOne {
-	suo.mutation.SetTalentID(i)
+func (suo *SkillUpdateOne) SetTalentID(u uuid.UUID) *SkillUpdateOne {
+	suo.mutation.SetTalentID(u)
 	return suo
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (suo *SkillUpdateOne) SetNillableTalentID(i *int) *SkillUpdateOne {
-	if i != nil {
-		suo.SetTalentID(*i)
+func (suo *SkillUpdateOne) SetNillableTalentID(u *uuid.UUID) *SkillUpdateOne {
+	if u != nil {
+		suo.SetTalentID(*u)
 	}
 	return suo
 }
@@ -565,7 +530,7 @@ func (suo *SkillUpdateOne) sqlSave(ctx context.Context) (_node *Skill, err error
 			Table:   skill.Table,
 			Columns: skill.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: skill.FieldID,
 			},
 		},
@@ -593,13 +558,6 @@ func (suo *SkillUpdateOne) sqlSave(ctx context.Context) (_node *Skill, err error
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := suo.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: skill.FieldUUID,
-		})
 	}
 	if value, ok := suo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -665,7 +623,7 @@ func (suo *SkillUpdateOne) sqlSave(ctx context.Context) (_node *Skill, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -681,7 +639,7 @@ func (suo *SkillUpdateOne) sqlSave(ctx context.Context) (_node *Skill, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},

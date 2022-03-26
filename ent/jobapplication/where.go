@@ -12,28 +12,28 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.JobApplication {
+func ID(id uuid.UUID) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.JobApplication {
+func IDEQ(id uuid.UUID) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.JobApplication {
+func IDNEQ(id uuid.UUID) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldID), id))
 	})
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.JobApplication {
+func IDIn(ids ...uuid.UUID) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
 		// if not arguments were provided, append the FALSE constants,
 		// since we can't apply "IN ()". This will make this predicate falsy.
@@ -50,7 +50,7 @@ func IDIn(ids ...int) predicate.JobApplication {
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.JobApplication {
+func IDNotIn(ids ...uuid.UUID) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
 		// if not arguments were provided, append the FALSE constants,
 		// since we can't apply "IN ()". This will make this predicate falsy.
@@ -67,37 +67,30 @@ func IDNotIn(ids ...int) predicate.JobApplication {
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.JobApplication {
+func IDGT(id uuid.UUID) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldID), id))
 	})
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.JobApplication {
+func IDGTE(id uuid.UUID) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldID), id))
 	})
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.JobApplication {
+func IDLT(id uuid.UUID) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldID), id))
 	})
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.JobApplication {
+func IDLTE(id uuid.UUID) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldID), id))
-	})
-}
-
-// UUID applies equality check predicate on the "uuid" field. It's identical to UUIDEQ.
-func UUID(v uuid.UUID) predicate.JobApplication {
-	return predicate.JobApplication(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUUID), v))
 	})
 }
 
@@ -123,14 +116,14 @@ func DeletedAt(v time.Time) predicate.JobApplication {
 }
 
 // TalentID applies equality check predicate on the "talent_id" field. It's identical to TalentIDEQ.
-func TalentID(v int) predicate.JobApplication {
+func TalentID(v uuid.UUID) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldTalentID), v))
 	})
 }
 
 // JobID applies equality check predicate on the "job_id" field. It's identical to JobIDEQ.
-func JobID(v int) predicate.JobApplication {
+func JobID(v uuid.UUID) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldJobID), v))
 	})
@@ -147,82 +140,6 @@ func ReferralSource(v string) predicate.JobApplication {
 func Note(v string) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldNote), v))
-	})
-}
-
-// UUIDEQ applies the EQ predicate on the "uuid" field.
-func UUIDEQ(v uuid.UUID) predicate.JobApplication {
-	return predicate.JobApplication(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUUID), v))
-	})
-}
-
-// UUIDNEQ applies the NEQ predicate on the "uuid" field.
-func UUIDNEQ(v uuid.UUID) predicate.JobApplication {
-	return predicate.JobApplication(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUUID), v))
-	})
-}
-
-// UUIDIn applies the In predicate on the "uuid" field.
-func UUIDIn(vs ...uuid.UUID) predicate.JobApplication {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.JobApplication(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldUUID), v...))
-	})
-}
-
-// UUIDNotIn applies the NotIn predicate on the "uuid" field.
-func UUIDNotIn(vs ...uuid.UUID) predicate.JobApplication {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.JobApplication(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldUUID), v...))
-	})
-}
-
-// UUIDGT applies the GT predicate on the "uuid" field.
-func UUIDGT(v uuid.UUID) predicate.JobApplication {
-	return predicate.JobApplication(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUUID), v))
-	})
-}
-
-// UUIDGTE applies the GTE predicate on the "uuid" field.
-func UUIDGTE(v uuid.UUID) predicate.JobApplication {
-	return predicate.JobApplication(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUUID), v))
-	})
-}
-
-// UUIDLT applies the LT predicate on the "uuid" field.
-func UUIDLT(v uuid.UUID) predicate.JobApplication {
-	return predicate.JobApplication(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUUID), v))
-	})
-}
-
-// UUIDLTE applies the LTE predicate on the "uuid" field.
-func UUIDLTE(v uuid.UUID) predicate.JobApplication {
-	return predicate.JobApplication(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUUID), v))
 	})
 }
 
@@ -469,21 +386,21 @@ func DeletedAtNotNil() predicate.JobApplication {
 }
 
 // TalentIDEQ applies the EQ predicate on the "talent_id" field.
-func TalentIDEQ(v int) predicate.JobApplication {
+func TalentIDEQ(v uuid.UUID) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldTalentID), v))
 	})
 }
 
 // TalentIDNEQ applies the NEQ predicate on the "talent_id" field.
-func TalentIDNEQ(v int) predicate.JobApplication {
+func TalentIDNEQ(v uuid.UUID) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldTalentID), v))
 	})
 }
 
 // TalentIDIn applies the In predicate on the "talent_id" field.
-func TalentIDIn(vs ...int) predicate.JobApplication {
+func TalentIDIn(vs ...uuid.UUID) predicate.JobApplication {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -500,7 +417,7 @@ func TalentIDIn(vs ...int) predicate.JobApplication {
 }
 
 // TalentIDNotIn applies the NotIn predicate on the "talent_id" field.
-func TalentIDNotIn(vs ...int) predicate.JobApplication {
+func TalentIDNotIn(vs ...uuid.UUID) predicate.JobApplication {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -531,21 +448,21 @@ func TalentIDNotNil() predicate.JobApplication {
 }
 
 // JobIDEQ applies the EQ predicate on the "job_id" field.
-func JobIDEQ(v int) predicate.JobApplication {
+func JobIDEQ(v uuid.UUID) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldJobID), v))
 	})
 }
 
 // JobIDNEQ applies the NEQ predicate on the "job_id" field.
-func JobIDNEQ(v int) predicate.JobApplication {
+func JobIDNEQ(v uuid.UUID) predicate.JobApplication {
 	return predicate.JobApplication(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldJobID), v))
 	})
 }
 
 // JobIDIn applies the In predicate on the "job_id" field.
-func JobIDIn(vs ...int) predicate.JobApplication {
+func JobIDIn(vs ...uuid.UUID) predicate.JobApplication {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -562,7 +479,7 @@ func JobIDIn(vs ...int) predicate.JobApplication {
 }
 
 // JobIDNotIn applies the NotIn predicate on the "job_id" field.
-func JobIDNotIn(vs ...int) predicate.JobApplication {
+func JobIDNotIn(vs ...uuid.UUID) predicate.JobApplication {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]

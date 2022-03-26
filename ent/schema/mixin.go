@@ -39,21 +39,17 @@ type UUIDMixin struct {
 
 func (UUIDMixin) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int("id").
-			StructTag(`json:"-"`),
-
-		field.UUID(oneword.UUID, uuid.UUID{}).
-			Unique().
+		field.UUID("id", uuid.UUID{}).
 			Default(uuid.New),
 	}
 }
 
-func (UUIDMixin) Indexes() []ent.Index {
-	return []ent.Index{
-		index.Fields(oneword.UUID).
-			Unique(),
-	}
-}
+// func (UUIDMixin) Indexes() []ent.Index {
+// 	return []ent.Index{
+// 		index.Fields("uuid").
+// 			Unique(),
+// 	}
+// }
 
 // TODO: Blog post on creating resuable mixins
 type BelongsToMixin struct {
@@ -81,7 +77,7 @@ func (b BelongsToMixin) Indexes() []ent.Index {
 
 func (b BelongsToMixin) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int(b.ForeignKey).
+		field.UUID(b.ForeignKey, uuid.UUID{}).
 			Optional().
 			StructTag(`json:"-"`),
 	}

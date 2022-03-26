@@ -27,7 +27,7 @@ func (Mission) Mixin() []ent.Mixin {
 			ParentName: oneword.Talent,
 			ParentType: Talent.Type,
 			Ref:        "missions",
-			ForeignKey: oneword.TalentID,
+			ForeignKey: "talent_id",
 		},
 		BelongsToMixin{
 			ParentName: "partner",

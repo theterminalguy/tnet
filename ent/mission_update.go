@@ -31,20 +31,6 @@ func (mu *MissionUpdate) Where(ps ...predicate.Mission) *MissionUpdate {
 	return mu
 }
 
-// SetUUID sets the "uuid" field.
-func (mu *MissionUpdate) SetUUID(u uuid.UUID) *MissionUpdate {
-	mu.mutation.SetUUID(u)
-	return mu
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (mu *MissionUpdate) SetNillableUUID(u *uuid.UUID) *MissionUpdate {
-	if u != nil {
-		mu.SetUUID(*u)
-	}
-	return mu
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (mu *MissionUpdate) SetUpdatedAt(t time.Time) *MissionUpdate {
 	mu.mutation.SetUpdatedAt(t)
@@ -72,15 +58,15 @@ func (mu *MissionUpdate) ClearDeletedAt() *MissionUpdate {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (mu *MissionUpdate) SetTalentID(i int) *MissionUpdate {
-	mu.mutation.SetTalentID(i)
+func (mu *MissionUpdate) SetTalentID(u uuid.UUID) *MissionUpdate {
+	mu.mutation.SetTalentID(u)
 	return mu
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (mu *MissionUpdate) SetNillableTalentID(i *int) *MissionUpdate {
-	if i != nil {
-		mu.SetTalentID(*i)
+func (mu *MissionUpdate) SetNillableTalentID(u *uuid.UUID) *MissionUpdate {
+	if u != nil {
+		mu.SetTalentID(*u)
 	}
 	return mu
 }
@@ -92,15 +78,15 @@ func (mu *MissionUpdate) ClearTalentID() *MissionUpdate {
 }
 
 // SetPartnerID sets the "partner_id" field.
-func (mu *MissionUpdate) SetPartnerID(i int) *MissionUpdate {
-	mu.mutation.SetPartnerID(i)
+func (mu *MissionUpdate) SetPartnerID(u uuid.UUID) *MissionUpdate {
+	mu.mutation.SetPartnerID(u)
 	return mu
 }
 
 // SetNillablePartnerID sets the "partner_id" field if the given value is not nil.
-func (mu *MissionUpdate) SetNillablePartnerID(i *int) *MissionUpdate {
-	if i != nil {
-		mu.SetPartnerID(*i)
+func (mu *MissionUpdate) SetNillablePartnerID(u *uuid.UUID) *MissionUpdate {
+	if u != nil {
+		mu.SetPartnerID(*u)
 	}
 	return mu
 }
@@ -255,7 +241,7 @@ func (mu *MissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   mission.Table,
 			Columns: mission.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: mission.FieldID,
 			},
 		},
@@ -266,13 +252,6 @@ func (mu *MissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := mu.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: mission.FieldUUID,
-		})
 	}
 	if value, ok := mu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -330,7 +309,7 @@ func (mu *MissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -346,7 +325,7 @@ func (mu *MissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -365,7 +344,7 @@ func (mu *MissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: partner.FieldID,
 				},
 			},
@@ -381,7 +360,7 @@ func (mu *MissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: partner.FieldID,
 				},
 			},
@@ -408,20 +387,6 @@ type MissionUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *MissionMutation
-}
-
-// SetUUID sets the "uuid" field.
-func (muo *MissionUpdateOne) SetUUID(u uuid.UUID) *MissionUpdateOne {
-	muo.mutation.SetUUID(u)
-	return muo
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (muo *MissionUpdateOne) SetNillableUUID(u *uuid.UUID) *MissionUpdateOne {
-	if u != nil {
-		muo.SetUUID(*u)
-	}
-	return muo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -451,15 +416,15 @@ func (muo *MissionUpdateOne) ClearDeletedAt() *MissionUpdateOne {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (muo *MissionUpdateOne) SetTalentID(i int) *MissionUpdateOne {
-	muo.mutation.SetTalentID(i)
+func (muo *MissionUpdateOne) SetTalentID(u uuid.UUID) *MissionUpdateOne {
+	muo.mutation.SetTalentID(u)
 	return muo
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (muo *MissionUpdateOne) SetNillableTalentID(i *int) *MissionUpdateOne {
-	if i != nil {
-		muo.SetTalentID(*i)
+func (muo *MissionUpdateOne) SetNillableTalentID(u *uuid.UUID) *MissionUpdateOne {
+	if u != nil {
+		muo.SetTalentID(*u)
 	}
 	return muo
 }
@@ -471,15 +436,15 @@ func (muo *MissionUpdateOne) ClearTalentID() *MissionUpdateOne {
 }
 
 // SetPartnerID sets the "partner_id" field.
-func (muo *MissionUpdateOne) SetPartnerID(i int) *MissionUpdateOne {
-	muo.mutation.SetPartnerID(i)
+func (muo *MissionUpdateOne) SetPartnerID(u uuid.UUID) *MissionUpdateOne {
+	muo.mutation.SetPartnerID(u)
 	return muo
 }
 
 // SetNillablePartnerID sets the "partner_id" field if the given value is not nil.
-func (muo *MissionUpdateOne) SetNillablePartnerID(i *int) *MissionUpdateOne {
-	if i != nil {
-		muo.SetPartnerID(*i)
+func (muo *MissionUpdateOne) SetNillablePartnerID(u *uuid.UUID) *MissionUpdateOne {
+	if u != nil {
+		muo.SetPartnerID(*u)
 	}
 	return muo
 }
@@ -641,7 +606,7 @@ func (muo *MissionUpdateOne) sqlSave(ctx context.Context) (_node *Mission, err e
 			Table:   mission.Table,
 			Columns: mission.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: mission.FieldID,
 			},
 		},
@@ -669,13 +634,6 @@ func (muo *MissionUpdateOne) sqlSave(ctx context.Context) (_node *Mission, err e
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := muo.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: mission.FieldUUID,
-		})
 	}
 	if value, ok := muo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -733,7 +691,7 @@ func (muo *MissionUpdateOne) sqlSave(ctx context.Context) (_node *Mission, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -749,7 +707,7 @@ func (muo *MissionUpdateOne) sqlSave(ctx context.Context) (_node *Mission, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -768,7 +726,7 @@ func (muo *MissionUpdateOne) sqlSave(ctx context.Context) (_node *Mission, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: partner.FieldID,
 				},
 			},
@@ -784,7 +742,7 @@ func (muo *MissionUpdateOne) sqlSave(ctx context.Context) (_node *Mission, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: partner.FieldID,
 				},
 			},

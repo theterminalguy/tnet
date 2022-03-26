@@ -12,28 +12,28 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.Talent {
+func ID(id uuid.UUID) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.Talent {
+func IDEQ(id uuid.UUID) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.Talent {
+func IDNEQ(id uuid.UUID) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldID), id))
 	})
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.Talent {
+func IDIn(ids ...uuid.UUID) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		// if not arguments were provided, append the FALSE constants,
 		// since we can't apply "IN ()". This will make this predicate falsy.
@@ -50,7 +50,7 @@ func IDIn(ids ...int) predicate.Talent {
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.Talent {
+func IDNotIn(ids ...uuid.UUID) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		// if not arguments were provided, append the FALSE constants,
 		// since we can't apply "IN ()". This will make this predicate falsy.
@@ -67,37 +67,30 @@ func IDNotIn(ids ...int) predicate.Talent {
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.Talent {
+func IDGT(id uuid.UUID) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldID), id))
 	})
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.Talent {
+func IDGTE(id uuid.UUID) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldID), id))
 	})
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.Talent {
+func IDLT(id uuid.UUID) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldID), id))
 	})
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.Talent {
+func IDLTE(id uuid.UUID) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldID), id))
-	})
-}
-
-// UUID applies equality check predicate on the "uuid" field. It's identical to UUIDEQ.
-func UUID(v uuid.UUID) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUUID), v))
 	})
 }
 
@@ -123,7 +116,7 @@ func DeletedAt(v time.Time) predicate.Talent {
 }
 
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v int) predicate.Talent {
+func UserID(v uuid.UUID) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUserID), v))
 	})
@@ -168,27 +161,6 @@ func PreferredJobTitle(v string) predicate.Talent {
 func IsAvailable(v bool) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldIsAvailable), v))
-	})
-}
-
-// ReferrerID applies equality check predicate on the "referrer_id" field. It's identical to ReferrerIDEQ.
-func ReferrerID(v int) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldReferrerID), v))
-	})
-}
-
-// ReferralCode applies equality check predicate on the "referral_code" field. It's identical to ReferralCodeEQ.
-func ReferralCode(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldReferralCode), v))
-	})
-}
-
-// TentnCode applies equality check predicate on the "tentn_code" field. It's identical to TentnCodeEQ.
-func TentnCode(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTentnCode), v))
 	})
 }
 
@@ -245,82 +217,6 @@ func Timezone(v string) predicate.Talent {
 func State(v string) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldState), v))
-	})
-}
-
-// UUIDEQ applies the EQ predicate on the "uuid" field.
-func UUIDEQ(v uuid.UUID) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUUID), v))
-	})
-}
-
-// UUIDNEQ applies the NEQ predicate on the "uuid" field.
-func UUIDNEQ(v uuid.UUID) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUUID), v))
-	})
-}
-
-// UUIDIn applies the In predicate on the "uuid" field.
-func UUIDIn(vs ...uuid.UUID) predicate.Talent {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Talent(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldUUID), v...))
-	})
-}
-
-// UUIDNotIn applies the NotIn predicate on the "uuid" field.
-func UUIDNotIn(vs ...uuid.UUID) predicate.Talent {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Talent(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldUUID), v...))
-	})
-}
-
-// UUIDGT applies the GT predicate on the "uuid" field.
-func UUIDGT(v uuid.UUID) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUUID), v))
-	})
-}
-
-// UUIDGTE applies the GTE predicate on the "uuid" field.
-func UUIDGTE(v uuid.UUID) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUUID), v))
-	})
-}
-
-// UUIDLT applies the LT predicate on the "uuid" field.
-func UUIDLT(v uuid.UUID) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUUID), v))
-	})
-}
-
-// UUIDLTE applies the LTE predicate on the "uuid" field.
-func UUIDLTE(v uuid.UUID) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUUID), v))
 	})
 }
 
@@ -567,21 +463,21 @@ func DeletedAtNotNil() predicate.Talent {
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v int) predicate.Talent {
+func UserIDEQ(v uuid.UUID) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUserID), v))
 	})
 }
 
 // UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v int) predicate.Talent {
+func UserIDNEQ(v uuid.UUID) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldUserID), v))
 	})
 }
 
 // UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...int) predicate.Talent {
+func UserIDIn(vs ...uuid.UUID) predicate.Talent {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -598,7 +494,7 @@ func UserIDIn(vs ...int) predicate.Talent {
 }
 
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...int) predicate.Talent {
+func UserIDNotIn(vs ...uuid.UUID) predicate.Talent {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1194,304 +1090,6 @@ func IsAvailableEQ(v bool) predicate.Talent {
 func IsAvailableNEQ(v bool) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldIsAvailable), v))
-	})
-}
-
-// ReferrerIDEQ applies the EQ predicate on the "referrer_id" field.
-func ReferrerIDEQ(v int) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldReferrerID), v))
-	})
-}
-
-// ReferrerIDNEQ applies the NEQ predicate on the "referrer_id" field.
-func ReferrerIDNEQ(v int) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldReferrerID), v))
-	})
-}
-
-// ReferrerIDIn applies the In predicate on the "referrer_id" field.
-func ReferrerIDIn(vs ...int) predicate.Talent {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Talent(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldReferrerID), v...))
-	})
-}
-
-// ReferrerIDNotIn applies the NotIn predicate on the "referrer_id" field.
-func ReferrerIDNotIn(vs ...int) predicate.Talent {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Talent(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldReferrerID), v...))
-	})
-}
-
-// ReferrerIDIsNil applies the IsNil predicate on the "referrer_id" field.
-func ReferrerIDIsNil() predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldReferrerID)))
-	})
-}
-
-// ReferrerIDNotNil applies the NotNil predicate on the "referrer_id" field.
-func ReferrerIDNotNil() predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldReferrerID)))
-	})
-}
-
-// ReferralCodeEQ applies the EQ predicate on the "referral_code" field.
-func ReferralCodeEQ(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldReferralCode), v))
-	})
-}
-
-// ReferralCodeNEQ applies the NEQ predicate on the "referral_code" field.
-func ReferralCodeNEQ(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldReferralCode), v))
-	})
-}
-
-// ReferralCodeIn applies the In predicate on the "referral_code" field.
-func ReferralCodeIn(vs ...string) predicate.Talent {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Talent(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldReferralCode), v...))
-	})
-}
-
-// ReferralCodeNotIn applies the NotIn predicate on the "referral_code" field.
-func ReferralCodeNotIn(vs ...string) predicate.Talent {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Talent(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldReferralCode), v...))
-	})
-}
-
-// ReferralCodeGT applies the GT predicate on the "referral_code" field.
-func ReferralCodeGT(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldReferralCode), v))
-	})
-}
-
-// ReferralCodeGTE applies the GTE predicate on the "referral_code" field.
-func ReferralCodeGTE(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldReferralCode), v))
-	})
-}
-
-// ReferralCodeLT applies the LT predicate on the "referral_code" field.
-func ReferralCodeLT(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldReferralCode), v))
-	})
-}
-
-// ReferralCodeLTE applies the LTE predicate on the "referral_code" field.
-func ReferralCodeLTE(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldReferralCode), v))
-	})
-}
-
-// ReferralCodeContains applies the Contains predicate on the "referral_code" field.
-func ReferralCodeContains(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldReferralCode), v))
-	})
-}
-
-// ReferralCodeHasPrefix applies the HasPrefix predicate on the "referral_code" field.
-func ReferralCodeHasPrefix(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldReferralCode), v))
-	})
-}
-
-// ReferralCodeHasSuffix applies the HasSuffix predicate on the "referral_code" field.
-func ReferralCodeHasSuffix(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldReferralCode), v))
-	})
-}
-
-// ReferralCodeIsNil applies the IsNil predicate on the "referral_code" field.
-func ReferralCodeIsNil() predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldReferralCode)))
-	})
-}
-
-// ReferralCodeNotNil applies the NotNil predicate on the "referral_code" field.
-func ReferralCodeNotNil() predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldReferralCode)))
-	})
-}
-
-// ReferralCodeEqualFold applies the EqualFold predicate on the "referral_code" field.
-func ReferralCodeEqualFold(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldReferralCode), v))
-	})
-}
-
-// ReferralCodeContainsFold applies the ContainsFold predicate on the "referral_code" field.
-func ReferralCodeContainsFold(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldReferralCode), v))
-	})
-}
-
-// TentnCodeEQ applies the EQ predicate on the "tentn_code" field.
-func TentnCodeEQ(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTentnCode), v))
-	})
-}
-
-// TentnCodeNEQ applies the NEQ predicate on the "tentn_code" field.
-func TentnCodeNEQ(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldTentnCode), v))
-	})
-}
-
-// TentnCodeIn applies the In predicate on the "tentn_code" field.
-func TentnCodeIn(vs ...string) predicate.Talent {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Talent(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldTentnCode), v...))
-	})
-}
-
-// TentnCodeNotIn applies the NotIn predicate on the "tentn_code" field.
-func TentnCodeNotIn(vs ...string) predicate.Talent {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Talent(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldTentnCode), v...))
-	})
-}
-
-// TentnCodeGT applies the GT predicate on the "tentn_code" field.
-func TentnCodeGT(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldTentnCode), v))
-	})
-}
-
-// TentnCodeGTE applies the GTE predicate on the "tentn_code" field.
-func TentnCodeGTE(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldTentnCode), v))
-	})
-}
-
-// TentnCodeLT applies the LT predicate on the "tentn_code" field.
-func TentnCodeLT(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldTentnCode), v))
-	})
-}
-
-// TentnCodeLTE applies the LTE predicate on the "tentn_code" field.
-func TentnCodeLTE(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldTentnCode), v))
-	})
-}
-
-// TentnCodeContains applies the Contains predicate on the "tentn_code" field.
-func TentnCodeContains(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldTentnCode), v))
-	})
-}
-
-// TentnCodeHasPrefix applies the HasPrefix predicate on the "tentn_code" field.
-func TentnCodeHasPrefix(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldTentnCode), v))
-	})
-}
-
-// TentnCodeHasSuffix applies the HasSuffix predicate on the "tentn_code" field.
-func TentnCodeHasSuffix(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldTentnCode), v))
-	})
-}
-
-// TentnCodeEqualFold applies the EqualFold predicate on the "tentn_code" field.
-func TentnCodeEqualFold(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldTentnCode), v))
-	})
-}
-
-// TentnCodeContainsFold applies the ContainsFold predicate on the "tentn_code" field.
-func TentnCodeContainsFold(v string) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldTentnCode), v))
 	})
 }
 
@@ -2394,62 +1992,6 @@ func HasUserWith(preds ...predicate.User) predicate.Talent {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(UserInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasReferrer applies the HasEdge predicate on the "referrer" edge.
-func HasReferrer() predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ReferrerTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ReferrerTable, ReferrerColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasReferrerWith applies the HasEdge predicate on the "referrer" edge with a given conditions (other predicates).
-func HasReferrerWith(preds ...predicate.Talent) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ReferrerTable, ReferrerColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasReferees applies the HasEdge predicate on the "referees" edge.
-func HasReferees() predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RefereesTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, RefereesTable, RefereesColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasRefereesWith applies the HasEdge predicate on the "referees" edge with a given conditions (other predicates).
-func HasRefereesWith(preds ...predicate.Talent) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, RefereesTable, RefereesColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

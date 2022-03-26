@@ -17,9 +17,7 @@ import (
 type Education struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"-"`
-	// UUID holds the value of the "uuid" field.
-	UUID uuid.UUID `json:"uuid,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -27,7 +25,7 @@ type Education struct {
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
 	// TalentID holds the value of the "talent_id" field.
-	TalentID int `json:"-"`
+	TalentID uuid.UUID `json:"-"`
 	// InstitutionName holds the value of the "institution_name" field.
 	InstitutionName string `json:"institution_name,omitempty"`
 	// Location holds the value of the "location" field.
@@ -75,13 +73,11 @@ func (*Education) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case education.FieldID, education.FieldTalentID:
-			values[i] = new(sql.NullInt64)
 		case education.FieldInstitutionName, education.FieldLocation, education.FieldDegree, education.FieldProgram, education.FieldOverview:
 			values[i] = new(sql.NullString)
 		case education.FieldCreatedAt, education.FieldUpdatedAt, education.FieldDeletedAt, education.FieldStartDate, education.FieldEndDate:
 			values[i] = new(sql.NullTime)
-		case education.FieldUUID:
+		case education.FieldID, education.FieldTalentID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Education", columns[i])
@@ -99,16 +95,10 @@ func (e *Education) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case education.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
-			}
-			e.ID = int(value.Int64)
-		case education.FieldUUID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field uuid", values[i])
+				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				e.UUID = *value
+				e.ID = *value
 			}
 		case education.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -130,10 +120,10 @@ func (e *Education) assignValues(columns []string, values []interface{}) error {
 				*e.DeletedAt = value.Time
 			}
 		case education.FieldTalentID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field talent_id", values[i])
-			} else if value.Valid {
-				e.TalentID = int(value.Int64)
+			} else if value != nil {
+				e.TalentID = *value
 			}
 		case education.FieldInstitutionName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -210,8 +200,6 @@ func (e *Education) String() string {
 	var builder strings.Builder
 	builder.WriteString("Education(")
 	builder.WriteString(fmt.Sprintf("id=%v", e.ID))
-	builder.WriteString(", uuid=")
-	builder.WriteString(fmt.Sprintf("%v", e.UUID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(e.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

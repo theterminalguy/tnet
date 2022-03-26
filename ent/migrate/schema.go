@@ -10,8 +10,7 @@ import (
 var (
 	// EducationsColumns holds the columns for the "educations" table.
 	EducationsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
@@ -22,7 +21,7 @@ var (
 		{Name: "overview", Type: field.TypeString, Size: 2147483647},
 		{Name: "start_date", Type: field.TypeTime},
 		{Name: "end_date", Type: field.TypeTime, Nullable: true},
-		{Name: "talent_id", Type: field.TypeInt, Nullable: true},
+		{Name: "talent_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// EducationsTable holds the schema information for the "educations" table.
 	EducationsTable = &schema.Table{
@@ -32,28 +31,22 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "educations_talents_educations",
-				Columns:    []*schema.Column{EducationsColumns[12]},
+				Columns:    []*schema.Column{EducationsColumns[11]},
 				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "education_uuid",
-				Unique:  true,
-				Columns: []*schema.Column{EducationsColumns[1]},
-			},
-			{
 				Name:    "education_talent_id",
 				Unique:  false,
-				Columns: []*schema.Column{EducationsColumns[12]},
+				Columns: []*schema.Column{EducationsColumns[11]},
 			},
 		},
 	}
 	// EmailTemplatesColumns holds the columns for the "email_templates" table.
 	EmailTemplatesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
@@ -63,7 +56,7 @@ var (
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"screening", "shortlisted", "interviewing", "hired", "rejected"}, Default: "screening"},
 		{Name: "cc", Type: field.TypeJSON},
 		{Name: "bcc", Type: field.TypeJSON},
-		{Name: "user_id", Type: field.TypeInt, Nullable: true},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// EmailTemplatesTable holds the schema information for the "email_templates" table.
 	EmailTemplatesTable = &schema.Table{
@@ -73,28 +66,22 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "email_templates_users_email_templates",
-				Columns:    []*schema.Column{EmailTemplatesColumns[11]},
+				Columns:    []*schema.Column{EmailTemplatesColumns[10]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "emailtemplate_uuid",
-				Unique:  true,
-				Columns: []*schema.Column{EmailTemplatesColumns[1]},
-			},
-			{
 				Name:    "emailtemplate_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{EmailTemplatesColumns[11]},
+				Columns: []*schema.Column{EmailTemplatesColumns[10]},
 			},
 		},
 	}
 	// EmergencyContactsColumns holds the columns for the "emergency_contacts" table.
 	EmergencyContactsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
@@ -103,7 +90,7 @@ var (
 		{Name: "address", Type: field.TypeString},
 		{Name: "relationship", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString, Unique: true},
-		{Name: "talent_id", Type: field.TypeInt, Nullable: true},
+		{Name: "talent_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// EmergencyContactsTable holds the schema information for the "emergency_contacts" table.
 	EmergencyContactsTable = &schema.Table{
@@ -113,28 +100,22 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "emergency_contacts_talents_emergency_contacts",
-				Columns:    []*schema.Column{EmergencyContactsColumns[10]},
+				Columns:    []*schema.Column{EmergencyContactsColumns[9]},
 				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "emergencycontact_uuid",
-				Unique:  true,
-				Columns: []*schema.Column{EmergencyContactsColumns[1]},
-			},
-			{
 				Name:    "emergencycontact_talent_id",
 				Unique:  false,
-				Columns: []*schema.Column{EmergencyContactsColumns[10]},
+				Columns: []*schema.Column{EmergencyContactsColumns[9]},
 			},
 		},
 	}
 	// JobsColumns holds the columns for the "jobs" table.
 	JobsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
@@ -150,7 +131,7 @@ var (
 		{Name: "requirements", Type: field.TypeJSON},
 		{Name: "you_have", Type: field.TypeJSON},
 		{Name: "timezone", Type: field.TypeString},
-		{Name: "user_id", Type: field.TypeInt, Nullable: true},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// JobsTable holds the schema information for the "jobs" table.
 	JobsTable = &schema.Table{
@@ -160,51 +141,45 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "jobs_users_jobs",
-				Columns:    []*schema.Column{JobsColumns[17]},
+				Columns:    []*schema.Column{JobsColumns[16]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "job_uuid",
-				Unique:  true,
-				Columns: []*schema.Column{JobsColumns[1]},
-			},
-			{
 				Name:    "job_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{JobsColumns[17]},
+				Columns: []*schema.Column{JobsColumns[16]},
 			},
 			{
 				Name:    "job_title",
 				Unique:  false,
-				Columns: []*schema.Column{JobsColumns[6]},
+				Columns: []*schema.Column{JobsColumns[5]},
 			},
 			{
 				Name:    "job_category",
 				Unique:  false,
-				Columns: []*schema.Column{JobsColumns[11]},
+				Columns: []*schema.Column{JobsColumns[10]},
 			},
 			{
 				Name:    "job_slug",
 				Unique:  true,
-				Columns: []*schema.Column{JobsColumns[7]},
+				Columns: []*schema.Column{JobsColumns[6]},
 			},
 		},
 	}
 	// JobApplicationsColumns holds the columns for the "job_applications" table.
 	JobApplicationsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "referral_source", Type: field.TypeString},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"screening", "shortlisted", "interviewing", "hired", "rejected"}, Default: "screening"},
 		{Name: "note", Type: field.TypeString, Nullable: true, Size: 2147483647},
-		{Name: "job_id", Type: field.TypeInt, Nullable: true},
-		{Name: "talent_id", Type: field.TypeInt, Nullable: true},
+		{Name: "job_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "talent_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// JobApplicationsTable holds the schema information for the "job_applications" table.
 	JobApplicationsTable = &schema.Table{
@@ -214,47 +189,41 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "job_applications_jobs_applications",
-				Columns:    []*schema.Column{JobApplicationsColumns[8]},
+				Columns:    []*schema.Column{JobApplicationsColumns[7]},
 				RefColumns: []*schema.Column{JobsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "job_applications_talents_job_applications",
-				Columns:    []*schema.Column{JobApplicationsColumns[9]},
+				Columns:    []*schema.Column{JobApplicationsColumns[8]},
 				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "jobapplication_uuid",
-				Unique:  true,
-				Columns: []*schema.Column{JobApplicationsColumns[1]},
-			},
-			{
 				Name:    "jobapplication_talent_id",
 				Unique:  false,
-				Columns: []*schema.Column{JobApplicationsColumns[9]},
+				Columns: []*schema.Column{JobApplicationsColumns[8]},
 			},
 			{
 				Name:    "jobapplication_job_id",
 				Unique:  false,
-				Columns: []*schema.Column{JobApplicationsColumns[8]},
+				Columns: []*schema.Column{JobApplicationsColumns[7]},
 			},
 		},
 	}
 	// MissionsColumns holds the columns for the "missions" table.
 	MissionsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "mission_type", Type: field.TypeEnum, Enums: []string{"internal", "external"}},
 		{Name: "start_date", Type: field.TypeTime},
 		{Name: "end_date", Type: field.TypeTime, Nullable: true},
-		{Name: "partner_id", Type: field.TypeInt, Nullable: true},
-		{Name: "talent_id", Type: field.TypeInt, Nullable: true},
+		{Name: "partner_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "talent_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// MissionsTable holds the schema information for the "missions" table.
 	MissionsTable = &schema.Table{
@@ -264,39 +233,33 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "missions_partners_missions",
-				Columns:    []*schema.Column{MissionsColumns[8]},
+				Columns:    []*schema.Column{MissionsColumns[7]},
 				RefColumns: []*schema.Column{PartnersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "missions_talents_missions",
-				Columns:    []*schema.Column{MissionsColumns[9]},
+				Columns:    []*schema.Column{MissionsColumns[8]},
 				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "mission_uuid",
-				Unique:  true,
-				Columns: []*schema.Column{MissionsColumns[1]},
-			},
-			{
 				Name:    "mission_talent_id",
 				Unique:  false,
-				Columns: []*schema.Column{MissionsColumns[9]},
+				Columns: []*schema.Column{MissionsColumns[8]},
 			},
 			{
 				Name:    "mission_partner_id",
 				Unique:  false,
-				Columns: []*schema.Column{MissionsColumns[8]},
+				Columns: []*schema.Column{MissionsColumns[7]},
 			},
 		},
 	}
 	// PartnersColumns holds the columns for the "partners" table.
 	PartnersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
@@ -312,24 +275,16 @@ var (
 		Name:       "partners",
 		Columns:    PartnersColumns,
 		PrimaryKey: []*schema.Column{PartnersColumns[0]},
-		Indexes: []*schema.Index{
-			{
-				Name:    "partner_uuid",
-				Unique:  true,
-				Columns: []*schema.Column{PartnersColumns[1]},
-			},
-		},
 	}
 	// PortfolioLinksColumns holds the columns for the "portfolio_links" table.
 	PortfolioLinksColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "url", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
-		{Name: "talent_id", Type: field.TypeInt, Nullable: true},
+		{Name: "talent_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// PortfolioLinksTable holds the schema information for the "portfolio_links" table.
 	PortfolioLinksTable = &schema.Table{
@@ -339,28 +294,22 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "portfolio_links_talents_portfoliolinks",
-				Columns:    []*schema.Column{PortfolioLinksColumns[7]},
+				Columns:    []*schema.Column{PortfolioLinksColumns[6]},
 				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "portfoliolink_uuid",
-				Unique:  true,
-				Columns: []*schema.Column{PortfolioLinksColumns[1]},
-			},
-			{
 				Name:    "portfoliolink_talent_id",
 				Unique:  false,
-				Columns: []*schema.Column{PortfolioLinksColumns[7]},
+				Columns: []*schema.Column{PortfolioLinksColumns[6]},
 			},
 		},
 	}
 	// SkillsColumns holds the columns for the "skills" table.
 	SkillsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
@@ -368,7 +317,7 @@ var (
 		{Name: "years_of_experience", Type: field.TypeFloat32},
 		{Name: "preferred", Type: field.TypeBool, Default: false},
 		{Name: "note", Type: field.TypeString, Size: 2147483647},
-		{Name: "talent_id", Type: field.TypeInt, Nullable: true},
+		{Name: "talent_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// SkillsTable holds the schema information for the "skills" table.
 	SkillsTable = &schema.Table{
@@ -378,33 +327,27 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "skills_talents_skills",
-				Columns:    []*schema.Column{SkillsColumns[9]},
+				Columns:    []*schema.Column{SkillsColumns[8]},
 				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "skill_uuid",
-				Unique:  true,
-				Columns: []*schema.Column{SkillsColumns[1]},
-			},
-			{
 				Name:    "skill_talent_id",
 				Unique:  false,
-				Columns: []*schema.Column{SkillsColumns[9]},
+				Columns: []*schema.Column{SkillsColumns[8]},
 			},
 			{
 				Name:    "skill_name",
 				Unique:  false,
-				Columns: []*schema.Column{SkillsColumns[5]},
+				Columns: []*schema.Column{SkillsColumns[4]},
 			},
 		},
 	}
 	// SlackAppInstallsColumns holds the columns for the "slack_app_installs" table.
 	SlackAppInstallsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
@@ -418,7 +361,7 @@ var (
 		{Name: "token_type", Type: field.TypeString},
 		{Name: "scope", Type: field.TypeString},
 		{Name: "is_enterprise_install", Type: field.TypeBool},
-		{Name: "user_id", Type: field.TypeInt, Nullable: true},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// SlackAppInstallsTable holds the schema information for the "slack_app_installs" table.
 	SlackAppInstallsTable = &schema.Table{
@@ -428,38 +371,32 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "slack_app_installs_users_slack_app_installs",
-				Columns:    []*schema.Column{SlackAppInstallsColumns[15]},
+				Columns:    []*schema.Column{SlackAppInstallsColumns[14]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "slackappinstall_uuid",
-				Unique:  true,
-				Columns: []*schema.Column{SlackAppInstallsColumns[1]},
-			},
-			{
 				Name:    "slackappinstall_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{SlackAppInstallsColumns[15]},
+				Columns: []*schema.Column{SlackAppInstallsColumns[14]},
 			},
 			{
 				Name:    "slackappinstall_team_id",
 				Unique:  true,
-				Columns: []*schema.Column{SlackAppInstallsColumns[5]},
+				Columns: []*schema.Column{SlackAppInstallsColumns[4]},
 			},
 			{
 				Name:    "slackappinstall_team_name_authed_user_email_authed_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{SlackAppInstallsColumns[6], SlackAppInstallsColumns[8], SlackAppInstallsColumns[7]},
+				Columns: []*schema.Column{SlackAppInstallsColumns[5], SlackAppInstallsColumns[7], SlackAppInstallsColumns[6]},
 			},
 		},
 	}
 	// TalentsColumns holds the columns for the "talents" table.
 	TalentsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
@@ -469,8 +406,6 @@ var (
 		{Name: "pronoun", Type: field.TypeString},
 		{Name: "preferred_job_title", Type: field.TypeString},
 		{Name: "is_available", Type: field.TypeBool},
-		{Name: "referral_code", Type: field.TypeString, Nullable: true, Default: "NULL"},
-		{Name: "tentn_code", Type: field.TypeString, Unique: true},
 		{Name: "professional_start_date", Type: field.TypeTime},
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "phone", Type: field.TypeString, Unique: true},
@@ -480,8 +415,7 @@ var (
 		{Name: "job_preference", Type: field.TypeEnum, Enums: []string{"remote", "onsite", "flexible"}},
 		{Name: "timezone", Type: field.TypeString},
 		{Name: "state", Type: field.TypeString},
-		{Name: "referrer_id", Type: field.TypeInt, Nullable: true},
-		{Name: "user_id", Type: field.TypeInt, Nullable: true},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// TalentsTable holds the schema information for the "talents" table.
 	TalentsTable = &schema.Table{
@@ -490,51 +424,34 @@ var (
 		PrimaryKey: []*schema.Column{TalentsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "talents_talents_referees",
-				Columns:    []*schema.Column{TalentsColumns[22]},
-				RefColumns: []*schema.Column{TalentsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "talents_users_talents",
-				Columns:    []*schema.Column{TalentsColumns[23]},
+				Columns:    []*schema.Column{TalentsColumns[19]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "talent_uuid",
-				Unique:  true,
-				Columns: []*schema.Column{TalentsColumns[1]},
-			},
-			{
 				Name:    "talent_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{TalentsColumns[23]},
+				Columns: []*schema.Column{TalentsColumns[19]},
 			},
 			{
-				Name:    "talent_referral_code_referrer_id",
-				Unique:  false,
-				Columns: []*schema.Column{TalentsColumns[11], TalentsColumns[22]},
-			},
-			{
-				Name:    "talent_tentn_code_email_phone",
+				Name:    "talent_email_phone",
 				Unique:  true,
-				Columns: []*schema.Column{TalentsColumns[12], TalentsColumns[14], TalentsColumns[15]},
+				Columns: []*schema.Column{TalentsColumns[11], TalentsColumns[12]},
 			},
 		},
 	}
 	// TalentCollectionsColumns holds the columns for the "talent_collections" table.
 	TalentCollectionsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "talent_uuids", Type: field.TypeJSON},
-		{Name: "user_id", Type: field.TypeInt, Nullable: true},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// TalentCollectionsTable holds the schema information for the "talent_collections" table.
 	TalentCollectionsTable = &schema.Table{
@@ -544,28 +461,22 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "talent_collections_users_talent_collections",
-				Columns:    []*schema.Column{TalentCollectionsColumns[7]},
+				Columns:    []*schema.Column{TalentCollectionsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "talentcollection_uuid",
-				Unique:  true,
-				Columns: []*schema.Column{TalentCollectionsColumns[1]},
-			},
-			{
 				Name:    "talentcollection_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{TalentCollectionsColumns[7]},
+				Columns: []*schema.Column{TalentCollectionsColumns[6]},
 			},
 		},
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
@@ -581,26 +492,20 @@ var (
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "user_uuid",
-				Unique:  true,
-				Columns: []*schema.Column{UsersColumns[1]},
-			},
-			{
 				Name:    "user_email",
 				Unique:  true,
-				Columns: []*schema.Column{UsersColumns[6]},
+				Columns: []*schema.Column{UsersColumns[5]},
 			},
 			{
 				Name:    "user_role",
 				Unique:  false,
-				Columns: []*schema.Column{UsersColumns[7]},
+				Columns: []*schema.Column{UsersColumns[6]},
 			},
 		},
 	}
 	// WorkExperiencesColumns holds the columns for the "work_experiences" table.
 	WorkExperiencesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "uuid", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
@@ -611,7 +516,7 @@ var (
 		{Name: "start_date", Type: field.TypeTime},
 		{Name: "end_date", Type: field.TypeTime, Nullable: true},
 		{Name: "primary_technologies", Type: field.TypeJSON},
-		{Name: "talent_id", Type: field.TypeInt, Nullable: true},
+		{Name: "talent_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// WorkExperiencesTable holds the schema information for the "work_experiences" table.
 	WorkExperiencesTable = &schema.Table{
@@ -621,21 +526,16 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "work_experiences_talents_work_experiences",
-				Columns:    []*schema.Column{WorkExperiencesColumns[12]},
+				Columns:    []*schema.Column{WorkExperiencesColumns[11]},
 				RefColumns: []*schema.Column{TalentsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "workexperience_uuid",
-				Unique:  true,
-				Columns: []*schema.Column{WorkExperiencesColumns[1]},
-			},
-			{
 				Name:    "workexperience_talent_id",
 				Unique:  false,
-				Columns: []*schema.Column{WorkExperiencesColumns[12]},
+				Columns: []*schema.Column{WorkExperiencesColumns[11]},
 			},
 		},
 	}
@@ -670,8 +570,7 @@ func init() {
 	PortfolioLinksTable.ForeignKeys[0].RefTable = TalentsTable
 	SkillsTable.ForeignKeys[0].RefTable = TalentsTable
 	SlackAppInstallsTable.ForeignKeys[0].RefTable = UsersTable
-	TalentsTable.ForeignKeys[0].RefTable = TalentsTable
-	TalentsTable.ForeignKeys[1].RefTable = UsersTable
+	TalentsTable.ForeignKeys[0].RefTable = UsersTable
 	TalentCollectionsTable.ForeignKeys[0].RefTable = UsersTable
 	WorkExperiencesTable.ForeignKeys[0].RefTable = TalentsTable
 }

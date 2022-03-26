@@ -14,6 +14,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/google/uuid"
 )
 
 // EducationQuery is the builder for querying Education entities.
@@ -109,8 +110,8 @@ func (eq *EducationQuery) FirstX(ctx context.Context) *Education {
 
 // FirstID returns the first Education ID from the query.
 // Returns a *NotFoundError when no Education ID was found.
-func (eq *EducationQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (eq *EducationQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = eq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -122,7 +123,7 @@ func (eq *EducationQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (eq *EducationQuery) FirstIDX(ctx context.Context) int {
+func (eq *EducationQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := eq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -160,8 +161,8 @@ func (eq *EducationQuery) OnlyX(ctx context.Context) *Education {
 // OnlyID is like Only, but returns the only Education ID in the query.
 // Returns a *NotSingularError when more than one Education ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (eq *EducationQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (eq *EducationQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = eq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -177,7 +178,7 @@ func (eq *EducationQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (eq *EducationQuery) OnlyIDX(ctx context.Context) int {
+func (eq *EducationQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := eq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -203,8 +204,8 @@ func (eq *EducationQuery) AllX(ctx context.Context) []*Education {
 }
 
 // IDs executes the query and returns a list of Education IDs.
-func (eq *EducationQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (eq *EducationQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := eq.Select(education.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -212,7 +213,7 @@ func (eq *EducationQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (eq *EducationQuery) IDsX(ctx context.Context) []int {
+func (eq *EducationQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := eq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -291,12 +292,12 @@ func (eq *EducationQuery) WithTalent(opts ...func(*TalentQuery)) *EducationQuery
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Education.Query().
-//		GroupBy(education.FieldUUID).
+//		GroupBy(education.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -318,11 +319,11 @@ func (eq *EducationQuery) GroupBy(field string, fields ...string) *EducationGrou
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.Education.Query().
-//		Select(education.FieldUUID).
+//		Select(education.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
 func (eq *EducationQuery) Select(fields ...string) *EducationSelect {
@@ -375,8 +376,8 @@ func (eq *EducationQuery) sqlAll(ctx context.Context) ([]*Education, error) {
 	}
 
 	if query := eq.withTalent; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Education)
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*Education)
 		for i := range nodes {
 			fk := nodes[i].TalentID
 			if _, ok := nodeids[fk]; !ok {
@@ -426,7 +427,7 @@ func (eq *EducationQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   education.Table,
 			Columns: education.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: education.FieldID,
 			},
 		},

@@ -22,20 +22,6 @@ type SkillCreate struct {
 	hooks    []Hook
 }
 
-// SetUUID sets the "uuid" field.
-func (sc *SkillCreate) SetUUID(u uuid.UUID) *SkillCreate {
-	sc.mutation.SetUUID(u)
-	return sc
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (sc *SkillCreate) SetNillableUUID(u *uuid.UUID) *SkillCreate {
-	if u != nil {
-		sc.SetUUID(*u)
-	}
-	return sc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (sc *SkillCreate) SetCreatedAt(t time.Time) *SkillCreate {
 	sc.mutation.SetCreatedAt(t)
@@ -79,15 +65,15 @@ func (sc *SkillCreate) SetNillableDeletedAt(t *time.Time) *SkillCreate {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (sc *SkillCreate) SetTalentID(i int) *SkillCreate {
-	sc.mutation.SetTalentID(i)
+func (sc *SkillCreate) SetTalentID(u uuid.UUID) *SkillCreate {
+	sc.mutation.SetTalentID(u)
 	return sc
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (sc *SkillCreate) SetNillableTalentID(i *int) *SkillCreate {
-	if i != nil {
-		sc.SetTalentID(*i)
+func (sc *SkillCreate) SetNillableTalentID(u *uuid.UUID) *SkillCreate {
+	if u != nil {
+		sc.SetTalentID(*u)
 	}
 	return sc
 }
@@ -125,8 +111,16 @@ func (sc *SkillCreate) SetNote(s string) *SkillCreate {
 }
 
 // SetID sets the "id" field.
-func (sc *SkillCreate) SetID(i int) *SkillCreate {
-	sc.mutation.SetID(i)
+func (sc *SkillCreate) SetID(u uuid.UUID) *SkillCreate {
+	sc.mutation.SetID(u)
+	return sc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (sc *SkillCreate) SetNillableID(u *uuid.UUID) *SkillCreate {
+	if u != nil {
+		sc.SetID(*u)
+	}
 	return sc
 }
 
@@ -206,10 +200,6 @@ func (sc *SkillCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (sc *SkillCreate) defaults() {
-	if _, ok := sc.mutation.UUID(); !ok {
-		v := skill.DefaultUUID()
-		sc.mutation.SetUUID(v)
-	}
 	if _, ok := sc.mutation.CreatedAt(); !ok {
 		v := skill.DefaultCreatedAt()
 		sc.mutation.SetCreatedAt(v)
@@ -222,13 +212,14 @@ func (sc *SkillCreate) defaults() {
 		v := skill.DefaultPreferred
 		sc.mutation.SetPreferred(v)
 	}
+	if _, ok := sc.mutation.ID(); !ok {
+		v := skill.DefaultID()
+		sc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (sc *SkillCreate) check() error {
-	if _, ok := sc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "Skill.uuid"`)}
-	}
 	if _, ok := sc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Skill.created_at"`)}
 	}
@@ -263,9 +254,12 @@ func (sc *SkillCreate) sqlSave(ctx context.Context) (*Skill, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -276,22 +270,14 @@ func (sc *SkillCreate) createSpec() (*Skill, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: skill.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: skill.FieldID,
 			},
 		}
 	)
 	if id, ok := sc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
-	}
-	if value, ok := sc.mutation.UUID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: skill.FieldUUID,
-		})
-		_node.UUID = value
+		_spec.ID.Value = &id
 	}
 	if value, ok := sc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -358,7 +344,7 @@ func (sc *SkillCreate) createSpec() (*Skill, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -414,10 +400,6 @@ func (scb *SkillCreateBulk) Save(ctx context.Context) ([]*Skill, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

@@ -22,20 +22,6 @@ type PortfolioLinkCreate struct {
 	hooks    []Hook
 }
 
-// SetUUID sets the "uuid" field.
-func (plc *PortfolioLinkCreate) SetUUID(u uuid.UUID) *PortfolioLinkCreate {
-	plc.mutation.SetUUID(u)
-	return plc
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (plc *PortfolioLinkCreate) SetNillableUUID(u *uuid.UUID) *PortfolioLinkCreate {
-	if u != nil {
-		plc.SetUUID(*u)
-	}
-	return plc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (plc *PortfolioLinkCreate) SetCreatedAt(t time.Time) *PortfolioLinkCreate {
 	plc.mutation.SetCreatedAt(t)
@@ -91,22 +77,30 @@ func (plc *PortfolioLinkCreate) SetName(s string) *PortfolioLinkCreate {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (plc *PortfolioLinkCreate) SetTalentID(i int) *PortfolioLinkCreate {
-	plc.mutation.SetTalentID(i)
+func (plc *PortfolioLinkCreate) SetTalentID(u uuid.UUID) *PortfolioLinkCreate {
+	plc.mutation.SetTalentID(u)
 	return plc
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (plc *PortfolioLinkCreate) SetNillableTalentID(i *int) *PortfolioLinkCreate {
-	if i != nil {
-		plc.SetTalentID(*i)
+func (plc *PortfolioLinkCreate) SetNillableTalentID(u *uuid.UUID) *PortfolioLinkCreate {
+	if u != nil {
+		plc.SetTalentID(*u)
 	}
 	return plc
 }
 
 // SetID sets the "id" field.
-func (plc *PortfolioLinkCreate) SetID(i int) *PortfolioLinkCreate {
-	plc.mutation.SetID(i)
+func (plc *PortfolioLinkCreate) SetID(u uuid.UUID) *PortfolioLinkCreate {
+	plc.mutation.SetID(u)
+	return plc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (plc *PortfolioLinkCreate) SetNillableID(u *uuid.UUID) *PortfolioLinkCreate {
+	if u != nil {
+		plc.SetID(*u)
+	}
 	return plc
 }
 
@@ -186,10 +180,6 @@ func (plc *PortfolioLinkCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (plc *PortfolioLinkCreate) defaults() {
-	if _, ok := plc.mutation.UUID(); !ok {
-		v := portfoliolink.DefaultUUID()
-		plc.mutation.SetUUID(v)
-	}
 	if _, ok := plc.mutation.CreatedAt(); !ok {
 		v := portfoliolink.DefaultCreatedAt()
 		plc.mutation.SetCreatedAt(v)
@@ -198,13 +188,14 @@ func (plc *PortfolioLinkCreate) defaults() {
 		v := portfoliolink.DefaultUpdatedAt()
 		plc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := plc.mutation.ID(); !ok {
+		v := portfoliolink.DefaultID()
+		plc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (plc *PortfolioLinkCreate) check() error {
-	if _, ok := plc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "PortfolioLink.uuid"`)}
-	}
 	if _, ok := plc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "PortfolioLink.created_at"`)}
 	}
@@ -228,9 +219,12 @@ func (plc *PortfolioLinkCreate) sqlSave(ctx context.Context) (*PortfolioLink, er
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -241,22 +235,14 @@ func (plc *PortfolioLinkCreate) createSpec() (*PortfolioLink, *sqlgraph.CreateSp
 		_spec = &sqlgraph.CreateSpec{
 			Table: portfoliolink.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: portfoliolink.FieldID,
 			},
 		}
 	)
 	if id, ok := plc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
-	}
-	if value, ok := plc.mutation.UUID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: portfoliolink.FieldUUID,
-		})
-		_node.UUID = value
+		_spec.ID.Value = &id
 	}
 	if value, ok := plc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -307,7 +293,7 @@ func (plc *PortfolioLinkCreate) createSpec() (*PortfolioLink, *sqlgraph.CreateSp
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -363,10 +349,6 @@ func (plcb *PortfolioLinkCreateBulk) Save(ctx context.Context) ([]*PortfolioLink
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

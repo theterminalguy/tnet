@@ -14,6 +14,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/google/uuid"
 )
 
 // PortfolioLinkQuery is the builder for querying PortfolioLink entities.
@@ -109,8 +110,8 @@ func (plq *PortfolioLinkQuery) FirstX(ctx context.Context) *PortfolioLink {
 
 // FirstID returns the first PortfolioLink ID from the query.
 // Returns a *NotFoundError when no PortfolioLink ID was found.
-func (plq *PortfolioLinkQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (plq *PortfolioLinkQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = plq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -122,7 +123,7 @@ func (plq *PortfolioLinkQuery) FirstID(ctx context.Context) (id int, err error) 
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (plq *PortfolioLinkQuery) FirstIDX(ctx context.Context) int {
+func (plq *PortfolioLinkQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := plq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -160,8 +161,8 @@ func (plq *PortfolioLinkQuery) OnlyX(ctx context.Context) *PortfolioLink {
 // OnlyID is like Only, but returns the only PortfolioLink ID in the query.
 // Returns a *NotSingularError when more than one PortfolioLink ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (plq *PortfolioLinkQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (plq *PortfolioLinkQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = plq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -177,7 +178,7 @@ func (plq *PortfolioLinkQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (plq *PortfolioLinkQuery) OnlyIDX(ctx context.Context) int {
+func (plq *PortfolioLinkQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := plq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -203,8 +204,8 @@ func (plq *PortfolioLinkQuery) AllX(ctx context.Context) []*PortfolioLink {
 }
 
 // IDs executes the query and returns a list of PortfolioLink IDs.
-func (plq *PortfolioLinkQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (plq *PortfolioLinkQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := plq.Select(portfoliolink.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -212,7 +213,7 @@ func (plq *PortfolioLinkQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (plq *PortfolioLinkQuery) IDsX(ctx context.Context) []int {
+func (plq *PortfolioLinkQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := plq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -291,12 +292,12 @@ func (plq *PortfolioLinkQuery) WithTalent(opts ...func(*TalentQuery)) *Portfolio
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.PortfolioLink.Query().
-//		GroupBy(portfoliolink.FieldUUID).
+//		GroupBy(portfoliolink.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -318,11 +319,11 @@ func (plq *PortfolioLinkQuery) GroupBy(field string, fields ...string) *Portfoli
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.PortfolioLink.Query().
-//		Select(portfoliolink.FieldUUID).
+//		Select(portfoliolink.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
 func (plq *PortfolioLinkQuery) Select(fields ...string) *PortfolioLinkSelect {
@@ -375,8 +376,8 @@ func (plq *PortfolioLinkQuery) sqlAll(ctx context.Context) ([]*PortfolioLink, er
 	}
 
 	if query := plq.withTalent; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*PortfolioLink)
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*PortfolioLink)
 		for i := range nodes {
 			fk := nodes[i].TalentID
 			if _, ok := nodeids[fk]; !ok {
@@ -426,7 +427,7 @@ func (plq *PortfolioLinkQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   portfoliolink.Table,
 			Columns: portfoliolink.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: portfoliolink.FieldID,
 			},
 		},

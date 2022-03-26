@@ -22,20 +22,6 @@ type SlackAppInstallCreate struct {
 	hooks    []Hook
 }
 
-// SetUUID sets the "uuid" field.
-func (saic *SlackAppInstallCreate) SetUUID(u uuid.UUID) *SlackAppInstallCreate {
-	saic.mutation.SetUUID(u)
-	return saic
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (saic *SlackAppInstallCreate) SetNillableUUID(u *uuid.UUID) *SlackAppInstallCreate {
-	if u != nil {
-		saic.SetUUID(*u)
-	}
-	return saic
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (saic *SlackAppInstallCreate) SetCreatedAt(t time.Time) *SlackAppInstallCreate {
 	saic.mutation.SetCreatedAt(t)
@@ -79,15 +65,15 @@ func (saic *SlackAppInstallCreate) SetNillableDeletedAt(t *time.Time) *SlackAppI
 }
 
 // SetUserID sets the "user_id" field.
-func (saic *SlackAppInstallCreate) SetUserID(i int) *SlackAppInstallCreate {
-	saic.mutation.SetUserID(i)
+func (saic *SlackAppInstallCreate) SetUserID(u uuid.UUID) *SlackAppInstallCreate {
+	saic.mutation.SetUserID(u)
 	return saic
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (saic *SlackAppInstallCreate) SetNillableUserID(i *int) *SlackAppInstallCreate {
-	if i != nil {
-		saic.SetUserID(*i)
+func (saic *SlackAppInstallCreate) SetNillableUserID(u *uuid.UUID) *SlackAppInstallCreate {
+	if u != nil {
+		saic.SetUserID(*u)
 	}
 	return saic
 }
@@ -153,8 +139,16 @@ func (saic *SlackAppInstallCreate) SetIsEnterpriseInstall(b bool) *SlackAppInsta
 }
 
 // SetID sets the "id" field.
-func (saic *SlackAppInstallCreate) SetID(i int) *SlackAppInstallCreate {
-	saic.mutation.SetID(i)
+func (saic *SlackAppInstallCreate) SetID(u uuid.UUID) *SlackAppInstallCreate {
+	saic.mutation.SetID(u)
+	return saic
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (saic *SlackAppInstallCreate) SetNillableID(u *uuid.UUID) *SlackAppInstallCreate {
+	if u != nil {
+		saic.SetID(*u)
+	}
 	return saic
 }
 
@@ -234,10 +228,6 @@ func (saic *SlackAppInstallCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (saic *SlackAppInstallCreate) defaults() {
-	if _, ok := saic.mutation.UUID(); !ok {
-		v := slackappinstall.DefaultUUID()
-		saic.mutation.SetUUID(v)
-	}
 	if _, ok := saic.mutation.CreatedAt(); !ok {
 		v := slackappinstall.DefaultCreatedAt()
 		saic.mutation.SetCreatedAt(v)
@@ -246,13 +236,14 @@ func (saic *SlackAppInstallCreate) defaults() {
 		v := slackappinstall.DefaultUpdatedAt()
 		saic.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := saic.mutation.ID(); !ok {
+		v := slackappinstall.DefaultID()
+		saic.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (saic *SlackAppInstallCreate) check() error {
-	if _, ok := saic.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "SlackAppInstall.uuid"`)}
-	}
 	if _, ok := saic.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "SlackAppInstall.created_at"`)}
 	}
@@ -300,9 +291,12 @@ func (saic *SlackAppInstallCreate) sqlSave(ctx context.Context) (*SlackAppInstal
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -313,22 +307,14 @@ func (saic *SlackAppInstallCreate) createSpec() (*SlackAppInstall, *sqlgraph.Cre
 		_spec = &sqlgraph.CreateSpec{
 			Table: slackappinstall.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: slackappinstall.FieldID,
 			},
 		}
 	)
 	if id, ok := saic.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
-	}
-	if value, ok := saic.mutation.UUID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: slackappinstall.FieldUUID,
-		})
-		_node.UUID = value
+		_spec.ID.Value = &id
 	}
 	if value, ok := saic.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -443,7 +429,7 @@ func (saic *SlackAppInstallCreate) createSpec() (*SlackAppInstall, *sqlgraph.Cre
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -499,10 +485,6 @@ func (saicb *SlackAppInstallCreateBulk) Save(ctx context.Context) ([]*SlackAppIn
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

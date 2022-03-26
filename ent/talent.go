@@ -17,9 +17,7 @@ import (
 type Talent struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"-"`
-	// UUID holds the value of the "uuid" field.
-	UUID uuid.UUID `json:"uuid,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -27,7 +25,7 @@ type Talent struct {
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
 	// UserID holds the value of the "user_id" field.
-	UserID int `json:"-"`
+	UserID uuid.UUID `json:"-"`
 	// FirstName holds the value of the "first_name" field.
 	FirstName string `json:"first_name,omitempty"`
 	// LastName holds the value of the "last_name" field.
@@ -40,12 +38,6 @@ type Talent struct {
 	PreferredJobTitle string `json:"preferred_job_title,omitempty"`
 	// IsAvailable holds the value of the "is_available" field.
 	IsAvailable bool `json:"is_available,omitempty"`
-	// ReferrerID holds the value of the "referrer_id" field.
-	ReferrerID int `json:"-"`
-	// ReferralCode holds the value of the "referral_code" field.
-	ReferralCode string `json:"referral_code,omitempty"`
-	// TentnCode holds the value of the "tentn_code" field.
-	TentnCode string `json:"tentn_code,omitempty"`
 	// ProfessionalStartDate holds the value of the "professional_start_date" field.
 	ProfessionalStartDate time.Time `json:"professional_start_date,omitempty"`
 	// Email holds the value of the "email" field.
@@ -73,10 +65,6 @@ type Talent struct {
 type TalentEdges struct {
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
-	// Referrer holds the value of the referrer edge.
-	Referrer *Talent `json:"referrer,omitempty"`
-	// Referees holds the value of the referees edge.
-	Referees []*Talent `json:"referees,omitempty"`
 	// Portfoliolinks holds the value of the portfoliolinks edge.
 	Portfoliolinks []*PortfolioLink `json:"portfoliolinks,omitempty"`
 	// Skills holds the value of the skills edge.
@@ -93,7 +81,7 @@ type TalentEdges struct {
 	Missions []*Mission `json:"missions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [10]bool
+	loadedTypes [8]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -110,33 +98,10 @@ func (e TalentEdges) UserOrErr() (*User, error) {
 	return nil, &NotLoadedError{edge: "user"}
 }
 
-// ReferrerOrErr returns the Referrer value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e TalentEdges) ReferrerOrErr() (*Talent, error) {
-	if e.loadedTypes[1] {
-		if e.Referrer == nil {
-			// The edge referrer was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: talent.Label}
-		}
-		return e.Referrer, nil
-	}
-	return nil, &NotLoadedError{edge: "referrer"}
-}
-
-// RefereesOrErr returns the Referees value or an error if the edge
-// was not loaded in eager-loading.
-func (e TalentEdges) RefereesOrErr() ([]*Talent, error) {
-	if e.loadedTypes[2] {
-		return e.Referees, nil
-	}
-	return nil, &NotLoadedError{edge: "referees"}
-}
-
 // PortfoliolinksOrErr returns the Portfoliolinks value or an error if the edge
 // was not loaded in eager-loading.
 func (e TalentEdges) PortfoliolinksOrErr() ([]*PortfolioLink, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[1] {
 		return e.Portfoliolinks, nil
 	}
 	return nil, &NotLoadedError{edge: "portfoliolinks"}
@@ -145,7 +110,7 @@ func (e TalentEdges) PortfoliolinksOrErr() ([]*PortfolioLink, error) {
 // SkillsOrErr returns the Skills value or an error if the edge
 // was not loaded in eager-loading.
 func (e TalentEdges) SkillsOrErr() ([]*Skill, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[2] {
 		return e.Skills, nil
 	}
 	return nil, &NotLoadedError{edge: "skills"}
@@ -154,7 +119,7 @@ func (e TalentEdges) SkillsOrErr() ([]*Skill, error) {
 // JobApplicationsOrErr returns the JobApplications value or an error if the edge
 // was not loaded in eager-loading.
 func (e TalentEdges) JobApplicationsOrErr() ([]*JobApplication, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[3] {
 		return e.JobApplications, nil
 	}
 	return nil, &NotLoadedError{edge: "job_applications"}
@@ -163,7 +128,7 @@ func (e TalentEdges) JobApplicationsOrErr() ([]*JobApplication, error) {
 // WorkExperiencesOrErr returns the WorkExperiences value or an error if the edge
 // was not loaded in eager-loading.
 func (e TalentEdges) WorkExperiencesOrErr() ([]*WorkExperience, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[4] {
 		return e.WorkExperiences, nil
 	}
 	return nil, &NotLoadedError{edge: "work_experiences"}
@@ -172,7 +137,7 @@ func (e TalentEdges) WorkExperiencesOrErr() ([]*WorkExperience, error) {
 // EducationsOrErr returns the Educations value or an error if the edge
 // was not loaded in eager-loading.
 func (e TalentEdges) EducationsOrErr() ([]*Education, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[5] {
 		return e.Educations, nil
 	}
 	return nil, &NotLoadedError{edge: "educations"}
@@ -181,7 +146,7 @@ func (e TalentEdges) EducationsOrErr() ([]*Education, error) {
 // EmergencyContactsOrErr returns the EmergencyContacts value or an error if the edge
 // was not loaded in eager-loading.
 func (e TalentEdges) EmergencyContactsOrErr() ([]*EmergencyContact, error) {
-	if e.loadedTypes[8] {
+	if e.loadedTypes[6] {
 		return e.EmergencyContacts, nil
 	}
 	return nil, &NotLoadedError{edge: "emergency_contacts"}
@@ -190,7 +155,7 @@ func (e TalentEdges) EmergencyContactsOrErr() ([]*EmergencyContact, error) {
 // MissionsOrErr returns the Missions value or an error if the edge
 // was not loaded in eager-loading.
 func (e TalentEdges) MissionsOrErr() ([]*Mission, error) {
-	if e.loadedTypes[9] {
+	if e.loadedTypes[7] {
 		return e.Missions, nil
 	}
 	return nil, &NotLoadedError{edge: "missions"}
@@ -203,13 +168,11 @@ func (*Talent) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case talent.FieldIsAvailable:
 			values[i] = new(sql.NullBool)
-		case talent.FieldID, talent.FieldUserID, talent.FieldReferrerID:
-			values[i] = new(sql.NullInt64)
-		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldReferralCode, talent.FieldTentnCode, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity, talent.FieldJobPreference, talent.FieldTimezone, talent.FieldState:
+		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity, talent.FieldJobPreference, talent.FieldTimezone, talent.FieldState:
 			values[i] = new(sql.NullString)
 		case talent.FieldCreatedAt, talent.FieldUpdatedAt, talent.FieldDeletedAt, talent.FieldProfessionalStartDate, talent.FieldJoinedTentnAt:
 			values[i] = new(sql.NullTime)
-		case talent.FieldUUID:
+		case talent.FieldID, talent.FieldUserID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Talent", columns[i])
@@ -227,16 +190,10 @@ func (t *Talent) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case talent.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
-			}
-			t.ID = int(value.Int64)
-		case talent.FieldUUID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field uuid", values[i])
+				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				t.UUID = *value
+				t.ID = *value
 			}
 		case talent.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -258,10 +215,10 @@ func (t *Talent) assignValues(columns []string, values []interface{}) error {
 				*t.DeletedAt = value.Time
 			}
 		case talent.FieldUserID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
-			} else if value.Valid {
-				t.UserID = int(value.Int64)
+			} else if value != nil {
+				t.UserID = *value
 			}
 		case talent.FieldFirstName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -298,24 +255,6 @@ func (t *Talent) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field is_available", values[i])
 			} else if value.Valid {
 				t.IsAvailable = value.Bool
-			}
-		case talent.FieldReferrerID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field referrer_id", values[i])
-			} else if value.Valid {
-				t.ReferrerID = int(value.Int64)
-			}
-		case talent.FieldReferralCode:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field referral_code", values[i])
-			} else if value.Valid {
-				t.ReferralCode = value.String
-			}
-		case talent.FieldTentnCode:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field tentn_code", values[i])
-			} else if value.Valid {
-				t.TentnCode = value.String
 			}
 		case talent.FieldProfessionalStartDate:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -382,16 +321,6 @@ func (t *Talent) QueryUser() *UserQuery {
 	return (&TalentClient{config: t.config}).QueryUser(t)
 }
 
-// QueryReferrer queries the "referrer" edge of the Talent entity.
-func (t *Talent) QueryReferrer() *TalentQuery {
-	return (&TalentClient{config: t.config}).QueryReferrer(t)
-}
-
-// QueryReferees queries the "referees" edge of the Talent entity.
-func (t *Talent) QueryReferees() *TalentQuery {
-	return (&TalentClient{config: t.config}).QueryReferees(t)
-}
-
 // QueryPortfoliolinks queries the "portfoliolinks" edge of the Talent entity.
 func (t *Talent) QueryPortfoliolinks() *PortfolioLinkQuery {
 	return (&TalentClient{config: t.config}).QueryPortfoliolinks(t)
@@ -450,8 +379,6 @@ func (t *Talent) String() string {
 	var builder strings.Builder
 	builder.WriteString("Talent(")
 	builder.WriteString(fmt.Sprintf("id=%v", t.ID))
-	builder.WriteString(", uuid=")
-	builder.WriteString(fmt.Sprintf("%v", t.UUID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(t.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
@@ -474,12 +401,6 @@ func (t *Talent) String() string {
 	builder.WriteString(t.PreferredJobTitle)
 	builder.WriteString(", is_available=")
 	builder.WriteString(fmt.Sprintf("%v", t.IsAvailable))
-	builder.WriteString(", referrer_id=")
-	builder.WriteString(fmt.Sprintf("%v", t.ReferrerID))
-	builder.WriteString(", referral_code=")
-	builder.WriteString(t.ReferralCode)
-	builder.WriteString(", tentn_code=")
-	builder.WriteString(t.TentnCode)
 	builder.WriteString(", professional_start_date=")
 	builder.WriteString(t.ProfessionalStartDate.Format(time.ANSIC))
 	builder.WriteString(", email=")

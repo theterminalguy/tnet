@@ -22,20 +22,6 @@ type WorkExperienceCreate struct {
 	hooks    []Hook
 }
 
-// SetUUID sets the "uuid" field.
-func (wec *WorkExperienceCreate) SetUUID(u uuid.UUID) *WorkExperienceCreate {
-	wec.mutation.SetUUID(u)
-	return wec
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (wec *WorkExperienceCreate) SetNillableUUID(u *uuid.UUID) *WorkExperienceCreate {
-	if u != nil {
-		wec.SetUUID(*u)
-	}
-	return wec
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (wec *WorkExperienceCreate) SetCreatedAt(t time.Time) *WorkExperienceCreate {
 	wec.mutation.SetCreatedAt(t)
@@ -79,15 +65,15 @@ func (wec *WorkExperienceCreate) SetNillableDeletedAt(t *time.Time) *WorkExperie
 }
 
 // SetTalentID sets the "talent_id" field.
-func (wec *WorkExperienceCreate) SetTalentID(i int) *WorkExperienceCreate {
-	wec.mutation.SetTalentID(i)
+func (wec *WorkExperienceCreate) SetTalentID(u uuid.UUID) *WorkExperienceCreate {
+	wec.mutation.SetTalentID(u)
 	return wec
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (wec *WorkExperienceCreate) SetNillableTalentID(i *int) *WorkExperienceCreate {
-	if i != nil {
-		wec.SetTalentID(*i)
+func (wec *WorkExperienceCreate) SetNillableTalentID(u *uuid.UUID) *WorkExperienceCreate {
+	if u != nil {
+		wec.SetTalentID(*u)
 	}
 	return wec
 }
@@ -143,8 +129,16 @@ func (wec *WorkExperienceCreate) SetPrimaryTechnologies(s []string) *WorkExperie
 }
 
 // SetID sets the "id" field.
-func (wec *WorkExperienceCreate) SetID(i int) *WorkExperienceCreate {
-	wec.mutation.SetID(i)
+func (wec *WorkExperienceCreate) SetID(u uuid.UUID) *WorkExperienceCreate {
+	wec.mutation.SetID(u)
+	return wec
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (wec *WorkExperienceCreate) SetNillableID(u *uuid.UUID) *WorkExperienceCreate {
+	if u != nil {
+		wec.SetID(*u)
+	}
 	return wec
 }
 
@@ -224,10 +218,6 @@ func (wec *WorkExperienceCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (wec *WorkExperienceCreate) defaults() {
-	if _, ok := wec.mutation.UUID(); !ok {
-		v := workexperience.DefaultUUID()
-		wec.mutation.SetUUID(v)
-	}
 	if _, ok := wec.mutation.CreatedAt(); !ok {
 		v := workexperience.DefaultCreatedAt()
 		wec.mutation.SetCreatedAt(v)
@@ -236,13 +226,14 @@ func (wec *WorkExperienceCreate) defaults() {
 		v := workexperience.DefaultUpdatedAt()
 		wec.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := wec.mutation.ID(); !ok {
+		v := workexperience.DefaultID()
+		wec.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (wec *WorkExperienceCreate) check() error {
-	if _, ok := wec.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "WorkExperience.uuid"`)}
-	}
 	if _, ok := wec.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "WorkExperience.created_at"`)}
 	}
@@ -278,9 +269,12 @@ func (wec *WorkExperienceCreate) sqlSave(ctx context.Context) (*WorkExperience, 
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -291,22 +285,14 @@ func (wec *WorkExperienceCreate) createSpec() (*WorkExperience, *sqlgraph.Create
 		_spec = &sqlgraph.CreateSpec{
 			Table: workexperience.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: workexperience.FieldID,
 			},
 		}
 	)
 	if id, ok := wec.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
-	}
-	if value, ok := wec.mutation.UUID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: workexperience.FieldUUID,
-		})
-		_node.UUID = value
+		_spec.ID.Value = &id
 	}
 	if value, ok := wec.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -397,7 +383,7 @@ func (wec *WorkExperienceCreate) createSpec() (*WorkExperience, *sqlgraph.Create
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -453,10 +439,6 @@ func (wecb *WorkExperienceCreateBulk) Save(ctx context.Context) ([]*WorkExperien
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

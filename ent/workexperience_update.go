@@ -30,20 +30,6 @@ func (weu *WorkExperienceUpdate) Where(ps ...predicate.WorkExperience) *WorkExpe
 	return weu
 }
 
-// SetUUID sets the "uuid" field.
-func (weu *WorkExperienceUpdate) SetUUID(u uuid.UUID) *WorkExperienceUpdate {
-	weu.mutation.SetUUID(u)
-	return weu
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (weu *WorkExperienceUpdate) SetNillableUUID(u *uuid.UUID) *WorkExperienceUpdate {
-	if u != nil {
-		weu.SetUUID(*u)
-	}
-	return weu
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (weu *WorkExperienceUpdate) SetUpdatedAt(t time.Time) *WorkExperienceUpdate {
 	weu.mutation.SetUpdatedAt(t)
@@ -71,15 +57,15 @@ func (weu *WorkExperienceUpdate) ClearDeletedAt() *WorkExperienceUpdate {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (weu *WorkExperienceUpdate) SetTalentID(i int) *WorkExperienceUpdate {
-	weu.mutation.SetTalentID(i)
+func (weu *WorkExperienceUpdate) SetTalentID(u uuid.UUID) *WorkExperienceUpdate {
+	weu.mutation.SetTalentID(u)
 	return weu
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (weu *WorkExperienceUpdate) SetNillableTalentID(i *int) *WorkExperienceUpdate {
-	if i != nil {
-		weu.SetTalentID(*i)
+func (weu *WorkExperienceUpdate) SetNillableTalentID(u *uuid.UUID) *WorkExperienceUpdate {
+	if u != nil {
+		weu.SetTalentID(*u)
 	}
 	return weu
 }
@@ -231,7 +217,7 @@ func (weu *WorkExperienceUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Table:   workexperience.Table,
 			Columns: workexperience.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: workexperience.FieldID,
 			},
 		},
@@ -242,13 +228,6 @@ func (weu *WorkExperienceUpdate) sqlSave(ctx context.Context) (n int, err error)
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := weu.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: workexperience.FieldUUID,
-		})
 	}
 	if value, ok := weu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -334,7 +313,7 @@ func (weu *WorkExperienceUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -350,7 +329,7 @@ func (weu *WorkExperienceUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -377,20 +356,6 @@ type WorkExperienceUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *WorkExperienceMutation
-}
-
-// SetUUID sets the "uuid" field.
-func (weuo *WorkExperienceUpdateOne) SetUUID(u uuid.UUID) *WorkExperienceUpdateOne {
-	weuo.mutation.SetUUID(u)
-	return weuo
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (weuo *WorkExperienceUpdateOne) SetNillableUUID(u *uuid.UUID) *WorkExperienceUpdateOne {
-	if u != nil {
-		weuo.SetUUID(*u)
-	}
-	return weuo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -420,15 +385,15 @@ func (weuo *WorkExperienceUpdateOne) ClearDeletedAt() *WorkExperienceUpdateOne {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (weuo *WorkExperienceUpdateOne) SetTalentID(i int) *WorkExperienceUpdateOne {
-	weuo.mutation.SetTalentID(i)
+func (weuo *WorkExperienceUpdateOne) SetTalentID(u uuid.UUID) *WorkExperienceUpdateOne {
+	weuo.mutation.SetTalentID(u)
 	return weuo
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (weuo *WorkExperienceUpdateOne) SetNillableTalentID(i *int) *WorkExperienceUpdateOne {
-	if i != nil {
-		weuo.SetTalentID(*i)
+func (weuo *WorkExperienceUpdateOne) SetNillableTalentID(u *uuid.UUID) *WorkExperienceUpdateOne {
+	if u != nil {
+		weuo.SetTalentID(*u)
 	}
 	return weuo
 }
@@ -587,7 +552,7 @@ func (weuo *WorkExperienceUpdateOne) sqlSave(ctx context.Context) (_node *WorkEx
 			Table:   workexperience.Table,
 			Columns: workexperience.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: workexperience.FieldID,
 			},
 		},
@@ -615,13 +580,6 @@ func (weuo *WorkExperienceUpdateOne) sqlSave(ctx context.Context) (_node *WorkEx
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := weuo.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: workexperience.FieldUUID,
-		})
 	}
 	if value, ok := weuo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -707,7 +665,7 @@ func (weuo *WorkExperienceUpdateOne) sqlSave(ctx context.Context) (_node *WorkEx
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -723,7 +681,7 @@ func (weuo *WorkExperienceUpdateOne) sqlSave(ctx context.Context) (_node *WorkEx
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},

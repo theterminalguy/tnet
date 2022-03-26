@@ -35,20 +35,6 @@ func (uu *UserUpdate) Where(ps ...predicate.User) *UserUpdate {
 	return uu
 }
 
-// SetUUID sets the "uuid" field.
-func (uu *UserUpdate) SetUUID(u uuid.UUID) *UserUpdate {
-	uu.mutation.SetUUID(u)
-	return uu
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableUUID(u *uuid.UUID) *UserUpdate {
-	if u != nil {
-		uu.SetUUID(*u)
-	}
-	return uu
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (uu *UserUpdate) SetUpdatedAt(t time.Time) *UserUpdate {
 	uu.mutation.SetUpdatedAt(t)
@@ -108,14 +94,14 @@ func (uu *UserUpdate) SetNillableApproved(b *bool) *UserUpdate {
 }
 
 // AddTalentIDs adds the "talents" edge to the Talent entity by IDs.
-func (uu *UserUpdate) AddTalentIDs(ids ...int) *UserUpdate {
+func (uu *UserUpdate) AddTalentIDs(ids ...uuid.UUID) *UserUpdate {
 	uu.mutation.AddTalentIDs(ids...)
 	return uu
 }
 
 // AddTalents adds the "talents" edges to the Talent entity.
 func (uu *UserUpdate) AddTalents(t ...*Talent) *UserUpdate {
-	ids := make([]int, len(t))
+	ids := make([]uuid.UUID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -123,14 +109,14 @@ func (uu *UserUpdate) AddTalents(t ...*Talent) *UserUpdate {
 }
 
 // AddSlackAppInstallIDs adds the "slack_app_installs" edge to the SlackAppInstall entity by IDs.
-func (uu *UserUpdate) AddSlackAppInstallIDs(ids ...int) *UserUpdate {
+func (uu *UserUpdate) AddSlackAppInstallIDs(ids ...uuid.UUID) *UserUpdate {
 	uu.mutation.AddSlackAppInstallIDs(ids...)
 	return uu
 }
 
 // AddSlackAppInstalls adds the "slack_app_installs" edges to the SlackAppInstall entity.
 func (uu *UserUpdate) AddSlackAppInstalls(s ...*SlackAppInstall) *UserUpdate {
-	ids := make([]int, len(s))
+	ids := make([]uuid.UUID, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
@@ -138,14 +124,14 @@ func (uu *UserUpdate) AddSlackAppInstalls(s ...*SlackAppInstall) *UserUpdate {
 }
 
 // AddJobIDs adds the "jobs" edge to the Job entity by IDs.
-func (uu *UserUpdate) AddJobIDs(ids ...int) *UserUpdate {
+func (uu *UserUpdate) AddJobIDs(ids ...uuid.UUID) *UserUpdate {
 	uu.mutation.AddJobIDs(ids...)
 	return uu
 }
 
 // AddJobs adds the "jobs" edges to the Job entity.
 func (uu *UserUpdate) AddJobs(j ...*Job) *UserUpdate {
-	ids := make([]int, len(j))
+	ids := make([]uuid.UUID, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
@@ -153,14 +139,14 @@ func (uu *UserUpdate) AddJobs(j ...*Job) *UserUpdate {
 }
 
 // AddEmailTemplateIDs adds the "email_templates" edge to the EmailTemplate entity by IDs.
-func (uu *UserUpdate) AddEmailTemplateIDs(ids ...int) *UserUpdate {
+func (uu *UserUpdate) AddEmailTemplateIDs(ids ...uuid.UUID) *UserUpdate {
 	uu.mutation.AddEmailTemplateIDs(ids...)
 	return uu
 }
 
 // AddEmailTemplates adds the "email_templates" edges to the EmailTemplate entity.
 func (uu *UserUpdate) AddEmailTemplates(e ...*EmailTemplate) *UserUpdate {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -168,14 +154,14 @@ func (uu *UserUpdate) AddEmailTemplates(e ...*EmailTemplate) *UserUpdate {
 }
 
 // AddTalentCollectionIDs adds the "talent_collections" edge to the TalentCollection entity by IDs.
-func (uu *UserUpdate) AddTalentCollectionIDs(ids ...int) *UserUpdate {
+func (uu *UserUpdate) AddTalentCollectionIDs(ids ...uuid.UUID) *UserUpdate {
 	uu.mutation.AddTalentCollectionIDs(ids...)
 	return uu
 }
 
 // AddTalentCollections adds the "talent_collections" edges to the TalentCollection entity.
 func (uu *UserUpdate) AddTalentCollections(t ...*TalentCollection) *UserUpdate {
-	ids := make([]int, len(t))
+	ids := make([]uuid.UUID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -194,14 +180,14 @@ func (uu *UserUpdate) ClearTalents() *UserUpdate {
 }
 
 // RemoveTalentIDs removes the "talents" edge to Talent entities by IDs.
-func (uu *UserUpdate) RemoveTalentIDs(ids ...int) *UserUpdate {
+func (uu *UserUpdate) RemoveTalentIDs(ids ...uuid.UUID) *UserUpdate {
 	uu.mutation.RemoveTalentIDs(ids...)
 	return uu
 }
 
 // RemoveTalents removes "talents" edges to Talent entities.
 func (uu *UserUpdate) RemoveTalents(t ...*Talent) *UserUpdate {
-	ids := make([]int, len(t))
+	ids := make([]uuid.UUID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -215,14 +201,14 @@ func (uu *UserUpdate) ClearSlackAppInstalls() *UserUpdate {
 }
 
 // RemoveSlackAppInstallIDs removes the "slack_app_installs" edge to SlackAppInstall entities by IDs.
-func (uu *UserUpdate) RemoveSlackAppInstallIDs(ids ...int) *UserUpdate {
+func (uu *UserUpdate) RemoveSlackAppInstallIDs(ids ...uuid.UUID) *UserUpdate {
 	uu.mutation.RemoveSlackAppInstallIDs(ids...)
 	return uu
 }
 
 // RemoveSlackAppInstalls removes "slack_app_installs" edges to SlackAppInstall entities.
 func (uu *UserUpdate) RemoveSlackAppInstalls(s ...*SlackAppInstall) *UserUpdate {
-	ids := make([]int, len(s))
+	ids := make([]uuid.UUID, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
@@ -236,14 +222,14 @@ func (uu *UserUpdate) ClearJobs() *UserUpdate {
 }
 
 // RemoveJobIDs removes the "jobs" edge to Job entities by IDs.
-func (uu *UserUpdate) RemoveJobIDs(ids ...int) *UserUpdate {
+func (uu *UserUpdate) RemoveJobIDs(ids ...uuid.UUID) *UserUpdate {
 	uu.mutation.RemoveJobIDs(ids...)
 	return uu
 }
 
 // RemoveJobs removes "jobs" edges to Job entities.
 func (uu *UserUpdate) RemoveJobs(j ...*Job) *UserUpdate {
-	ids := make([]int, len(j))
+	ids := make([]uuid.UUID, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
@@ -257,14 +243,14 @@ func (uu *UserUpdate) ClearEmailTemplates() *UserUpdate {
 }
 
 // RemoveEmailTemplateIDs removes the "email_templates" edge to EmailTemplate entities by IDs.
-func (uu *UserUpdate) RemoveEmailTemplateIDs(ids ...int) *UserUpdate {
+func (uu *UserUpdate) RemoveEmailTemplateIDs(ids ...uuid.UUID) *UserUpdate {
 	uu.mutation.RemoveEmailTemplateIDs(ids...)
 	return uu
 }
 
 // RemoveEmailTemplates removes "email_templates" edges to EmailTemplate entities.
 func (uu *UserUpdate) RemoveEmailTemplates(e ...*EmailTemplate) *UserUpdate {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -278,14 +264,14 @@ func (uu *UserUpdate) ClearTalentCollections() *UserUpdate {
 }
 
 // RemoveTalentCollectionIDs removes the "talent_collections" edge to TalentCollection entities by IDs.
-func (uu *UserUpdate) RemoveTalentCollectionIDs(ids ...int) *UserUpdate {
+func (uu *UserUpdate) RemoveTalentCollectionIDs(ids ...uuid.UUID) *UserUpdate {
 	uu.mutation.RemoveTalentCollectionIDs(ids...)
 	return uu
 }
 
 // RemoveTalentCollections removes "talent_collections" edges to TalentCollection entities.
 func (uu *UserUpdate) RemoveTalentCollections(t ...*TalentCollection) *UserUpdate {
-	ids := make([]int, len(t))
+	ids := make([]uuid.UUID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -377,7 +363,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   user.Table,
 			Columns: user.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: user.FieldID,
 			},
 		},
@@ -388,13 +374,6 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := uu.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: user.FieldUUID,
-		})
 	}
 	if value, ok := uu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -453,7 +432,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -469,7 +448,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -488,7 +467,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -507,7 +486,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: slackappinstall.FieldID,
 				},
 			},
@@ -523,7 +502,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: slackappinstall.FieldID,
 				},
 			},
@@ -542,7 +521,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: slackappinstall.FieldID,
 				},
 			},
@@ -561,7 +540,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: job.FieldID,
 				},
 			},
@@ -577,7 +556,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: job.FieldID,
 				},
 			},
@@ -596,7 +575,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: job.FieldID,
 				},
 			},
@@ -615,7 +594,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: emailtemplate.FieldID,
 				},
 			},
@@ -631,7 +610,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: emailtemplate.FieldID,
 				},
 			},
@@ -650,7 +629,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: emailtemplate.FieldID,
 				},
 			},
@@ -669,7 +648,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talentcollection.FieldID,
 				},
 			},
@@ -685,7 +664,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talentcollection.FieldID,
 				},
 			},
@@ -704,7 +683,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talentcollection.FieldID,
 				},
 			},
@@ -731,20 +710,6 @@ type UserUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *UserMutation
-}
-
-// SetUUID sets the "uuid" field.
-func (uuo *UserUpdateOne) SetUUID(u uuid.UUID) *UserUpdateOne {
-	uuo.mutation.SetUUID(u)
-	return uuo
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableUUID(u *uuid.UUID) *UserUpdateOne {
-	if u != nil {
-		uuo.SetUUID(*u)
-	}
-	return uuo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -806,14 +771,14 @@ func (uuo *UserUpdateOne) SetNillableApproved(b *bool) *UserUpdateOne {
 }
 
 // AddTalentIDs adds the "talents" edge to the Talent entity by IDs.
-func (uuo *UserUpdateOne) AddTalentIDs(ids ...int) *UserUpdateOne {
+func (uuo *UserUpdateOne) AddTalentIDs(ids ...uuid.UUID) *UserUpdateOne {
 	uuo.mutation.AddTalentIDs(ids...)
 	return uuo
 }
 
 // AddTalents adds the "talents" edges to the Talent entity.
 func (uuo *UserUpdateOne) AddTalents(t ...*Talent) *UserUpdateOne {
-	ids := make([]int, len(t))
+	ids := make([]uuid.UUID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -821,14 +786,14 @@ func (uuo *UserUpdateOne) AddTalents(t ...*Talent) *UserUpdateOne {
 }
 
 // AddSlackAppInstallIDs adds the "slack_app_installs" edge to the SlackAppInstall entity by IDs.
-func (uuo *UserUpdateOne) AddSlackAppInstallIDs(ids ...int) *UserUpdateOne {
+func (uuo *UserUpdateOne) AddSlackAppInstallIDs(ids ...uuid.UUID) *UserUpdateOne {
 	uuo.mutation.AddSlackAppInstallIDs(ids...)
 	return uuo
 }
 
 // AddSlackAppInstalls adds the "slack_app_installs" edges to the SlackAppInstall entity.
 func (uuo *UserUpdateOne) AddSlackAppInstalls(s ...*SlackAppInstall) *UserUpdateOne {
-	ids := make([]int, len(s))
+	ids := make([]uuid.UUID, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
@@ -836,14 +801,14 @@ func (uuo *UserUpdateOne) AddSlackAppInstalls(s ...*SlackAppInstall) *UserUpdate
 }
 
 // AddJobIDs adds the "jobs" edge to the Job entity by IDs.
-func (uuo *UserUpdateOne) AddJobIDs(ids ...int) *UserUpdateOne {
+func (uuo *UserUpdateOne) AddJobIDs(ids ...uuid.UUID) *UserUpdateOne {
 	uuo.mutation.AddJobIDs(ids...)
 	return uuo
 }
 
 // AddJobs adds the "jobs" edges to the Job entity.
 func (uuo *UserUpdateOne) AddJobs(j ...*Job) *UserUpdateOne {
-	ids := make([]int, len(j))
+	ids := make([]uuid.UUID, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
@@ -851,14 +816,14 @@ func (uuo *UserUpdateOne) AddJobs(j ...*Job) *UserUpdateOne {
 }
 
 // AddEmailTemplateIDs adds the "email_templates" edge to the EmailTemplate entity by IDs.
-func (uuo *UserUpdateOne) AddEmailTemplateIDs(ids ...int) *UserUpdateOne {
+func (uuo *UserUpdateOne) AddEmailTemplateIDs(ids ...uuid.UUID) *UserUpdateOne {
 	uuo.mutation.AddEmailTemplateIDs(ids...)
 	return uuo
 }
 
 // AddEmailTemplates adds the "email_templates" edges to the EmailTemplate entity.
 func (uuo *UserUpdateOne) AddEmailTemplates(e ...*EmailTemplate) *UserUpdateOne {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -866,14 +831,14 @@ func (uuo *UserUpdateOne) AddEmailTemplates(e ...*EmailTemplate) *UserUpdateOne 
 }
 
 // AddTalentCollectionIDs adds the "talent_collections" edge to the TalentCollection entity by IDs.
-func (uuo *UserUpdateOne) AddTalentCollectionIDs(ids ...int) *UserUpdateOne {
+func (uuo *UserUpdateOne) AddTalentCollectionIDs(ids ...uuid.UUID) *UserUpdateOne {
 	uuo.mutation.AddTalentCollectionIDs(ids...)
 	return uuo
 }
 
 // AddTalentCollections adds the "talent_collections" edges to the TalentCollection entity.
 func (uuo *UserUpdateOne) AddTalentCollections(t ...*TalentCollection) *UserUpdateOne {
-	ids := make([]int, len(t))
+	ids := make([]uuid.UUID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -892,14 +857,14 @@ func (uuo *UserUpdateOne) ClearTalents() *UserUpdateOne {
 }
 
 // RemoveTalentIDs removes the "talents" edge to Talent entities by IDs.
-func (uuo *UserUpdateOne) RemoveTalentIDs(ids ...int) *UserUpdateOne {
+func (uuo *UserUpdateOne) RemoveTalentIDs(ids ...uuid.UUID) *UserUpdateOne {
 	uuo.mutation.RemoveTalentIDs(ids...)
 	return uuo
 }
 
 // RemoveTalents removes "talents" edges to Talent entities.
 func (uuo *UserUpdateOne) RemoveTalents(t ...*Talent) *UserUpdateOne {
-	ids := make([]int, len(t))
+	ids := make([]uuid.UUID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -913,14 +878,14 @@ func (uuo *UserUpdateOne) ClearSlackAppInstalls() *UserUpdateOne {
 }
 
 // RemoveSlackAppInstallIDs removes the "slack_app_installs" edge to SlackAppInstall entities by IDs.
-func (uuo *UserUpdateOne) RemoveSlackAppInstallIDs(ids ...int) *UserUpdateOne {
+func (uuo *UserUpdateOne) RemoveSlackAppInstallIDs(ids ...uuid.UUID) *UserUpdateOne {
 	uuo.mutation.RemoveSlackAppInstallIDs(ids...)
 	return uuo
 }
 
 // RemoveSlackAppInstalls removes "slack_app_installs" edges to SlackAppInstall entities.
 func (uuo *UserUpdateOne) RemoveSlackAppInstalls(s ...*SlackAppInstall) *UserUpdateOne {
-	ids := make([]int, len(s))
+	ids := make([]uuid.UUID, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
@@ -934,14 +899,14 @@ func (uuo *UserUpdateOne) ClearJobs() *UserUpdateOne {
 }
 
 // RemoveJobIDs removes the "jobs" edge to Job entities by IDs.
-func (uuo *UserUpdateOne) RemoveJobIDs(ids ...int) *UserUpdateOne {
+func (uuo *UserUpdateOne) RemoveJobIDs(ids ...uuid.UUID) *UserUpdateOne {
 	uuo.mutation.RemoveJobIDs(ids...)
 	return uuo
 }
 
 // RemoveJobs removes "jobs" edges to Job entities.
 func (uuo *UserUpdateOne) RemoveJobs(j ...*Job) *UserUpdateOne {
-	ids := make([]int, len(j))
+	ids := make([]uuid.UUID, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
@@ -955,14 +920,14 @@ func (uuo *UserUpdateOne) ClearEmailTemplates() *UserUpdateOne {
 }
 
 // RemoveEmailTemplateIDs removes the "email_templates" edge to EmailTemplate entities by IDs.
-func (uuo *UserUpdateOne) RemoveEmailTemplateIDs(ids ...int) *UserUpdateOne {
+func (uuo *UserUpdateOne) RemoveEmailTemplateIDs(ids ...uuid.UUID) *UserUpdateOne {
 	uuo.mutation.RemoveEmailTemplateIDs(ids...)
 	return uuo
 }
 
 // RemoveEmailTemplates removes "email_templates" edges to EmailTemplate entities.
 func (uuo *UserUpdateOne) RemoveEmailTemplates(e ...*EmailTemplate) *UserUpdateOne {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -976,14 +941,14 @@ func (uuo *UserUpdateOne) ClearTalentCollections() *UserUpdateOne {
 }
 
 // RemoveTalentCollectionIDs removes the "talent_collections" edge to TalentCollection entities by IDs.
-func (uuo *UserUpdateOne) RemoveTalentCollectionIDs(ids ...int) *UserUpdateOne {
+func (uuo *UserUpdateOne) RemoveTalentCollectionIDs(ids ...uuid.UUID) *UserUpdateOne {
 	uuo.mutation.RemoveTalentCollectionIDs(ids...)
 	return uuo
 }
 
 // RemoveTalentCollections removes "talent_collections" edges to TalentCollection entities.
 func (uuo *UserUpdateOne) RemoveTalentCollections(t ...*TalentCollection) *UserUpdateOne {
-	ids := make([]int, len(t))
+	ids := make([]uuid.UUID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -1082,7 +1047,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Table:   user.Table,
 			Columns: user.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: user.FieldID,
 			},
 		},
@@ -1110,13 +1075,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := uuo.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: user.FieldUUID,
-		})
 	}
 	if value, ok := uuo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -1175,7 +1133,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -1191,7 +1149,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -1210,7 +1168,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -1229,7 +1187,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: slackappinstall.FieldID,
 				},
 			},
@@ -1245,7 +1203,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: slackappinstall.FieldID,
 				},
 			},
@@ -1264,7 +1222,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: slackappinstall.FieldID,
 				},
 			},
@@ -1283,7 +1241,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: job.FieldID,
 				},
 			},
@@ -1299,7 +1257,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: job.FieldID,
 				},
 			},
@@ -1318,7 +1276,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: job.FieldID,
 				},
 			},
@@ -1337,7 +1295,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: emailtemplate.FieldID,
 				},
 			},
@@ -1353,7 +1311,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: emailtemplate.FieldID,
 				},
 			},
@@ -1372,7 +1330,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: emailtemplate.FieldID,
 				},
 			},
@@ -1391,7 +1349,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talentcollection.FieldID,
 				},
 			},
@@ -1407,7 +1365,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talentcollection.FieldID,
 				},
 			},
@@ -1426,7 +1384,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talentcollection.FieldID,
 				},
 			},

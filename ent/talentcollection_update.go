@@ -30,20 +30,6 @@ func (tcu *TalentCollectionUpdate) Where(ps ...predicate.TalentCollection) *Tale
 	return tcu
 }
 
-// SetUUID sets the "uuid" field.
-func (tcu *TalentCollectionUpdate) SetUUID(u uuid.UUID) *TalentCollectionUpdate {
-	tcu.mutation.SetUUID(u)
-	return tcu
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (tcu *TalentCollectionUpdate) SetNillableUUID(u *uuid.UUID) *TalentCollectionUpdate {
-	if u != nil {
-		tcu.SetUUID(*u)
-	}
-	return tcu
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (tcu *TalentCollectionUpdate) SetUpdatedAt(t time.Time) *TalentCollectionUpdate {
 	tcu.mutation.SetUpdatedAt(t)
@@ -71,15 +57,15 @@ func (tcu *TalentCollectionUpdate) ClearDeletedAt() *TalentCollectionUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (tcu *TalentCollectionUpdate) SetUserID(i int) *TalentCollectionUpdate {
-	tcu.mutation.SetUserID(i)
+func (tcu *TalentCollectionUpdate) SetUserID(u uuid.UUID) *TalentCollectionUpdate {
+	tcu.mutation.SetUserID(u)
 	return tcu
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (tcu *TalentCollectionUpdate) SetNillableUserID(i *int) *TalentCollectionUpdate {
-	if i != nil {
-		tcu.SetUserID(*i)
+func (tcu *TalentCollectionUpdate) SetNillableUserID(u *uuid.UUID) *TalentCollectionUpdate {
+	if u != nil {
+		tcu.SetUserID(*u)
 	}
 	return tcu
 }
@@ -187,7 +173,7 @@ func (tcu *TalentCollectionUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Table:   talentcollection.Table,
 			Columns: talentcollection.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: talentcollection.FieldID,
 			},
 		},
@@ -198,13 +184,6 @@ func (tcu *TalentCollectionUpdate) sqlSave(ctx context.Context) (n int, err erro
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := tcu.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: talentcollection.FieldUUID,
-		})
 	}
 	if value, ok := tcu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -249,7 +228,7 @@ func (tcu *TalentCollectionUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -265,7 +244,7 @@ func (tcu *TalentCollectionUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -292,20 +271,6 @@ type TalentCollectionUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *TalentCollectionMutation
-}
-
-// SetUUID sets the "uuid" field.
-func (tcuo *TalentCollectionUpdateOne) SetUUID(u uuid.UUID) *TalentCollectionUpdateOne {
-	tcuo.mutation.SetUUID(u)
-	return tcuo
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (tcuo *TalentCollectionUpdateOne) SetNillableUUID(u *uuid.UUID) *TalentCollectionUpdateOne {
-	if u != nil {
-		tcuo.SetUUID(*u)
-	}
-	return tcuo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -335,15 +300,15 @@ func (tcuo *TalentCollectionUpdateOne) ClearDeletedAt() *TalentCollectionUpdateO
 }
 
 // SetUserID sets the "user_id" field.
-func (tcuo *TalentCollectionUpdateOne) SetUserID(i int) *TalentCollectionUpdateOne {
-	tcuo.mutation.SetUserID(i)
+func (tcuo *TalentCollectionUpdateOne) SetUserID(u uuid.UUID) *TalentCollectionUpdateOne {
+	tcuo.mutation.SetUserID(u)
 	return tcuo
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (tcuo *TalentCollectionUpdateOne) SetNillableUserID(i *int) *TalentCollectionUpdateOne {
-	if i != nil {
-		tcuo.SetUserID(*i)
+func (tcuo *TalentCollectionUpdateOne) SetNillableUserID(u *uuid.UUID) *TalentCollectionUpdateOne {
+	if u != nil {
+		tcuo.SetUserID(*u)
 	}
 	return tcuo
 }
@@ -458,7 +423,7 @@ func (tcuo *TalentCollectionUpdateOne) sqlSave(ctx context.Context) (_node *Tale
 			Table:   talentcollection.Table,
 			Columns: talentcollection.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: talentcollection.FieldID,
 			},
 		},
@@ -486,13 +451,6 @@ func (tcuo *TalentCollectionUpdateOne) sqlSave(ctx context.Context) (_node *Tale
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := tcuo.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: talentcollection.FieldUUID,
-		})
 	}
 	if value, ok := tcuo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -537,7 +495,7 @@ func (tcuo *TalentCollectionUpdateOne) sqlSave(ctx context.Context) (_node *Tale
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -553,7 +511,7 @@ func (tcuo *TalentCollectionUpdateOne) sqlSave(ctx context.Context) (_node *Tale
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},

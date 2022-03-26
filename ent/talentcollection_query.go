@@ -14,6 +14,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/talentcollection"
 	"github.com/10hourlabs/tentn/ent/user"
+	"github.com/google/uuid"
 )
 
 // TalentCollectionQuery is the builder for querying TalentCollection entities.
@@ -109,8 +110,8 @@ func (tcq *TalentCollectionQuery) FirstX(ctx context.Context) *TalentCollection 
 
 // FirstID returns the first TalentCollection ID from the query.
 // Returns a *NotFoundError when no TalentCollection ID was found.
-func (tcq *TalentCollectionQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (tcq *TalentCollectionQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = tcq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -122,7 +123,7 @@ func (tcq *TalentCollectionQuery) FirstID(ctx context.Context) (id int, err erro
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (tcq *TalentCollectionQuery) FirstIDX(ctx context.Context) int {
+func (tcq *TalentCollectionQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := tcq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -160,8 +161,8 @@ func (tcq *TalentCollectionQuery) OnlyX(ctx context.Context) *TalentCollection {
 // OnlyID is like Only, but returns the only TalentCollection ID in the query.
 // Returns a *NotSingularError when more than one TalentCollection ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (tcq *TalentCollectionQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (tcq *TalentCollectionQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = tcq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -177,7 +178,7 @@ func (tcq *TalentCollectionQuery) OnlyID(ctx context.Context) (id int, err error
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (tcq *TalentCollectionQuery) OnlyIDX(ctx context.Context) int {
+func (tcq *TalentCollectionQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := tcq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -203,8 +204,8 @@ func (tcq *TalentCollectionQuery) AllX(ctx context.Context) []*TalentCollection 
 }
 
 // IDs executes the query and returns a list of TalentCollection IDs.
-func (tcq *TalentCollectionQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (tcq *TalentCollectionQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := tcq.Select(talentcollection.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -212,7 +213,7 @@ func (tcq *TalentCollectionQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (tcq *TalentCollectionQuery) IDsX(ctx context.Context) []int {
+func (tcq *TalentCollectionQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := tcq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -291,12 +292,12 @@ func (tcq *TalentCollectionQuery) WithUser(opts ...func(*UserQuery)) *TalentColl
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.TalentCollection.Query().
-//		GroupBy(talentcollection.FieldUUID).
+//		GroupBy(talentcollection.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -318,11 +319,11 @@ func (tcq *TalentCollectionQuery) GroupBy(field string, fields ...string) *Talen
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.TalentCollection.Query().
-//		Select(talentcollection.FieldUUID).
+//		Select(talentcollection.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
 func (tcq *TalentCollectionQuery) Select(fields ...string) *TalentCollectionSelect {
@@ -375,8 +376,8 @@ func (tcq *TalentCollectionQuery) sqlAll(ctx context.Context) ([]*TalentCollecti
 	}
 
 	if query := tcq.withUser; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*TalentCollection)
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*TalentCollection)
 		for i := range nodes {
 			fk := nodes[i].UserID
 			if _, ok := nodeids[fk]; !ok {
@@ -426,7 +427,7 @@ func (tcq *TalentCollectionQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   talentcollection.Table,
 			Columns: talentcollection.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: talentcollection.FieldID,
 			},
 		},

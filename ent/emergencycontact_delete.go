@@ -72,7 +72,7 @@ func (ecd *EmergencyContactDelete) sqlExec(ctx context.Context) (int, error) {
 		Node: &sqlgraph.NodeSpec{
 			Table: emergencycontact.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: emergencycontact.FieldID,
 			},
 		},

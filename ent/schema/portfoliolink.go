@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"github.com/10hourlabs/tentn/oneword"
+	"github.com/google/uuid"
 )
 
 // PortfolioLink holds the schema definition for the PortfolioLink entity.
@@ -28,7 +29,7 @@ func (PortfolioLink) Fields() []ent.Field {
 
 		field.String(oneword.Name),
 
-		field.Int(oneword.TalentID).
+		field.UUID("talent_id", uuid.UUID{}).
 			Optional().
 			StructTag(`json:"-"`),
 	}
@@ -37,7 +38,7 @@ func (PortfolioLink) Fields() []ent.Field {
 // Indexes for the PortfolioLink
 func (PortfolioLink) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields(oneword.TalentID),
+		index.Fields("talent_id"),
 	}
 }
 
@@ -47,6 +48,6 @@ func (PortfolioLink) Edges() []ent.Edge {
 		edge.From(oneword.Talent, Talent.Type).
 			Ref(oneword.PortfolioLinks).
 			Unique().
-			Field(oneword.TalentID),
+			Field("talent_id"),
 	}
 }

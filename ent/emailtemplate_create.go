@@ -22,20 +22,6 @@ type EmailTemplateCreate struct {
 	hooks    []Hook
 }
 
-// SetUUID sets the "uuid" field.
-func (etc *EmailTemplateCreate) SetUUID(u uuid.UUID) *EmailTemplateCreate {
-	etc.mutation.SetUUID(u)
-	return etc
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (etc *EmailTemplateCreate) SetNillableUUID(u *uuid.UUID) *EmailTemplateCreate {
-	if u != nil {
-		etc.SetUUID(*u)
-	}
-	return etc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (etc *EmailTemplateCreate) SetCreatedAt(t time.Time) *EmailTemplateCreate {
 	etc.mutation.SetCreatedAt(t)
@@ -79,15 +65,15 @@ func (etc *EmailTemplateCreate) SetNillableDeletedAt(t *time.Time) *EmailTemplat
 }
 
 // SetUserID sets the "user_id" field.
-func (etc *EmailTemplateCreate) SetUserID(i int) *EmailTemplateCreate {
-	etc.mutation.SetUserID(i)
+func (etc *EmailTemplateCreate) SetUserID(u uuid.UUID) *EmailTemplateCreate {
+	etc.mutation.SetUserID(u)
 	return etc
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (etc *EmailTemplateCreate) SetNillableUserID(i *int) *EmailTemplateCreate {
-	if i != nil {
-		etc.SetUserID(*i)
+func (etc *EmailTemplateCreate) SetNillableUserID(u *uuid.UUID) *EmailTemplateCreate {
+	if u != nil {
+		etc.SetUserID(*u)
 	}
 	return etc
 }
@@ -137,8 +123,16 @@ func (etc *EmailTemplateCreate) SetBcc(s []string) *EmailTemplateCreate {
 }
 
 // SetID sets the "id" field.
-func (etc *EmailTemplateCreate) SetID(i int) *EmailTemplateCreate {
-	etc.mutation.SetID(i)
+func (etc *EmailTemplateCreate) SetID(u uuid.UUID) *EmailTemplateCreate {
+	etc.mutation.SetID(u)
+	return etc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (etc *EmailTemplateCreate) SetNillableID(u *uuid.UUID) *EmailTemplateCreate {
+	if u != nil {
+		etc.SetID(*u)
+	}
 	return etc
 }
 
@@ -218,10 +212,6 @@ func (etc *EmailTemplateCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (etc *EmailTemplateCreate) defaults() {
-	if _, ok := etc.mutation.UUID(); !ok {
-		v := emailtemplate.DefaultUUID()
-		etc.mutation.SetUUID(v)
-	}
 	if _, ok := etc.mutation.CreatedAt(); !ok {
 		v := emailtemplate.DefaultCreatedAt()
 		etc.mutation.SetCreatedAt(v)
@@ -234,13 +224,14 @@ func (etc *EmailTemplateCreate) defaults() {
 		v := emailtemplate.DefaultStatus
 		etc.mutation.SetStatus(v)
 	}
+	if _, ok := etc.mutation.ID(); !ok {
+		v := emailtemplate.DefaultID()
+		etc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (etc *EmailTemplateCreate) check() error {
-	if _, ok := etc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "EmailTemplate.uuid"`)}
-	}
 	if _, ok := etc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "EmailTemplate.created_at"`)}
 	}
@@ -281,9 +272,12 @@ func (etc *EmailTemplateCreate) sqlSave(ctx context.Context) (*EmailTemplate, er
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -294,22 +288,14 @@ func (etc *EmailTemplateCreate) createSpec() (*EmailTemplate, *sqlgraph.CreateSp
 		_spec = &sqlgraph.CreateSpec{
 			Table: emailtemplate.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: emailtemplate.FieldID,
 			},
 		}
 	)
 	if id, ok := etc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
-	}
-	if value, ok := etc.mutation.UUID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: emailtemplate.FieldUUID,
-		})
-		_node.UUID = value
+		_spec.ID.Value = &id
 	}
 	if value, ok := etc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -392,7 +378,7 @@ func (etc *EmailTemplateCreate) createSpec() (*EmailTemplate, *sqlgraph.CreateSp
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -448,10 +434,6 @@ func (etcb *EmailTemplateCreateBulk) Save(ctx context.Context) ([]*EmailTemplate
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

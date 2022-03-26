@@ -18,9 +18,7 @@ import (
 type JobApplication struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"-"`
-	// UUID holds the value of the "uuid" field.
-	UUID uuid.UUID `json:"uuid,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -28,9 +26,9 @@ type JobApplication struct {
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
 	// TalentID holds the value of the "talent_id" field.
-	TalentID int `json:"-"`
+	TalentID uuid.UUID `json:"-"`
 	// JobID holds the value of the "job_id" field.
-	JobID int `json:"-"`
+	JobID uuid.UUID `json:"-"`
 	// ReferralSource holds the value of the "referral_source" field.
 	ReferralSource string `json:"referral_source,omitempty"`
 	// Status holds the value of the "status" field.
@@ -86,13 +84,11 @@ func (*JobApplication) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case jobapplication.FieldID, jobapplication.FieldTalentID, jobapplication.FieldJobID:
-			values[i] = new(sql.NullInt64)
 		case jobapplication.FieldReferralSource, jobapplication.FieldStatus, jobapplication.FieldNote:
 			values[i] = new(sql.NullString)
 		case jobapplication.FieldCreatedAt, jobapplication.FieldUpdatedAt, jobapplication.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case jobapplication.FieldUUID:
+		case jobapplication.FieldID, jobapplication.FieldTalentID, jobapplication.FieldJobID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type JobApplication", columns[i])
@@ -110,16 +106,10 @@ func (ja *JobApplication) assignValues(columns []string, values []interface{}) e
 	for i := range columns {
 		switch columns[i] {
 		case jobapplication.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
-			}
-			ja.ID = int(value.Int64)
-		case jobapplication.FieldUUID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field uuid", values[i])
+				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				ja.UUID = *value
+				ja.ID = *value
 			}
 		case jobapplication.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -141,16 +131,16 @@ func (ja *JobApplication) assignValues(columns []string, values []interface{}) e
 				*ja.DeletedAt = value.Time
 			}
 		case jobapplication.FieldTalentID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field talent_id", values[i])
-			} else if value.Valid {
-				ja.TalentID = int(value.Int64)
+			} else if value != nil {
+				ja.TalentID = *value
 			}
 		case jobapplication.FieldJobID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field job_id", values[i])
-			} else if value.Valid {
-				ja.JobID = int(value.Int64)
+			} else if value != nil {
+				ja.JobID = *value
 			}
 		case jobapplication.FieldReferralSource:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -208,8 +198,6 @@ func (ja *JobApplication) String() string {
 	var builder strings.Builder
 	builder.WriteString("JobApplication(")
 	builder.WriteString(fmt.Sprintf("id=%v", ja.ID))
-	builder.WriteString(", uuid=")
-	builder.WriteString(fmt.Sprintf("%v", ja.UUID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(ja.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

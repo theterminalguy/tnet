@@ -30,13 +30,13 @@ func (JobApplication) Mixin() []ent.Mixin {
 			ParentName: oneword.Talent,
 			ParentType: Talent.Type,
 			Ref:        oneword.JobApplications,
-			ForeignKey: oneword.TalentID,
+			ForeignKey: "talent_id",
 		},
 		BelongsToMixin{
 			ParentName: oneword.Job,
 			ParentType: Job.Type,
 			Ref:        oneword.Applications,
-			ForeignKey: oneword.JobID,
+			ForeignKey: "job_id",
 		},
 	}
 }

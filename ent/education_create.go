@@ -22,20 +22,6 @@ type EducationCreate struct {
 	hooks    []Hook
 }
 
-// SetUUID sets the "uuid" field.
-func (ec *EducationCreate) SetUUID(u uuid.UUID) *EducationCreate {
-	ec.mutation.SetUUID(u)
-	return ec
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (ec *EducationCreate) SetNillableUUID(u *uuid.UUID) *EducationCreate {
-	if u != nil {
-		ec.SetUUID(*u)
-	}
-	return ec
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (ec *EducationCreate) SetCreatedAt(t time.Time) *EducationCreate {
 	ec.mutation.SetCreatedAt(t)
@@ -79,15 +65,15 @@ func (ec *EducationCreate) SetNillableDeletedAt(t *time.Time) *EducationCreate {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (ec *EducationCreate) SetTalentID(i int) *EducationCreate {
-	ec.mutation.SetTalentID(i)
+func (ec *EducationCreate) SetTalentID(u uuid.UUID) *EducationCreate {
+	ec.mutation.SetTalentID(u)
 	return ec
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (ec *EducationCreate) SetNillableTalentID(i *int) *EducationCreate {
-	if i != nil {
-		ec.SetTalentID(*i)
+func (ec *EducationCreate) SetNillableTalentID(u *uuid.UUID) *EducationCreate {
+	if u != nil {
+		ec.SetTalentID(*u)
 	}
 	return ec
 }
@@ -143,8 +129,16 @@ func (ec *EducationCreate) SetNillableEndDate(t *time.Time) *EducationCreate {
 }
 
 // SetID sets the "id" field.
-func (ec *EducationCreate) SetID(i int) *EducationCreate {
-	ec.mutation.SetID(i)
+func (ec *EducationCreate) SetID(u uuid.UUID) *EducationCreate {
+	ec.mutation.SetID(u)
+	return ec
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (ec *EducationCreate) SetNillableID(u *uuid.UUID) *EducationCreate {
+	if u != nil {
+		ec.SetID(*u)
+	}
 	return ec
 }
 
@@ -224,10 +218,6 @@ func (ec *EducationCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ec *EducationCreate) defaults() {
-	if _, ok := ec.mutation.UUID(); !ok {
-		v := education.DefaultUUID()
-		ec.mutation.SetUUID(v)
-	}
 	if _, ok := ec.mutation.CreatedAt(); !ok {
 		v := education.DefaultCreatedAt()
 		ec.mutation.SetCreatedAt(v)
@@ -236,13 +226,14 @@ func (ec *EducationCreate) defaults() {
 		v := education.DefaultUpdatedAt()
 		ec.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := ec.mutation.ID(); !ok {
+		v := education.DefaultID()
+		ec.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (ec *EducationCreate) check() error {
-	if _, ok := ec.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "Education.uuid"`)}
-	}
 	if _, ok := ec.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Education.created_at"`)}
 	}
@@ -278,9 +269,12 @@ func (ec *EducationCreate) sqlSave(ctx context.Context) (*Education, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -291,22 +285,14 @@ func (ec *EducationCreate) createSpec() (*Education, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: education.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: education.FieldID,
 			},
 		}
 	)
 	if id, ok := ec.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
-	}
-	if value, ok := ec.mutation.UUID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: education.FieldUUID,
-		})
-		_node.UUID = value
+		_spec.ID.Value = &id
 	}
 	if value, ok := ec.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -397,7 +383,7 @@ func (ec *EducationCreate) createSpec() (*Education, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -453,10 +439,6 @@ func (ecb *EducationCreateBulk) Save(ctx context.Context) ([]*Education, error) 
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

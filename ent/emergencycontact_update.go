@@ -30,20 +30,6 @@ func (ecu *EmergencyContactUpdate) Where(ps ...predicate.EmergencyContact) *Emer
 	return ecu
 }
 
-// SetUUID sets the "uuid" field.
-func (ecu *EmergencyContactUpdate) SetUUID(u uuid.UUID) *EmergencyContactUpdate {
-	ecu.mutation.SetUUID(u)
-	return ecu
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (ecu *EmergencyContactUpdate) SetNillableUUID(u *uuid.UUID) *EmergencyContactUpdate {
-	if u != nil {
-		ecu.SetUUID(*u)
-	}
-	return ecu
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (ecu *EmergencyContactUpdate) SetUpdatedAt(t time.Time) *EmergencyContactUpdate {
 	ecu.mutation.SetUpdatedAt(t)
@@ -71,15 +57,15 @@ func (ecu *EmergencyContactUpdate) ClearDeletedAt() *EmergencyContactUpdate {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (ecu *EmergencyContactUpdate) SetTalentID(i int) *EmergencyContactUpdate {
-	ecu.mutation.SetTalentID(i)
+func (ecu *EmergencyContactUpdate) SetTalentID(u uuid.UUID) *EmergencyContactUpdate {
+	ecu.mutation.SetTalentID(u)
 	return ecu
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (ecu *EmergencyContactUpdate) SetNillableTalentID(i *int) *EmergencyContactUpdate {
-	if i != nil {
-		ecu.SetTalentID(*i)
+func (ecu *EmergencyContactUpdate) SetNillableTalentID(u *uuid.UUID) *EmergencyContactUpdate {
+	if u != nil {
+		ecu.SetTalentID(*u)
 	}
 	return ecu
 }
@@ -205,7 +191,7 @@ func (ecu *EmergencyContactUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Table:   emergencycontact.Table,
 			Columns: emergencycontact.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: emergencycontact.FieldID,
 			},
 		},
@@ -216,13 +202,6 @@ func (ecu *EmergencyContactUpdate) sqlSave(ctx context.Context) (n int, err erro
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := ecu.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: emergencycontact.FieldUUID,
-		})
 	}
 	if value, ok := ecu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -288,7 +267,7 @@ func (ecu *EmergencyContactUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -304,7 +283,7 @@ func (ecu *EmergencyContactUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -331,20 +310,6 @@ type EmergencyContactUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *EmergencyContactMutation
-}
-
-// SetUUID sets the "uuid" field.
-func (ecuo *EmergencyContactUpdateOne) SetUUID(u uuid.UUID) *EmergencyContactUpdateOne {
-	ecuo.mutation.SetUUID(u)
-	return ecuo
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (ecuo *EmergencyContactUpdateOne) SetNillableUUID(u *uuid.UUID) *EmergencyContactUpdateOne {
-	if u != nil {
-		ecuo.SetUUID(*u)
-	}
-	return ecuo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -374,15 +339,15 @@ func (ecuo *EmergencyContactUpdateOne) ClearDeletedAt() *EmergencyContactUpdateO
 }
 
 // SetTalentID sets the "talent_id" field.
-func (ecuo *EmergencyContactUpdateOne) SetTalentID(i int) *EmergencyContactUpdateOne {
-	ecuo.mutation.SetTalentID(i)
+func (ecuo *EmergencyContactUpdateOne) SetTalentID(u uuid.UUID) *EmergencyContactUpdateOne {
+	ecuo.mutation.SetTalentID(u)
 	return ecuo
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (ecuo *EmergencyContactUpdateOne) SetNillableTalentID(i *int) *EmergencyContactUpdateOne {
-	if i != nil {
-		ecuo.SetTalentID(*i)
+func (ecuo *EmergencyContactUpdateOne) SetNillableTalentID(u *uuid.UUID) *EmergencyContactUpdateOne {
+	if u != nil {
+		ecuo.SetTalentID(*u)
 	}
 	return ecuo
 }
@@ -515,7 +480,7 @@ func (ecuo *EmergencyContactUpdateOne) sqlSave(ctx context.Context) (_node *Emer
 			Table:   emergencycontact.Table,
 			Columns: emergencycontact.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: emergencycontact.FieldID,
 			},
 		},
@@ -543,13 +508,6 @@ func (ecuo *EmergencyContactUpdateOne) sqlSave(ctx context.Context) (_node *Emer
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := ecuo.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: emergencycontact.FieldUUID,
-		})
 	}
 	if value, ok := ecuo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -615,7 +573,7 @@ func (ecuo *EmergencyContactUpdateOne) sqlSave(ctx context.Context) (_node *Emer
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -631,7 +589,7 @@ func (ecuo *EmergencyContactUpdateOne) sqlSave(ctx context.Context) (_node *Emer
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},

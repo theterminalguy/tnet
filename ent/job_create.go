@@ -23,20 +23,6 @@ type JobCreate struct {
 	hooks    []Hook
 }
 
-// SetUUID sets the "uuid" field.
-func (jc *JobCreate) SetUUID(u uuid.UUID) *JobCreate {
-	jc.mutation.SetUUID(u)
-	return jc
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (jc *JobCreate) SetNillableUUID(u *uuid.UUID) *JobCreate {
-	if u != nil {
-		jc.SetUUID(*u)
-	}
-	return jc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (jc *JobCreate) SetCreatedAt(t time.Time) *JobCreate {
 	jc.mutation.SetCreatedAt(t)
@@ -80,15 +66,15 @@ func (jc *JobCreate) SetNillableDeletedAt(t *time.Time) *JobCreate {
 }
 
 // SetUserID sets the "user_id" field.
-func (jc *JobCreate) SetUserID(i int) *JobCreate {
-	jc.mutation.SetUserID(i)
+func (jc *JobCreate) SetUserID(u uuid.UUID) *JobCreate {
+	jc.mutation.SetUserID(u)
 	return jc
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (jc *JobCreate) SetNillableUserID(i *int) *JobCreate {
-	if i != nil {
-		jc.SetUserID(*i)
+func (jc *JobCreate) SetNillableUserID(u *uuid.UUID) *JobCreate {
+	if u != nil {
+		jc.SetUserID(*u)
 	}
 	return jc
 }
@@ -182,8 +168,16 @@ func (jc *JobCreate) SetTimezone(s string) *JobCreate {
 }
 
 // SetID sets the "id" field.
-func (jc *JobCreate) SetID(i int) *JobCreate {
-	jc.mutation.SetID(i)
+func (jc *JobCreate) SetID(u uuid.UUID) *JobCreate {
+	jc.mutation.SetID(u)
+	return jc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (jc *JobCreate) SetNillableID(u *uuid.UUID) *JobCreate {
+	if u != nil {
+		jc.SetID(*u)
+	}
 	return jc
 }
 
@@ -193,14 +187,14 @@ func (jc *JobCreate) SetUser(u *User) *JobCreate {
 }
 
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
-func (jc *JobCreate) AddApplicationIDs(ids ...int) *JobCreate {
+func (jc *JobCreate) AddApplicationIDs(ids ...uuid.UUID) *JobCreate {
 	jc.mutation.AddApplicationIDs(ids...)
 	return jc
 }
 
 // AddApplications adds the "applications" edges to the JobApplication entity.
 func (jc *JobCreate) AddApplications(j ...*JobApplication) *JobCreate {
-	ids := make([]int, len(j))
+	ids := make([]uuid.UUID, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
@@ -278,10 +272,6 @@ func (jc *JobCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (jc *JobCreate) defaults() {
-	if _, ok := jc.mutation.UUID(); !ok {
-		v := job.DefaultUUID()
-		jc.mutation.SetUUID(v)
-	}
 	if _, ok := jc.mutation.CreatedAt(); !ok {
 		v := job.DefaultCreatedAt()
 		jc.mutation.SetCreatedAt(v)
@@ -298,13 +288,14 @@ func (jc *JobCreate) defaults() {
 		v := job.DefaultLocation
 		jc.mutation.SetLocation(v)
 	}
+	if _, ok := jc.mutation.ID(); !ok {
+		v := job.DefaultID()
+		jc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (jc *JobCreate) check() error {
-	if _, ok := jc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "Job.uuid"`)}
-	}
 	if _, ok := jc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Job.created_at"`)}
 	}
@@ -368,9 +359,12 @@ func (jc *JobCreate) sqlSave(ctx context.Context) (*Job, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -381,22 +375,14 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: job.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: job.FieldID,
 			},
 		}
 	)
 	if id, ok := jc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
-	}
-	if value, ok := jc.mutation.UUID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: job.FieldUUID,
-		})
-		_node.UUID = value
+		_spec.ID.Value = &id
 	}
 	if value, ok := jc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -527,7 +513,7 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -547,7 +533,7 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: jobapplication.FieldID,
 				},
 			},
@@ -602,10 +588,6 @@ func (jcb *JobCreateBulk) Save(ctx context.Context) ([]*Job, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {
