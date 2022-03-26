@@ -2,15 +2,12 @@ package repository
 
 import (
 	"errors"
-	"fmt"
-	"log"
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/internal/paginator"
-	"github.com/10hourlabs/tentn/randutil"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/10hourlabs/tentn/util/date"
 	"github.com/google/uuid"
@@ -20,7 +17,7 @@ var ErrInvalidReferralCode error = errors.New("invalid referral code")
 
 type TalentQuerier interface {
 	GetAll() ([]*ent.Talent, error)
-	GetByUUID(id uuid.UUID) (*ent.Talent, error)
+	GetByID(id uuid.UUID) (*ent.Talent, error)
 	GetTalentByUserID(userId int) (*ent.Talent, error)
 	Create(p TalentParams) (*TalentResponse, error)
 	Update(id uuid.UUID, p TalentParams) (*TalentResponse, []error)
@@ -30,7 +27,7 @@ type TalentQuerier interface {
 type TalentRepository struct{}
 
 type TalentParams struct {
-	UserID                int                  `json:"user_id" validate:"required"`
+	UserID                uuid.UUID            `json:"user_id" validate:"required"`
 	FirstName             string               `json:"first_name" validate:"required"`
 	LastName              string               `json:"last_name" validate:"required"`
 	Email                 string               `json:"email" validate:"required"`
@@ -99,7 +96,7 @@ func (*TalentRepository) GetByEmail(email string) (*TalentResponse, error) {
 
 func (*TalentRepository) GetTalentByUUID(id uuid.UUID) (*TalentResponse, error) {
 	a, err := dBConn.Talent.Query().
-		Where(talent.UUIDEQ(id)).
+		Where(talent.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -136,9 +133,9 @@ func (*TalentRepository) GetTalentByUUID(id uuid.UUID) (*TalentResponse, error) 
 	return response, nil
 }
 
-func (*TalentRepository) GetByUUID(id uuid.UUID) (*ent.Talent, error) {
+func (*TalentRepository) GetByID(id uuid.UUID) (*ent.Talent, error) {
 	a, err := dBConn.Talent.Query().
-		Where(talent.UUIDEQ(id)).
+		Where(talent.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -193,28 +190,16 @@ func (r *TalentRepository) Create(p TalentParams) (*TalentResponse, error) {
 		SetPreferredName(p.PreferredName).
 		SetPronoun(p.Pronoun).
 		SetPreferredJobTitle(p.PreferredJobTitle).
-		SetReferralCode(p.ReferralCode).
 		SetProfessionalStartDate(startDate).
 		SetEmail(p.Email).
 		SetPhone(p.Phone).
 		SetCountryCode(p.CountryCode).
-		SetTentnCode(r.genTenTNCode(p)).
 		SetCity(p.City).
 		SetUserID(p.UserID).
 		SetJobPreference(p.JobPreference).
 		SetIsAvailable(p.Available).
 		SetTimezone(timeZoneName[1]).
 		SetState(p.State)
-	if len(p.ReferralCode) > 1 {
-		ref, err := dBConn.Talent.Query().
-			Where(talent.TentnCodeEQ(p.ReferralCode)).
-			Only(dBContext)
-		if err != nil {
-			return nil, ErrInvalidReferralCode
-		}
-		q.SetReferrerID(ref.ID)
-		q.SetReferralCode(ref.TentnCode)
-	}
 	a, err := q.Save(dBContext)
 	if err != nil {
 		return nil, err
@@ -228,7 +213,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*TalentResponse
 	if err != nil {
 		return nil, []error{err}
 	}
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -371,22 +356,6 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*TalentResponse
 		vldErrs = append(vldErrs, vldErr)
 	}
 
-	// Set and Validate JobPreference if provided
-	/*if vldErr := setNillableJSONArrayField(p.JobPreference, func(v []string) error {
-		res := LinearCheckElemArray(p.JobPreference, schema.EmploymentTypes())
-		if !res {
-			return errors.New("unknown job preference")
-		}
-		err := validateParams(p, "JobPreference")
-		if err != nil {
-			return err
-		}
-		bldr.SetJobPreference(p.JobPreference)
-		return nil
-	}); vldErr != nil {
-		vldErrs = append(vldErrs, vldErr)
-	}*/
-
 	// Set and Validate IsAvailable if provided
 	if vldErr := setNillableBoolField(p.Available, func(v bool) error {
 		err := validateParams(p, "IsAvailable")
@@ -414,7 +383,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*TalentResponse
 }
 
 func (r *TalentRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}
@@ -427,33 +396,10 @@ func (r *TalentRepository) DeleteByUUID(id uuid.UUID) error {
 	return nil
 }
 
-func (r *TalentRepository) genTenTNCode(p TalentParams) string {
-	attempts := 0
-	for {
-		if attempts == 4 {
-			break
-		}
-		code := fmt.Sprintf("%v%v", p.PreferredName, randutil.String(5))
-		a, err := dBConn.Talent.Query().
-			Where(talent.TentnCode(code)).
-			Only(dBContext)
-		if a == nil {
-			return code
-		} else {
-			log.Println(fmt.Sprintf("Duplicate TenTNCode exists: %v", err))
-		}
-		if err != nil {
-			log.Println(err)
-		}
-		attempts += 1
-	}
-	return randutil.StringWithCharset(10, p.FirstName+p.LastName+"0123456789")
-}
-
-func (r *TalentRepository) GetTalentByUserID(userId int) (*ent.Talent, error) {
+func (r *TalentRepository) GetTalentByUserID(userID uuid.UUID) (*ent.Talent, error) {
 	record, err := dBConn.Talent.Query().
 		Where(talent.And(
-			talent.UserIDEQ(userId),
+			talent.UserIDEQ(userID),
 			talent.DeletedAtIsNil())).
 		Only(dBContext)
 	if err != nil {
@@ -463,7 +409,7 @@ func (r *TalentRepository) GetTalentByUserID(userId int) (*ent.Talent, error) {
 }
 
 type TalentResponse struct {
-	UUID                  uuid.UUID            `json:"uuid"`
+	ID                    uuid.UUID            `json:"id"`
 	CreatedAt             time.Time            `json:"created_at"`
 	UpdatedAt             time.Time            `json:"updated_at"`
 	DeletedAt             *time.Time           `json:"deleted_at"`
@@ -495,7 +441,7 @@ type Country struct {
 
 func BuildTalentResponse(talent *ent.Talent) *TalentResponse {
 	return &TalentResponse{
-		UUID:                  talent.UUID,
+		ID:                    talent.ID,
 		CreatedAt:             talent.CreatedAt,
 		DeletedAt:             talent.DeletedAt,
 		FirstName:             talent.FirstName,
@@ -504,9 +450,6 @@ func BuildTalentResponse(talent *ent.Talent) *TalentResponse {
 		Pronoun:               talent.Pronoun,
 		PreferredJobTitle:     talent.PreferredJobTitle,
 		IsAvailable:           talent.IsAvailable,
-		ReferrerID:            talent.ReferrerID,
-		ReferralCode:          talent.ReferralCode,
-		TentnCode:             talent.TentnCode,
 		ProfessionalStartDate: talent.ProfessionalStartDate,
 		Email:                 talent.Email,
 		Phone:                 talent.Phone,

@@ -15,7 +15,7 @@ import (
 type JobQuerier interface {
 	GetAllForRecruiter(id int) ([]*ent.Job, error)
 	GetAll(page string) (*paginator.OffsetPaginater, error)
-	GetByUUID(id uuid.UUID) (*ent.Job, error)
+	GetByID(id uuid.UUID) (*ent.Job, error)
 	Create(p JobParams) (*ent.Job, error)
 	Update(id uuid.UUID, p JobParams) (*ent.Job, []error)
 	DeleteByUUID(id uuid.UUID) error
@@ -24,7 +24,7 @@ type JobQuerier interface {
 type JobRepository struct{}
 
 type JobParams struct {
-	UserID int `json:"user_id" validate:"required"`
+	UserID uuid.UUID `json:"user_id" validate:"required"`
 
 	// TODO: automatically expire job
 	Hiring     bool   `json:"hiring"`
@@ -64,7 +64,7 @@ func (*JobRepository) Filter(prd ...predicate.Job) ([]*ent.Job, error) {
 	return jobs, nil
 }
 
-func (*JobRepository) GetAllForRecruiter(id int) ([]*ent.Job, error) {
+func (*JobRepository) GetAllForRecruiter(id uuid.UUID) ([]*ent.Job, error) {
 	jobs, err := dBConn.Job.Query().
 		Where(job.UserID(id),
 			job.DeletedAtIsNil()).
@@ -96,9 +96,9 @@ func (*JobRepository) GetAll(page string) (*paginator.OffsetPaginater, error) {
 	return pager.Paginate(jobList), nil
 }
 
-func (*JobRepository) GetByUUID(id uuid.UUID) (*ent.Job, error) {
+func (*JobRepository) GetByID(id uuid.UUID) (*ent.Job, error) {
 	j, err := dBConn.Job.Query().
-		Where(job.UUIDEQ(id)).
+		Where(job.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -121,7 +121,7 @@ func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
 	jobUUID := uuid.New()
 	j, err := dBConn.Job.
 		Create().
-		SetUUID(jobUUID).
+		SetID(jobUUID).
 		SetHiring(p.Hiring).
 		SetTitle(p.Title).
 		SetSummary(p.Summary).
@@ -142,7 +142,7 @@ func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
 }
 
 func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -289,7 +289,7 @@ func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
 }
 
 func (r *JobRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}

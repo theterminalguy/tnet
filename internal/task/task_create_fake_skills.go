@@ -32,7 +32,7 @@ func (c *CreateFakeSkill) Run(_ string) error {
 	for _, talent := range talents {
 		for i := 0; i < 3; i++ {
 			sp := repo.SkillParams{
-				TalentUUID:        talent.UUID,
+				TalentID:        talent.ID,
 				YearsOfExperience: mathutil.RandomFloat32([]float32{}),
 				Preferred: (func() bool {
 					return []bool{true, false}[rand.Intn(2)]

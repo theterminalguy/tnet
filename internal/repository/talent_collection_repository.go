@@ -12,7 +12,7 @@ import (
 type TalentCollectionRepository struct{}
 
 type TalentCollectionParams struct {
-	UserID      int
+	UserID      uuid.UUID
 	Name        string      `json:"name"`
 	TalentUUIDS []uuid.UUID `json:"talent_uuids"`
 }
@@ -31,9 +31,9 @@ func (*TalentCollectionRepository) GetAll() ([]*ent.TalentCollection, error) {
 	return records, nil
 }
 
-func (*TalentCollectionRepository) GetByUUID(id uuid.UUID) (*ent.TalentCollection, error) {
+func (*TalentCollectionRepository) GetByID(id uuid.UUID) (*ent.TalentCollection, error) {
 	record, err := dBConn.TalentCollection.Query().
-		Where(talentcollection.UUIDEQ(id)).
+		Where(talentcollection.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -80,7 +80,7 @@ func (r *TalentCollectionRepository) Update(id uuid.UUID, p TalentCollectionPara
 	if err != nil {
 		return nil, err
 	}
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +96,7 @@ func (r *TalentCollectionRepository) Update(id uuid.UUID, p TalentCollectionPara
 }
 
 func (r *TalentCollectionRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}
@@ -131,7 +131,7 @@ func (r *TalentCollectionRepository) RemoveTalents(t *ent.TalentCollection, tale
 	return t, nil
 }
 
-func (t *TalentCollectionRepository) validateScopedUniquenessOfName(name string, userID int) error {
+func (t *TalentCollectionRepository) validateScopedUniquenessOfName(name string, userID uuid.UUID) error {
 	records, err := dBConn.TalentCollection.Query().
 		Where(
 			talentcollection.And(

@@ -7,6 +7,7 @@ import (
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/util/collection"
+	"github.com/google/uuid"
 )
 
 type CreateFakeJob struct {
@@ -21,7 +22,7 @@ func NewCreateFakeJob() *CreateFakeJob {
 	}
 }
 
-func (j *CreateFakeJob) CreateFakeJob(userID int) error {
+func (j *CreateFakeJob) CreateFakeJob(userID uuid.UUID) error {
 	jobParams := repo.JobParams{
 		Hiring: true,
 		Title: (func() string {

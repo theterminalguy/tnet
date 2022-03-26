@@ -25,19 +25,19 @@ func (t *TalentScope) GetWorkExperiences() ([]*ent.WorkExperience, error) {
 	return t.Talent.QueryWorkExperiences().All(repo.GetDBContext())
 }
 
-func (t *TalentScope) GetWorkExperienceByUUID(uuid uuid.UUID) (*ent.WorkExperience, error) {
+func (t *TalentScope) GetWorkExperienceByUUID(id uuid.UUID) (*ent.WorkExperience, error) {
 	return t.Talent.QueryWorkExperiences().
-		Where(workexperience.UUIDEQ(uuid)).
+		Where(workexperience.ID(id)).
 		First(repo.GetDBContext())
 }
 
 func (t *TalentScope) UpdateWorkExperience(uuid uuid.UUID, params repo.WorkExperienceParams) (*ent.WorkExperience, []error) {
-	params.TalentUUID = t.Talent.UUID
+	params.TalentID = t.Talent.ID
 	record, err := t.GetWorkExperienceByUUID(uuid)
 	if err != nil {
 		return nil, []error{err}
 	}
-	return repo.NewWorkExperienceRepository().Update(record.UUID, params)
+	return repo.NewWorkExperienceRepository().Update(record.ID, params)
 }
 
 func (t *TalentScope) DeleteWorkExperience(uuid uuid.UUID) error {
@@ -45,70 +45,70 @@ func (t *TalentScope) DeleteWorkExperience(uuid uuid.UUID) error {
 	if err != nil {
 		return err
 	}
-	return repo.NewWorkExperienceRepository().DeleteByUUID(record.UUID)
+	return repo.NewWorkExperienceRepository().DeleteByUUID(record.ID)
 }
 
 func (t *TalentScope) GetSkills() ([]*ent.Skill, error) {
 	return t.Talent.QuerySkills().All(repo.GetDBContext())
 }
 
-func (t *TalentScope) GetSkillByUUID(uuid uuid.UUID) (*ent.Skill, error) {
+func (t *TalentScope) GetSkillByUUID(id uuid.UUID) (*ent.Skill, error) {
 	return t.Talent.QuerySkills().
-		Where(skill.UUIDEQ(uuid)).
+		Where(skill.ID(id)).
 		First(repo.GetDBContext())
 }
 
 func (t *TalentScope) UpdateSkill(uuid uuid.UUID, params repo.SkillParams) (*ent.Skill, []error) {
-	params.TalentUUID = t.Talent.UUID
+	params.TalentID = t.Talent.ID
 	record, err := t.GetSkillByUUID(uuid)
 	if err != nil {
 		return nil, []error{err}
 	}
-	return repo.NewSkillRepository().Update(record.UUID, params)
+	return repo.NewSkillRepository().Update(record.ID, params)
 }
 
-func (t *TalentScope) DeleteSkill(uuid uuid.UUID) error {
-	record, err := t.GetSkillByUUID(uuid)
+func (t *TalentScope) DeleteSkill(id uuid.UUID) error {
+	record, err := t.GetSkillByUUID(id)
 	if err != nil {
 		return err
 	}
-	return repo.NewSkillRepository().DeleteByUUID(record.UUID)
+	return repo.NewSkillRepository().DeleteByUUID(record.ID)
 }
 
 func (t *TalentScope) GetPortfolioLinks() ([]*ent.PortfolioLink, error) {
 	return t.Talent.QueryPortfoliolinks().All(repo.GetDBContext())
 }
 
-func (t *TalentScope) GetPortfolioLinkByUUID(uuid uuid.UUID) (*ent.PortfolioLink, error) {
+func (t *TalentScope) GetPortfolioLinkByUUID(id uuid.UUID) (*ent.PortfolioLink, error) {
 	return t.Talent.QueryPortfoliolinks().
-		Where(portfoliolink.UUIDEQ(uuid)).
+		Where(portfoliolink.ID(id)).
 		First(repo.GetDBContext())
 }
 
-func (t *TalentScope) UpdatePortfolioLink(uuid uuid.UUID, params repo.PortfolioLinkParams) (*ent.PortfolioLink, []error) {
-	params.TalentUUID = t.Talent.UUID
-	record, err := t.GetPortfolioLinkByUUID(uuid)
+func (t *TalentScope) UpdatePortfolioLink(id uuid.UUID, params repo.PortfolioLinkParams) (*ent.PortfolioLink, []error) {
+	params.TalentID = t.Talent.ID
+	record, err := t.GetPortfolioLinkByUUID(id)
 	if err != nil {
 		return nil, []error{err}
 	}
-	return repo.NewPortfolioLinkRepository().Update(record.UUID, params)
+	return repo.NewPortfolioLinkRepository().Update(record.ID, params)
 }
 
-func (t *TalentScope) DeletePortfolioLink(uuid uuid.UUID) error {
-	record, err := t.GetPortfolioLinkByUUID(uuid)
+func (t *TalentScope) DeletePortfolioLink(id uuid.UUID) error {
+	record, err := t.GetPortfolioLinkByUUID(id)
 	if err != nil {
 		return err
 	}
-	return repo.NewPortfolioLinkRepository().DeleteByUUID(record.UUID)
+	return repo.NewPortfolioLinkRepository().DeleteByUUID(record.ID)
 }
 
 func (t *TalentScope) GetJobApplications() ([]*ent.JobApplication, error) {
 	return t.Talent.QueryJobApplications().All(repo.GetDBContext())
 }
 
-func (t *TalentScope) GetJobApplicationByUUID(uuid uuid.UUID) (*ent.JobApplication, error) {
+func (t *TalentScope) GetJobApplicationByUUID(id uuid.UUID) (*ent.JobApplication, error) {
 	return t.Talent.QueryJobApplications().
-		Where(jobapplication.UUIDEQ(uuid)).
+		Where(jobapplication.ID(id)).
 		First(repo.GetDBContext())
 }
 
@@ -116,25 +116,25 @@ func (t *TalentScope) GetEducations() ([]*ent.Education, error) {
 	return t.Talent.QueryEducations().All(repo.GetDBContext())
 }
 
-func (t *TalentScope) GetEducationByUUID(uuid uuid.UUID) (*ent.Education, error) {
+func (t *TalentScope) GetEducationByUUID(id uuid.UUID) (*ent.Education, error) {
 	return t.Talent.QueryEducations().
-		Where(education.UUIDEQ(uuid)).
+		Where(education.ID(id)).
 		First(repo.GetDBContext())
 }
 
-func (t *TalentScope) UpdateEducation(uuid uuid.UUID, params repo.EducationParams) (*ent.Education, []error) {
-	params.TalentUUID = t.Talent.UUID
-	record, err := t.GetEducationByUUID(uuid)
+func (t *TalentScope) UpdateEducation(id uuid.UUID, params repo.EducationParams) (*ent.Education, []error) {
+	params.TalentUUID = t.Talent.ID
+	record, err := t.GetEducationByUUID(id)
 	if err != nil {
 		return nil, []error{err}
 	}
-	return repo.NewEducationRepository().Update(record.UUID, params)
+	return repo.NewEducationRepository().Update(record.ID, params)
 }
 
-func (t *TalentScope) DeleteEducation(uuid uuid.UUID) error {
-	record, err := t.GetJobApplicationByUUID(uuid)
+func (t *TalentScope) DeleteEducation(id uuid.UUID) error {
+	record, err := t.GetJobApplicationByUUID(id)
 	if err != nil {
 		return err
 	}
-	return repo.NewEducationRepository().DeleteByUUID(record.UUID)
+	return repo.NewEducationRepository().DeleteByUUID(record.ID)
 }

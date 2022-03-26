@@ -123,12 +123,12 @@ func (j *JobApplicationService) Create(p repo.JobApplicationParams) (*ent.JobApp
 
 func (j *JobApplicationService) Validate(talentUUID, jobUUID uuid.UUID) error {
 	// check if talent exists
-	talent, err := j.TalentRepository.GetByUUID(talentUUID)
+	talent, err := j.TalentRepository.GetByID(talentUUID)
 	if err != nil {
 		return err
 	}
 	// check if job exists
-	job, err := j.JobRepository.GetByUUID(jobUUID)
+	job, err := j.JobRepository.GetByID(jobUUID)
 	if err != nil {
 		return err
 	}
@@ -158,13 +158,13 @@ func (j *JobApplicationService) Validate(talentUUID, jobUUID uuid.UUID) error {
 	return nil
 }
 
-func (j *JobApplicationService) UpdateStatus(user *scope.RecruiterScope, uuid uuid.UUID, params repo.JobApplicationParams) (*ent.JobApplication, []error) {
+func (j *JobApplicationService) UpdateStatus(user *scope.RecruiterScope, id uuid.UUID, params repo.JobApplicationParams) (*ent.JobApplication, []error) {
 	//update the status
-	record, err := user.GetJobApplicationByUUID(uuid)
+	record, err := user.GetJobApplicationByUUID(id)
 	if err != nil {
 		return nil, []error{err}
 	}
-	jobApplication, queryErr := j.JobApplicationRepository.Update(record.UUID, params)
+	jobApplication, queryErr := j.JobApplicationRepository.Update(record.ID, params)
 	if err != nil {
 		return nil, queryErr
 	}

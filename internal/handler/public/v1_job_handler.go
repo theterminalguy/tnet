@@ -41,7 +41,7 @@ func (h *V1PublicJobHandler) ReadByID(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	j, err := h.JobRepository.GetByUUID(id)
+	j, err := h.JobRepository.GetByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

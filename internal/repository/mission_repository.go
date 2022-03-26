@@ -35,9 +35,9 @@ func (*MissionRepository) GetAll() ([]*ent.Mission, error) {
 	return records, nil
 }
 
-func (*MissionRepository) GetByUUID(id uuid.UUID) (*ent.Mission, error) {
+func (*MissionRepository) GetByID(id uuid.UUID) (*ent.Mission, error) {
 	record, err := dBConn.Mission.Query().
-		Where(mission.UUIDEQ(id)).
+		Where(mission.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -54,11 +54,11 @@ func (*MissionRepository) Create(p MissionParams) (*ent.Mission, error) {
 		return nil, err
 	}
 
-	a, err := NewTalentRepository().GetByUUID(p.TalentUUID)
+	a, err := NewTalentRepository().GetByID(p.TalentUUID)
 	if err != nil {
 		return nil, err
 	}
-	j, err := NewPartnerRepository().GetByUUID(p.PartnerUUID)
+	j, err := NewPartnerRepository().GetByID(p.PartnerUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ func (r *MissionRepository) Update(id uuid.UUID, p MissionParams) (*ent.Mission,
 		return nil, []error{err}
 	}
 
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -171,7 +171,7 @@ func (r *MissionRepository) Update(id uuid.UUID, p MissionParams) (*ent.Mission,
 }
 
 func (r *MissionRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}

@@ -32,9 +32,9 @@ func (*UserRepository) GetAll() ([]*ent.User, error) {
 	return records, nil
 }
 
-func (*UserRepository) GetByUUID(id uuid.UUID) (*ent.User, error) {
+func (*UserRepository) GetByID(id uuid.UUID) (*ent.User, error) {
 	record, err := dBConn.User.Query().
-		Where(user.UUIDEQ(id)).
+		Where(user.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -81,7 +81,7 @@ func (r *UserRepository) Update(id uuid.UUID, p UserParams) (*ent.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +95,7 @@ func (r *UserRepository) Update(id uuid.UUID, p UserParams) (*ent.User, error) {
 }
 
 func (r *UserRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}

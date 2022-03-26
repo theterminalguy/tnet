@@ -14,7 +14,7 @@ import (
 type JobApplicationQuerier interface {
 	GetAllForTalent(talentID int) ([]*ent.JobApplication, error)
 	GetAll() ([]*ent.JobApplication, error)
-	GetByUUID(id uuid.UUID) (*ent.JobApplication, error)
+	GetByID(id uuid.UUID) (*ent.JobApplication, error)
 	Create(p JobApplicationParams) (*ent.JobApplication, error)
 	Update(id uuid.UUID, p JobApplicationParams) (*ent.JobApplication, []error)
 	DeleteByUUID(id uuid.UUID) error
@@ -48,7 +48,7 @@ func (*JobApplicationRepository) Filter(prd ...predicate.JobApplication) ([]*ent
 	return jobApplications, nil
 }
 
-func (*JobApplicationRepository) GetAllForTalent(talentID int) ([]*ent.JobApplication, error) {
+func (*JobApplicationRepository) GetAllForTalent(talentID uuid.UUID) ([]*ent.JobApplication, error) {
 	records, err := dBConn.JobApplication.Query().
 		Where(jobapplication.And(
 			jobapplication.TalentID(talentID),
@@ -70,9 +70,9 @@ func (*JobApplicationRepository) GetAll() ([]*ent.JobApplication, error) {
 	return records, nil
 }
 
-func (*JobApplicationRepository) GetByUUID(id uuid.UUID) (*ent.JobApplication, error) {
+func (*JobApplicationRepository) GetByID(id uuid.UUID) (*ent.JobApplication, error) {
 	record, err := dBConn.JobApplication.Query().
-		Where(jobapplication.UUIDEQ(id)).
+		Where(jobapplication.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -88,11 +88,11 @@ func (*JobApplicationRepository) Create(p JobApplicationParams) (*ent.JobApplica
 	if err != nil {
 		return nil, err
 	}
-	a, err := NewTalentRepository().GetByUUID(p.TalentUUID)
+	a, err := NewTalentRepository().GetByID(p.TalentUUID)
 	if err != nil {
 		return nil, err
 	}
-	j, err := NewJobRepository().GetByUUID(p.JobUUID)
+	j, err := NewJobRepository().GetByID(p.JobUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ func (r *JobApplicationRepository) Update(id uuid.UUID, p JobApplicationParams) 
 		return nil, []error{err}
 	}
 
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -163,7 +163,7 @@ func (r *JobApplicationRepository) Update(id uuid.UUID, p JobApplicationParams) 
 }
 
 func (r *JobApplicationRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}
@@ -176,7 +176,7 @@ func (r *JobApplicationRepository) DeleteByUUID(id uuid.UUID) error {
 	return nil
 }
 
-func (*JobApplicationRepository) AlreadyApplied(jobID, talentID int) error {
+func (*JobApplicationRepository) AlreadyApplied(jobID, talentID uuid.UUID) error {
 	records, err := dBConn.JobApplication.Query().Where(
 		jobapplication.And(
 			jobapplication.JobID(jobID),

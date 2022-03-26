@@ -12,7 +12,7 @@ import (
 type EmergencyContactQuerier interface {
 	GetAllForTalent(talentID int) ([]*ent.EmergencyContact, error)
 	GetAll() ([]*ent.EmergencyContact, error)
-	GetByUUID(id uuid.UUID) (*ent.EmergencyContact, error)
+	GetByID(id uuid.UUID) (*ent.EmergencyContact, error)
 	Create(p EmergencyContactParams) (*ent.EmergencyContact, error)
 	Update(id uuid.UUID, p EmergencyContactParams) (*ent.EmergencyContact, []error)
 	DeleteByUUID(id uuid.UUID) error
@@ -43,9 +43,9 @@ func (*EmergencyContactRepository) GetAll() ([]*ent.EmergencyContact, error) {
 	return records, nil
 }
 
-func (*EmergencyContactRepository) GetByUUID(id uuid.UUID) (*ent.EmergencyContact, error) {
+func (*EmergencyContactRepository) GetByID(id uuid.UUID) (*ent.EmergencyContact, error) {
 	record, err := dBConn.EmergencyContact.Query().
-		Where(emergencycontact.UUIDEQ(id)).
+		Where(emergencycontact.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (*EmergencyContactRepository) Create(p EmergencyContactParams) (*ent.Emerge
 		return nil, err
 	}
 
-	a, err := NewTalentRepository().GetByUUID(p.TalentUUID)
+	a, err := NewTalentRepository().GetByID(p.TalentUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (r *EmergencyContactRepository) Update(id uuid.UUID, p EmergencyContactPara
 	if err != nil {
 		return nil, []error{err}
 	}
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -170,7 +170,7 @@ func (r *EmergencyContactRepository) Update(id uuid.UUID, p EmergencyContactPara
 }
 
 func (r *EmergencyContactRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}

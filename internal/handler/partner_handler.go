@@ -36,7 +36,7 @@ func (h *PartnerHandler) ReadByID(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := h.PartnerRepository.GetByUUID(id)
+	record, err := h.PartnerRepository.GetByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

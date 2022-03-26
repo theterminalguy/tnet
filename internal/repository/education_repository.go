@@ -14,7 +14,7 @@ import (
 type EducationQuerier interface {
 	GetAllForTalent(talentID int) ([]*ent.Education, error)
 	GetAll() ([]*ent.Education, error)
-	GetByUUID(id uuid.UUID) (*ent.Education, error)
+	GetByID(id uuid.UUID) (*ent.Education, error)
 	Create(p EducationParams) (*ent.Education, error)
 	Update(id uuid.UUID, p EducationParams) (*ent.Education, []error)
 	DeleteByUUID(id uuid.UUID) error
@@ -47,7 +47,7 @@ func (*EducationRepository) Filter(prd ...predicate.Education) ([]*ent.Education
 	return educations, nil
 }
 
-func (*EducationRepository) GetAllForTalent(talentID int) ([]*ent.Education, error) {
+func (*EducationRepository) GetAllForTalent(talentID uuid.UUID) ([]*ent.Education, error) {
 	records, err := dBConn.Education.Query().
 		Where(education.And(
 			education.TalentID(talentID),
@@ -69,9 +69,9 @@ func (*EducationRepository) GetAll() ([]*ent.Education, error) {
 	return records, nil
 }
 
-func (*EducationRepository) GetByUUID(id uuid.UUID) (*ent.Education, error) {
+func (*EducationRepository) GetByID(id uuid.UUID) (*ent.Education, error) {
 	record, err := dBConn.Education.Query().
-		Where(education.UUIDEQ(id)).
+		Where(education.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -91,7 +91,7 @@ func (*EducationRepository) Create(p EducationParams) (*ent.Education, error) {
 	var sd *time.Time
 	var ed *time.Time
 
-	a, err := NewTalentRepository().GetByUUID(p.TalentUUID)
+	a, err := NewTalentRepository().GetByID(p.TalentUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +134,7 @@ func (r *EducationRepository) Update(id uuid.UUID, p EducationParams) (*ent.Educ
 	if err != nil {
 		return nil, []error{err}
 	}
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -234,7 +234,7 @@ func (r *EducationRepository) Update(id uuid.UUID, p EducationParams) (*ent.Educ
 }
 
 func (r *EducationRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}
@@ -247,7 +247,7 @@ func (r *EducationRepository) DeleteByUUID(id uuid.UUID) error {
 	return nil
 }
 
-func (r *EducationRepository) GetEducationByTalentUUID(talentID int) (*ent.Education, error) {
+func (r *EducationRepository) GetEducationByTalentUUID(talentID uuid.UUID) (*ent.Education, error) {
 	record, err := dBConn.Education.Query().
 		Where(education.And(
 			education.TalentID(talentID),
