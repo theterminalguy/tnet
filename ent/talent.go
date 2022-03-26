@@ -39,7 +39,7 @@ type Talent struct {
 	// IsAvailable holds the value of the "is_available" field.
 	IsAvailable bool `json:"is_available,omitempty"`
 	// ProfessionalStartDate holds the value of the "professional_start_date" field.
-	ProfessionalStartDate time.Time `json:"professional_start_date,omitempty"`
+	ProfessionalStartDate time.Time `json:"career_start_date"`
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
 	// Phone holds the value of the "phone" field.

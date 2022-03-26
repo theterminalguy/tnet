@@ -41,7 +41,7 @@ func (Talent) Fields() []ent.Field {
 
 		field.Bool("is_available"),
 
-		field.Time(oneword.ProfessionalStartDate),
+		field.Time(oneword.ProfessionalStartDate).StructTag(`json:"career_start_date"`),
 
 		field.String(oneword.Email).
 			Unique(),

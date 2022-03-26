@@ -34,8 +34,7 @@ type TalentParams struct {
 	PreferredName         string               `json:"preferred_name" validate:"required"`
 	Pronoun               string               `json:"pronoun" validate:"required"`
 	PreferredJobTitle     string               `json:"preferred_job_title" validate:"required"`
-	ReferralCode          string               `json:"referral_code"`
-	ProfessionalStartDate string               `json:"professional_start_date" validate:"required"` // YYYY-MM-DD
+	ProfessionalStartDate string               `json:"career_start_date" validate:"required"` // YYYY-MM-DD
 	Phone                 string               `json:"phone" validate:"required"`
 	CountryCode           string               `json:"country_code" validate:"required,iso3166_1_alpha2"`
 	City                  string               `json:"city" validate:"required"`
@@ -359,27 +358,24 @@ func (r *TalentRepository) GetTalentByUserID(userID uuid.UUID) (*ent.Talent, err
 }
 
 type TalentResponse struct {
-	ID                    uuid.UUID            `json:"id"`
-	CreatedAt             time.Time            `json:"created_at"`
-	UpdatedAt             time.Time            `json:"updated_at"`
-	DeletedAt             *time.Time           `json:"deleted_at"`
-	FirstName             string               `json:"first_name"`
-	LastName              string               `json:"last_name"`
-	PreferredName         string               `json:"preferred_name"`
-	Pronoun               string               `json:"pronoun"`
-	PreferredJobTitle     string               `json:"preferred_job_title"`
-	IsAvailable           bool                 `json:"is_available"`
-	ReferrerID            int                  `json:"-"`
-	ReferralCode          string               `json:"referral_code"`
-	TentnCode             string               `json:"tentn_code"`
-	ProfessionalStartDate time.Time            `json:"professional_start_date"`
-	Email                 string               `json:"email"`
-	Phone                 string               `json:"phone"`
-	Country               Country              `json:"country"`
-	JoinedTentnAt         *time.Time           `json:"joined_tentn_at"`
-	JobPreference         talent.JobPreference `json:"job_preference"`
-	Edges                 *ent.TalentEdges     `json:"edges"`
-	TimeZone              string               `json:"timezone"`
+	ID                uuid.UUID            `json:"id"`
+	CreatedAt         time.Time            `json:"created_at"`
+	UpdatedAt         time.Time            `json:"updated_at"`
+	DeletedAt         *time.Time           `json:"deleted_at"`
+	FirstName         string               `json:"first_name"`
+	LastName          string               `json:"last_name"`
+	PreferredName     string               `json:"preferred_name"`
+	Pronoun           string               `json:"pronoun"`
+	PreferredJobTitle string               `json:"preferred_job_title"`
+	IsAvailable       bool                 `json:"is_available"`
+	CareerStartDate   time.Time            `json:"career_start_date"`
+	Email             string               `json:"email"`
+	Phone             string               `json:"phone"`
+	Country           Country              `json:"country"`
+	JoinedTentnAt     *time.Time           `json:"joined_tentn_at"`
+	JobPreference     talent.JobPreference `json:"job_preference"`
+	Edges             *ent.TalentEdges     `json:"edges"`
+	TimeZone          string               `json:"timezone"`
 }
 
 type Country struct {
@@ -391,18 +387,18 @@ type Country struct {
 
 func BuildTalentResponse(talent *ent.Talent) *TalentResponse {
 	return &TalentResponse{
-		ID:                    talent.ID,
-		CreatedAt:             talent.CreatedAt,
-		DeletedAt:             talent.DeletedAt,
-		FirstName:             talent.FirstName,
-		LastName:              talent.LastName,
-		PreferredName:         talent.PreferredName,
-		Pronoun:               talent.Pronoun,
-		PreferredJobTitle:     talent.PreferredJobTitle,
-		IsAvailable:           talent.IsAvailable,
-		ProfessionalStartDate: talent.ProfessionalStartDate,
-		Email:                 talent.Email,
-		Phone:                 talent.Phone,
+		ID:                talent.ID,
+		CreatedAt:         talent.CreatedAt,
+		DeletedAt:         talent.DeletedAt,
+		FirstName:         talent.FirstName,
+		LastName:          talent.LastName,
+		PreferredName:     talent.PreferredName,
+		Pronoun:           talent.Pronoun,
+		PreferredJobTitle: talent.PreferredJobTitle,
+		IsAvailable:       talent.IsAvailable,
+		CareerStartDate:   talent.ProfessionalStartDate,
+		Email:             talent.Email,
+		Phone:             talent.Phone,
 		Country: Country{
 			Code:  talent.CountryCode,
 			Name:  countryRepo[talent.CountryCode],
