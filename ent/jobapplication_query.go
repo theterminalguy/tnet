@@ -15,6 +15,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/google/uuid"
 )
 
 // JobApplicationQuery is the builder for querying JobApplication entities.
@@ -133,8 +134,8 @@ func (jaq *JobApplicationQuery) FirstX(ctx context.Context) *JobApplication {
 
 // FirstID returns the first JobApplication ID from the query.
 // Returns a *NotFoundError when no JobApplication ID was found.
-func (jaq *JobApplicationQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (jaq *JobApplicationQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = jaq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -146,7 +147,7 @@ func (jaq *JobApplicationQuery) FirstID(ctx context.Context) (id int, err error)
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (jaq *JobApplicationQuery) FirstIDX(ctx context.Context) int {
+func (jaq *JobApplicationQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := jaq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -184,8 +185,8 @@ func (jaq *JobApplicationQuery) OnlyX(ctx context.Context) *JobApplication {
 // OnlyID is like Only, but returns the only JobApplication ID in the query.
 // Returns a *NotSingularError when more than one JobApplication ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (jaq *JobApplicationQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (jaq *JobApplicationQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = jaq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -201,7 +202,7 @@ func (jaq *JobApplicationQuery) OnlyID(ctx context.Context) (id int, err error) 
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (jaq *JobApplicationQuery) OnlyIDX(ctx context.Context) int {
+func (jaq *JobApplicationQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := jaq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -227,8 +228,8 @@ func (jaq *JobApplicationQuery) AllX(ctx context.Context) []*JobApplication {
 }
 
 // IDs executes the query and returns a list of JobApplication IDs.
-func (jaq *JobApplicationQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (jaq *JobApplicationQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := jaq.Select(jobapplication.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -236,7 +237,7 @@ func (jaq *JobApplicationQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (jaq *JobApplicationQuery) IDsX(ctx context.Context) []int {
+func (jaq *JobApplicationQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := jaq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -327,12 +328,12 @@ func (jaq *JobApplicationQuery) WithJob(opts ...func(*JobQuery)) *JobApplication
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.JobApplication.Query().
-//		GroupBy(jobapplication.FieldUUID).
+//		GroupBy(jobapplication.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -354,11 +355,11 @@ func (jaq *JobApplicationQuery) GroupBy(field string, fields ...string) *JobAppl
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.JobApplication.Query().
-//		Select(jobapplication.FieldUUID).
+//		Select(jobapplication.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
 func (jaq *JobApplicationQuery) Select(fields ...string) *JobApplicationSelect {
@@ -412,8 +413,8 @@ func (jaq *JobApplicationQuery) sqlAll(ctx context.Context) ([]*JobApplication, 
 	}
 
 	if query := jaq.withTalent; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*JobApplication)
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*JobApplication)
 		for i := range nodes {
 			fk := nodes[i].TalentID
 			if _, ok := nodeids[fk]; !ok {
@@ -438,8 +439,8 @@ func (jaq *JobApplicationQuery) sqlAll(ctx context.Context) ([]*JobApplication, 
 	}
 
 	if query := jaq.withJob; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*JobApplication)
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*JobApplication)
 		for i := range nodes {
 			fk := nodes[i].JobID
 			if _, ok := nodeids[fk]; !ok {
@@ -489,7 +490,7 @@ func (jaq *JobApplicationQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   jobapplication.Table,
 			Columns: jobapplication.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: jobapplication.FieldID,
 			},
 		},

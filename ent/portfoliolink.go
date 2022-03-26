@@ -17,9 +17,7 @@ import (
 type PortfolioLink struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"-"`
-	// UUID holds the value of the "uuid" field.
-	UUID uuid.UUID `json:"uuid,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -31,7 +29,7 @@ type PortfolioLink struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// TalentID holds the value of the "talent_id" field.
-	TalentID int `json:"-"`
+	TalentID uuid.UUID `json:"-"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PortfolioLinkQuery when eager-loading is set.
 	Edges PortfolioLinkEdges `json:"edges"`
@@ -65,13 +63,11 @@ func (*PortfolioLink) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case portfoliolink.FieldID, portfoliolink.FieldTalentID:
-			values[i] = new(sql.NullInt64)
 		case portfoliolink.FieldURL, portfoliolink.FieldName:
 			values[i] = new(sql.NullString)
 		case portfoliolink.FieldCreatedAt, portfoliolink.FieldUpdatedAt, portfoliolink.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case portfoliolink.FieldUUID:
+		case portfoliolink.FieldID, portfoliolink.FieldTalentID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type PortfolioLink", columns[i])
@@ -89,16 +85,10 @@ func (pl *PortfolioLink) assignValues(columns []string, values []interface{}) er
 	for i := range columns {
 		switch columns[i] {
 		case portfoliolink.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
-			}
-			pl.ID = int(value.Int64)
-		case portfoliolink.FieldUUID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field uuid", values[i])
+				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				pl.UUID = *value
+				pl.ID = *value
 			}
 		case portfoliolink.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -132,10 +122,10 @@ func (pl *PortfolioLink) assignValues(columns []string, values []interface{}) er
 				pl.Name = value.String
 			}
 		case portfoliolink.FieldTalentID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field talent_id", values[i])
-			} else if value.Valid {
-				pl.TalentID = int(value.Int64)
+			} else if value != nil {
+				pl.TalentID = *value
 			}
 		}
 	}
@@ -170,8 +160,6 @@ func (pl *PortfolioLink) String() string {
 	var builder strings.Builder
 	builder.WriteString("PortfolioLink(")
 	builder.WriteString(fmt.Sprintf("id=%v", pl.ID))
-	builder.WriteString(", uuid=")
-	builder.WriteString(fmt.Sprintf("%v", pl.UUID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(pl.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

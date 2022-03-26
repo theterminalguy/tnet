@@ -23,20 +23,6 @@ type MissionCreate struct {
 	hooks    []Hook
 }
 
-// SetUUID sets the "uuid" field.
-func (mc *MissionCreate) SetUUID(u uuid.UUID) *MissionCreate {
-	mc.mutation.SetUUID(u)
-	return mc
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (mc *MissionCreate) SetNillableUUID(u *uuid.UUID) *MissionCreate {
-	if u != nil {
-		mc.SetUUID(*u)
-	}
-	return mc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (mc *MissionCreate) SetCreatedAt(t time.Time) *MissionCreate {
 	mc.mutation.SetCreatedAt(t)
@@ -80,29 +66,29 @@ func (mc *MissionCreate) SetNillableDeletedAt(t *time.Time) *MissionCreate {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (mc *MissionCreate) SetTalentID(i int) *MissionCreate {
-	mc.mutation.SetTalentID(i)
+func (mc *MissionCreate) SetTalentID(u uuid.UUID) *MissionCreate {
+	mc.mutation.SetTalentID(u)
 	return mc
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (mc *MissionCreate) SetNillableTalentID(i *int) *MissionCreate {
-	if i != nil {
-		mc.SetTalentID(*i)
+func (mc *MissionCreate) SetNillableTalentID(u *uuid.UUID) *MissionCreate {
+	if u != nil {
+		mc.SetTalentID(*u)
 	}
 	return mc
 }
 
 // SetPartnerID sets the "partner_id" field.
-func (mc *MissionCreate) SetPartnerID(i int) *MissionCreate {
-	mc.mutation.SetPartnerID(i)
+func (mc *MissionCreate) SetPartnerID(u uuid.UUID) *MissionCreate {
+	mc.mutation.SetPartnerID(u)
 	return mc
 }
 
 // SetNillablePartnerID sets the "partner_id" field if the given value is not nil.
-func (mc *MissionCreate) SetNillablePartnerID(i *int) *MissionCreate {
-	if i != nil {
-		mc.SetPartnerID(*i)
+func (mc *MissionCreate) SetNillablePartnerID(u *uuid.UUID) *MissionCreate {
+	if u != nil {
+		mc.SetPartnerID(*u)
 	}
 	return mc
 }
@@ -134,8 +120,16 @@ func (mc *MissionCreate) SetNillableEndDate(t *time.Time) *MissionCreate {
 }
 
 // SetID sets the "id" field.
-func (mc *MissionCreate) SetID(i int) *MissionCreate {
-	mc.mutation.SetID(i)
+func (mc *MissionCreate) SetID(u uuid.UUID) *MissionCreate {
+	mc.mutation.SetID(u)
+	return mc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (mc *MissionCreate) SetNillableID(u *uuid.UUID) *MissionCreate {
+	if u != nil {
+		mc.SetID(*u)
+	}
 	return mc
 }
 
@@ -220,10 +214,6 @@ func (mc *MissionCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (mc *MissionCreate) defaults() {
-	if _, ok := mc.mutation.UUID(); !ok {
-		v := mission.DefaultUUID()
-		mc.mutation.SetUUID(v)
-	}
 	if _, ok := mc.mutation.CreatedAt(); !ok {
 		v := mission.DefaultCreatedAt()
 		mc.mutation.SetCreatedAt(v)
@@ -232,13 +222,14 @@ func (mc *MissionCreate) defaults() {
 		v := mission.DefaultUpdatedAt()
 		mc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := mc.mutation.ID(); !ok {
+		v := mission.DefaultID()
+		mc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (mc *MissionCreate) check() error {
-	if _, ok := mc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "Mission.uuid"`)}
-	}
 	if _, ok := mc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Mission.created_at"`)}
 	}
@@ -267,9 +258,12 @@ func (mc *MissionCreate) sqlSave(ctx context.Context) (*Mission, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -280,22 +274,14 @@ func (mc *MissionCreate) createSpec() (*Mission, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: mission.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: mission.FieldID,
 			},
 		}
 	)
 	if id, ok := mc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
-	}
-	if value, ok := mc.mutation.UUID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: mission.FieldUUID,
-		})
-		_node.UUID = value
+		_spec.ID.Value = &id
 	}
 	if value, ok := mc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -354,7 +340,7 @@ func (mc *MissionCreate) createSpec() (*Mission, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -374,7 +360,7 @@ func (mc *MissionCreate) createSpec() (*Mission, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: partner.FieldID,
 				},
 			},
@@ -430,10 +416,6 @@ func (mcb *MissionCreateBulk) Save(ctx context.Context) ([]*Mission, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

@@ -22,20 +22,6 @@ type TalentCollectionCreate struct {
 	hooks    []Hook
 }
 
-// SetUUID sets the "uuid" field.
-func (tcc *TalentCollectionCreate) SetUUID(u uuid.UUID) *TalentCollectionCreate {
-	tcc.mutation.SetUUID(u)
-	return tcc
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (tcc *TalentCollectionCreate) SetNillableUUID(u *uuid.UUID) *TalentCollectionCreate {
-	if u != nil {
-		tcc.SetUUID(*u)
-	}
-	return tcc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (tcc *TalentCollectionCreate) SetCreatedAt(t time.Time) *TalentCollectionCreate {
 	tcc.mutation.SetCreatedAt(t)
@@ -79,15 +65,15 @@ func (tcc *TalentCollectionCreate) SetNillableDeletedAt(t *time.Time) *TalentCol
 }
 
 // SetUserID sets the "user_id" field.
-func (tcc *TalentCollectionCreate) SetUserID(i int) *TalentCollectionCreate {
-	tcc.mutation.SetUserID(i)
+func (tcc *TalentCollectionCreate) SetUserID(u uuid.UUID) *TalentCollectionCreate {
+	tcc.mutation.SetUserID(u)
 	return tcc
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (tcc *TalentCollectionCreate) SetNillableUserID(i *int) *TalentCollectionCreate {
-	if i != nil {
-		tcc.SetUserID(*i)
+func (tcc *TalentCollectionCreate) SetNillableUserID(u *uuid.UUID) *TalentCollectionCreate {
+	if u != nil {
+		tcc.SetUserID(*u)
 	}
 	return tcc
 }
@@ -105,8 +91,16 @@ func (tcc *TalentCollectionCreate) SetTalentUuids(s []string) *TalentCollectionC
 }
 
 // SetID sets the "id" field.
-func (tcc *TalentCollectionCreate) SetID(i int) *TalentCollectionCreate {
-	tcc.mutation.SetID(i)
+func (tcc *TalentCollectionCreate) SetID(u uuid.UUID) *TalentCollectionCreate {
+	tcc.mutation.SetID(u)
+	return tcc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (tcc *TalentCollectionCreate) SetNillableID(u *uuid.UUID) *TalentCollectionCreate {
+	if u != nil {
+		tcc.SetID(*u)
+	}
 	return tcc
 }
 
@@ -186,10 +180,6 @@ func (tcc *TalentCollectionCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (tcc *TalentCollectionCreate) defaults() {
-	if _, ok := tcc.mutation.UUID(); !ok {
-		v := talentcollection.DefaultUUID()
-		tcc.mutation.SetUUID(v)
-	}
 	if _, ok := tcc.mutation.CreatedAt(); !ok {
 		v := talentcollection.DefaultCreatedAt()
 		tcc.mutation.SetCreatedAt(v)
@@ -198,13 +188,14 @@ func (tcc *TalentCollectionCreate) defaults() {
 		v := talentcollection.DefaultUpdatedAt()
 		tcc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := tcc.mutation.ID(); !ok {
+		v := talentcollection.DefaultID()
+		tcc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (tcc *TalentCollectionCreate) check() error {
-	if _, ok := tcc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "TalentCollection.uuid"`)}
-	}
 	if _, ok := tcc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TalentCollection.created_at"`)}
 	}
@@ -228,9 +219,12 @@ func (tcc *TalentCollectionCreate) sqlSave(ctx context.Context) (*TalentCollecti
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -241,22 +235,14 @@ func (tcc *TalentCollectionCreate) createSpec() (*TalentCollection, *sqlgraph.Cr
 		_spec = &sqlgraph.CreateSpec{
 			Table: talentcollection.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: talentcollection.FieldID,
 			},
 		}
 	)
 	if id, ok := tcc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
-	}
-	if value, ok := tcc.mutation.UUID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: talentcollection.FieldUUID,
-		})
-		_node.UUID = value
+		_spec.ID.Value = &id
 	}
 	if value, ok := tcc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -307,7 +293,7 @@ func (tcc *TalentCollectionCreate) createSpec() (*TalentCollection, *sqlgraph.Cr
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -363,10 +349,6 @@ func (tccb *TalentCollectionCreateBulk) Save(ctx context.Context) ([]*TalentColl
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

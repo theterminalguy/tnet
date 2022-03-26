@@ -30,20 +30,6 @@ func (plu *PortfolioLinkUpdate) Where(ps ...predicate.PortfolioLink) *PortfolioL
 	return plu
 }
 
-// SetUUID sets the "uuid" field.
-func (plu *PortfolioLinkUpdate) SetUUID(u uuid.UUID) *PortfolioLinkUpdate {
-	plu.mutation.SetUUID(u)
-	return plu
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (plu *PortfolioLinkUpdate) SetNillableUUID(u *uuid.UUID) *PortfolioLinkUpdate {
-	if u != nil {
-		plu.SetUUID(*u)
-	}
-	return plu
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (plu *PortfolioLinkUpdate) SetUpdatedAt(t time.Time) *PortfolioLinkUpdate {
 	plu.mutation.SetUpdatedAt(t)
@@ -83,15 +69,15 @@ func (plu *PortfolioLinkUpdate) SetName(s string) *PortfolioLinkUpdate {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (plu *PortfolioLinkUpdate) SetTalentID(i int) *PortfolioLinkUpdate {
-	plu.mutation.SetTalentID(i)
+func (plu *PortfolioLinkUpdate) SetTalentID(u uuid.UUID) *PortfolioLinkUpdate {
+	plu.mutation.SetTalentID(u)
 	return plu
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (plu *PortfolioLinkUpdate) SetNillableTalentID(i *int) *PortfolioLinkUpdate {
-	if i != nil {
-		plu.SetTalentID(*i)
+func (plu *PortfolioLinkUpdate) SetNillableTalentID(u *uuid.UUID) *PortfolioLinkUpdate {
+	if u != nil {
+		plu.SetTalentID(*u)
 	}
 	return plu
 }
@@ -187,7 +173,7 @@ func (plu *PortfolioLinkUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Table:   portfoliolink.Table,
 			Columns: portfoliolink.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: portfoliolink.FieldID,
 			},
 		},
@@ -198,13 +184,6 @@ func (plu *PortfolioLinkUpdate) sqlSave(ctx context.Context) (n int, err error) 
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := plu.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: portfoliolink.FieldUUID,
-		})
 	}
 	if value, ok := plu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -249,7 +228,7 @@ func (plu *PortfolioLinkUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -265,7 +244,7 @@ func (plu *PortfolioLinkUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -292,20 +271,6 @@ type PortfolioLinkUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *PortfolioLinkMutation
-}
-
-// SetUUID sets the "uuid" field.
-func (pluo *PortfolioLinkUpdateOne) SetUUID(u uuid.UUID) *PortfolioLinkUpdateOne {
-	pluo.mutation.SetUUID(u)
-	return pluo
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (pluo *PortfolioLinkUpdateOne) SetNillableUUID(u *uuid.UUID) *PortfolioLinkUpdateOne {
-	if u != nil {
-		pluo.SetUUID(*u)
-	}
-	return pluo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -347,15 +312,15 @@ func (pluo *PortfolioLinkUpdateOne) SetName(s string) *PortfolioLinkUpdateOne {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (pluo *PortfolioLinkUpdateOne) SetTalentID(i int) *PortfolioLinkUpdateOne {
-	pluo.mutation.SetTalentID(i)
+func (pluo *PortfolioLinkUpdateOne) SetTalentID(u uuid.UUID) *PortfolioLinkUpdateOne {
+	pluo.mutation.SetTalentID(u)
 	return pluo
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (pluo *PortfolioLinkUpdateOne) SetNillableTalentID(i *int) *PortfolioLinkUpdateOne {
-	if i != nil {
-		pluo.SetTalentID(*i)
+func (pluo *PortfolioLinkUpdateOne) SetNillableTalentID(u *uuid.UUID) *PortfolioLinkUpdateOne {
+	if u != nil {
+		pluo.SetTalentID(*u)
 	}
 	return pluo
 }
@@ -458,7 +423,7 @@ func (pluo *PortfolioLinkUpdateOne) sqlSave(ctx context.Context) (_node *Portfol
 			Table:   portfoliolink.Table,
 			Columns: portfoliolink.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: portfoliolink.FieldID,
 			},
 		},
@@ -486,13 +451,6 @@ func (pluo *PortfolioLinkUpdateOne) sqlSave(ctx context.Context) (_node *Portfol
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := pluo.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: portfoliolink.FieldUUID,
-		})
 	}
 	if value, ok := pluo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -537,7 +495,7 @@ func (pluo *PortfolioLinkUpdateOne) sqlSave(ctx context.Context) (_node *Portfol
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -553,7 +511,7 @@ func (pluo *PortfolioLinkUpdateOne) sqlSave(ctx context.Context) (_node *Portfol
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},

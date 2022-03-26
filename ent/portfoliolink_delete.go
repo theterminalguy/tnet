@@ -72,7 +72,7 @@ func (pld *PortfolioLinkDelete) sqlExec(ctx context.Context) (int, error) {
 		Node: &sqlgraph.NodeSpec{
 			Table: portfoliolink.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: portfoliolink.FieldID,
 			},
 		},

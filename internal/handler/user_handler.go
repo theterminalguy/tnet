@@ -36,7 +36,7 @@ func (h *UserHandler) ReadByID(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := h.UserRepository.GetByUUID(id)
+	record, err := h.UserRepository.GetByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -76,7 +76,7 @@ func (h *UserHandler) DeleteOne(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.UserRepository.DeleteByUUID(id)
+	err = h.UserRepository.DeleteByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

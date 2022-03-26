@@ -22,20 +22,6 @@ type EmergencyContactCreate struct {
 	hooks    []Hook
 }
 
-// SetUUID sets the "uuid" field.
-func (ecc *EmergencyContactCreate) SetUUID(u uuid.UUID) *EmergencyContactCreate {
-	ecc.mutation.SetUUID(u)
-	return ecc
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (ecc *EmergencyContactCreate) SetNillableUUID(u *uuid.UUID) *EmergencyContactCreate {
-	if u != nil {
-		ecc.SetUUID(*u)
-	}
-	return ecc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (ecc *EmergencyContactCreate) SetCreatedAt(t time.Time) *EmergencyContactCreate {
 	ecc.mutation.SetCreatedAt(t)
@@ -79,15 +65,15 @@ func (ecc *EmergencyContactCreate) SetNillableDeletedAt(t *time.Time) *Emergency
 }
 
 // SetTalentID sets the "talent_id" field.
-func (ecc *EmergencyContactCreate) SetTalentID(i int) *EmergencyContactCreate {
-	ecc.mutation.SetTalentID(i)
+func (ecc *EmergencyContactCreate) SetTalentID(u uuid.UUID) *EmergencyContactCreate {
+	ecc.mutation.SetTalentID(u)
 	return ecc
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (ecc *EmergencyContactCreate) SetNillableTalentID(i *int) *EmergencyContactCreate {
-	if i != nil {
-		ecc.SetTalentID(*i)
+func (ecc *EmergencyContactCreate) SetNillableTalentID(u *uuid.UUID) *EmergencyContactCreate {
+	if u != nil {
+		ecc.SetTalentID(*u)
 	}
 	return ecc
 }
@@ -123,8 +109,16 @@ func (ecc *EmergencyContactCreate) SetEmail(s string) *EmergencyContactCreate {
 }
 
 // SetID sets the "id" field.
-func (ecc *EmergencyContactCreate) SetID(i int) *EmergencyContactCreate {
-	ecc.mutation.SetID(i)
+func (ecc *EmergencyContactCreate) SetID(u uuid.UUID) *EmergencyContactCreate {
+	ecc.mutation.SetID(u)
+	return ecc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (ecc *EmergencyContactCreate) SetNillableID(u *uuid.UUID) *EmergencyContactCreate {
+	if u != nil {
+		ecc.SetID(*u)
+	}
 	return ecc
 }
 
@@ -204,10 +198,6 @@ func (ecc *EmergencyContactCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ecc *EmergencyContactCreate) defaults() {
-	if _, ok := ecc.mutation.UUID(); !ok {
-		v := emergencycontact.DefaultUUID()
-		ecc.mutation.SetUUID(v)
-	}
 	if _, ok := ecc.mutation.CreatedAt(); !ok {
 		v := emergencycontact.DefaultCreatedAt()
 		ecc.mutation.SetCreatedAt(v)
@@ -216,13 +206,14 @@ func (ecc *EmergencyContactCreate) defaults() {
 		v := emergencycontact.DefaultUpdatedAt()
 		ecc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := ecc.mutation.ID(); !ok {
+		v := emergencycontact.DefaultID()
+		ecc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (ecc *EmergencyContactCreate) check() error {
-	if _, ok := ecc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "EmergencyContact.uuid"`)}
-	}
 	if _, ok := ecc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "EmergencyContact.created_at"`)}
 	}
@@ -255,9 +246,12 @@ func (ecc *EmergencyContactCreate) sqlSave(ctx context.Context) (*EmergencyConta
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -268,22 +262,14 @@ func (ecc *EmergencyContactCreate) createSpec() (*EmergencyContact, *sqlgraph.Cr
 		_spec = &sqlgraph.CreateSpec{
 			Table: emergencycontact.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: emergencycontact.FieldID,
 			},
 		}
 	)
 	if id, ok := ecc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
-	}
-	if value, ok := ecc.mutation.UUID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: emergencycontact.FieldUUID,
-		})
-		_node.UUID = value
+		_spec.ID.Value = &id
 	}
 	if value, ok := ecc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -358,7 +344,7 @@ func (ecc *EmergencyContactCreate) createSpec() (*EmergencyContact, *sqlgraph.Cr
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -414,10 +400,6 @@ func (eccb *EmergencyContactCreateBulk) Save(ctx context.Context) ([]*EmergencyC
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

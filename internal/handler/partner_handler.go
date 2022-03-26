@@ -36,7 +36,7 @@ func (h *PartnerHandler) ReadByID(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := h.PartnerRepository.GetByUUID(id)
+	record, err := h.PartnerRepository.GetByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -76,7 +76,7 @@ func (h *PartnerHandler) DeleteOne(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.PartnerRepository.DeleteByUUID(id)
+	err = h.PartnerRepository.DeleteByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

@@ -26,18 +26,18 @@ func (r *RecruiterScope) GetJobs() ([]*ent.Job, error) {
 		}).All(repo.GetDBContext())
 }
 
-func (r *RecruiterScope) GetJobByUUID(id uuid.UUID) (*ent.Job, error) {
+func (r *RecruiterScope) GetJobByID(id uuid.UUID) (*ent.Job, error) {
 	return r.Recruiter.QueryJobs().
-		Where(job.UUIDEQ(id)).
+		Where(job.ID(id)).
 		WithApplications(func(jaq *ent.JobApplicationQuery) {
 			jaq.WithTalent()
 		}).
 		First(repo.GetDBContext())
 }
 
-func (r *RecruiterScope) GetJobApplicationByUUID(id uuid.UUID) (*ent.JobApplication, error) {
+func (r *RecruiterScope) GetJobApplicationByID(id uuid.UUID) (*ent.JobApplication, error) {
 	return r.Recruiter.QueryJobs().QueryApplications().WithTalent().WithJob().
-		Where(jobapplication.UUIDEQ(id)).
+		Where(jobapplication.ID(id)).
 		First(repo.GetDBContext())
 }
 
@@ -45,31 +45,31 @@ func (r *RecruiterScope) GetTalentCollections() ([]*ent.TalentCollection, error)
 	return r.Recruiter.QueryTalentCollections().All(repo.GetDBContext())
 }
 
-func (r *RecruiterScope) GetTalentCollectionByUUID(id uuid.UUID) (*ent.TalentCollection, error) {
+func (r *RecruiterScope) GetTalentCollectionByID(id uuid.UUID) (*ent.TalentCollection, error) {
 	return r.Recruiter.QueryTalentCollections().
 		Where(
 			talentcollection.And(
 				talentcollection.UserIDEQ(r.Recruiter.ID),
-				talentcollection.UUIDEQ(id),
+				talentcollection.ID(id),
 			)).First(repo.GetDBContext())
 }
 
 func (r *RecruiterScope) DeleteCollection(id uuid.UUID) error {
 	record, err := r.Recruiter.QueryTalentCollections().Where(
 		talentcollection.UserIDEQ(r.Recruiter.ID),
-		talentcollection.UUIDEQ(id),
+		talentcollection.ID(id),
 	).First(repo.GetDBContext())
 	if err != nil {
 		return err
 	}
 	tRepo := repo.NewTalentCollectionRepository()
-	return tRepo.DeleteByUUID(record.UUID)
+	return tRepo.DeleteByID(record.ID)
 }
 
 func (r *RecruiterScope) DeleteTalentsFromCollection(collectionID uuid.UUID, talentIDs []uuid.UUID) (*ent.TalentCollection, error) {
 	talentCollection, err := r.Recruiter.QueryTalentCollections().Where(
 		talentcollection.UserIDEQ(r.Recruiter.ID),
-		talentcollection.UUIDEQ(collectionID),
+		talentcollection.ID(collectionID),
 	).First(repo.GetDBContext())
 	if err != nil {
 		return nil, err
@@ -81,11 +81,11 @@ func (r *RecruiterScope) DeleteTalentsFromCollection(collectionID uuid.UUID, tal
 func (r *RecruiterScope) UpdateTalentCollection(collectionID uuid.UUID, params repo.TalentCollectionParams) (*ent.TalentCollection, error) {
 	talentCollection, err := r.Recruiter.QueryTalentCollections().Where(
 		talentcollection.UserIDEQ(r.Recruiter.ID),
-		talentcollection.UUIDEQ(collectionID),
+		talentcollection.ID(collectionID),
 	).First(repo.GetDBContext())
 	if err != nil {
 		return nil, err
 	}
 	tRepo := repo.NewTalentCollectionRepository()
-	return tRepo.Update(talentCollection.UUID, params)
+	return tRepo.Update(talentCollection.ID, params)
 }

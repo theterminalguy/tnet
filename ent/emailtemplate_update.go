@@ -30,20 +30,6 @@ func (etu *EmailTemplateUpdate) Where(ps ...predicate.EmailTemplate) *EmailTempl
 	return etu
 }
 
-// SetUUID sets the "uuid" field.
-func (etu *EmailTemplateUpdate) SetUUID(u uuid.UUID) *EmailTemplateUpdate {
-	etu.mutation.SetUUID(u)
-	return etu
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (etu *EmailTemplateUpdate) SetNillableUUID(u *uuid.UUID) *EmailTemplateUpdate {
-	if u != nil {
-		etu.SetUUID(*u)
-	}
-	return etu
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (etu *EmailTemplateUpdate) SetUpdatedAt(t time.Time) *EmailTemplateUpdate {
 	etu.mutation.SetUpdatedAt(t)
@@ -71,15 +57,15 @@ func (etu *EmailTemplateUpdate) ClearDeletedAt() *EmailTemplateUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (etu *EmailTemplateUpdate) SetUserID(i int) *EmailTemplateUpdate {
-	etu.mutation.SetUserID(i)
+func (etu *EmailTemplateUpdate) SetUserID(u uuid.UUID) *EmailTemplateUpdate {
+	etu.mutation.SetUserID(u)
 	return etu
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (etu *EmailTemplateUpdate) SetNillableUserID(i *int) *EmailTemplateUpdate {
-	if i != nil {
-		etu.SetUserID(*i)
+func (etu *EmailTemplateUpdate) SetNillableUserID(u *uuid.UUID) *EmailTemplateUpdate {
+	if u != nil {
+		etu.SetUserID(*u)
 	}
 	return etu
 }
@@ -235,7 +221,7 @@ func (etu *EmailTemplateUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Table:   emailtemplate.Table,
 			Columns: emailtemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: emailtemplate.FieldID,
 			},
 		},
@@ -246,13 +232,6 @@ func (etu *EmailTemplateUpdate) sqlSave(ctx context.Context) (n int, err error) 
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := etu.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: emailtemplate.FieldUUID,
-		})
 	}
 	if value, ok := etu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -325,7 +304,7 @@ func (etu *EmailTemplateUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -341,7 +320,7 @@ func (etu *EmailTemplateUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -368,20 +347,6 @@ type EmailTemplateUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *EmailTemplateMutation
-}
-
-// SetUUID sets the "uuid" field.
-func (etuo *EmailTemplateUpdateOne) SetUUID(u uuid.UUID) *EmailTemplateUpdateOne {
-	etuo.mutation.SetUUID(u)
-	return etuo
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (etuo *EmailTemplateUpdateOne) SetNillableUUID(u *uuid.UUID) *EmailTemplateUpdateOne {
-	if u != nil {
-		etuo.SetUUID(*u)
-	}
-	return etuo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -411,15 +376,15 @@ func (etuo *EmailTemplateUpdateOne) ClearDeletedAt() *EmailTemplateUpdateOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (etuo *EmailTemplateUpdateOne) SetUserID(i int) *EmailTemplateUpdateOne {
-	etuo.mutation.SetUserID(i)
+func (etuo *EmailTemplateUpdateOne) SetUserID(u uuid.UUID) *EmailTemplateUpdateOne {
+	etuo.mutation.SetUserID(u)
 	return etuo
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (etuo *EmailTemplateUpdateOne) SetNillableUserID(i *int) *EmailTemplateUpdateOne {
-	if i != nil {
-		etuo.SetUserID(*i)
+func (etuo *EmailTemplateUpdateOne) SetNillableUserID(u *uuid.UUID) *EmailTemplateUpdateOne {
+	if u != nil {
+		etuo.SetUserID(*u)
 	}
 	return etuo
 }
@@ -582,7 +547,7 @@ func (etuo *EmailTemplateUpdateOne) sqlSave(ctx context.Context) (_node *EmailTe
 			Table:   emailtemplate.Table,
 			Columns: emailtemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: emailtemplate.FieldID,
 			},
 		},
@@ -610,13 +575,6 @@ func (etuo *EmailTemplateUpdateOne) sqlSave(ctx context.Context) (_node *EmailTe
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := etuo.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: emailtemplate.FieldUUID,
-		})
 	}
 	if value, ok := etuo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -689,7 +647,7 @@ func (etuo *EmailTemplateUpdateOne) sqlSave(ctx context.Context) (_node *EmailTe
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -705,7 +663,7 @@ func (etuo *EmailTemplateUpdateOne) sqlSave(ctx context.Context) (_node *EmailTe
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},

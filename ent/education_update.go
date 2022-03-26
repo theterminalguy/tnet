@@ -30,20 +30,6 @@ func (eu *EducationUpdate) Where(ps ...predicate.Education) *EducationUpdate {
 	return eu
 }
 
-// SetUUID sets the "uuid" field.
-func (eu *EducationUpdate) SetUUID(u uuid.UUID) *EducationUpdate {
-	eu.mutation.SetUUID(u)
-	return eu
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (eu *EducationUpdate) SetNillableUUID(u *uuid.UUID) *EducationUpdate {
-	if u != nil {
-		eu.SetUUID(*u)
-	}
-	return eu
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (eu *EducationUpdate) SetUpdatedAt(t time.Time) *EducationUpdate {
 	eu.mutation.SetUpdatedAt(t)
@@ -71,15 +57,15 @@ func (eu *EducationUpdate) ClearDeletedAt() *EducationUpdate {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (eu *EducationUpdate) SetTalentID(i int) *EducationUpdate {
-	eu.mutation.SetTalentID(i)
+func (eu *EducationUpdate) SetTalentID(u uuid.UUID) *EducationUpdate {
+	eu.mutation.SetTalentID(u)
 	return eu
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (eu *EducationUpdate) SetNillableTalentID(i *int) *EducationUpdate {
-	if i != nil {
-		eu.SetTalentID(*i)
+func (eu *EducationUpdate) SetNillableTalentID(u *uuid.UUID) *EducationUpdate {
+	if u != nil {
+		eu.SetTalentID(*u)
 	}
 	return eu
 }
@@ -231,7 +217,7 @@ func (eu *EducationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   education.Table,
 			Columns: education.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: education.FieldID,
 			},
 		},
@@ -242,13 +228,6 @@ func (eu *EducationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := eu.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: education.FieldUUID,
-		})
 	}
 	if value, ok := eu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -334,7 +313,7 @@ func (eu *EducationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -350,7 +329,7 @@ func (eu *EducationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -377,20 +356,6 @@ type EducationUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *EducationMutation
-}
-
-// SetUUID sets the "uuid" field.
-func (euo *EducationUpdateOne) SetUUID(u uuid.UUID) *EducationUpdateOne {
-	euo.mutation.SetUUID(u)
-	return euo
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (euo *EducationUpdateOne) SetNillableUUID(u *uuid.UUID) *EducationUpdateOne {
-	if u != nil {
-		euo.SetUUID(*u)
-	}
-	return euo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -420,15 +385,15 @@ func (euo *EducationUpdateOne) ClearDeletedAt() *EducationUpdateOne {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (euo *EducationUpdateOne) SetTalentID(i int) *EducationUpdateOne {
-	euo.mutation.SetTalentID(i)
+func (euo *EducationUpdateOne) SetTalentID(u uuid.UUID) *EducationUpdateOne {
+	euo.mutation.SetTalentID(u)
 	return euo
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (euo *EducationUpdateOne) SetNillableTalentID(i *int) *EducationUpdateOne {
-	if i != nil {
-		euo.SetTalentID(*i)
+func (euo *EducationUpdateOne) SetNillableTalentID(u *uuid.UUID) *EducationUpdateOne {
+	if u != nil {
+		euo.SetTalentID(*u)
 	}
 	return euo
 }
@@ -587,7 +552,7 @@ func (euo *EducationUpdateOne) sqlSave(ctx context.Context) (_node *Education, e
 			Table:   education.Table,
 			Columns: education.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: education.FieldID,
 			},
 		},
@@ -615,13 +580,6 @@ func (euo *EducationUpdateOne) sqlSave(ctx context.Context) (_node *Education, e
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := euo.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: education.FieldUUID,
-		})
 	}
 	if value, ok := euo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -707,7 +665,7 @@ func (euo *EducationUpdateOne) sqlSave(ctx context.Context) (_node *Education, e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -723,7 +681,7 @@ func (euo *EducationUpdateOne) sqlSave(ctx context.Context) (_node *Education, e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},

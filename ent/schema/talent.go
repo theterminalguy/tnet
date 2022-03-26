@@ -41,27 +41,7 @@ func (Talent) Fields() []ent.Field {
 
 		field.Bool("is_available"),
 
-		// Set on create.
-		// This is the Talent referrer database id
-		field.Int(oneword.ReferrerID).
-			Optional().
-			StructTag(`json:"-"`),
-
-		// Provided by the user
-		// Should be validate against existing
-		// Talents TenTNCode
-		// This should be optional
-		field.String(oneword.ReferralCode).
-			Default(oneword.NULL).
-			Optional().
-			Immutable(),
-
-		// Set on create
-		field.String(oneword.TenTNCode).
-			Unique().
-			Immutable(),
-
-		field.Time(oneword.ProfessionalStartDate),
+		field.Time(oneword.ProfessionalStartDate).StructTag(`json:"career_start_date"`),
 
 		field.String(oneword.Email).
 			Unique(),
@@ -90,9 +70,7 @@ func (Talent) Fields() []ent.Field {
 func (Talent) Indexes() []ent.Index {
 	// first_name, last_name, email, phone, country_code, city, preferred name, pronoun
 	return []ent.Index{
-		index.Fields(oneword.ReferralCode, oneword.ReferrerID),
-
-		index.Fields(oneword.TenTNCode, oneword.Email, oneword.Phone).
+		index.Fields(oneword.Email, oneword.Phone).
 			Unique(),
 	}
 }
@@ -100,11 +78,6 @@ func (Talent) Indexes() []ent.Index {
 // Edges of the Talent.
 func (Talent) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To(oneword.Referees, Talent.Type).
-			From(oneword.Referrer).
-			Unique().
-			Field(oneword.ReferrerID),
-
 		edge.To(oneword.PortfolioLinks, PortfolioLink.Type),
 
 		edge.To(oneword.Skills, Skill.Type),

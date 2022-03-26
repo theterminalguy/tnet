@@ -13,17 +13,17 @@ import (
 
 type SkillQuerier interface {
 	GetAll() ([]*ent.Skill, error)
-	GetAllForTalent(talentID int) ([]*ent.Skill, error)
-	GetByUUID(id uuid.UUID) (*ent.Skill, error)
+	GetAllForTalent(talentID uuid.UUID) ([]*ent.Skill, error)
+	GetByID(id uuid.UUID) (*ent.Skill, error)
 	Create(p SkillParams) (*ent.Skill, error)
 	Update(id uuid.UUID, p SkillParams) (*ent.Skill, []error)
-	DeleteByUUID(id uuid.UUID) error
+	DeleteByID(id uuid.UUID) error
 }
 
 type SkillRepository struct{}
 
 type SkillParams struct {
-	TalentUUID uuid.UUID `json:"talent_uuid" validate:"required"`
+	TalentID uuid.UUID `json:"talent_id" validate:"required"`
 
 	// Talent can specify years of experience in decimal where 1.5 equals 1 and a half year
 	YearsOfExperience float32 `json:"years_of_experience" validate:"gte=1.0"`
@@ -60,8 +60,8 @@ func (*SkillRepository) GetAll() ([]*ent.Skill, error) {
 	return records, nil
 }
 
-func (*SkillRepository) GetAllByTalentUUID(TalentUUID uuid.UUID) ([]*ent.Skill, error) {
-	a, err := NewTalentRepository().GetByUUID(TalentUUID)
+func (*SkillRepository) GetAllByTalentID(TalentID uuid.UUID) ([]*ent.Skill, error) {
+	a, err := NewTalentRepository().GetByID(TalentID)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (*SkillRepository) GetAllByTalentUUID(TalentUUID uuid.UUID) ([]*ent.Skill, 
 	return records, nil
 }
 
-func (*SkillRepository) GetAllForTalent(talentID int) ([]*ent.Skill, error) {
+func (*SkillRepository) GetAllForTalent(talentID uuid.UUID) ([]*ent.Skill, error) {
 	records, err := dBConn.Skill.Query().
 		Where(skill.And(
 			skill.TalentID(talentID),
@@ -84,9 +84,9 @@ func (*SkillRepository) GetAllForTalent(talentID int) ([]*ent.Skill, error) {
 	return records, nil
 }
 
-func (*SkillRepository) GetByUUID(id uuid.UUID) (*ent.Skill, error) {
+func (*SkillRepository) GetByID(id uuid.UUID) (*ent.Skill, error) {
 	record, err := dBConn.Skill.Query().
-		Where(skill.UUIDEQ(id)).
+		Where(skill.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -102,7 +102,7 @@ func (*SkillRepository) Create(p SkillParams) (*ent.Skill, error) {
 	if err != nil {
 		return nil, err
 	}
-	a, err := NewTalentRepository().GetByUUID(p.TalentUUID)
+	a, err := NewTalentRepository().GetByID(p.TalentID)
 	if err != nil {
 		return nil, err
 	}
@@ -121,11 +121,11 @@ func (*SkillRepository) Create(p SkillParams) (*ent.Skill, error) {
 }
 
 func (r *SkillRepository) Update(id uuid.UUID, p SkillParams) (*ent.Skill, []error) {
-	err := validateParams(p, "TalentUUID")
+	err := validateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -195,8 +195,8 @@ func (r *SkillRepository) Update(id uuid.UUID, p SkillParams) (*ent.Skill, []err
 	return record, nil
 }
 
-func (r *SkillRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+func (r *SkillRepository) DeleteByID(id uuid.UUID) error {
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}

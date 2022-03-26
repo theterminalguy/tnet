@@ -31,20 +31,6 @@ func (jau *JobApplicationUpdate) Where(ps ...predicate.JobApplication) *JobAppli
 	return jau
 }
 
-// SetUUID sets the "uuid" field.
-func (jau *JobApplicationUpdate) SetUUID(u uuid.UUID) *JobApplicationUpdate {
-	jau.mutation.SetUUID(u)
-	return jau
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (jau *JobApplicationUpdate) SetNillableUUID(u *uuid.UUID) *JobApplicationUpdate {
-	if u != nil {
-		jau.SetUUID(*u)
-	}
-	return jau
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (jau *JobApplicationUpdate) SetUpdatedAt(t time.Time) *JobApplicationUpdate {
 	jau.mutation.SetUpdatedAt(t)
@@ -72,15 +58,15 @@ func (jau *JobApplicationUpdate) ClearDeletedAt() *JobApplicationUpdate {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (jau *JobApplicationUpdate) SetTalentID(i int) *JobApplicationUpdate {
-	jau.mutation.SetTalentID(i)
+func (jau *JobApplicationUpdate) SetTalentID(u uuid.UUID) *JobApplicationUpdate {
+	jau.mutation.SetTalentID(u)
 	return jau
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (jau *JobApplicationUpdate) SetNillableTalentID(i *int) *JobApplicationUpdate {
-	if i != nil {
-		jau.SetTalentID(*i)
+func (jau *JobApplicationUpdate) SetNillableTalentID(u *uuid.UUID) *JobApplicationUpdate {
+	if u != nil {
+		jau.SetTalentID(*u)
 	}
 	return jau
 }
@@ -92,15 +78,15 @@ func (jau *JobApplicationUpdate) ClearTalentID() *JobApplicationUpdate {
 }
 
 // SetJobID sets the "job_id" field.
-func (jau *JobApplicationUpdate) SetJobID(i int) *JobApplicationUpdate {
-	jau.mutation.SetJobID(i)
+func (jau *JobApplicationUpdate) SetJobID(u uuid.UUID) *JobApplicationUpdate {
+	jau.mutation.SetJobID(u)
 	return jau
 }
 
 // SetNillableJobID sets the "job_id" field if the given value is not nil.
-func (jau *JobApplicationUpdate) SetNillableJobID(i *int) *JobApplicationUpdate {
-	if i != nil {
-		jau.SetJobID(*i)
+func (jau *JobApplicationUpdate) SetNillableJobID(u *uuid.UUID) *JobApplicationUpdate {
+	if u != nil {
+		jau.SetJobID(*u)
 	}
 	return jau
 }
@@ -263,7 +249,7 @@ func (jau *JobApplicationUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Table:   jobapplication.Table,
 			Columns: jobapplication.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: jobapplication.FieldID,
 			},
 		},
@@ -274,13 +260,6 @@ func (jau *JobApplicationUpdate) sqlSave(ctx context.Context) (n int, err error)
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := jau.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: jobapplication.FieldUUID,
-		})
 	}
 	if value, ok := jau.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -338,7 +317,7 @@ func (jau *JobApplicationUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -354,7 +333,7 @@ func (jau *JobApplicationUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -373,7 +352,7 @@ func (jau *JobApplicationUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: job.FieldID,
 				},
 			},
@@ -389,7 +368,7 @@ func (jau *JobApplicationUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: job.FieldID,
 				},
 			},
@@ -416,20 +395,6 @@ type JobApplicationUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *JobApplicationMutation
-}
-
-// SetUUID sets the "uuid" field.
-func (jauo *JobApplicationUpdateOne) SetUUID(u uuid.UUID) *JobApplicationUpdateOne {
-	jauo.mutation.SetUUID(u)
-	return jauo
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (jauo *JobApplicationUpdateOne) SetNillableUUID(u *uuid.UUID) *JobApplicationUpdateOne {
-	if u != nil {
-		jauo.SetUUID(*u)
-	}
-	return jauo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -459,15 +424,15 @@ func (jauo *JobApplicationUpdateOne) ClearDeletedAt() *JobApplicationUpdateOne {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (jauo *JobApplicationUpdateOne) SetTalentID(i int) *JobApplicationUpdateOne {
-	jauo.mutation.SetTalentID(i)
+func (jauo *JobApplicationUpdateOne) SetTalentID(u uuid.UUID) *JobApplicationUpdateOne {
+	jauo.mutation.SetTalentID(u)
 	return jauo
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (jauo *JobApplicationUpdateOne) SetNillableTalentID(i *int) *JobApplicationUpdateOne {
-	if i != nil {
-		jauo.SetTalentID(*i)
+func (jauo *JobApplicationUpdateOne) SetNillableTalentID(u *uuid.UUID) *JobApplicationUpdateOne {
+	if u != nil {
+		jauo.SetTalentID(*u)
 	}
 	return jauo
 }
@@ -479,15 +444,15 @@ func (jauo *JobApplicationUpdateOne) ClearTalentID() *JobApplicationUpdateOne {
 }
 
 // SetJobID sets the "job_id" field.
-func (jauo *JobApplicationUpdateOne) SetJobID(i int) *JobApplicationUpdateOne {
-	jauo.mutation.SetJobID(i)
+func (jauo *JobApplicationUpdateOne) SetJobID(u uuid.UUID) *JobApplicationUpdateOne {
+	jauo.mutation.SetJobID(u)
 	return jauo
 }
 
 // SetNillableJobID sets the "job_id" field if the given value is not nil.
-func (jauo *JobApplicationUpdateOne) SetNillableJobID(i *int) *JobApplicationUpdateOne {
-	if i != nil {
-		jauo.SetJobID(*i)
+func (jauo *JobApplicationUpdateOne) SetNillableJobID(u *uuid.UUID) *JobApplicationUpdateOne {
+	if u != nil {
+		jauo.SetJobID(*u)
 	}
 	return jauo
 }
@@ -657,7 +622,7 @@ func (jauo *JobApplicationUpdateOne) sqlSave(ctx context.Context) (_node *JobApp
 			Table:   jobapplication.Table,
 			Columns: jobapplication.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: jobapplication.FieldID,
 			},
 		},
@@ -685,13 +650,6 @@ func (jauo *JobApplicationUpdateOne) sqlSave(ctx context.Context) (_node *JobApp
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := jauo.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: jobapplication.FieldUUID,
-		})
 	}
 	if value, ok := jauo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -749,7 +707,7 @@ func (jauo *JobApplicationUpdateOne) sqlSave(ctx context.Context) (_node *JobApp
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -765,7 +723,7 @@ func (jauo *JobApplicationUpdateOne) sqlSave(ctx context.Context) (_node *JobApp
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -784,7 +742,7 @@ func (jauo *JobApplicationUpdateOne) sqlSave(ctx context.Context) (_node *JobApp
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: job.FieldID,
 				},
 			},
@@ -800,7 +758,7 @@ func (jauo *JobApplicationUpdateOne) sqlSave(ctx context.Context) (_node *JobApp
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: job.FieldID,
 				},
 			},

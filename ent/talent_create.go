@@ -29,20 +29,6 @@ type TalentCreate struct {
 	hooks    []Hook
 }
 
-// SetUUID sets the "uuid" field.
-func (tc *TalentCreate) SetUUID(u uuid.UUID) *TalentCreate {
-	tc.mutation.SetUUID(u)
-	return tc
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (tc *TalentCreate) SetNillableUUID(u *uuid.UUID) *TalentCreate {
-	if u != nil {
-		tc.SetUUID(*u)
-	}
-	return tc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (tc *TalentCreate) SetCreatedAt(t time.Time) *TalentCreate {
 	tc.mutation.SetCreatedAt(t)
@@ -86,15 +72,15 @@ func (tc *TalentCreate) SetNillableDeletedAt(t *time.Time) *TalentCreate {
 }
 
 // SetUserID sets the "user_id" field.
-func (tc *TalentCreate) SetUserID(i int) *TalentCreate {
-	tc.mutation.SetUserID(i)
+func (tc *TalentCreate) SetUserID(u uuid.UUID) *TalentCreate {
+	tc.mutation.SetUserID(u)
 	return tc
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (tc *TalentCreate) SetNillableUserID(i *int) *TalentCreate {
-	if i != nil {
-		tc.SetUserID(*i)
+func (tc *TalentCreate) SetNillableUserID(u *uuid.UUID) *TalentCreate {
+	if u != nil {
+		tc.SetUserID(*u)
 	}
 	return tc
 }
@@ -132,40 +118,6 @@ func (tc *TalentCreate) SetPreferredJobTitle(s string) *TalentCreate {
 // SetIsAvailable sets the "is_available" field.
 func (tc *TalentCreate) SetIsAvailable(b bool) *TalentCreate {
 	tc.mutation.SetIsAvailable(b)
-	return tc
-}
-
-// SetReferrerID sets the "referrer_id" field.
-func (tc *TalentCreate) SetReferrerID(i int) *TalentCreate {
-	tc.mutation.SetReferrerID(i)
-	return tc
-}
-
-// SetNillableReferrerID sets the "referrer_id" field if the given value is not nil.
-func (tc *TalentCreate) SetNillableReferrerID(i *int) *TalentCreate {
-	if i != nil {
-		tc.SetReferrerID(*i)
-	}
-	return tc
-}
-
-// SetReferralCode sets the "referral_code" field.
-func (tc *TalentCreate) SetReferralCode(s string) *TalentCreate {
-	tc.mutation.SetReferralCode(s)
-	return tc
-}
-
-// SetNillableReferralCode sets the "referral_code" field if the given value is not nil.
-func (tc *TalentCreate) SetNillableReferralCode(s *string) *TalentCreate {
-	if s != nil {
-		tc.SetReferralCode(*s)
-	}
-	return tc
-}
-
-// SetTentnCode sets the "tentn_code" field.
-func (tc *TalentCreate) SetTentnCode(s string) *TalentCreate {
-	tc.mutation.SetTentnCode(s)
 	return tc
 }
 
@@ -232,8 +184,16 @@ func (tc *TalentCreate) SetState(s string) *TalentCreate {
 }
 
 // SetID sets the "id" field.
-func (tc *TalentCreate) SetID(i int) *TalentCreate {
-	tc.mutation.SetID(i)
+func (tc *TalentCreate) SetID(u uuid.UUID) *TalentCreate {
+	tc.mutation.SetID(u)
+	return tc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (tc *TalentCreate) SetNillableID(u *uuid.UUID) *TalentCreate {
+	if u != nil {
+		tc.SetID(*u)
+	}
 	return tc
 }
 
@@ -242,35 +202,15 @@ func (tc *TalentCreate) SetUser(u *User) *TalentCreate {
 	return tc.SetUserID(u.ID)
 }
 
-// SetReferrer sets the "referrer" edge to the Talent entity.
-func (tc *TalentCreate) SetReferrer(t *Talent) *TalentCreate {
-	return tc.SetReferrerID(t.ID)
-}
-
-// AddRefereeIDs adds the "referees" edge to the Talent entity by IDs.
-func (tc *TalentCreate) AddRefereeIDs(ids ...int) *TalentCreate {
-	tc.mutation.AddRefereeIDs(ids...)
-	return tc
-}
-
-// AddReferees adds the "referees" edges to the Talent entity.
-func (tc *TalentCreate) AddReferees(t ...*Talent) *TalentCreate {
-	ids := make([]int, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return tc.AddRefereeIDs(ids...)
-}
-
 // AddPortfoliolinkIDs adds the "portfoliolinks" edge to the PortfolioLink entity by IDs.
-func (tc *TalentCreate) AddPortfoliolinkIDs(ids ...int) *TalentCreate {
+func (tc *TalentCreate) AddPortfoliolinkIDs(ids ...uuid.UUID) *TalentCreate {
 	tc.mutation.AddPortfoliolinkIDs(ids...)
 	return tc
 }
 
 // AddPortfoliolinks adds the "portfoliolinks" edges to the PortfolioLink entity.
 func (tc *TalentCreate) AddPortfoliolinks(p ...*PortfolioLink) *TalentCreate {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -278,14 +218,14 @@ func (tc *TalentCreate) AddPortfoliolinks(p ...*PortfolioLink) *TalentCreate {
 }
 
 // AddSkillIDs adds the "skills" edge to the Skill entity by IDs.
-func (tc *TalentCreate) AddSkillIDs(ids ...int) *TalentCreate {
+func (tc *TalentCreate) AddSkillIDs(ids ...uuid.UUID) *TalentCreate {
 	tc.mutation.AddSkillIDs(ids...)
 	return tc
 }
 
 // AddSkills adds the "skills" edges to the Skill entity.
 func (tc *TalentCreate) AddSkills(s ...*Skill) *TalentCreate {
-	ids := make([]int, len(s))
+	ids := make([]uuid.UUID, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
@@ -293,14 +233,14 @@ func (tc *TalentCreate) AddSkills(s ...*Skill) *TalentCreate {
 }
 
 // AddJobApplicationIDs adds the "job_applications" edge to the JobApplication entity by IDs.
-func (tc *TalentCreate) AddJobApplicationIDs(ids ...int) *TalentCreate {
+func (tc *TalentCreate) AddJobApplicationIDs(ids ...uuid.UUID) *TalentCreate {
 	tc.mutation.AddJobApplicationIDs(ids...)
 	return tc
 }
 
 // AddJobApplications adds the "job_applications" edges to the JobApplication entity.
 func (tc *TalentCreate) AddJobApplications(j ...*JobApplication) *TalentCreate {
-	ids := make([]int, len(j))
+	ids := make([]uuid.UUID, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
@@ -308,14 +248,14 @@ func (tc *TalentCreate) AddJobApplications(j ...*JobApplication) *TalentCreate {
 }
 
 // AddWorkExperienceIDs adds the "work_experiences" edge to the WorkExperience entity by IDs.
-func (tc *TalentCreate) AddWorkExperienceIDs(ids ...int) *TalentCreate {
+func (tc *TalentCreate) AddWorkExperienceIDs(ids ...uuid.UUID) *TalentCreate {
 	tc.mutation.AddWorkExperienceIDs(ids...)
 	return tc
 }
 
 // AddWorkExperiences adds the "work_experiences" edges to the WorkExperience entity.
 func (tc *TalentCreate) AddWorkExperiences(w ...*WorkExperience) *TalentCreate {
-	ids := make([]int, len(w))
+	ids := make([]uuid.UUID, len(w))
 	for i := range w {
 		ids[i] = w[i].ID
 	}
@@ -323,14 +263,14 @@ func (tc *TalentCreate) AddWorkExperiences(w ...*WorkExperience) *TalentCreate {
 }
 
 // AddEducationIDs adds the "educations" edge to the Education entity by IDs.
-func (tc *TalentCreate) AddEducationIDs(ids ...int) *TalentCreate {
+func (tc *TalentCreate) AddEducationIDs(ids ...uuid.UUID) *TalentCreate {
 	tc.mutation.AddEducationIDs(ids...)
 	return tc
 }
 
 // AddEducations adds the "educations" edges to the Education entity.
 func (tc *TalentCreate) AddEducations(e ...*Education) *TalentCreate {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -338,14 +278,14 @@ func (tc *TalentCreate) AddEducations(e ...*Education) *TalentCreate {
 }
 
 // AddEmergencyContactIDs adds the "emergency_contacts" edge to the EmergencyContact entity by IDs.
-func (tc *TalentCreate) AddEmergencyContactIDs(ids ...int) *TalentCreate {
+func (tc *TalentCreate) AddEmergencyContactIDs(ids ...uuid.UUID) *TalentCreate {
 	tc.mutation.AddEmergencyContactIDs(ids...)
 	return tc
 }
 
 // AddEmergencyContacts adds the "emergency_contacts" edges to the EmergencyContact entity.
 func (tc *TalentCreate) AddEmergencyContacts(e ...*EmergencyContact) *TalentCreate {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -353,14 +293,14 @@ func (tc *TalentCreate) AddEmergencyContacts(e ...*EmergencyContact) *TalentCrea
 }
 
 // AddMissionIDs adds the "missions" edge to the Mission entity by IDs.
-func (tc *TalentCreate) AddMissionIDs(ids ...int) *TalentCreate {
+func (tc *TalentCreate) AddMissionIDs(ids ...uuid.UUID) *TalentCreate {
 	tc.mutation.AddMissionIDs(ids...)
 	return tc
 }
 
 // AddMissions adds the "missions" edges to the Mission entity.
 func (tc *TalentCreate) AddMissions(m ...*Mission) *TalentCreate {
-	ids := make([]int, len(m))
+	ids := make([]uuid.UUID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -438,10 +378,6 @@ func (tc *TalentCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (tc *TalentCreate) defaults() {
-	if _, ok := tc.mutation.UUID(); !ok {
-		v := talent.DefaultUUID()
-		tc.mutation.SetUUID(v)
-	}
 	if _, ok := tc.mutation.CreatedAt(); !ok {
 		v := talent.DefaultCreatedAt()
 		tc.mutation.SetCreatedAt(v)
@@ -450,17 +386,14 @@ func (tc *TalentCreate) defaults() {
 		v := talent.DefaultUpdatedAt()
 		tc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := tc.mutation.ReferralCode(); !ok {
-		v := talent.DefaultReferralCode
-		tc.mutation.SetReferralCode(v)
+	if _, ok := tc.mutation.ID(); !ok {
+		v := talent.DefaultID()
+		tc.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (tc *TalentCreate) check() error {
-	if _, ok := tc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "Talent.uuid"`)}
-	}
 	if _, ok := tc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Talent.created_at"`)}
 	}
@@ -484,9 +417,6 @@ func (tc *TalentCreate) check() error {
 	}
 	if _, ok := tc.mutation.IsAvailable(); !ok {
 		return &ValidationError{Name: "is_available", err: errors.New(`ent: missing required field "Talent.is_available"`)}
-	}
-	if _, ok := tc.mutation.TentnCode(); !ok {
-		return &ValidationError{Name: "tentn_code", err: errors.New(`ent: missing required field "Talent.tentn_code"`)}
 	}
 	if _, ok := tc.mutation.ProfessionalStartDate(); !ok {
 		return &ValidationError{Name: "professional_start_date", err: errors.New(`ent: missing required field "Talent.professional_start_date"`)}
@@ -533,9 +463,12 @@ func (tc *TalentCreate) sqlSave(ctx context.Context) (*Talent, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -546,22 +479,14 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: talent.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: talent.FieldID,
 			},
 		}
 	)
 	if id, ok := tc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
-	}
-	if value, ok := tc.mutation.UUID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: talent.FieldUUID,
-		})
-		_node.UUID = value
+		_spec.ID.Value = &id
 	}
 	if value, ok := tc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -634,22 +559,6 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Column: talent.FieldIsAvailable,
 		})
 		_node.IsAvailable = value
-	}
-	if value, ok := tc.mutation.ReferralCode(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: talent.FieldReferralCode,
-		})
-		_node.ReferralCode = value
-	}
-	if value, ok := tc.mutation.TentnCode(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: talent.FieldTentnCode,
-		})
-		_node.TentnCode = value
 	}
 	if value, ok := tc.mutation.ProfessionalStartDate(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -732,7 +641,7 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -741,45 +650,6 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.UserID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := tc.mutation.ReferrerIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   talent.ReferrerTable,
-			Columns: []string{talent.ReferrerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: talent.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.ReferrerID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := tc.mutation.RefereesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   talent.RefereesTable,
-			Columns: []string{talent.RefereesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: talent.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := tc.mutation.PortfoliolinksIDs(); len(nodes) > 0 {
@@ -791,7 +661,7 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: portfoliolink.FieldID,
 				},
 			},
@@ -810,7 +680,7 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: skill.FieldID,
 				},
 			},
@@ -829,7 +699,7 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: jobapplication.FieldID,
 				},
 			},
@@ -848,7 +718,7 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: workexperience.FieldID,
 				},
 			},
@@ -867,7 +737,7 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: education.FieldID,
 				},
 			},
@@ -886,7 +756,7 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: emergencycontact.FieldID,
 				},
 			},
@@ -905,7 +775,7 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: mission.FieldID,
 				},
 			},
@@ -960,10 +830,6 @@ func (tcb *TalentCreateBulk) Save(ctx context.Context) ([]*Talent, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

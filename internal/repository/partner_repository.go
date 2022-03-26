@@ -34,9 +34,9 @@ func (*PartnerRepository) GetAll() ([]*ent.Partner, error) {
 	return records, nil
 }
 
-func (*PartnerRepository) GetByUUID(id uuid.UUID) (*ent.Partner, error) {
+func (*PartnerRepository) GetByID(id uuid.UUID) (*ent.Partner, error) {
 	record, err := dBConn.Partner.Query().
-		Where(partner.UUIDEQ(id)).
+		Where(partner.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func (*PartnerRepository) Create(p PartnerParams) (*ent.Partner, error) {
 }
 
 func (r *PartnerRepository) Update(id uuid.UUID, p PartnerParams) (*ent.Partner, []error) {
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -160,8 +160,8 @@ func (r *PartnerRepository) Update(id uuid.UUID, p PartnerParams) (*ent.Partner,
 	return record, nil
 }
 
-func (r *PartnerRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+func (r *PartnerRepository) DeleteByID(id uuid.UUID) error {
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}

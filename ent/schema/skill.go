@@ -21,7 +21,7 @@ func (Skill) Mixin() []ent.Mixin {
 			ParentName: oneword.Talent,
 			ParentType: Talent.Type,
 			Ref:        oneword.Skills,
-			ForeignKey: oneword.TalentID,
+			ForeignKey: "talent_id",
 		},
 	}
 }

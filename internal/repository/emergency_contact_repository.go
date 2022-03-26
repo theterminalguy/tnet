@@ -10,18 +10,18 @@ import (
 )
 
 type EmergencyContactQuerier interface {
-	GetAllForTalent(talentID int) ([]*ent.EmergencyContact, error)
+	GetAllForTalent(talentID uuid.UUID) ([]*ent.EmergencyContact, error)
 	GetAll() ([]*ent.EmergencyContact, error)
-	GetByUUID(id uuid.UUID) (*ent.EmergencyContact, error)
+	GetByID(id uuid.UUID) (*ent.EmergencyContact, error)
 	Create(p EmergencyContactParams) (*ent.EmergencyContact, error)
 	Update(id uuid.UUID, p EmergencyContactParams) (*ent.EmergencyContact, []error)
-	DeleteByUUID(id uuid.UUID) error
+	DeleteByID(id uuid.UUID) error
 }
 
 type EmergencyContactRepository struct{}
 
 type EmergencyContactParams struct {
-	TalentUUID   uuid.UUID `json:"talent_uuid" validate:"required"`
+	TalentID     uuid.UUID `json:"talent_id" validate:"required"`
 	Name         string    `json:"name" validate:"required"`
 	PhoneNumber  string    `json:"phone_number" validate:"required"`
 	Address      string    `json:"address" validate:"required"`
@@ -43,9 +43,9 @@ func (*EmergencyContactRepository) GetAll() ([]*ent.EmergencyContact, error) {
 	return records, nil
 }
 
-func (*EmergencyContactRepository) GetByUUID(id uuid.UUID) (*ent.EmergencyContact, error) {
+func (*EmergencyContactRepository) GetByID(id uuid.UUID) (*ent.EmergencyContact, error) {
 	record, err := dBConn.EmergencyContact.Query().
-		Where(emergencycontact.UUIDEQ(id)).
+		Where(emergencycontact.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (*EmergencyContactRepository) Create(p EmergencyContactParams) (*ent.Emerge
 		return nil, err
 	}
 
-	a, err := NewTalentRepository().GetByUUID(p.TalentUUID)
+	a, err := NewTalentRepository().GetByID(p.TalentID)
 	if err != nil {
 		return nil, err
 	}
@@ -83,11 +83,11 @@ func (*EmergencyContactRepository) Create(p EmergencyContactParams) (*ent.Emerge
 }
 
 func (r *EmergencyContactRepository) Update(id uuid.UUID, p EmergencyContactParams) (*ent.EmergencyContact, []error) {
-	err := validateParams(p, "TalentUUID")
+	err := validateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -169,8 +169,8 @@ func (r *EmergencyContactRepository) Update(id uuid.UUID, p EmergencyContactPara
 	return record, nil
 }
 
-func (r *EmergencyContactRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+func (r *EmergencyContactRepository) DeleteByID(id uuid.UUID) error {
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}

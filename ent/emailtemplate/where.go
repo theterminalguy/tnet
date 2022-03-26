@@ -12,28 +12,28 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.EmailTemplate {
+func ID(id uuid.UUID) predicate.EmailTemplate {
 	return predicate.EmailTemplate(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.EmailTemplate {
+func IDEQ(id uuid.UUID) predicate.EmailTemplate {
 	return predicate.EmailTemplate(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.EmailTemplate {
+func IDNEQ(id uuid.UUID) predicate.EmailTemplate {
 	return predicate.EmailTemplate(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldID), id))
 	})
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.EmailTemplate {
+func IDIn(ids ...uuid.UUID) predicate.EmailTemplate {
 	return predicate.EmailTemplate(func(s *sql.Selector) {
 		// if not arguments were provided, append the FALSE constants,
 		// since we can't apply "IN ()". This will make this predicate falsy.
@@ -50,7 +50,7 @@ func IDIn(ids ...int) predicate.EmailTemplate {
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.EmailTemplate {
+func IDNotIn(ids ...uuid.UUID) predicate.EmailTemplate {
 	return predicate.EmailTemplate(func(s *sql.Selector) {
 		// if not arguments were provided, append the FALSE constants,
 		// since we can't apply "IN ()". This will make this predicate falsy.
@@ -67,37 +67,30 @@ func IDNotIn(ids ...int) predicate.EmailTemplate {
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.EmailTemplate {
+func IDGT(id uuid.UUID) predicate.EmailTemplate {
 	return predicate.EmailTemplate(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldID), id))
 	})
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.EmailTemplate {
+func IDGTE(id uuid.UUID) predicate.EmailTemplate {
 	return predicate.EmailTemplate(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldID), id))
 	})
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.EmailTemplate {
+func IDLT(id uuid.UUID) predicate.EmailTemplate {
 	return predicate.EmailTemplate(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldID), id))
 	})
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.EmailTemplate {
+func IDLTE(id uuid.UUID) predicate.EmailTemplate {
 	return predicate.EmailTemplate(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldID), id))
-	})
-}
-
-// UUID applies equality check predicate on the "uuid" field. It's identical to UUIDEQ.
-func UUID(v uuid.UUID) predicate.EmailTemplate {
-	return predicate.EmailTemplate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUUID), v))
 	})
 }
 
@@ -123,7 +116,7 @@ func DeletedAt(v time.Time) predicate.EmailTemplate {
 }
 
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v int) predicate.EmailTemplate {
+func UserID(v uuid.UUID) predicate.EmailTemplate {
 	return predicate.EmailTemplate(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUserID), v))
 	})
@@ -147,82 +140,6 @@ func Subject(v string) predicate.EmailTemplate {
 func Body(v string) predicate.EmailTemplate {
 	return predicate.EmailTemplate(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldBody), v))
-	})
-}
-
-// UUIDEQ applies the EQ predicate on the "uuid" field.
-func UUIDEQ(v uuid.UUID) predicate.EmailTemplate {
-	return predicate.EmailTemplate(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUUID), v))
-	})
-}
-
-// UUIDNEQ applies the NEQ predicate on the "uuid" field.
-func UUIDNEQ(v uuid.UUID) predicate.EmailTemplate {
-	return predicate.EmailTemplate(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUUID), v))
-	})
-}
-
-// UUIDIn applies the In predicate on the "uuid" field.
-func UUIDIn(vs ...uuid.UUID) predicate.EmailTemplate {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EmailTemplate(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldUUID), v...))
-	})
-}
-
-// UUIDNotIn applies the NotIn predicate on the "uuid" field.
-func UUIDNotIn(vs ...uuid.UUID) predicate.EmailTemplate {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EmailTemplate(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldUUID), v...))
-	})
-}
-
-// UUIDGT applies the GT predicate on the "uuid" field.
-func UUIDGT(v uuid.UUID) predicate.EmailTemplate {
-	return predicate.EmailTemplate(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUUID), v))
-	})
-}
-
-// UUIDGTE applies the GTE predicate on the "uuid" field.
-func UUIDGTE(v uuid.UUID) predicate.EmailTemplate {
-	return predicate.EmailTemplate(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUUID), v))
-	})
-}
-
-// UUIDLT applies the LT predicate on the "uuid" field.
-func UUIDLT(v uuid.UUID) predicate.EmailTemplate {
-	return predicate.EmailTemplate(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUUID), v))
-	})
-}
-
-// UUIDLTE applies the LTE predicate on the "uuid" field.
-func UUIDLTE(v uuid.UUID) predicate.EmailTemplate {
-	return predicate.EmailTemplate(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUUID), v))
 	})
 }
 
@@ -469,21 +386,21 @@ func DeletedAtNotNil() predicate.EmailTemplate {
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v int) predicate.EmailTemplate {
+func UserIDEQ(v uuid.UUID) predicate.EmailTemplate {
 	return predicate.EmailTemplate(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUserID), v))
 	})
 }
 
 // UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v int) predicate.EmailTemplate {
+func UserIDNEQ(v uuid.UUID) predicate.EmailTemplate {
 	return predicate.EmailTemplate(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldUserID), v))
 	})
 }
 
 // UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...int) predicate.EmailTemplate {
+func UserIDIn(vs ...uuid.UUID) predicate.EmailTemplate {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -500,7 +417,7 @@ func UserIDIn(vs ...int) predicate.EmailTemplate {
 }
 
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...int) predicate.EmailTemplate {
+func UserIDNotIn(vs ...uuid.UUID) predicate.EmailTemplate {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]

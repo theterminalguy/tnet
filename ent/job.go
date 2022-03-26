@@ -18,9 +18,7 @@ import (
 type Job struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"-"`
-	// UUID holds the value of the "uuid" field.
-	UUID uuid.UUID `json:"uuid,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -28,7 +26,7 @@ type Job struct {
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
 	// UserID holds the value of the "user_id" field.
-	UserID int `json:"-"`
+	UserID uuid.UUID `json:"-"`
 	// Hiring holds the value of the "hiring" field.
 	Hiring bool `json:"hiring"`
 	// Title holds the value of the "title" field.
@@ -101,13 +99,11 @@ func (*Job) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case job.FieldHiring:
 			values[i] = new(sql.NullBool)
-		case job.FieldID, job.FieldUserID:
-			values[i] = new(sql.NullInt64)
 		case job.FieldTitle, job.FieldSlug, job.FieldLocation, job.FieldSummary, job.FieldEmployment, job.FieldCategory, job.FieldThumbnail, job.FieldTimezone:
 			values[i] = new(sql.NullString)
 		case job.FieldCreatedAt, job.FieldUpdatedAt, job.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case job.FieldUUID:
+		case job.FieldID, job.FieldUserID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Job", columns[i])
@@ -125,16 +121,10 @@ func (j *Job) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case job.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
-			}
-			j.ID = int(value.Int64)
-		case job.FieldUUID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field uuid", values[i])
+				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				j.UUID = *value
+				j.ID = *value
 			}
 		case job.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -156,10 +146,10 @@ func (j *Job) assignValues(columns []string, values []interface{}) error {
 				*j.DeletedAt = value.Time
 			}
 		case job.FieldUserID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
-			} else if value.Valid {
-				j.UserID = int(value.Int64)
+			} else if value != nil {
+				j.UserID = *value
 			}
 		case job.FieldHiring:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -277,8 +267,6 @@ func (j *Job) String() string {
 	var builder strings.Builder
 	builder.WriteString("Job(")
 	builder.WriteString(fmt.Sprintf("id=%v", j.ID))
-	builder.WriteString(", uuid=")
-	builder.WriteString(fmt.Sprintf("%v", j.UUID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(j.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

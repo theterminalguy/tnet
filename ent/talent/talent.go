@@ -14,8 +14,6 @@ const (
 	Label = "talent"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldUUID holds the string denoting the uuid field in the database.
-	FieldUUID = "uuid"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -36,12 +34,6 @@ const (
 	FieldPreferredJobTitle = "preferred_job_title"
 	// FieldIsAvailable holds the string denoting the is_available field in the database.
 	FieldIsAvailable = "is_available"
-	// FieldReferrerID holds the string denoting the referrer_id field in the database.
-	FieldReferrerID = "referrer_id"
-	// FieldReferralCode holds the string denoting the referral_code field in the database.
-	FieldReferralCode = "referral_code"
-	// FieldTentnCode holds the string denoting the tentn_code field in the database.
-	FieldTentnCode = "tentn_code"
 	// FieldProfessionalStartDate holds the string denoting the professional_start_date field in the database.
 	FieldProfessionalStartDate = "professional_start_date"
 	// FieldEmail holds the string denoting the email field in the database.
@@ -62,10 +54,6 @@ const (
 	FieldState = "state"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
-	// EdgeReferrer holds the string denoting the referrer edge name in mutations.
-	EdgeReferrer = "referrer"
-	// EdgeReferees holds the string denoting the referees edge name in mutations.
-	EdgeReferees = "referees"
 	// EdgePortfoliolinks holds the string denoting the portfoliolinks edge name in mutations.
 	EdgePortfoliolinks = "portfoliolinks"
 	// EdgeSkills holds the string denoting the skills edge name in mutations.
@@ -89,14 +77,6 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
-	// ReferrerTable is the table that holds the referrer relation/edge.
-	ReferrerTable = "talents"
-	// ReferrerColumn is the table column denoting the referrer relation/edge.
-	ReferrerColumn = "referrer_id"
-	// RefereesTable is the table that holds the referees relation/edge.
-	RefereesTable = "talents"
-	// RefereesColumn is the table column denoting the referees relation/edge.
-	RefereesColumn = "referrer_id"
 	// PortfoliolinksTable is the table that holds the portfoliolinks relation/edge.
 	PortfoliolinksTable = "portfolio_links"
 	// PortfoliolinksInverseTable is the table name for the PortfolioLink entity.
@@ -151,7 +131,6 @@ const (
 // Columns holds all SQL columns for talent fields.
 var Columns = []string{
 	FieldID,
-	FieldUUID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
@@ -162,9 +141,6 @@ var Columns = []string{
 	FieldPronoun,
 	FieldPreferredJobTitle,
 	FieldIsAvailable,
-	FieldReferrerID,
-	FieldReferralCode,
-	FieldTentnCode,
 	FieldProfessionalStartDate,
 	FieldEmail,
 	FieldPhone,
@@ -187,18 +163,16 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// DefaultUUID holds the default value on creation for the "uuid" field.
-	DefaultUUID func() uuid.UUID
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultReferralCode holds the default value on creation for the "referral_code" field.
-	DefaultReferralCode string
 	// CountryCodeValidator is a validator for the "country_code" field. It is called by the builders before save.
 	CountryCodeValidator func(string) error
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() uuid.UUID
 )
 
 // JobPreference defines the type for the "job_preference" enum field.

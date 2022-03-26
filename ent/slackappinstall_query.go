@@ -14,6 +14,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/user"
+	"github.com/google/uuid"
 )
 
 // SlackAppInstallQuery is the builder for querying SlackAppInstall entities.
@@ -109,8 +110,8 @@ func (saiq *SlackAppInstallQuery) FirstX(ctx context.Context) *SlackAppInstall {
 
 // FirstID returns the first SlackAppInstall ID from the query.
 // Returns a *NotFoundError when no SlackAppInstall ID was found.
-func (saiq *SlackAppInstallQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (saiq *SlackAppInstallQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = saiq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -122,7 +123,7 @@ func (saiq *SlackAppInstallQuery) FirstID(ctx context.Context) (id int, err erro
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (saiq *SlackAppInstallQuery) FirstIDX(ctx context.Context) int {
+func (saiq *SlackAppInstallQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := saiq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -160,8 +161,8 @@ func (saiq *SlackAppInstallQuery) OnlyX(ctx context.Context) *SlackAppInstall {
 // OnlyID is like Only, but returns the only SlackAppInstall ID in the query.
 // Returns a *NotSingularError when more than one SlackAppInstall ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (saiq *SlackAppInstallQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (saiq *SlackAppInstallQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = saiq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -177,7 +178,7 @@ func (saiq *SlackAppInstallQuery) OnlyID(ctx context.Context) (id int, err error
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (saiq *SlackAppInstallQuery) OnlyIDX(ctx context.Context) int {
+func (saiq *SlackAppInstallQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := saiq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -203,8 +204,8 @@ func (saiq *SlackAppInstallQuery) AllX(ctx context.Context) []*SlackAppInstall {
 }
 
 // IDs executes the query and returns a list of SlackAppInstall IDs.
-func (saiq *SlackAppInstallQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (saiq *SlackAppInstallQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := saiq.Select(slackappinstall.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -212,7 +213,7 @@ func (saiq *SlackAppInstallQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (saiq *SlackAppInstallQuery) IDsX(ctx context.Context) []int {
+func (saiq *SlackAppInstallQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := saiq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -291,12 +292,12 @@ func (saiq *SlackAppInstallQuery) WithUser(opts ...func(*UserQuery)) *SlackAppIn
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.SlackAppInstall.Query().
-//		GroupBy(slackappinstall.FieldUUID).
+//		GroupBy(slackappinstall.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -318,11 +319,11 @@ func (saiq *SlackAppInstallQuery) GroupBy(field string, fields ...string) *Slack
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.SlackAppInstall.Query().
-//		Select(slackappinstall.FieldUUID).
+//		Select(slackappinstall.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
 func (saiq *SlackAppInstallQuery) Select(fields ...string) *SlackAppInstallSelect {
@@ -375,8 +376,8 @@ func (saiq *SlackAppInstallQuery) sqlAll(ctx context.Context) ([]*SlackAppInstal
 	}
 
 	if query := saiq.withUser; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*SlackAppInstall)
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*SlackAppInstall)
 		for i := range nodes {
 			fk := nodes[i].UserID
 			if _, ok := nodeids[fk]; !ok {
@@ -426,7 +427,7 @@ func (saiq *SlackAppInstallQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   slackappinstall.Table,
 			Columns: slackappinstall.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: slackappinstall.FieldID,
 			},
 		},

@@ -12,9 +12,9 @@ import (
 type TalentCollectionRepository struct{}
 
 type TalentCollectionParams struct {
-	UserID      int
-	Name        string      `json:"name"`
-	TalentUUIDS []uuid.UUID `json:"talent_uuids"`
+	UserID    uuid.UUID
+	Name      string      `json:"name"`
+	TalentIDS []uuid.UUID `json:"talent_ids"`
 }
 
 func NewTalentCollectionRepository() *TalentCollectionRepository {
@@ -31,9 +31,9 @@ func (*TalentCollectionRepository) GetAll() ([]*ent.TalentCollection, error) {
 	return records, nil
 }
 
-func (*TalentCollectionRepository) GetByUUID(id uuid.UUID) (*ent.TalentCollection, error) {
+func (*TalentCollectionRepository) GetByID(id uuid.UUID) (*ent.TalentCollection, error) {
 	record, err := dBConn.TalentCollection.Query().
-		Where(talentcollection.UUIDEQ(id)).
+		Where(talentcollection.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -55,15 +55,15 @@ func (t *TalentCollectionRepository) Create(p TalentCollectionParams) (*ent.Tale
 	}
 
 	// convert uuids to strings
-	talentUUIDs := make([]string, len(p.TalentUUIDS))
-	for i, uuid := range p.TalentUUIDS {
-		talentUUIDs[i] = uuid.String()
+	TalentIDs := make([]string, len(p.TalentIDS))
+	for i, uuid := range p.TalentIDS {
+		TalentIDs[i] = uuid.String()
 	}
 	record, err := dBConn.TalentCollection.
 		Create().
 		SetName(p.Name).
 		SetUserID(p.UserID).
-		SetTalentUuids(talentUUIDs).
+		SetTalentUuids(TalentIDs).
 		Save(dBContext)
 	if err != nil {
 		return nil, err
@@ -80,11 +80,11 @@ func (r *TalentCollectionRepository) Update(id uuid.UUID, p TalentCollectionPara
 	if err != nil {
 		return nil, err
 	}
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, err
 	}
-	setUUIDsForUpdate(record, p.TalentUUIDS)
+	setUUIDsForUpdate(record, p.TalentIDS)
 	_, err = record.Update().
 		SetName(p.Name).
 		SetTalentUuids(record.TalentUuids).
@@ -95,8 +95,8 @@ func (r *TalentCollectionRepository) Update(id uuid.UUID, p TalentCollectionPara
 	return record, nil
 }
 
-func (r *TalentCollectionRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+func (r *TalentCollectionRepository) DeleteByID(id uuid.UUID) error {
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}
@@ -111,17 +111,17 @@ func (r *TalentCollectionRepository) RemoveTalents(t *ent.TalentCollection, tale
 		return nil, errors.New("talent collection is empty")
 	}
 	// convert uuids to strings
-	talentUUIDs := make([]string, len(talentIDs))
-	for i, talentUUID := range talentIDs {
-		talentUUIDs[i] = talentUUID.String()
+	TalentIDs := make([]string, len(talentIDs))
+	for i, TalentID := range talentIDs {
+		TalentIDs[i] = TalentID.String()
 	}
-	var newTalentUUIDs []string
-	for _, talentUUID := range t.TalentUuids {
-		if !collection.Contains(talentUUIDs, talentUUID) {
-			newTalentUUIDs = append(newTalentUUIDs, talentUUID)
+	var newTalentIDs []string
+	for _, TalentID := range t.TalentUuids {
+		if !collection.Contains(TalentIDs, TalentID) {
+			newTalentIDs = append(newTalentIDs, TalentID)
 		}
 	}
-	t.TalentUuids = newTalentUUIDs
+	t.TalentUuids = newTalentIDs
 	_, err := t.Update().
 		SetTalentUuids(t.TalentUuids).
 		Save(dBContext)
@@ -131,7 +131,7 @@ func (r *TalentCollectionRepository) RemoveTalents(t *ent.TalentCollection, tale
 	return t, nil
 }
 
-func (t *TalentCollectionRepository) validateScopedUniquenessOfName(name string, userID int) error {
+func (t *TalentCollectionRepository) validateScopedUniquenessOfName(name string, userID uuid.UUID) error {
 	records, err := dBConn.TalentCollection.Query().
 		Where(
 			talentcollection.And(
@@ -151,19 +151,19 @@ func (t *TalentCollectionRepository) validateScopedUniquenessOfName(name string,
 func setUUIDsForUpdate(t *ent.TalentCollection, newUUIDs []uuid.UUID) {
 	// convert uuids to strings
 	oldUUIDs := make([]uuid.UUID, len(t.TalentUuids))
-	for i, talentUUID := range t.TalentUuids {
-		oldUUIDs[i] = uuid.MustParse(talentUUID)
+	for i, TalentID := range t.TalentUuids {
+		oldUUIDs[i] = uuid.MustParse(TalentID)
 	}
 
 	// find the uuids from the new list that are not in the old list
-	newTalentUUIDs := collection.UUIDDiffs(oldUUIDs, newUUIDs)
+	newTalentIDs := collection.UUIDDiffs(oldUUIDs, newUUIDs)
 
 	// if we found any new uuids, add them to the old list
-	if len(newTalentUUIDs) > 0 {
-		newTalentUUIDsStr := make([]string, len(newTalentUUIDs))
-		for i, uuid := range newTalentUUIDs {
-			newTalentUUIDsStr[i] = uuid.String()
+	if len(newTalentIDs) > 0 {
+		newTalentIDsStr := make([]string, len(newTalentIDs))
+		for i, uuid := range newTalentIDs {
+			newTalentIDsStr[i] = uuid.String()
 		}
-		t.TalentUuids = append(t.TalentUuids, newTalentUUIDsStr...)
+		t.TalentUuids = append(t.TalentUuids, newTalentIDsStr...)
 	}
 }

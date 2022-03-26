@@ -18,9 +18,7 @@ import (
 type Mission struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"-"`
-	// UUID holds the value of the "uuid" field.
-	UUID uuid.UUID `json:"uuid,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -28,9 +26,9 @@ type Mission struct {
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
 	// TalentID holds the value of the "talent_id" field.
-	TalentID int `json:"-"`
+	TalentID uuid.UUID `json:"-"`
 	// PartnerID holds the value of the "partner_id" field.
-	PartnerID int `json:"-"`
+	PartnerID uuid.UUID `json:"-"`
 	// MissionType holds the value of the "mission_type" field.
 	MissionType mission.MissionType `json:"mission_type,omitempty"`
 	// StartDate holds the value of the "start_date" field.
@@ -86,13 +84,11 @@ func (*Mission) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case mission.FieldID, mission.FieldTalentID, mission.FieldPartnerID:
-			values[i] = new(sql.NullInt64)
 		case mission.FieldMissionType:
 			values[i] = new(sql.NullString)
 		case mission.FieldCreatedAt, mission.FieldUpdatedAt, mission.FieldDeletedAt, mission.FieldStartDate, mission.FieldEndDate:
 			values[i] = new(sql.NullTime)
-		case mission.FieldUUID:
+		case mission.FieldID, mission.FieldTalentID, mission.FieldPartnerID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Mission", columns[i])
@@ -110,16 +106,10 @@ func (m *Mission) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case mission.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
-			}
-			m.ID = int(value.Int64)
-		case mission.FieldUUID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field uuid", values[i])
+				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				m.UUID = *value
+				m.ID = *value
 			}
 		case mission.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -141,16 +131,16 @@ func (m *Mission) assignValues(columns []string, values []interface{}) error {
 				*m.DeletedAt = value.Time
 			}
 		case mission.FieldTalentID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field talent_id", values[i])
-			} else if value.Valid {
-				m.TalentID = int(value.Int64)
+			} else if value != nil {
+				m.TalentID = *value
 			}
 		case mission.FieldPartnerID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field partner_id", values[i])
-			} else if value.Valid {
-				m.PartnerID = int(value.Int64)
+			} else if value != nil {
+				m.PartnerID = *value
 			}
 		case mission.FieldMissionType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -208,8 +198,6 @@ func (m *Mission) String() string {
 	var builder strings.Builder
 	builder.WriteString("Mission(")
 	builder.WriteString(fmt.Sprintf("id=%v", m.ID))
-	builder.WriteString(", uuid=")
-	builder.WriteString(fmt.Sprintf("%v", m.UUID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

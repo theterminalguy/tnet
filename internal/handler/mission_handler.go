@@ -36,7 +36,7 @@ func (h *MissionHandler) ReadByID(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := h.MissionRepository.GetByUUID(id)
+	record, err := h.MissionRepository.GetByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -76,7 +76,7 @@ func (h *MissionHandler) DeleteOne(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.MissionRepository.DeleteByUUID(id)
+	err = h.MissionRepository.DeleteByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

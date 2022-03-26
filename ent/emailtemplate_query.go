@@ -14,6 +14,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/user"
+	"github.com/google/uuid"
 )
 
 // EmailTemplateQuery is the builder for querying EmailTemplate entities.
@@ -109,8 +110,8 @@ func (etq *EmailTemplateQuery) FirstX(ctx context.Context) *EmailTemplate {
 
 // FirstID returns the first EmailTemplate ID from the query.
 // Returns a *NotFoundError when no EmailTemplate ID was found.
-func (etq *EmailTemplateQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (etq *EmailTemplateQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = etq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -122,7 +123,7 @@ func (etq *EmailTemplateQuery) FirstID(ctx context.Context) (id int, err error) 
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (etq *EmailTemplateQuery) FirstIDX(ctx context.Context) int {
+func (etq *EmailTemplateQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := etq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -160,8 +161,8 @@ func (etq *EmailTemplateQuery) OnlyX(ctx context.Context) *EmailTemplate {
 // OnlyID is like Only, but returns the only EmailTemplate ID in the query.
 // Returns a *NotSingularError when more than one EmailTemplate ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (etq *EmailTemplateQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (etq *EmailTemplateQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = etq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -177,7 +178,7 @@ func (etq *EmailTemplateQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (etq *EmailTemplateQuery) OnlyIDX(ctx context.Context) int {
+func (etq *EmailTemplateQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := etq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -203,8 +204,8 @@ func (etq *EmailTemplateQuery) AllX(ctx context.Context) []*EmailTemplate {
 }
 
 // IDs executes the query and returns a list of EmailTemplate IDs.
-func (etq *EmailTemplateQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (etq *EmailTemplateQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := etq.Select(emailtemplate.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -212,7 +213,7 @@ func (etq *EmailTemplateQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (etq *EmailTemplateQuery) IDsX(ctx context.Context) []int {
+func (etq *EmailTemplateQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := etq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -291,12 +292,12 @@ func (etq *EmailTemplateQuery) WithUser(opts ...func(*UserQuery)) *EmailTemplate
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.EmailTemplate.Query().
-//		GroupBy(emailtemplate.FieldUUID).
+//		GroupBy(emailtemplate.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -318,11 +319,11 @@ func (etq *EmailTemplateQuery) GroupBy(field string, fields ...string) *EmailTem
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.EmailTemplate.Query().
-//		Select(emailtemplate.FieldUUID).
+//		Select(emailtemplate.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
 func (etq *EmailTemplateQuery) Select(fields ...string) *EmailTemplateSelect {
@@ -375,8 +376,8 @@ func (etq *EmailTemplateQuery) sqlAll(ctx context.Context) ([]*EmailTemplate, er
 	}
 
 	if query := etq.withUser; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*EmailTemplate)
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*EmailTemplate)
 		for i := range nodes {
 			fk := nodes[i].UserID
 			if _, ok := nodeids[fk]; !ok {
@@ -426,7 +427,7 @@ func (etq *EmailTemplateQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   emailtemplate.Table,
 			Columns: emailtemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: emailtemplate.FieldID,
 			},
 		},

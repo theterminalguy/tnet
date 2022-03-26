@@ -11,7 +11,7 @@ import (
 type SlackAppInstallRepository struct{}
 
 type SlackAppInstallParams struct {
-	UserID              int
+	UserID              uuid.UUID
 	TeamID              string `json:"team_id" validate:"required"`
 	TeamName            string `json:"team_name" validate:"required"`
 	AuthedUserID        string `json:"authed_user_id" validate:"required"`
@@ -38,9 +38,9 @@ func (*SlackAppInstallRepository) GetAll() ([]*ent.SlackAppInstall, error) {
 	return records, nil
 }
 
-func (*SlackAppInstallRepository) GetByUUID(id uuid.UUID) (*ent.SlackAppInstall, error) {
+func (*SlackAppInstallRepository) GetByID(id uuid.UUID) (*ent.SlackAppInstall, error) {
 	record, err := dBConn.SlackAppInstall.Query().
-		Where(slackappinstall.UUIDEQ(id)).
+		Where(slackappinstall.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -94,7 +94,7 @@ func (r *SlackAppInstallRepository) Update(id uuid.UUID, p SlackAppInstallParams
 	if err != nil {
 		return nil, err
 	}
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -107,8 +107,8 @@ func (r *SlackAppInstallRepository) Update(id uuid.UUID, p SlackAppInstallParams
 	return record, nil
 }
 
-func (r *SlackAppInstallRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+func (r *SlackAppInstallRepository) DeleteByID(id uuid.UUID) error {
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}

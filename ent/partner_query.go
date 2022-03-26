@@ -15,6 +15,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/google/uuid"
 )
 
 // PartnerQuery is the builder for querying Partner entities.
@@ -110,8 +111,8 @@ func (pq *PartnerQuery) FirstX(ctx context.Context) *Partner {
 
 // FirstID returns the first Partner ID from the query.
 // Returns a *NotFoundError when no Partner ID was found.
-func (pq *PartnerQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (pq *PartnerQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = pq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -123,7 +124,7 @@ func (pq *PartnerQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (pq *PartnerQuery) FirstIDX(ctx context.Context) int {
+func (pq *PartnerQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := pq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -161,8 +162,8 @@ func (pq *PartnerQuery) OnlyX(ctx context.Context) *Partner {
 // OnlyID is like Only, but returns the only Partner ID in the query.
 // Returns a *NotSingularError when more than one Partner ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (pq *PartnerQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (pq *PartnerQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = pq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -178,7 +179,7 @@ func (pq *PartnerQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (pq *PartnerQuery) OnlyIDX(ctx context.Context) int {
+func (pq *PartnerQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := pq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -204,8 +205,8 @@ func (pq *PartnerQuery) AllX(ctx context.Context) []*Partner {
 }
 
 // IDs executes the query and returns a list of Partner IDs.
-func (pq *PartnerQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (pq *PartnerQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := pq.Select(partner.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -213,7 +214,7 @@ func (pq *PartnerQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (pq *PartnerQuery) IDsX(ctx context.Context) []int {
+func (pq *PartnerQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := pq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -292,12 +293,12 @@ func (pq *PartnerQuery) WithMissions(opts ...func(*MissionQuery)) *PartnerQuery 
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Partner.Query().
-//		GroupBy(partner.FieldUUID).
+//		GroupBy(partner.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -319,11 +320,11 @@ func (pq *PartnerQuery) GroupBy(field string, fields ...string) *PartnerGroupBy 
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.Partner.Query().
-//		Select(partner.FieldUUID).
+//		Select(partner.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
 func (pq *PartnerQuery) Select(fields ...string) *PartnerSelect {
@@ -377,7 +378,7 @@ func (pq *PartnerQuery) sqlAll(ctx context.Context) ([]*Partner, error) {
 
 	if query := pq.withMissions; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*Partner)
+		nodeids := make(map[uuid.UUID]*Partner)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -426,7 +427,7 @@ func (pq *PartnerQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   partner.Table,
 			Columns: partner.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: partner.FieldID,
 			},
 		},

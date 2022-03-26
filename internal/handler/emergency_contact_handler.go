@@ -36,7 +36,7 @@ func (h *EmergencyContactHandler) ReadByID(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := h.EmergencyContactRepository.GetByUUID(id)
+	record, err := h.EmergencyContactRepository.GetByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -76,7 +76,7 @@ func (h *EmergencyContactHandler) DeleteOne(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.EmergencyContactRepository.DeleteByUUID(id)
+	err = h.EmergencyContactRepository.DeleteByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

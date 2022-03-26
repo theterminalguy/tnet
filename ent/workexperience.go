@@ -18,9 +18,7 @@ import (
 type WorkExperience struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"-"`
-	// UUID holds the value of the "uuid" field.
-	UUID uuid.UUID `json:"uuid,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -28,7 +26,7 @@ type WorkExperience struct {
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
 	// TalentID holds the value of the "talent_id" field.
-	TalentID int `json:"-"`
+	TalentID uuid.UUID `json:"-"`
 	// CompanyName holds the value of the "company_name" field.
 	CompanyName string `json:"company_name,omitempty"`
 	// Location holds the value of the "location" field.
@@ -78,13 +76,11 @@ func (*WorkExperience) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case workexperience.FieldPrimaryTechnologies:
 			values[i] = new([]byte)
-		case workexperience.FieldID, workexperience.FieldTalentID:
-			values[i] = new(sql.NullInt64)
 		case workexperience.FieldCompanyName, workexperience.FieldLocation, workexperience.FieldJobTitle, workexperience.FieldDescription:
 			values[i] = new(sql.NullString)
 		case workexperience.FieldCreatedAt, workexperience.FieldUpdatedAt, workexperience.FieldDeletedAt, workexperience.FieldStartDate, workexperience.FieldEndDate:
 			values[i] = new(sql.NullTime)
-		case workexperience.FieldUUID:
+		case workexperience.FieldID, workexperience.FieldTalentID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type WorkExperience", columns[i])
@@ -102,16 +98,10 @@ func (we *WorkExperience) assignValues(columns []string, values []interface{}) e
 	for i := range columns {
 		switch columns[i] {
 		case workexperience.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
-			}
-			we.ID = int(value.Int64)
-		case workexperience.FieldUUID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field uuid", values[i])
+				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				we.UUID = *value
+				we.ID = *value
 			}
 		case workexperience.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -133,10 +123,10 @@ func (we *WorkExperience) assignValues(columns []string, values []interface{}) e
 				*we.DeletedAt = value.Time
 			}
 		case workexperience.FieldTalentID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field talent_id", values[i])
-			} else if value.Valid {
-				we.TalentID = int(value.Int64)
+			} else if value != nil {
+				we.TalentID = *value
 			}
 		case workexperience.FieldCompanyName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -215,8 +205,6 @@ func (we *WorkExperience) String() string {
 	var builder strings.Builder
 	builder.WriteString("WorkExperience(")
 	builder.WriteString(fmt.Sprintf("id=%v", we.ID))
-	builder.WriteString(", uuid=")
-	builder.WriteString(fmt.Sprintf("%v", we.UUID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(we.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

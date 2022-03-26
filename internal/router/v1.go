@@ -34,7 +34,7 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 				Middlewares: nil,
 			},
 			{
-				Path:        "timezone-types",
+				Path:        "timezones",
 				Only:        []Request{READ_ALL},
 				Handler:     public_handler.NewV1TimezoneHandler(),
 				Middlewares: nil,

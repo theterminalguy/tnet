@@ -35,7 +35,7 @@ func NewJWTClaims(u *ent.User, c echo.Context) *JWTClaims {
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 			IssuedAt:  time.Now().Unix(),
 			Issuer:    c.Request().Host,
-			Subject:   u.UUID.String(),
+			Subject:   u.ID.String(),
 		},
 	}
 }

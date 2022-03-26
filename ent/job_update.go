@@ -31,20 +31,6 @@ func (ju *JobUpdate) Where(ps ...predicate.Job) *JobUpdate {
 	return ju
 }
 
-// SetUUID sets the "uuid" field.
-func (ju *JobUpdate) SetUUID(u uuid.UUID) *JobUpdate {
-	ju.mutation.SetUUID(u)
-	return ju
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (ju *JobUpdate) SetNillableUUID(u *uuid.UUID) *JobUpdate {
-	if u != nil {
-		ju.SetUUID(*u)
-	}
-	return ju
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (ju *JobUpdate) SetUpdatedAt(t time.Time) *JobUpdate {
 	ju.mutation.SetUpdatedAt(t)
@@ -72,15 +58,15 @@ func (ju *JobUpdate) ClearDeletedAt() *JobUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (ju *JobUpdate) SetUserID(i int) *JobUpdate {
-	ju.mutation.SetUserID(i)
+func (ju *JobUpdate) SetUserID(u uuid.UUID) *JobUpdate {
+	ju.mutation.SetUserID(u)
 	return ju
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (ju *JobUpdate) SetNillableUserID(i *int) *JobUpdate {
-	if i != nil {
-		ju.SetUserID(*i)
+func (ju *JobUpdate) SetNillableUserID(u *uuid.UUID) *JobUpdate {
+	if u != nil {
+		ju.SetUserID(*u)
 	}
 	return ju
 }
@@ -179,14 +165,14 @@ func (ju *JobUpdate) SetUser(u *User) *JobUpdate {
 }
 
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
-func (ju *JobUpdate) AddApplicationIDs(ids ...int) *JobUpdate {
+func (ju *JobUpdate) AddApplicationIDs(ids ...uuid.UUID) *JobUpdate {
 	ju.mutation.AddApplicationIDs(ids...)
 	return ju
 }
 
 // AddApplications adds the "applications" edges to the JobApplication entity.
 func (ju *JobUpdate) AddApplications(j ...*JobApplication) *JobUpdate {
-	ids := make([]int, len(j))
+	ids := make([]uuid.UUID, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
@@ -211,14 +197,14 @@ func (ju *JobUpdate) ClearApplications() *JobUpdate {
 }
 
 // RemoveApplicationIDs removes the "applications" edge to JobApplication entities by IDs.
-func (ju *JobUpdate) RemoveApplicationIDs(ids ...int) *JobUpdate {
+func (ju *JobUpdate) RemoveApplicationIDs(ids ...uuid.UUID) *JobUpdate {
 	ju.mutation.RemoveApplicationIDs(ids...)
 	return ju
 }
 
 // RemoveApplications removes "applications" edges to JobApplication entities.
 func (ju *JobUpdate) RemoveApplications(j ...*JobApplication) *JobUpdate {
-	ids := make([]int, len(j))
+	ids := make([]uuid.UUID, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
@@ -315,7 +301,7 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   job.Table,
 			Columns: job.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: job.FieldID,
 			},
 		},
@@ -326,13 +312,6 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := ju.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: job.FieldUUID,
-		})
 	}
 	if value, ok := ju.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -440,7 +419,7 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -456,7 +435,7 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -475,7 +454,7 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: jobapplication.FieldID,
 				},
 			},
@@ -491,7 +470,7 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: jobapplication.FieldID,
 				},
 			},
@@ -510,7 +489,7 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: jobapplication.FieldID,
 				},
 			},
@@ -537,20 +516,6 @@ type JobUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *JobMutation
-}
-
-// SetUUID sets the "uuid" field.
-func (juo *JobUpdateOne) SetUUID(u uuid.UUID) *JobUpdateOne {
-	juo.mutation.SetUUID(u)
-	return juo
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (juo *JobUpdateOne) SetNillableUUID(u *uuid.UUID) *JobUpdateOne {
-	if u != nil {
-		juo.SetUUID(*u)
-	}
-	return juo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -580,15 +545,15 @@ func (juo *JobUpdateOne) ClearDeletedAt() *JobUpdateOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (juo *JobUpdateOne) SetUserID(i int) *JobUpdateOne {
-	juo.mutation.SetUserID(i)
+func (juo *JobUpdateOne) SetUserID(u uuid.UUID) *JobUpdateOne {
+	juo.mutation.SetUserID(u)
 	return juo
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (juo *JobUpdateOne) SetNillableUserID(i *int) *JobUpdateOne {
-	if i != nil {
-		juo.SetUserID(*i)
+func (juo *JobUpdateOne) SetNillableUserID(u *uuid.UUID) *JobUpdateOne {
+	if u != nil {
+		juo.SetUserID(*u)
 	}
 	return juo
 }
@@ -687,14 +652,14 @@ func (juo *JobUpdateOne) SetUser(u *User) *JobUpdateOne {
 }
 
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
-func (juo *JobUpdateOne) AddApplicationIDs(ids ...int) *JobUpdateOne {
+func (juo *JobUpdateOne) AddApplicationIDs(ids ...uuid.UUID) *JobUpdateOne {
 	juo.mutation.AddApplicationIDs(ids...)
 	return juo
 }
 
 // AddApplications adds the "applications" edges to the JobApplication entity.
 func (juo *JobUpdateOne) AddApplications(j ...*JobApplication) *JobUpdateOne {
-	ids := make([]int, len(j))
+	ids := make([]uuid.UUID, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
@@ -719,14 +684,14 @@ func (juo *JobUpdateOne) ClearApplications() *JobUpdateOne {
 }
 
 // RemoveApplicationIDs removes the "applications" edge to JobApplication entities by IDs.
-func (juo *JobUpdateOne) RemoveApplicationIDs(ids ...int) *JobUpdateOne {
+func (juo *JobUpdateOne) RemoveApplicationIDs(ids ...uuid.UUID) *JobUpdateOne {
 	juo.mutation.RemoveApplicationIDs(ids...)
 	return juo
 }
 
 // RemoveApplications removes "applications" edges to JobApplication entities.
 func (juo *JobUpdateOne) RemoveApplications(j ...*JobApplication) *JobUpdateOne {
-	ids := make([]int, len(j))
+	ids := make([]uuid.UUID, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
@@ -830,7 +795,7 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 			Table:   job.Table,
 			Columns: job.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: job.FieldID,
 			},
 		},
@@ -858,13 +823,6 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := juo.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: job.FieldUUID,
-		})
 	}
 	if value, ok := juo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -972,7 +930,7 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -988,7 +946,7 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -1007,7 +965,7 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: jobapplication.FieldID,
 				},
 			},
@@ -1023,7 +981,7 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: jobapplication.FieldID,
 				},
 			},
@@ -1042,7 +1000,7 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: jobapplication.FieldID,
 				},
 			},

@@ -22,6 +22,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/10hourlabs/tentn/ent/workexperience"
+	"github.com/google/uuid"
 )
 
 // TalentQuery is the builder for querying Talent entities.
@@ -35,8 +36,6 @@ type TalentQuery struct {
 	predicates []predicate.Talent
 	// eager-loading edges.
 	withUser              *UserQuery
-	withReferrer          *TalentQuery
-	withReferees          *TalentQuery
 	withPortfoliolinks    *PortfolioLinkQuery
 	withSkills            *SkillQuery
 	withJobApplications   *JobApplicationQuery
@@ -95,50 +94,6 @@ func (tq *TalentQuery) QueryUser() *UserQuery {
 			sqlgraph.From(talent.Table, talent.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, talent.UserTable, talent.UserColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryReferrer chains the current query on the "referrer" edge.
-func (tq *TalentQuery) QueryReferrer() *TalentQuery {
-	query := &TalentQuery{config: tq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := tq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := tq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(talent.Table, talent.FieldID, selector),
-			sqlgraph.To(talent.Table, talent.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, talent.ReferrerTable, talent.ReferrerColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryReferees chains the current query on the "referees" edge.
-func (tq *TalentQuery) QueryReferees() *TalentQuery {
-	query := &TalentQuery{config: tq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := tq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := tq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(talent.Table, talent.FieldID, selector),
-			sqlgraph.To(talent.Table, talent.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, talent.RefereesTable, talent.RefereesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
 		return fromU, nil
@@ -324,8 +279,8 @@ func (tq *TalentQuery) FirstX(ctx context.Context) *Talent {
 
 // FirstID returns the first Talent ID from the query.
 // Returns a *NotFoundError when no Talent ID was found.
-func (tq *TalentQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (tq *TalentQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = tq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -337,7 +292,7 @@ func (tq *TalentQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (tq *TalentQuery) FirstIDX(ctx context.Context) int {
+func (tq *TalentQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := tq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -375,8 +330,8 @@ func (tq *TalentQuery) OnlyX(ctx context.Context) *Talent {
 // OnlyID is like Only, but returns the only Talent ID in the query.
 // Returns a *NotSingularError when more than one Talent ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (tq *TalentQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (tq *TalentQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = tq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -392,7 +347,7 @@ func (tq *TalentQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (tq *TalentQuery) OnlyIDX(ctx context.Context) int {
+func (tq *TalentQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := tq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -418,8 +373,8 @@ func (tq *TalentQuery) AllX(ctx context.Context) []*Talent {
 }
 
 // IDs executes the query and returns a list of Talent IDs.
-func (tq *TalentQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (tq *TalentQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := tq.Select(talent.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -427,7 +382,7 @@ func (tq *TalentQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (tq *TalentQuery) IDsX(ctx context.Context) []int {
+func (tq *TalentQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := tq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -482,8 +437,6 @@ func (tq *TalentQuery) Clone() *TalentQuery {
 		order:                 append([]OrderFunc{}, tq.order...),
 		predicates:            append([]predicate.Talent{}, tq.predicates...),
 		withUser:              tq.withUser.Clone(),
-		withReferrer:          tq.withReferrer.Clone(),
-		withReferees:          tq.withReferees.Clone(),
 		withPortfoliolinks:    tq.withPortfoliolinks.Clone(),
 		withSkills:            tq.withSkills.Clone(),
 		withJobApplications:   tq.withJobApplications.Clone(),
@@ -506,28 +459,6 @@ func (tq *TalentQuery) WithUser(opts ...func(*UserQuery)) *TalentQuery {
 		opt(query)
 	}
 	tq.withUser = query
-	return tq
-}
-
-// WithReferrer tells the query-builder to eager-load the nodes that are connected to
-// the "referrer" edge. The optional arguments are used to configure the query builder of the edge.
-func (tq *TalentQuery) WithReferrer(opts ...func(*TalentQuery)) *TalentQuery {
-	query := &TalentQuery{config: tq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	tq.withReferrer = query
-	return tq
-}
-
-// WithReferees tells the query-builder to eager-load the nodes that are connected to
-// the "referees" edge. The optional arguments are used to configure the query builder of the edge.
-func (tq *TalentQuery) WithReferees(opts ...func(*TalentQuery)) *TalentQuery {
-	query := &TalentQuery{config: tq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	tq.withReferees = query
 	return tq
 }
 
@@ -614,12 +545,12 @@ func (tq *TalentQuery) WithMissions(opts ...func(*MissionQuery)) *TalentQuery {
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Talent.Query().
-//		GroupBy(talent.FieldUUID).
+//		GroupBy(talent.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -641,11 +572,11 @@ func (tq *TalentQuery) GroupBy(field string, fields ...string) *TalentGroupBy {
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.Talent.Query().
-//		Select(talent.FieldUUID).
+//		Select(talent.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
 func (tq *TalentQuery) Select(fields ...string) *TalentSelect {
@@ -673,10 +604,8 @@ func (tq *TalentQuery) sqlAll(ctx context.Context) ([]*Talent, error) {
 	var (
 		nodes       = []*Talent{}
 		_spec       = tq.querySpec()
-		loadedTypes = [10]bool{
+		loadedTypes = [8]bool{
 			tq.withUser != nil,
-			tq.withReferrer != nil,
-			tq.withReferees != nil,
 			tq.withPortfoliolinks != nil,
 			tq.withSkills != nil,
 			tq.withJobApplications != nil,
@@ -707,8 +636,8 @@ func (tq *TalentQuery) sqlAll(ctx context.Context) ([]*Talent, error) {
 	}
 
 	if query := tq.withUser; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Talent)
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*Talent)
 		for i := range nodes {
 			fk := nodes[i].UserID
 			if _, ok := nodeids[fk]; !ok {
@@ -732,60 +661,9 @@ func (tq *TalentQuery) sqlAll(ctx context.Context) ([]*Talent, error) {
 		}
 	}
 
-	if query := tq.withReferrer; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Talent)
-		for i := range nodes {
-			fk := nodes[i].ReferrerID
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
-		}
-		query.Where(talent.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "referrer_id" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.Referrer = n
-			}
-		}
-	}
-
-	if query := tq.withReferees; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*Talent)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Referees = []*Talent{}
-		}
-		query.Where(predicate.Talent(func(s *sql.Selector) {
-			s.Where(sql.InValues(talent.RefereesColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.ReferrerID
-			node, ok := nodeids[fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "referrer_id" returned %v for node %v`, fk, n.ID)
-			}
-			node.Edges.Referees = append(node.Edges.Referees, n)
-		}
-	}
-
 	if query := tq.withPortfoliolinks; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*Talent)
+		nodeids := make(map[uuid.UUID]*Talent)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -810,7 +688,7 @@ func (tq *TalentQuery) sqlAll(ctx context.Context) ([]*Talent, error) {
 
 	if query := tq.withSkills; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*Talent)
+		nodeids := make(map[uuid.UUID]*Talent)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -835,7 +713,7 @@ func (tq *TalentQuery) sqlAll(ctx context.Context) ([]*Talent, error) {
 
 	if query := tq.withJobApplications; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*Talent)
+		nodeids := make(map[uuid.UUID]*Talent)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -860,7 +738,7 @@ func (tq *TalentQuery) sqlAll(ctx context.Context) ([]*Talent, error) {
 
 	if query := tq.withWorkExperiences; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*Talent)
+		nodeids := make(map[uuid.UUID]*Talent)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -885,7 +763,7 @@ func (tq *TalentQuery) sqlAll(ctx context.Context) ([]*Talent, error) {
 
 	if query := tq.withEducations; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*Talent)
+		nodeids := make(map[uuid.UUID]*Talent)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -910,7 +788,7 @@ func (tq *TalentQuery) sqlAll(ctx context.Context) ([]*Talent, error) {
 
 	if query := tq.withEmergencyContacts; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*Talent)
+		nodeids := make(map[uuid.UUID]*Talent)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -935,7 +813,7 @@ func (tq *TalentQuery) sqlAll(ctx context.Context) ([]*Talent, error) {
 
 	if query := tq.withMissions; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*Talent)
+		nodeids := make(map[uuid.UUID]*Talent)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -984,7 +862,7 @@ func (tq *TalentQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   talent.Table,
 			Columns: talent.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: talent.FieldID,
 			},
 		},

@@ -18,9 +18,7 @@ import (
 type EmailTemplate struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"-"`
-	// UUID holds the value of the "uuid" field.
-	UUID uuid.UUID `json:"uuid,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -28,7 +26,7 @@ type EmailTemplate struct {
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
 	// UserID holds the value of the "user_id" field.
-	UserID int `json:"-"`
+	UserID uuid.UUID `json:"-"`
 	// From holds the value of the "from" field.
 	From string `json:"from,omitempty"`
 	// Subject holds the value of the "subject" field.
@@ -76,13 +74,11 @@ func (*EmailTemplate) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case emailtemplate.FieldCc, emailtemplate.FieldBcc:
 			values[i] = new([]byte)
-		case emailtemplate.FieldID, emailtemplate.FieldUserID:
-			values[i] = new(sql.NullInt64)
 		case emailtemplate.FieldFrom, emailtemplate.FieldSubject, emailtemplate.FieldBody, emailtemplate.FieldStatus:
 			values[i] = new(sql.NullString)
 		case emailtemplate.FieldCreatedAt, emailtemplate.FieldUpdatedAt, emailtemplate.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case emailtemplate.FieldUUID:
+		case emailtemplate.FieldID, emailtemplate.FieldUserID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type EmailTemplate", columns[i])
@@ -100,16 +96,10 @@ func (et *EmailTemplate) assignValues(columns []string, values []interface{}) er
 	for i := range columns {
 		switch columns[i] {
 		case emailtemplate.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
-			}
-			et.ID = int(value.Int64)
-		case emailtemplate.FieldUUID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field uuid", values[i])
+				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				et.UUID = *value
+				et.ID = *value
 			}
 		case emailtemplate.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -131,10 +121,10 @@ func (et *EmailTemplate) assignValues(columns []string, values []interface{}) er
 				*et.DeletedAt = value.Time
 			}
 		case emailtemplate.FieldUserID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
-			} else if value.Valid {
-				et.UserID = int(value.Int64)
+			} else if value != nil {
+				et.UserID = *value
 			}
 		case emailtemplate.FieldFrom:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -209,8 +199,6 @@ func (et *EmailTemplate) String() string {
 	var builder strings.Builder
 	builder.WriteString("EmailTemplate(")
 	builder.WriteString(fmt.Sprintf("id=%v", et.ID))
-	builder.WriteString(", uuid=")
-	builder.WriteString(fmt.Sprintf("%v", et.UUID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(et.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

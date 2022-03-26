@@ -17,9 +17,7 @@ import (
 type SlackAppInstall struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"-"`
-	// UUID holds the value of the "uuid" field.
-	UUID uuid.UUID `json:"uuid,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -27,7 +25,7 @@ type SlackAppInstall struct {
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
 	// UserID holds the value of the "user_id" field.
-	UserID int `json:"-"`
+	UserID uuid.UUID `json:"-"`
 	// TeamID holds the value of the "team_id" field.
 	TeamID string `json:"team_id,omitempty"`
 	// TeamName holds the value of the "team_name" field.
@@ -83,13 +81,11 @@ func (*SlackAppInstall) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case slackappinstall.FieldIsEnterpriseInstall:
 			values[i] = new(sql.NullBool)
-		case slackappinstall.FieldID, slackappinstall.FieldUserID:
-			values[i] = new(sql.NullInt64)
 		case slackappinstall.FieldTeamID, slackappinstall.FieldTeamName, slackappinstall.FieldAuthedUserID, slackappinstall.FieldAuthedUserEmail, slackappinstall.FieldAppID, slackappinstall.FieldBotUserID, slackappinstall.FieldAccessToken, slackappinstall.FieldTokenType, slackappinstall.FieldScope:
 			values[i] = new(sql.NullString)
 		case slackappinstall.FieldCreatedAt, slackappinstall.FieldUpdatedAt, slackappinstall.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case slackappinstall.FieldUUID:
+		case slackappinstall.FieldID, slackappinstall.FieldUserID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type SlackAppInstall", columns[i])
@@ -107,16 +103,10 @@ func (sai *SlackAppInstall) assignValues(columns []string, values []interface{})
 	for i := range columns {
 		switch columns[i] {
 		case slackappinstall.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
-			}
-			sai.ID = int(value.Int64)
-		case slackappinstall.FieldUUID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field uuid", values[i])
+				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				sai.UUID = *value
+				sai.ID = *value
 			}
 		case slackappinstall.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -138,10 +128,10 @@ func (sai *SlackAppInstall) assignValues(columns []string, values []interface{})
 				*sai.DeletedAt = value.Time
 			}
 		case slackappinstall.FieldUserID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
-			} else if value.Valid {
-				sai.UserID = int(value.Int64)
+			} else if value != nil {
+				sai.UserID = *value
 			}
 		case slackappinstall.FieldTeamID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -236,8 +226,6 @@ func (sai *SlackAppInstall) String() string {
 	var builder strings.Builder
 	builder.WriteString("SlackAppInstall(")
 	builder.WriteString(fmt.Sprintf("id=%v", sai.ID))
-	builder.WriteString(", uuid=")
-	builder.WriteString(fmt.Sprintf("%v", sai.UUID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(sai.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

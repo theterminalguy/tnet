@@ -22,20 +22,6 @@ type PartnerCreate struct {
 	hooks    []Hook
 }
 
-// SetUUID sets the "uuid" field.
-func (pc *PartnerCreate) SetUUID(u uuid.UUID) *PartnerCreate {
-	pc.mutation.SetUUID(u)
-	return pc
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (pc *PartnerCreate) SetNillableUUID(u *uuid.UUID) *PartnerCreate {
-	if u != nil {
-		pc.SetUUID(*u)
-	}
-	return pc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (pc *PartnerCreate) SetCreatedAt(t time.Time) *PartnerCreate {
 	pc.mutation.SetCreatedAt(t)
@@ -115,20 +101,28 @@ func (pc *PartnerCreate) SetWebsiteUrl(s string) *PartnerCreate {
 }
 
 // SetID sets the "id" field.
-func (pc *PartnerCreate) SetID(i int) *PartnerCreate {
-	pc.mutation.SetID(i)
+func (pc *PartnerCreate) SetID(u uuid.UUID) *PartnerCreate {
+	pc.mutation.SetID(u)
+	return pc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (pc *PartnerCreate) SetNillableID(u *uuid.UUID) *PartnerCreate {
+	if u != nil {
+		pc.SetID(*u)
+	}
 	return pc
 }
 
 // AddMissionIDs adds the "missions" edge to the Mission entity by IDs.
-func (pc *PartnerCreate) AddMissionIDs(ids ...int) *PartnerCreate {
+func (pc *PartnerCreate) AddMissionIDs(ids ...uuid.UUID) *PartnerCreate {
 	pc.mutation.AddMissionIDs(ids...)
 	return pc
 }
 
 // AddMissions adds the "missions" edges to the Mission entity.
 func (pc *PartnerCreate) AddMissions(m ...*Mission) *PartnerCreate {
-	ids := make([]int, len(m))
+	ids := make([]uuid.UUID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -206,10 +200,6 @@ func (pc *PartnerCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (pc *PartnerCreate) defaults() {
-	if _, ok := pc.mutation.UUID(); !ok {
-		v := partner.DefaultUUID()
-		pc.mutation.SetUUID(v)
-	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
 		v := partner.DefaultCreatedAt()
 		pc.mutation.SetCreatedAt(v)
@@ -218,13 +208,14 @@ func (pc *PartnerCreate) defaults() {
 		v := partner.DefaultUpdatedAt()
 		pc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := pc.mutation.ID(); !ok {
+		v := partner.DefaultID()
+		pc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (pc *PartnerCreate) check() error {
-	if _, ok := pc.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "Partner.uuid"`)}
-	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Partner.created_at"`)}
 	}
@@ -260,9 +251,12 @@ func (pc *PartnerCreate) sqlSave(ctx context.Context) (*Partner, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -273,22 +267,14 @@ func (pc *PartnerCreate) createSpec() (*Partner, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: partner.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: partner.FieldID,
 			},
 		}
 	)
 	if id, ok := pc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
-	}
-	if value, ok := pc.mutation.UUID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: partner.FieldUUID,
-		})
-		_node.UUID = value
+		_spec.ID.Value = &id
 	}
 	if value, ok := pc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -371,7 +357,7 @@ func (pc *PartnerCreate) createSpec() (*Partner, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: mission.FieldID,
 				},
 			},
@@ -426,10 +412,6 @@ func (pcb *PartnerCreateBulk) Save(ctx context.Context) ([]*Partner, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

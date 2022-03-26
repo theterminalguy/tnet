@@ -15,7 +15,7 @@ type MissionRepository struct{}
 
 type MissionParams struct {
 	PartnerUUID uuid.UUID `json:"partner_uuid" validate:"required"`
-	TalentUUID  uuid.UUID `json:"talent_uuid" validate:"required"`
+	TalentID    uuid.UUID `json:"talent_id" validate:"required"`
 	MissionType string    `json:"mission_type" validate:"required"`
 	StartDate   string    `json:"start_date" validate:"datetime=2006-01-02T15:04:05Z07:00"`
 	EndDate     string    `json:"end_date"`
@@ -35,9 +35,9 @@ func (*MissionRepository) GetAll() ([]*ent.Mission, error) {
 	return records, nil
 }
 
-func (*MissionRepository) GetByUUID(id uuid.UUID) (*ent.Mission, error) {
+func (*MissionRepository) GetByID(id uuid.UUID) (*ent.Mission, error) {
 	record, err := dBConn.Mission.Query().
-		Where(mission.UUIDEQ(id)).
+		Where(mission.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -54,11 +54,11 @@ func (*MissionRepository) Create(p MissionParams) (*ent.Mission, error) {
 		return nil, err
 	}
 
-	a, err := NewTalentRepository().GetByUUID(p.TalentUUID)
+	a, err := NewTalentRepository().GetByID(p.TalentID)
 	if err != nil {
 		return nil, err
 	}
-	j, err := NewPartnerRepository().GetByUUID(p.PartnerUUID)
+	j, err := NewPartnerRepository().GetByID(p.PartnerUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +109,7 @@ func (*MissionRepository) Create(p MissionParams) (*ent.Mission, error) {
 }
 
 func (r *MissionRepository) Update(id uuid.UUID, p MissionParams) (*ent.Mission, []error) {
-	err := validateParams(p, "TalentUUID")
+	err := validateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -119,7 +119,7 @@ func (r *MissionRepository) Update(id uuid.UUID, p MissionParams) (*ent.Mission,
 		return nil, []error{err}
 	}
 
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -170,8 +170,8 @@ func (r *MissionRepository) Update(id uuid.UUID, p MissionParams) (*ent.Mission,
 	return record, nil
 }
 
-func (r *MissionRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+func (r *MissionRepository) DeleteByID(id uuid.UUID) error {
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}

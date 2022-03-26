@@ -14,6 +14,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/google/uuid"
 )
 
 // SkillQuery is the builder for querying Skill entities.
@@ -109,8 +110,8 @@ func (sq *SkillQuery) FirstX(ctx context.Context) *Skill {
 
 // FirstID returns the first Skill ID from the query.
 // Returns a *NotFoundError when no Skill ID was found.
-func (sq *SkillQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (sq *SkillQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = sq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -122,7 +123,7 @@ func (sq *SkillQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (sq *SkillQuery) FirstIDX(ctx context.Context) int {
+func (sq *SkillQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := sq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -160,8 +161,8 @@ func (sq *SkillQuery) OnlyX(ctx context.Context) *Skill {
 // OnlyID is like Only, but returns the only Skill ID in the query.
 // Returns a *NotSingularError when more than one Skill ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (sq *SkillQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (sq *SkillQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = sq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -177,7 +178,7 @@ func (sq *SkillQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (sq *SkillQuery) OnlyIDX(ctx context.Context) int {
+func (sq *SkillQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := sq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -203,8 +204,8 @@ func (sq *SkillQuery) AllX(ctx context.Context) []*Skill {
 }
 
 // IDs executes the query and returns a list of Skill IDs.
-func (sq *SkillQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (sq *SkillQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := sq.Select(skill.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -212,7 +213,7 @@ func (sq *SkillQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (sq *SkillQuery) IDsX(ctx context.Context) []int {
+func (sq *SkillQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := sq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -291,12 +292,12 @@ func (sq *SkillQuery) WithTalent(opts ...func(*TalentQuery)) *SkillQuery {
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Skill.Query().
-//		GroupBy(skill.FieldUUID).
+//		GroupBy(skill.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -318,11 +319,11 @@ func (sq *SkillQuery) GroupBy(field string, fields ...string) *SkillGroupBy {
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.Skill.Query().
-//		Select(skill.FieldUUID).
+//		Select(skill.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
 func (sq *SkillQuery) Select(fields ...string) *SkillSelect {
@@ -375,8 +376,8 @@ func (sq *SkillQuery) sqlAll(ctx context.Context) ([]*Skill, error) {
 	}
 
 	if query := sq.withTalent; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Skill)
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*Skill)
 		for i := range nodes {
 			fk := nodes[i].TalentID
 			if _, ok := nodeids[fk]; !ok {
@@ -426,7 +427,7 @@ func (sq *SkillQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   skill.Table,
 			Columns: skill.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: skill.FieldID,
 			},
 		},

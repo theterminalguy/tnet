@@ -17,7 +17,7 @@ func GetCurrentUser(c echo.Context) (*ent.User, error) {
 	userUUID := fmt.Sprintf("%v", sub)
 
 	ur := repo.NewUserRepository()
-	record, err := ur.GetByUUID(uuid.MustParse(userUUID))
+	record, err := ur.GetByID(uuid.MustParse(userUUID))
 	if err != nil {
 		return nil, err
 	}

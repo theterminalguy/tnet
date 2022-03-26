@@ -11,7 +11,7 @@ import (
 type EmailTemplateRepository struct{}
 
 type EmailTemplateParams struct {
-	UserID  int                  `json:"user_id" validate:"required"`
+	UserID  uuid.UUID            `json:"user_id" validate:"required"`
 	Subject string               `json:"subject" validate:"required"`
 	Body    string               `json:"body" validate:"required"`
 	Status  emailtemplate.Status `json:"status" validate:"required"`
@@ -33,7 +33,7 @@ func (*EmailTemplateRepository) GetAll() ([]*ent.EmailTemplate, error) {
 	return records, nil
 }
 
-func (*EmailTemplateRepository) GetEmailForRecruiter(userid int, status string) (*ent.EmailTemplate, error) {
+func (*EmailTemplateRepository) GetEmailForRecruiter(userid uuid.UUID, status string) (*ent.EmailTemplate, error) {
 	record, err := dBConn.EmailTemplate.Query().
 		Where(
 			emailtemplate.UserIDEQ(userid),
@@ -49,9 +49,9 @@ func (*EmailTemplateRepository) GetEmailForRecruiter(userid int, status string) 
 	return record, nil
 }
 
-func (*EmailTemplateRepository) GetByUUID(id uuid.UUID) (*ent.EmailTemplate, error) {
+func (*EmailTemplateRepository) GetByID(id uuid.UUID) (*ent.EmailTemplate, error) {
 	record, err := dBConn.EmailTemplate.Query().
-		Where(emailtemplate.UUIDEQ(id)).
+		Where(emailtemplate.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (r *EmailTemplateRepository) Update(id uuid.UUID, p EmailTemplateParams) (*
 	if err != nil {
 		return nil, err
 	}
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -101,8 +101,8 @@ func (r *EmailTemplateRepository) Update(id uuid.UUID, p EmailTemplateParams) (*
 	return record, nil
 }
 
-func (r *EmailTemplateRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+func (r *EmailTemplateRepository) DeleteByID(id uuid.UUID) error {
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}

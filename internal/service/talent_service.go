@@ -53,7 +53,7 @@ func (t *TalentService) UpdateProfile(user *ent.User, p *repo.TalentParams) (*re
 	if err != nil {
 		return nil, []error{err}
 	}
-	a, vldErrs := t.TalentRepo.Update(talent.UUID, *p)
+	a, vldErrs := t.TalentRepo.Update(talent.ID, *p)
 	if vldErrs != nil {
 		return nil, vldErrs
 	}

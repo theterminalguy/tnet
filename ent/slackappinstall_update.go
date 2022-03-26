@@ -30,20 +30,6 @@ func (saiu *SlackAppInstallUpdate) Where(ps ...predicate.SlackAppInstall) *Slack
 	return saiu
 }
 
-// SetUUID sets the "uuid" field.
-func (saiu *SlackAppInstallUpdate) SetUUID(u uuid.UUID) *SlackAppInstallUpdate {
-	saiu.mutation.SetUUID(u)
-	return saiu
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (saiu *SlackAppInstallUpdate) SetNillableUUID(u *uuid.UUID) *SlackAppInstallUpdate {
-	if u != nil {
-		saiu.SetUUID(*u)
-	}
-	return saiu
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (saiu *SlackAppInstallUpdate) SetUpdatedAt(t time.Time) *SlackAppInstallUpdate {
 	saiu.mutation.SetUpdatedAt(t)
@@ -71,15 +57,15 @@ func (saiu *SlackAppInstallUpdate) ClearDeletedAt() *SlackAppInstallUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (saiu *SlackAppInstallUpdate) SetUserID(i int) *SlackAppInstallUpdate {
-	saiu.mutation.SetUserID(i)
+func (saiu *SlackAppInstallUpdate) SetUserID(u uuid.UUID) *SlackAppInstallUpdate {
+	saiu.mutation.SetUserID(u)
 	return saiu
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (saiu *SlackAppInstallUpdate) SetNillableUserID(i *int) *SlackAppInstallUpdate {
-	if i != nil {
-		saiu.SetUserID(*i)
+func (saiu *SlackAppInstallUpdate) SetNillableUserID(u *uuid.UUID) *SlackAppInstallUpdate {
+	if u != nil {
+		saiu.SetUserID(*u)
 	}
 	return saiu
 }
@@ -235,7 +221,7 @@ func (saiu *SlackAppInstallUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Table:   slackappinstall.Table,
 			Columns: slackappinstall.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: slackappinstall.FieldID,
 			},
 		},
@@ -246,13 +232,6 @@ func (saiu *SlackAppInstallUpdate) sqlSave(ctx context.Context) (n int, err erro
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := saiu.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: slackappinstall.FieldUUID,
-		})
 	}
 	if value, ok := saiu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -353,7 +332,7 @@ func (saiu *SlackAppInstallUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -369,7 +348,7 @@ func (saiu *SlackAppInstallUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -396,20 +375,6 @@ type SlackAppInstallUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *SlackAppInstallMutation
-}
-
-// SetUUID sets the "uuid" field.
-func (saiuo *SlackAppInstallUpdateOne) SetUUID(u uuid.UUID) *SlackAppInstallUpdateOne {
-	saiuo.mutation.SetUUID(u)
-	return saiuo
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (saiuo *SlackAppInstallUpdateOne) SetNillableUUID(u *uuid.UUID) *SlackAppInstallUpdateOne {
-	if u != nil {
-		saiuo.SetUUID(*u)
-	}
-	return saiuo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -439,15 +404,15 @@ func (saiuo *SlackAppInstallUpdateOne) ClearDeletedAt() *SlackAppInstallUpdateOn
 }
 
 // SetUserID sets the "user_id" field.
-func (saiuo *SlackAppInstallUpdateOne) SetUserID(i int) *SlackAppInstallUpdateOne {
-	saiuo.mutation.SetUserID(i)
+func (saiuo *SlackAppInstallUpdateOne) SetUserID(u uuid.UUID) *SlackAppInstallUpdateOne {
+	saiuo.mutation.SetUserID(u)
 	return saiuo
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (saiuo *SlackAppInstallUpdateOne) SetNillableUserID(i *int) *SlackAppInstallUpdateOne {
-	if i != nil {
-		saiuo.SetUserID(*i)
+func (saiuo *SlackAppInstallUpdateOne) SetNillableUserID(u *uuid.UUID) *SlackAppInstallUpdateOne {
+	if u != nil {
+		saiuo.SetUserID(*u)
 	}
 	return saiuo
 }
@@ -610,7 +575,7 @@ func (saiuo *SlackAppInstallUpdateOne) sqlSave(ctx context.Context) (_node *Slac
 			Table:   slackappinstall.Table,
 			Columns: slackappinstall.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: slackappinstall.FieldID,
 			},
 		},
@@ -638,13 +603,6 @@ func (saiuo *SlackAppInstallUpdateOne) sqlSave(ctx context.Context) (_node *Slac
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := saiuo.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: slackappinstall.FieldUUID,
-		})
 	}
 	if value, ok := saiuo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -745,7 +703,7 @@ func (saiuo *SlackAppInstallUpdateOne) sqlSave(ctx context.Context) (_node *Slac
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -761,7 +719,7 @@ func (saiuo *SlackAppInstallUpdateOne) sqlSave(ctx context.Context) (_node *Slac
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},

@@ -60,8 +60,7 @@ type EducationMutation struct {
 	config
 	op               Op
 	typ              string
-	id               *int
-	uuid             *uuid.UUID
+	id               *uuid.UUID
 	created_at       *time.Time
 	updated_at       *time.Time
 	deleted_at       *time.Time
@@ -73,7 +72,7 @@ type EducationMutation struct {
 	start_date       *time.Time
 	end_date         *time.Time
 	clearedFields    map[string]struct{}
-	talent           *int
+	talent           *uuid.UUID
 	clearedtalent    bool
 	done             bool
 	oldValue         func(context.Context) (*Education, error)
@@ -100,7 +99,7 @@ func newEducationMutation(c config, op Op, opts ...educationOption) *EducationMu
 }
 
 // withEducationID sets the ID field of the mutation.
-func withEducationID(id int) educationOption {
+func withEducationID(id uuid.UUID) educationOption {
 	return func(m *EducationMutation) {
 		var (
 			err   error
@@ -152,13 +151,13 @@ func (m EducationMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Education entities.
-func (m *EducationMutation) SetID(id int) {
+func (m *EducationMutation) SetID(id uuid.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *EducationMutation) ID() (id int, exists bool) {
+func (m *EducationMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -169,12 +168,12 @@ func (m *EducationMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *EducationMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *EducationMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uuid.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -182,42 +181,6 @@ func (m *EducationMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetUUID sets the "uuid" field.
-func (m *EducationMutation) SetUUID(u uuid.UUID) {
-	m.uuid = &u
-}
-
-// UUID returns the value of the "uuid" field in the mutation.
-func (m *EducationMutation) UUID() (r uuid.UUID, exists bool) {
-	v := m.uuid
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUUID returns the old "uuid" field's value of the Education entity.
-// If the Education object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EducationMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUUID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUUID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
-	}
-	return oldValue.UUID, nil
-}
-
-// ResetUUID resets all changes to the "uuid" field.
-func (m *EducationMutation) ResetUUID() {
-	m.uuid = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -342,12 +305,12 @@ func (m *EducationMutation) ResetDeletedAt() {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (m *EducationMutation) SetTalentID(i int) {
-	m.talent = &i
+func (m *EducationMutation) SetTalentID(u uuid.UUID) {
+	m.talent = &u
 }
 
 // TalentID returns the value of the "talent_id" field in the mutation.
-func (m *EducationMutation) TalentID() (r int, exists bool) {
+func (m *EducationMutation) TalentID() (r uuid.UUID, exists bool) {
 	v := m.talent
 	if v == nil {
 		return
@@ -358,7 +321,7 @@ func (m *EducationMutation) TalentID() (r int, exists bool) {
 // OldTalentID returns the old "talent_id" field's value of the Education entity.
 // If the Education object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EducationMutation) OldTalentID(ctx context.Context) (v int, err error) {
+func (m *EducationMutation) OldTalentID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTalentID is only allowed on UpdateOne operations")
 	}
@@ -668,7 +631,7 @@ func (m *EducationMutation) TalentCleared() bool {
 // TalentIDs returns the "talent" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TalentID instead. It exists only for internal usage by the builders.
-func (m *EducationMutation) TalentIDs() (ids []int) {
+func (m *EducationMutation) TalentIDs() (ids []uuid.UUID) {
 	if id := m.talent; id != nil {
 		ids = append(ids, *id)
 	}
@@ -700,10 +663,7 @@ func (m *EducationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EducationMutation) Fields() []string {
-	fields := make([]string, 0, 12)
-	if m.uuid != nil {
-		fields = append(fields, education.FieldUUID)
-	}
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, education.FieldCreatedAt)
 	}
@@ -745,8 +705,6 @@ func (m *EducationMutation) Fields() []string {
 // schema.
 func (m *EducationMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case education.FieldUUID:
-		return m.UUID()
 	case education.FieldCreatedAt:
 		return m.CreatedAt()
 	case education.FieldUpdatedAt:
@@ -778,8 +736,6 @@ func (m *EducationMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *EducationMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case education.FieldUUID:
-		return m.OldUUID(ctx)
 	case education.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case education.FieldUpdatedAt:
@@ -811,13 +767,6 @@ func (m *EducationMutation) OldField(ctx context.Context, name string) (ent.Valu
 // type.
 func (m *EducationMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case education.FieldUUID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUUID(v)
-		return nil
 	case education.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -840,7 +789,7 @@ func (m *EducationMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedAt(v)
 		return nil
 	case education.FieldTalentID:
-		v, ok := value.(int)
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -902,16 +851,13 @@ func (m *EducationMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *EducationMutation) AddedFields() []string {
-	var fields []string
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *EducationMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	}
 	return nil, false
 }
 
@@ -968,9 +914,6 @@ func (m *EducationMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *EducationMutation) ResetField(name string) error {
 	switch name {
-	case education.FieldUUID:
-		m.ResetUUID()
-		return nil
 	case education.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -1089,8 +1032,7 @@ type EmailTemplateMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
-	uuid          *uuid.UUID
+	id            *uuid.UUID
 	created_at    *time.Time
 	updated_at    *time.Time
 	deleted_at    *time.Time
@@ -1101,7 +1043,7 @@ type EmailTemplateMutation struct {
 	cc            *[]string
 	bcc           *[]string
 	clearedFields map[string]struct{}
-	user          *int
+	user          *uuid.UUID
 	cleareduser   bool
 	done          bool
 	oldValue      func(context.Context) (*EmailTemplate, error)
@@ -1128,7 +1070,7 @@ func newEmailTemplateMutation(c config, op Op, opts ...emailtemplateOption) *Ema
 }
 
 // withEmailTemplateID sets the ID field of the mutation.
-func withEmailTemplateID(id int) emailtemplateOption {
+func withEmailTemplateID(id uuid.UUID) emailtemplateOption {
 	return func(m *EmailTemplateMutation) {
 		var (
 			err   error
@@ -1180,13 +1122,13 @@ func (m EmailTemplateMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of EmailTemplate entities.
-func (m *EmailTemplateMutation) SetID(id int) {
+func (m *EmailTemplateMutation) SetID(id uuid.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *EmailTemplateMutation) ID() (id int, exists bool) {
+func (m *EmailTemplateMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1197,12 +1139,12 @@ func (m *EmailTemplateMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *EmailTemplateMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *EmailTemplateMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uuid.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -1210,42 +1152,6 @@ func (m *EmailTemplateMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetUUID sets the "uuid" field.
-func (m *EmailTemplateMutation) SetUUID(u uuid.UUID) {
-	m.uuid = &u
-}
-
-// UUID returns the value of the "uuid" field in the mutation.
-func (m *EmailTemplateMutation) UUID() (r uuid.UUID, exists bool) {
-	v := m.uuid
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUUID returns the old "uuid" field's value of the EmailTemplate entity.
-// If the EmailTemplate object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EmailTemplateMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUUID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUUID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
-	}
-	return oldValue.UUID, nil
-}
-
-// ResetUUID resets all changes to the "uuid" field.
-func (m *EmailTemplateMutation) ResetUUID() {
-	m.uuid = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -1370,12 +1276,12 @@ func (m *EmailTemplateMutation) ResetDeletedAt() {
 }
 
 // SetUserID sets the "user_id" field.
-func (m *EmailTemplateMutation) SetUserID(i int) {
-	m.user = &i
+func (m *EmailTemplateMutation) SetUserID(u uuid.UUID) {
+	m.user = &u
 }
 
 // UserID returns the value of the "user_id" field in the mutation.
-func (m *EmailTemplateMutation) UserID() (r int, exists bool) {
+func (m *EmailTemplateMutation) UserID() (r uuid.UUID, exists bool) {
 	v := m.user
 	if v == nil {
 		return
@@ -1386,7 +1292,7 @@ func (m *EmailTemplateMutation) UserID() (r int, exists bool) {
 // OldUserID returns the old "user_id" field's value of the EmailTemplate entity.
 // If the EmailTemplate object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EmailTemplateMutation) OldUserID(ctx context.Context) (v int, err error) {
+func (m *EmailTemplateMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
 	}
@@ -1647,7 +1553,7 @@ func (m *EmailTemplateMutation) UserCleared() bool {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *EmailTemplateMutation) UserIDs() (ids []int) {
+func (m *EmailTemplateMutation) UserIDs() (ids []uuid.UUID) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -1679,10 +1585,7 @@ func (m *EmailTemplateMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EmailTemplateMutation) Fields() []string {
-	fields := make([]string, 0, 11)
-	if m.uuid != nil {
-		fields = append(fields, emailtemplate.FieldUUID)
-	}
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, emailtemplate.FieldCreatedAt)
 	}
@@ -1721,8 +1624,6 @@ func (m *EmailTemplateMutation) Fields() []string {
 // schema.
 func (m *EmailTemplateMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case emailtemplate.FieldUUID:
-		return m.UUID()
 	case emailtemplate.FieldCreatedAt:
 		return m.CreatedAt()
 	case emailtemplate.FieldUpdatedAt:
@@ -1752,8 +1653,6 @@ func (m *EmailTemplateMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *EmailTemplateMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case emailtemplate.FieldUUID:
-		return m.OldUUID(ctx)
 	case emailtemplate.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case emailtemplate.FieldUpdatedAt:
@@ -1783,13 +1682,6 @@ func (m *EmailTemplateMutation) OldField(ctx context.Context, name string) (ent.
 // type.
 func (m *EmailTemplateMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case emailtemplate.FieldUUID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUUID(v)
-		return nil
 	case emailtemplate.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -1812,7 +1704,7 @@ func (m *EmailTemplateMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedAt(v)
 		return nil
 	case emailtemplate.FieldUserID:
-		v, ok := value.(int)
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1867,16 +1759,13 @@ func (m *EmailTemplateMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *EmailTemplateMutation) AddedFields() []string {
-	var fields []string
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *EmailTemplateMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	}
 	return nil, false
 }
 
@@ -1927,9 +1816,6 @@ func (m *EmailTemplateMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *EmailTemplateMutation) ResetField(name string) error {
 	switch name {
-	case emailtemplate.FieldUUID:
-		m.ResetUUID()
-		return nil
 	case emailtemplate.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -2045,8 +1931,7 @@ type EmergencyContactMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
-	uuid          *uuid.UUID
+	id            *uuid.UUID
 	created_at    *time.Time
 	updated_at    *time.Time
 	deleted_at    *time.Time
@@ -2056,7 +1941,7 @@ type EmergencyContactMutation struct {
 	relationship  *string
 	email         *string
 	clearedFields map[string]struct{}
-	talent        *int
+	talent        *uuid.UUID
 	clearedtalent bool
 	done          bool
 	oldValue      func(context.Context) (*EmergencyContact, error)
@@ -2083,7 +1968,7 @@ func newEmergencyContactMutation(c config, op Op, opts ...emergencycontactOption
 }
 
 // withEmergencyContactID sets the ID field of the mutation.
-func withEmergencyContactID(id int) emergencycontactOption {
+func withEmergencyContactID(id uuid.UUID) emergencycontactOption {
 	return func(m *EmergencyContactMutation) {
 		var (
 			err   error
@@ -2135,13 +2020,13 @@ func (m EmergencyContactMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of EmergencyContact entities.
-func (m *EmergencyContactMutation) SetID(id int) {
+func (m *EmergencyContactMutation) SetID(id uuid.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *EmergencyContactMutation) ID() (id int, exists bool) {
+func (m *EmergencyContactMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -2152,12 +2037,12 @@ func (m *EmergencyContactMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *EmergencyContactMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *EmergencyContactMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uuid.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -2165,42 +2050,6 @@ func (m *EmergencyContactMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetUUID sets the "uuid" field.
-func (m *EmergencyContactMutation) SetUUID(u uuid.UUID) {
-	m.uuid = &u
-}
-
-// UUID returns the value of the "uuid" field in the mutation.
-func (m *EmergencyContactMutation) UUID() (r uuid.UUID, exists bool) {
-	v := m.uuid
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUUID returns the old "uuid" field's value of the EmergencyContact entity.
-// If the EmergencyContact object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EmergencyContactMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUUID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUUID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
-	}
-	return oldValue.UUID, nil
-}
-
-// ResetUUID resets all changes to the "uuid" field.
-func (m *EmergencyContactMutation) ResetUUID() {
-	m.uuid = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -2325,12 +2174,12 @@ func (m *EmergencyContactMutation) ResetDeletedAt() {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (m *EmergencyContactMutation) SetTalentID(i int) {
-	m.talent = &i
+func (m *EmergencyContactMutation) SetTalentID(u uuid.UUID) {
+	m.talent = &u
 }
 
 // TalentID returns the value of the "talent_id" field in the mutation.
-func (m *EmergencyContactMutation) TalentID() (r int, exists bool) {
+func (m *EmergencyContactMutation) TalentID() (r uuid.UUID, exists bool) {
 	v := m.talent
 	if v == nil {
 		return
@@ -2341,7 +2190,7 @@ func (m *EmergencyContactMutation) TalentID() (r int, exists bool) {
 // OldTalentID returns the old "talent_id" field's value of the EmergencyContact entity.
 // If the EmergencyContact object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EmergencyContactMutation) OldTalentID(ctx context.Context) (v int, err error) {
+func (m *EmergencyContactMutation) OldTalentID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTalentID is only allowed on UpdateOne operations")
 	}
@@ -2566,7 +2415,7 @@ func (m *EmergencyContactMutation) TalentCleared() bool {
 // TalentIDs returns the "talent" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TalentID instead. It exists only for internal usage by the builders.
-func (m *EmergencyContactMutation) TalentIDs() (ids []int) {
+func (m *EmergencyContactMutation) TalentIDs() (ids []uuid.UUID) {
 	if id := m.talent; id != nil {
 		ids = append(ids, *id)
 	}
@@ -2598,10 +2447,7 @@ func (m *EmergencyContactMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EmergencyContactMutation) Fields() []string {
-	fields := make([]string, 0, 10)
-	if m.uuid != nil {
-		fields = append(fields, emergencycontact.FieldUUID)
-	}
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, emergencycontact.FieldCreatedAt)
 	}
@@ -2637,8 +2483,6 @@ func (m *EmergencyContactMutation) Fields() []string {
 // schema.
 func (m *EmergencyContactMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case emergencycontact.FieldUUID:
-		return m.UUID()
 	case emergencycontact.FieldCreatedAt:
 		return m.CreatedAt()
 	case emergencycontact.FieldUpdatedAt:
@@ -2666,8 +2510,6 @@ func (m *EmergencyContactMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *EmergencyContactMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case emergencycontact.FieldUUID:
-		return m.OldUUID(ctx)
 	case emergencycontact.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case emergencycontact.FieldUpdatedAt:
@@ -2695,13 +2537,6 @@ func (m *EmergencyContactMutation) OldField(ctx context.Context, name string) (e
 // type.
 func (m *EmergencyContactMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case emergencycontact.FieldUUID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUUID(v)
-		return nil
 	case emergencycontact.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -2724,7 +2559,7 @@ func (m *EmergencyContactMutation) SetField(name string, value ent.Value) error 
 		m.SetDeletedAt(v)
 		return nil
 	case emergencycontact.FieldTalentID:
-		v, ok := value.(int)
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2772,16 +2607,13 @@ func (m *EmergencyContactMutation) SetField(name string, value ent.Value) error 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *EmergencyContactMutation) AddedFields() []string {
-	var fields []string
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *EmergencyContactMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	}
 	return nil, false
 }
 
@@ -2832,9 +2664,6 @@ func (m *EmergencyContactMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *EmergencyContactMutation) ResetField(name string) error {
 	switch name {
-	case emergencycontact.FieldUUID:
-		m.ResetUUID()
-		return nil
 	case emergencycontact.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -2947,8 +2776,7 @@ type JobMutation struct {
 	config
 	op                  Op
 	typ                 string
-	id                  *int
-	uuid                *uuid.UUID
+	id                  *uuid.UUID
 	created_at          *time.Time
 	updated_at          *time.Time
 	deleted_at          *time.Time
@@ -2965,10 +2793,10 @@ type JobMutation struct {
 	you_have            *[]string
 	timezone            *string
 	clearedFields       map[string]struct{}
-	user                *int
+	user                *uuid.UUID
 	cleareduser         bool
-	applications        map[int]struct{}
-	removedapplications map[int]struct{}
+	applications        map[uuid.UUID]struct{}
+	removedapplications map[uuid.UUID]struct{}
 	clearedapplications bool
 	done                bool
 	oldValue            func(context.Context) (*Job, error)
@@ -2995,7 +2823,7 @@ func newJobMutation(c config, op Op, opts ...jobOption) *JobMutation {
 }
 
 // withJobID sets the ID field of the mutation.
-func withJobID(id int) jobOption {
+func withJobID(id uuid.UUID) jobOption {
 	return func(m *JobMutation) {
 		var (
 			err   error
@@ -3047,13 +2875,13 @@ func (m JobMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Job entities.
-func (m *JobMutation) SetID(id int) {
+func (m *JobMutation) SetID(id uuid.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *JobMutation) ID() (id int, exists bool) {
+func (m *JobMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -3064,12 +2892,12 @@ func (m *JobMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *JobMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *JobMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uuid.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -3077,42 +2905,6 @@ func (m *JobMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetUUID sets the "uuid" field.
-func (m *JobMutation) SetUUID(u uuid.UUID) {
-	m.uuid = &u
-}
-
-// UUID returns the value of the "uuid" field in the mutation.
-func (m *JobMutation) UUID() (r uuid.UUID, exists bool) {
-	v := m.uuid
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUUID returns the old "uuid" field's value of the Job entity.
-// If the Job object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *JobMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUUID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUUID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
-	}
-	return oldValue.UUID, nil
-}
-
-// ResetUUID resets all changes to the "uuid" field.
-func (m *JobMutation) ResetUUID() {
-	m.uuid = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -3237,12 +3029,12 @@ func (m *JobMutation) ResetDeletedAt() {
 }
 
 // SetUserID sets the "user_id" field.
-func (m *JobMutation) SetUserID(i int) {
-	m.user = &i
+func (m *JobMutation) SetUserID(u uuid.UUID) {
+	m.user = &u
 }
 
 // UserID returns the value of the "user_id" field in the mutation.
-func (m *JobMutation) UserID() (r int, exists bool) {
+func (m *JobMutation) UserID() (r uuid.UUID, exists bool) {
 	v := m.user
 	if v == nil {
 		return
@@ -3253,7 +3045,7 @@ func (m *JobMutation) UserID() (r int, exists bool) {
 // OldUserID returns the old "user_id" field's value of the Job entity.
 // If the Job object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *JobMutation) OldUserID(ctx context.Context) (v int, err error) {
+func (m *JobMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
 	}
@@ -3730,7 +3522,7 @@ func (m *JobMutation) UserCleared() bool {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *JobMutation) UserIDs() (ids []int) {
+func (m *JobMutation) UserIDs() (ids []uuid.UUID) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -3744,9 +3536,9 @@ func (m *JobMutation) ResetUser() {
 }
 
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by ids.
-func (m *JobMutation) AddApplicationIDs(ids ...int) {
+func (m *JobMutation) AddApplicationIDs(ids ...uuid.UUID) {
 	if m.applications == nil {
-		m.applications = make(map[int]struct{})
+		m.applications = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.applications[ids[i]] = struct{}{}
@@ -3764,9 +3556,9 @@ func (m *JobMutation) ApplicationsCleared() bool {
 }
 
 // RemoveApplicationIDs removes the "applications" edge to the JobApplication entity by IDs.
-func (m *JobMutation) RemoveApplicationIDs(ids ...int) {
+func (m *JobMutation) RemoveApplicationIDs(ids ...uuid.UUID) {
 	if m.removedapplications == nil {
-		m.removedapplications = make(map[int]struct{})
+		m.removedapplications = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		delete(m.applications, ids[i])
@@ -3775,7 +3567,7 @@ func (m *JobMutation) RemoveApplicationIDs(ids ...int) {
 }
 
 // RemovedApplications returns the removed IDs of the "applications" edge to the JobApplication entity.
-func (m *JobMutation) RemovedApplicationsIDs() (ids []int) {
+func (m *JobMutation) RemovedApplicationsIDs() (ids []uuid.UUID) {
 	for id := range m.removedapplications {
 		ids = append(ids, id)
 	}
@@ -3783,7 +3575,7 @@ func (m *JobMutation) RemovedApplicationsIDs() (ids []int) {
 }
 
 // ApplicationsIDs returns the "applications" edge IDs in the mutation.
-func (m *JobMutation) ApplicationsIDs() (ids []int) {
+func (m *JobMutation) ApplicationsIDs() (ids []uuid.UUID) {
 	for id := range m.applications {
 		ids = append(ids, id)
 	}
@@ -3816,10 +3608,7 @@ func (m *JobMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *JobMutation) Fields() []string {
-	fields := make([]string, 0, 17)
-	if m.uuid != nil {
-		fields = append(fields, job.FieldUUID)
-	}
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, job.FieldCreatedAt)
 	}
@@ -3876,8 +3665,6 @@ func (m *JobMutation) Fields() []string {
 // schema.
 func (m *JobMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case job.FieldUUID:
-		return m.UUID()
 	case job.FieldCreatedAt:
 		return m.CreatedAt()
 	case job.FieldUpdatedAt:
@@ -3919,8 +3706,6 @@ func (m *JobMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *JobMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case job.FieldUUID:
-		return m.OldUUID(ctx)
 	case job.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case job.FieldUpdatedAt:
@@ -3962,13 +3747,6 @@ func (m *JobMutation) OldField(ctx context.Context, name string) (ent.Value, err
 // type.
 func (m *JobMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case job.FieldUUID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUUID(v)
-		return nil
 	case job.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -3991,7 +3769,7 @@ func (m *JobMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedAt(v)
 		return nil
 	case job.FieldUserID:
-		v, ok := value.(int)
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -4088,16 +3866,13 @@ func (m *JobMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *JobMutation) AddedFields() []string {
-	var fields []string
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *JobMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	}
 	return nil, false
 }
 
@@ -4148,9 +3923,6 @@ func (m *JobMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *JobMutation) ResetField(name string) error {
 	switch name {
-	case job.FieldUUID:
-		m.ResetUUID()
-		return nil
 	case job.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -4310,8 +4082,7 @@ type JobApplicationMutation struct {
 	config
 	op              Op
 	typ             string
-	id              *int
-	uuid            *uuid.UUID
+	id              *uuid.UUID
 	created_at      *time.Time
 	updated_at      *time.Time
 	deleted_at      *time.Time
@@ -4319,9 +4090,9 @@ type JobApplicationMutation struct {
 	status          *jobapplication.Status
 	note            *string
 	clearedFields   map[string]struct{}
-	talent          *int
+	talent          *uuid.UUID
 	clearedtalent   bool
-	job             *int
+	job             *uuid.UUID
 	clearedjob      bool
 	done            bool
 	oldValue        func(context.Context) (*JobApplication, error)
@@ -4348,7 +4119,7 @@ func newJobApplicationMutation(c config, op Op, opts ...jobapplicationOption) *J
 }
 
 // withJobApplicationID sets the ID field of the mutation.
-func withJobApplicationID(id int) jobapplicationOption {
+func withJobApplicationID(id uuid.UUID) jobapplicationOption {
 	return func(m *JobApplicationMutation) {
 		var (
 			err   error
@@ -4400,13 +4171,13 @@ func (m JobApplicationMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of JobApplication entities.
-func (m *JobApplicationMutation) SetID(id int) {
+func (m *JobApplicationMutation) SetID(id uuid.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *JobApplicationMutation) ID() (id int, exists bool) {
+func (m *JobApplicationMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -4417,12 +4188,12 @@ func (m *JobApplicationMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *JobApplicationMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *JobApplicationMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uuid.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -4430,42 +4201,6 @@ func (m *JobApplicationMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetUUID sets the "uuid" field.
-func (m *JobApplicationMutation) SetUUID(u uuid.UUID) {
-	m.uuid = &u
-}
-
-// UUID returns the value of the "uuid" field in the mutation.
-func (m *JobApplicationMutation) UUID() (r uuid.UUID, exists bool) {
-	v := m.uuid
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUUID returns the old "uuid" field's value of the JobApplication entity.
-// If the JobApplication object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *JobApplicationMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUUID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUUID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
-	}
-	return oldValue.UUID, nil
-}
-
-// ResetUUID resets all changes to the "uuid" field.
-func (m *JobApplicationMutation) ResetUUID() {
-	m.uuid = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -4590,12 +4325,12 @@ func (m *JobApplicationMutation) ResetDeletedAt() {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (m *JobApplicationMutation) SetTalentID(i int) {
-	m.talent = &i
+func (m *JobApplicationMutation) SetTalentID(u uuid.UUID) {
+	m.talent = &u
 }
 
 // TalentID returns the value of the "talent_id" field in the mutation.
-func (m *JobApplicationMutation) TalentID() (r int, exists bool) {
+func (m *JobApplicationMutation) TalentID() (r uuid.UUID, exists bool) {
 	v := m.talent
 	if v == nil {
 		return
@@ -4606,7 +4341,7 @@ func (m *JobApplicationMutation) TalentID() (r int, exists bool) {
 // OldTalentID returns the old "talent_id" field's value of the JobApplication entity.
 // If the JobApplication object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *JobApplicationMutation) OldTalentID(ctx context.Context) (v int, err error) {
+func (m *JobApplicationMutation) OldTalentID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTalentID is only allowed on UpdateOne operations")
 	}
@@ -4639,12 +4374,12 @@ func (m *JobApplicationMutation) ResetTalentID() {
 }
 
 // SetJobID sets the "job_id" field.
-func (m *JobApplicationMutation) SetJobID(i int) {
-	m.job = &i
+func (m *JobApplicationMutation) SetJobID(u uuid.UUID) {
+	m.job = &u
 }
 
 // JobID returns the value of the "job_id" field in the mutation.
-func (m *JobApplicationMutation) JobID() (r int, exists bool) {
+func (m *JobApplicationMutation) JobID() (r uuid.UUID, exists bool) {
 	v := m.job
 	if v == nil {
 		return
@@ -4655,7 +4390,7 @@ func (m *JobApplicationMutation) JobID() (r int, exists bool) {
 // OldJobID returns the old "job_id" field's value of the JobApplication entity.
 // If the JobApplication object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *JobApplicationMutation) OldJobID(ctx context.Context) (v int, err error) {
+func (m *JobApplicationMutation) OldJobID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldJobID is only allowed on UpdateOne operations")
 	}
@@ -4821,7 +4556,7 @@ func (m *JobApplicationMutation) TalentCleared() bool {
 // TalentIDs returns the "talent" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TalentID instead. It exists only for internal usage by the builders.
-func (m *JobApplicationMutation) TalentIDs() (ids []int) {
+func (m *JobApplicationMutation) TalentIDs() (ids []uuid.UUID) {
 	if id := m.talent; id != nil {
 		ids = append(ids, *id)
 	}
@@ -4847,7 +4582,7 @@ func (m *JobApplicationMutation) JobCleared() bool {
 // JobIDs returns the "job" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // JobID instead. It exists only for internal usage by the builders.
-func (m *JobApplicationMutation) JobIDs() (ids []int) {
+func (m *JobApplicationMutation) JobIDs() (ids []uuid.UUID) {
 	if id := m.job; id != nil {
 		ids = append(ids, *id)
 	}
@@ -4879,10 +4614,7 @@ func (m *JobApplicationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *JobApplicationMutation) Fields() []string {
-	fields := make([]string, 0, 9)
-	if m.uuid != nil {
-		fields = append(fields, jobapplication.FieldUUID)
-	}
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, jobapplication.FieldCreatedAt)
 	}
@@ -4915,8 +4647,6 @@ func (m *JobApplicationMutation) Fields() []string {
 // schema.
 func (m *JobApplicationMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case jobapplication.FieldUUID:
-		return m.UUID()
 	case jobapplication.FieldCreatedAt:
 		return m.CreatedAt()
 	case jobapplication.FieldUpdatedAt:
@@ -4942,8 +4672,6 @@ func (m *JobApplicationMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *JobApplicationMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case jobapplication.FieldUUID:
-		return m.OldUUID(ctx)
 	case jobapplication.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case jobapplication.FieldUpdatedAt:
@@ -4969,13 +4697,6 @@ func (m *JobApplicationMutation) OldField(ctx context.Context, name string) (ent
 // type.
 func (m *JobApplicationMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case jobapplication.FieldUUID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUUID(v)
-		return nil
 	case jobapplication.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -4998,14 +4719,14 @@ func (m *JobApplicationMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedAt(v)
 		return nil
 	case jobapplication.FieldTalentID:
-		v, ok := value.(int)
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTalentID(v)
 		return nil
 	case jobapplication.FieldJobID:
-		v, ok := value.(int)
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -5039,16 +4760,13 @@ func (m *JobApplicationMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *JobApplicationMutation) AddedFields() []string {
-	var fields []string
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *JobApplicationMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	}
 	return nil, false
 }
 
@@ -5111,9 +4829,6 @@ func (m *JobApplicationMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *JobApplicationMutation) ResetField(name string) error {
 	switch name {
-	case jobapplication.FieldUUID:
-		m.ResetUUID()
-		return nil
 	case jobapplication.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -5241,8 +4956,7 @@ type MissionMutation struct {
 	config
 	op             Op
 	typ            string
-	id             *int
-	uuid           *uuid.UUID
+	id             *uuid.UUID
 	created_at     *time.Time
 	updated_at     *time.Time
 	deleted_at     *time.Time
@@ -5250,9 +4964,9 @@ type MissionMutation struct {
 	start_date     *time.Time
 	end_date       *time.Time
 	clearedFields  map[string]struct{}
-	talent         *int
+	talent         *uuid.UUID
 	clearedtalent  bool
-	partner        *int
+	partner        *uuid.UUID
 	clearedpartner bool
 	done           bool
 	oldValue       func(context.Context) (*Mission, error)
@@ -5279,7 +4993,7 @@ func newMissionMutation(c config, op Op, opts ...missionOption) *MissionMutation
 }
 
 // withMissionID sets the ID field of the mutation.
-func withMissionID(id int) missionOption {
+func withMissionID(id uuid.UUID) missionOption {
 	return func(m *MissionMutation) {
 		var (
 			err   error
@@ -5331,13 +5045,13 @@ func (m MissionMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Mission entities.
-func (m *MissionMutation) SetID(id int) {
+func (m *MissionMutation) SetID(id uuid.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *MissionMutation) ID() (id int, exists bool) {
+func (m *MissionMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -5348,12 +5062,12 @@ func (m *MissionMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *MissionMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *MissionMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uuid.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -5361,42 +5075,6 @@ func (m *MissionMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetUUID sets the "uuid" field.
-func (m *MissionMutation) SetUUID(u uuid.UUID) {
-	m.uuid = &u
-}
-
-// UUID returns the value of the "uuid" field in the mutation.
-func (m *MissionMutation) UUID() (r uuid.UUID, exists bool) {
-	v := m.uuid
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUUID returns the old "uuid" field's value of the Mission entity.
-// If the Mission object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MissionMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUUID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUUID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
-	}
-	return oldValue.UUID, nil
-}
-
-// ResetUUID resets all changes to the "uuid" field.
-func (m *MissionMutation) ResetUUID() {
-	m.uuid = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -5521,12 +5199,12 @@ func (m *MissionMutation) ResetDeletedAt() {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (m *MissionMutation) SetTalentID(i int) {
-	m.talent = &i
+func (m *MissionMutation) SetTalentID(u uuid.UUID) {
+	m.talent = &u
 }
 
 // TalentID returns the value of the "talent_id" field in the mutation.
-func (m *MissionMutation) TalentID() (r int, exists bool) {
+func (m *MissionMutation) TalentID() (r uuid.UUID, exists bool) {
 	v := m.talent
 	if v == nil {
 		return
@@ -5537,7 +5215,7 @@ func (m *MissionMutation) TalentID() (r int, exists bool) {
 // OldTalentID returns the old "talent_id" field's value of the Mission entity.
 // If the Mission object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MissionMutation) OldTalentID(ctx context.Context) (v int, err error) {
+func (m *MissionMutation) OldTalentID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTalentID is only allowed on UpdateOne operations")
 	}
@@ -5570,12 +5248,12 @@ func (m *MissionMutation) ResetTalentID() {
 }
 
 // SetPartnerID sets the "partner_id" field.
-func (m *MissionMutation) SetPartnerID(i int) {
-	m.partner = &i
+func (m *MissionMutation) SetPartnerID(u uuid.UUID) {
+	m.partner = &u
 }
 
 // PartnerID returns the value of the "partner_id" field in the mutation.
-func (m *MissionMutation) PartnerID() (r int, exists bool) {
+func (m *MissionMutation) PartnerID() (r uuid.UUID, exists bool) {
 	v := m.partner
 	if v == nil {
 		return
@@ -5586,7 +5264,7 @@ func (m *MissionMutation) PartnerID() (r int, exists bool) {
 // OldPartnerID returns the old "partner_id" field's value of the Mission entity.
 // If the Mission object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MissionMutation) OldPartnerID(ctx context.Context) (v int, err error) {
+func (m *MissionMutation) OldPartnerID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPartnerID is only allowed on UpdateOne operations")
 	}
@@ -5752,7 +5430,7 @@ func (m *MissionMutation) TalentCleared() bool {
 // TalentIDs returns the "talent" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TalentID instead. It exists only for internal usage by the builders.
-func (m *MissionMutation) TalentIDs() (ids []int) {
+func (m *MissionMutation) TalentIDs() (ids []uuid.UUID) {
 	if id := m.talent; id != nil {
 		ids = append(ids, *id)
 	}
@@ -5778,7 +5456,7 @@ func (m *MissionMutation) PartnerCleared() bool {
 // PartnerIDs returns the "partner" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // PartnerID instead. It exists only for internal usage by the builders.
-func (m *MissionMutation) PartnerIDs() (ids []int) {
+func (m *MissionMutation) PartnerIDs() (ids []uuid.UUID) {
 	if id := m.partner; id != nil {
 		ids = append(ids, *id)
 	}
@@ -5810,10 +5488,7 @@ func (m *MissionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MissionMutation) Fields() []string {
-	fields := make([]string, 0, 9)
-	if m.uuid != nil {
-		fields = append(fields, mission.FieldUUID)
-	}
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, mission.FieldCreatedAt)
 	}
@@ -5846,8 +5521,6 @@ func (m *MissionMutation) Fields() []string {
 // schema.
 func (m *MissionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case mission.FieldUUID:
-		return m.UUID()
 	case mission.FieldCreatedAt:
 		return m.CreatedAt()
 	case mission.FieldUpdatedAt:
@@ -5873,8 +5546,6 @@ func (m *MissionMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *MissionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case mission.FieldUUID:
-		return m.OldUUID(ctx)
 	case mission.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case mission.FieldUpdatedAt:
@@ -5900,13 +5571,6 @@ func (m *MissionMutation) OldField(ctx context.Context, name string) (ent.Value,
 // type.
 func (m *MissionMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case mission.FieldUUID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUUID(v)
-		return nil
 	case mission.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -5929,14 +5593,14 @@ func (m *MissionMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedAt(v)
 		return nil
 	case mission.FieldTalentID:
-		v, ok := value.(int)
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTalentID(v)
 		return nil
 	case mission.FieldPartnerID:
-		v, ok := value.(int)
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -5970,16 +5634,13 @@ func (m *MissionMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *MissionMutation) AddedFields() []string {
-	var fields []string
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *MissionMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	}
 	return nil, false
 }
 
@@ -6042,9 +5703,6 @@ func (m *MissionMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *MissionMutation) ResetField(name string) error {
 	switch name {
-	case mission.FieldUUID:
-		m.ResetUUID()
-		return nil
 	case mission.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -6172,8 +5830,7 @@ type PartnerMutation struct {
 	config
 	op                        Op
 	typ                       string
-	id                        *int
-	uuid                      *uuid.UUID
+	id                        *uuid.UUID
 	created_at                *time.Time
 	updated_at                *time.Time
 	deleted_at                *time.Time
@@ -6184,8 +5841,8 @@ type PartnerMutation struct {
 	_ContactPersonEmail       *string
 	_WebsiteUrl               *string
 	clearedFields             map[string]struct{}
-	missions                  map[int]struct{}
-	removedmissions           map[int]struct{}
+	missions                  map[uuid.UUID]struct{}
+	removedmissions           map[uuid.UUID]struct{}
 	clearedmissions           bool
 	done                      bool
 	oldValue                  func(context.Context) (*Partner, error)
@@ -6212,7 +5869,7 @@ func newPartnerMutation(c config, op Op, opts ...partnerOption) *PartnerMutation
 }
 
 // withPartnerID sets the ID field of the mutation.
-func withPartnerID(id int) partnerOption {
+func withPartnerID(id uuid.UUID) partnerOption {
 	return func(m *PartnerMutation) {
 		var (
 			err   error
@@ -6264,13 +5921,13 @@ func (m PartnerMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Partner entities.
-func (m *PartnerMutation) SetID(id int) {
+func (m *PartnerMutation) SetID(id uuid.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *PartnerMutation) ID() (id int, exists bool) {
+func (m *PartnerMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -6281,12 +5938,12 @@ func (m *PartnerMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *PartnerMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *PartnerMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uuid.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -6294,42 +5951,6 @@ func (m *PartnerMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetUUID sets the "uuid" field.
-func (m *PartnerMutation) SetUUID(u uuid.UUID) {
-	m.uuid = &u
-}
-
-// UUID returns the value of the "uuid" field in the mutation.
-func (m *PartnerMutation) UUID() (r uuid.UUID, exists bool) {
-	v := m.uuid
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUUID returns the old "uuid" field's value of the Partner entity.
-// If the Partner object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PartnerMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUUID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUUID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
-	}
-	return oldValue.UUID, nil
-}
-
-// ResetUUID resets all changes to the "uuid" field.
-func (m *PartnerMutation) ResetUUID() {
-	m.uuid = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -6670,9 +6291,9 @@ func (m *PartnerMutation) ResetWebsiteUrl() {
 }
 
 // AddMissionIDs adds the "missions" edge to the Mission entity by ids.
-func (m *PartnerMutation) AddMissionIDs(ids ...int) {
+func (m *PartnerMutation) AddMissionIDs(ids ...uuid.UUID) {
 	if m.missions == nil {
-		m.missions = make(map[int]struct{})
+		m.missions = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.missions[ids[i]] = struct{}{}
@@ -6690,9 +6311,9 @@ func (m *PartnerMutation) MissionsCleared() bool {
 }
 
 // RemoveMissionIDs removes the "missions" edge to the Mission entity by IDs.
-func (m *PartnerMutation) RemoveMissionIDs(ids ...int) {
+func (m *PartnerMutation) RemoveMissionIDs(ids ...uuid.UUID) {
 	if m.removedmissions == nil {
-		m.removedmissions = make(map[int]struct{})
+		m.removedmissions = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		delete(m.missions, ids[i])
@@ -6701,7 +6322,7 @@ func (m *PartnerMutation) RemoveMissionIDs(ids ...int) {
 }
 
 // RemovedMissions returns the removed IDs of the "missions" edge to the Mission entity.
-func (m *PartnerMutation) RemovedMissionsIDs() (ids []int) {
+func (m *PartnerMutation) RemovedMissionsIDs() (ids []uuid.UUID) {
 	for id := range m.removedmissions {
 		ids = append(ids, id)
 	}
@@ -6709,7 +6330,7 @@ func (m *PartnerMutation) RemovedMissionsIDs() (ids []int) {
 }
 
 // MissionsIDs returns the "missions" edge IDs in the mutation.
-func (m *PartnerMutation) MissionsIDs() (ids []int) {
+func (m *PartnerMutation) MissionsIDs() (ids []uuid.UUID) {
 	for id := range m.missions {
 		ids = append(ids, id)
 	}
@@ -6742,10 +6363,7 @@ func (m *PartnerMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PartnerMutation) Fields() []string {
-	fields := make([]string, 0, 10)
-	if m.uuid != nil {
-		fields = append(fields, partner.FieldUUID)
-	}
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, partner.FieldCreatedAt)
 	}
@@ -6781,8 +6399,6 @@ func (m *PartnerMutation) Fields() []string {
 // schema.
 func (m *PartnerMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case partner.FieldUUID:
-		return m.UUID()
 	case partner.FieldCreatedAt:
 		return m.CreatedAt()
 	case partner.FieldUpdatedAt:
@@ -6810,8 +6426,6 @@ func (m *PartnerMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *PartnerMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case partner.FieldUUID:
-		return m.OldUUID(ctx)
 	case partner.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case partner.FieldUpdatedAt:
@@ -6839,13 +6453,6 @@ func (m *PartnerMutation) OldField(ctx context.Context, name string) (ent.Value,
 // type.
 func (m *PartnerMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case partner.FieldUUID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUUID(v)
-		return nil
 	case partner.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -6967,9 +6574,6 @@ func (m *PartnerMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *PartnerMutation) ResetField(name string) error {
 	switch name {
-	case partner.FieldUUID:
-		m.ResetUUID()
-		return nil
 	case partner.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -7090,15 +6694,14 @@ type PortfolioLinkMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
-	uuid          *uuid.UUID
+	id            *uuid.UUID
 	created_at    *time.Time
 	updated_at    *time.Time
 	deleted_at    *time.Time
 	url           *string
 	name          *string
 	clearedFields map[string]struct{}
-	talent        *int
+	talent        *uuid.UUID
 	clearedtalent bool
 	done          bool
 	oldValue      func(context.Context) (*PortfolioLink, error)
@@ -7125,7 +6728,7 @@ func newPortfolioLinkMutation(c config, op Op, opts ...portfoliolinkOption) *Por
 }
 
 // withPortfolioLinkID sets the ID field of the mutation.
-func withPortfolioLinkID(id int) portfoliolinkOption {
+func withPortfolioLinkID(id uuid.UUID) portfoliolinkOption {
 	return func(m *PortfolioLinkMutation) {
 		var (
 			err   error
@@ -7177,13 +6780,13 @@ func (m PortfolioLinkMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of PortfolioLink entities.
-func (m *PortfolioLinkMutation) SetID(id int) {
+func (m *PortfolioLinkMutation) SetID(id uuid.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *PortfolioLinkMutation) ID() (id int, exists bool) {
+func (m *PortfolioLinkMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -7194,12 +6797,12 @@ func (m *PortfolioLinkMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *PortfolioLinkMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *PortfolioLinkMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uuid.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -7207,42 +6810,6 @@ func (m *PortfolioLinkMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetUUID sets the "uuid" field.
-func (m *PortfolioLinkMutation) SetUUID(u uuid.UUID) {
-	m.uuid = &u
-}
-
-// UUID returns the value of the "uuid" field in the mutation.
-func (m *PortfolioLinkMutation) UUID() (r uuid.UUID, exists bool) {
-	v := m.uuid
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUUID returns the old "uuid" field's value of the PortfolioLink entity.
-// If the PortfolioLink object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PortfolioLinkMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUUID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUUID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
-	}
-	return oldValue.UUID, nil
-}
-
-// ResetUUID resets all changes to the "uuid" field.
-func (m *PortfolioLinkMutation) ResetUUID() {
-	m.uuid = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -7439,12 +7006,12 @@ func (m *PortfolioLinkMutation) ResetName() {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (m *PortfolioLinkMutation) SetTalentID(i int) {
-	m.talent = &i
+func (m *PortfolioLinkMutation) SetTalentID(u uuid.UUID) {
+	m.talent = &u
 }
 
 // TalentID returns the value of the "talent_id" field in the mutation.
-func (m *PortfolioLinkMutation) TalentID() (r int, exists bool) {
+func (m *PortfolioLinkMutation) TalentID() (r uuid.UUID, exists bool) {
 	v := m.talent
 	if v == nil {
 		return
@@ -7455,7 +7022,7 @@ func (m *PortfolioLinkMutation) TalentID() (r int, exists bool) {
 // OldTalentID returns the old "talent_id" field's value of the PortfolioLink entity.
 // If the PortfolioLink object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PortfolioLinkMutation) OldTalentID(ctx context.Context) (v int, err error) {
+func (m *PortfolioLinkMutation) OldTalentID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTalentID is only allowed on UpdateOne operations")
 	}
@@ -7500,7 +7067,7 @@ func (m *PortfolioLinkMutation) TalentCleared() bool {
 // TalentIDs returns the "talent" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TalentID instead. It exists only for internal usage by the builders.
-func (m *PortfolioLinkMutation) TalentIDs() (ids []int) {
+func (m *PortfolioLinkMutation) TalentIDs() (ids []uuid.UUID) {
 	if id := m.talent; id != nil {
 		ids = append(ids, *id)
 	}
@@ -7532,10 +7099,7 @@ func (m *PortfolioLinkMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PortfolioLinkMutation) Fields() []string {
-	fields := make([]string, 0, 7)
-	if m.uuid != nil {
-		fields = append(fields, portfoliolink.FieldUUID)
-	}
+	fields := make([]string, 0, 6)
 	if m.created_at != nil {
 		fields = append(fields, portfoliolink.FieldCreatedAt)
 	}
@@ -7562,8 +7126,6 @@ func (m *PortfolioLinkMutation) Fields() []string {
 // schema.
 func (m *PortfolioLinkMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case portfoliolink.FieldUUID:
-		return m.UUID()
 	case portfoliolink.FieldCreatedAt:
 		return m.CreatedAt()
 	case portfoliolink.FieldUpdatedAt:
@@ -7585,8 +7147,6 @@ func (m *PortfolioLinkMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *PortfolioLinkMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case portfoliolink.FieldUUID:
-		return m.OldUUID(ctx)
 	case portfoliolink.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case portfoliolink.FieldUpdatedAt:
@@ -7608,13 +7168,6 @@ func (m *PortfolioLinkMutation) OldField(ctx context.Context, name string) (ent.
 // type.
 func (m *PortfolioLinkMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case portfoliolink.FieldUUID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUUID(v)
-		return nil
 	case portfoliolink.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -7651,7 +7204,7 @@ func (m *PortfolioLinkMutation) SetField(name string, value ent.Value) error {
 		m.SetName(v)
 		return nil
 	case portfoliolink.FieldTalentID:
-		v, ok := value.(int)
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -7664,16 +7217,13 @@ func (m *PortfolioLinkMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *PortfolioLinkMutation) AddedFields() []string {
-	var fields []string
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *PortfolioLinkMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	}
 	return nil, false
 }
 
@@ -7724,9 +7274,6 @@ func (m *PortfolioLinkMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *PortfolioLinkMutation) ResetField(name string) error {
 	switch name {
-	case portfoliolink.FieldUUID:
-		m.ResetUUID()
-		return nil
 	case portfoliolink.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -7830,8 +7377,7 @@ type SkillMutation struct {
 	config
 	op                     Op
 	typ                    string
-	id                     *int
-	uuid                   *uuid.UUID
+	id                     *uuid.UUID
 	created_at             *time.Time
 	updated_at             *time.Time
 	deleted_at             *time.Time
@@ -7841,7 +7387,7 @@ type SkillMutation struct {
 	preferred              *bool
 	note                   *string
 	clearedFields          map[string]struct{}
-	talent                 *int
+	talent                 *uuid.UUID
 	clearedtalent          bool
 	done                   bool
 	oldValue               func(context.Context) (*Skill, error)
@@ -7868,7 +7414,7 @@ func newSkillMutation(c config, op Op, opts ...skillOption) *SkillMutation {
 }
 
 // withSkillID sets the ID field of the mutation.
-func withSkillID(id int) skillOption {
+func withSkillID(id uuid.UUID) skillOption {
 	return func(m *SkillMutation) {
 		var (
 			err   error
@@ -7920,13 +7466,13 @@ func (m SkillMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Skill entities.
-func (m *SkillMutation) SetID(id int) {
+func (m *SkillMutation) SetID(id uuid.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *SkillMutation) ID() (id int, exists bool) {
+func (m *SkillMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -7937,12 +7483,12 @@ func (m *SkillMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *SkillMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *SkillMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uuid.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -7950,42 +7496,6 @@ func (m *SkillMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetUUID sets the "uuid" field.
-func (m *SkillMutation) SetUUID(u uuid.UUID) {
-	m.uuid = &u
-}
-
-// UUID returns the value of the "uuid" field in the mutation.
-func (m *SkillMutation) UUID() (r uuid.UUID, exists bool) {
-	v := m.uuid
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUUID returns the old "uuid" field's value of the Skill entity.
-// If the Skill object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SkillMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUUID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUUID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
-	}
-	return oldValue.UUID, nil
-}
-
-// ResetUUID resets all changes to the "uuid" field.
-func (m *SkillMutation) ResetUUID() {
-	m.uuid = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -8110,12 +7620,12 @@ func (m *SkillMutation) ResetDeletedAt() {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (m *SkillMutation) SetTalentID(i int) {
-	m.talent = &i
+func (m *SkillMutation) SetTalentID(u uuid.UUID) {
+	m.talent = &u
 }
 
 // TalentID returns the value of the "talent_id" field in the mutation.
-func (m *SkillMutation) TalentID() (r int, exists bool) {
+func (m *SkillMutation) TalentID() (r uuid.UUID, exists bool) {
 	v := m.talent
 	if v == nil {
 		return
@@ -8126,7 +7636,7 @@ func (m *SkillMutation) TalentID() (r int, exists bool) {
 // OldTalentID returns the old "talent_id" field's value of the Skill entity.
 // If the Skill object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SkillMutation) OldTalentID(ctx context.Context) (v int, err error) {
+func (m *SkillMutation) OldTalentID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTalentID is only allowed on UpdateOne operations")
 	}
@@ -8335,7 +7845,7 @@ func (m *SkillMutation) TalentCleared() bool {
 // TalentIDs returns the "talent" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TalentID instead. It exists only for internal usage by the builders.
-func (m *SkillMutation) TalentIDs() (ids []int) {
+func (m *SkillMutation) TalentIDs() (ids []uuid.UUID) {
 	if id := m.talent; id != nil {
 		ids = append(ids, *id)
 	}
@@ -8367,10 +7877,7 @@ func (m *SkillMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SkillMutation) Fields() []string {
-	fields := make([]string, 0, 9)
-	if m.uuid != nil {
-		fields = append(fields, skill.FieldUUID)
-	}
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, skill.FieldCreatedAt)
 	}
@@ -8403,8 +7910,6 @@ func (m *SkillMutation) Fields() []string {
 // schema.
 func (m *SkillMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case skill.FieldUUID:
-		return m.UUID()
 	case skill.FieldCreatedAt:
 		return m.CreatedAt()
 	case skill.FieldUpdatedAt:
@@ -8430,8 +7935,6 @@ func (m *SkillMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *SkillMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case skill.FieldUUID:
-		return m.OldUUID(ctx)
 	case skill.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case skill.FieldUpdatedAt:
@@ -8457,13 +7960,6 @@ func (m *SkillMutation) OldField(ctx context.Context, name string) (ent.Value, e
 // type.
 func (m *SkillMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case skill.FieldUUID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUUID(v)
-		return nil
 	case skill.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -8486,7 +7982,7 @@ func (m *SkillMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedAt(v)
 		return nil
 	case skill.FieldTalentID:
-		v, ok := value.(int)
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -8599,9 +8095,6 @@ func (m *SkillMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *SkillMutation) ResetField(name string) error {
 	switch name {
-	case skill.FieldUUID:
-		m.ResetUUID()
-		return nil
 	case skill.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -8711,8 +8204,7 @@ type SlackAppInstallMutation struct {
 	config
 	op                    Op
 	typ                   string
-	id                    *int
-	uuid                  *uuid.UUID
+	id                    *uuid.UUID
 	created_at            *time.Time
 	updated_at            *time.Time
 	deleted_at            *time.Time
@@ -8727,7 +8219,7 @@ type SlackAppInstallMutation struct {
 	scope                 *string
 	is_enterprise_install *bool
 	clearedFields         map[string]struct{}
-	user                  *int
+	user                  *uuid.UUID
 	cleareduser           bool
 	done                  bool
 	oldValue              func(context.Context) (*SlackAppInstall, error)
@@ -8754,7 +8246,7 @@ func newSlackAppInstallMutation(c config, op Op, opts ...slackappinstallOption) 
 }
 
 // withSlackAppInstallID sets the ID field of the mutation.
-func withSlackAppInstallID(id int) slackappinstallOption {
+func withSlackAppInstallID(id uuid.UUID) slackappinstallOption {
 	return func(m *SlackAppInstallMutation) {
 		var (
 			err   error
@@ -8806,13 +8298,13 @@ func (m SlackAppInstallMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of SlackAppInstall entities.
-func (m *SlackAppInstallMutation) SetID(id int) {
+func (m *SlackAppInstallMutation) SetID(id uuid.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *SlackAppInstallMutation) ID() (id int, exists bool) {
+func (m *SlackAppInstallMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -8823,12 +8315,12 @@ func (m *SlackAppInstallMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *SlackAppInstallMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *SlackAppInstallMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uuid.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -8836,42 +8328,6 @@ func (m *SlackAppInstallMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetUUID sets the "uuid" field.
-func (m *SlackAppInstallMutation) SetUUID(u uuid.UUID) {
-	m.uuid = &u
-}
-
-// UUID returns the value of the "uuid" field in the mutation.
-func (m *SlackAppInstallMutation) UUID() (r uuid.UUID, exists bool) {
-	v := m.uuid
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUUID returns the old "uuid" field's value of the SlackAppInstall entity.
-// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SlackAppInstallMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUUID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUUID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
-	}
-	return oldValue.UUID, nil
-}
-
-// ResetUUID resets all changes to the "uuid" field.
-func (m *SlackAppInstallMutation) ResetUUID() {
-	m.uuid = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -8996,12 +8452,12 @@ func (m *SlackAppInstallMutation) ResetDeletedAt() {
 }
 
 // SetUserID sets the "user_id" field.
-func (m *SlackAppInstallMutation) SetUserID(i int) {
-	m.user = &i
+func (m *SlackAppInstallMutation) SetUserID(u uuid.UUID) {
+	m.user = &u
 }
 
 // UserID returns the value of the "user_id" field in the mutation.
-func (m *SlackAppInstallMutation) UserID() (r int, exists bool) {
+func (m *SlackAppInstallMutation) UserID() (r uuid.UUID, exists bool) {
 	v := m.user
 	if v == nil {
 		return
@@ -9012,7 +8468,7 @@ func (m *SlackAppInstallMutation) UserID() (r int, exists bool) {
 // OldUserID returns the old "user_id" field's value of the SlackAppInstall entity.
 // If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SlackAppInstallMutation) OldUserID(ctx context.Context) (v int, err error) {
+func (m *SlackAppInstallMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
 	}
@@ -9417,7 +8873,7 @@ func (m *SlackAppInstallMutation) UserCleared() bool {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *SlackAppInstallMutation) UserIDs() (ids []int) {
+func (m *SlackAppInstallMutation) UserIDs() (ids []uuid.UUID) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -9449,10 +8905,7 @@ func (m *SlackAppInstallMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SlackAppInstallMutation) Fields() []string {
-	fields := make([]string, 0, 15)
-	if m.uuid != nil {
-		fields = append(fields, slackappinstall.FieldUUID)
-	}
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, slackappinstall.FieldCreatedAt)
 	}
@@ -9503,8 +8956,6 @@ func (m *SlackAppInstallMutation) Fields() []string {
 // schema.
 func (m *SlackAppInstallMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case slackappinstall.FieldUUID:
-		return m.UUID()
 	case slackappinstall.FieldCreatedAt:
 		return m.CreatedAt()
 	case slackappinstall.FieldUpdatedAt:
@@ -9542,8 +8993,6 @@ func (m *SlackAppInstallMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *SlackAppInstallMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case slackappinstall.FieldUUID:
-		return m.OldUUID(ctx)
 	case slackappinstall.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case slackappinstall.FieldUpdatedAt:
@@ -9581,13 +9030,6 @@ func (m *SlackAppInstallMutation) OldField(ctx context.Context, name string) (en
 // type.
 func (m *SlackAppInstallMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case slackappinstall.FieldUUID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUUID(v)
-		return nil
 	case slackappinstall.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -9610,7 +9052,7 @@ func (m *SlackAppInstallMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedAt(v)
 		return nil
 	case slackappinstall.FieldUserID:
-		v, ok := value.(int)
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -9693,16 +9135,13 @@ func (m *SlackAppInstallMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *SlackAppInstallMutation) AddedFields() []string {
-	var fields []string
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *SlackAppInstallMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	}
 	return nil, false
 }
 
@@ -9753,9 +9192,6 @@ func (m *SlackAppInstallMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *SlackAppInstallMutation) ResetField(name string) error {
 	switch name {
-	case slackappinstall.FieldUUID:
-		m.ResetUUID()
-		return nil
 	case slackappinstall.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -9883,8 +9319,7 @@ type TalentMutation struct {
 	config
 	op                        Op
 	typ                       string
-	id                        *int
-	uuid                      *uuid.UUID
+	id                        *uuid.UUID
 	created_at                *time.Time
 	updated_at                *time.Time
 	deleted_at                *time.Time
@@ -9894,8 +9329,6 @@ type TalentMutation struct {
 	pronoun                   *string
 	preferred_job_title       *string
 	is_available              *bool
-	referral_code             *string
-	tentn_code                *string
 	professional_start_date   *time.Time
 	email                     *string
 	phone                     *string
@@ -9906,33 +9339,28 @@ type TalentMutation struct {
 	timezone                  *string
 	state                     *string
 	clearedFields             map[string]struct{}
-	user                      *int
+	user                      *uuid.UUID
 	cleareduser               bool
-	referrer                  *int
-	clearedreferrer           bool
-	referees                  map[int]struct{}
-	removedreferees           map[int]struct{}
-	clearedreferees           bool
-	portfoliolinks            map[int]struct{}
-	removedportfoliolinks     map[int]struct{}
+	portfoliolinks            map[uuid.UUID]struct{}
+	removedportfoliolinks     map[uuid.UUID]struct{}
 	clearedportfoliolinks     bool
-	skills                    map[int]struct{}
-	removedskills             map[int]struct{}
+	skills                    map[uuid.UUID]struct{}
+	removedskills             map[uuid.UUID]struct{}
 	clearedskills             bool
-	job_applications          map[int]struct{}
-	removedjob_applications   map[int]struct{}
+	job_applications          map[uuid.UUID]struct{}
+	removedjob_applications   map[uuid.UUID]struct{}
 	clearedjob_applications   bool
-	work_experiences          map[int]struct{}
-	removedwork_experiences   map[int]struct{}
+	work_experiences          map[uuid.UUID]struct{}
+	removedwork_experiences   map[uuid.UUID]struct{}
 	clearedwork_experiences   bool
-	educations                map[int]struct{}
-	removededucations         map[int]struct{}
+	educations                map[uuid.UUID]struct{}
+	removededucations         map[uuid.UUID]struct{}
 	clearededucations         bool
-	emergency_contacts        map[int]struct{}
-	removedemergency_contacts map[int]struct{}
+	emergency_contacts        map[uuid.UUID]struct{}
+	removedemergency_contacts map[uuid.UUID]struct{}
 	clearedemergency_contacts bool
-	missions                  map[int]struct{}
-	removedmissions           map[int]struct{}
+	missions                  map[uuid.UUID]struct{}
+	removedmissions           map[uuid.UUID]struct{}
 	clearedmissions           bool
 	done                      bool
 	oldValue                  func(context.Context) (*Talent, error)
@@ -9959,7 +9387,7 @@ func newTalentMutation(c config, op Op, opts ...talentOption) *TalentMutation {
 }
 
 // withTalentID sets the ID field of the mutation.
-func withTalentID(id int) talentOption {
+func withTalentID(id uuid.UUID) talentOption {
 	return func(m *TalentMutation) {
 		var (
 			err   error
@@ -10011,13 +9439,13 @@ func (m TalentMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Talent entities.
-func (m *TalentMutation) SetID(id int) {
+func (m *TalentMutation) SetID(id uuid.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *TalentMutation) ID() (id int, exists bool) {
+func (m *TalentMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -10028,12 +9456,12 @@ func (m *TalentMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *TalentMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *TalentMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uuid.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -10041,42 +9469,6 @@ func (m *TalentMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetUUID sets the "uuid" field.
-func (m *TalentMutation) SetUUID(u uuid.UUID) {
-	m.uuid = &u
-}
-
-// UUID returns the value of the "uuid" field in the mutation.
-func (m *TalentMutation) UUID() (r uuid.UUID, exists bool) {
-	v := m.uuid
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUUID returns the old "uuid" field's value of the Talent entity.
-// If the Talent object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TalentMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUUID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUUID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
-	}
-	return oldValue.UUID, nil
-}
-
-// ResetUUID resets all changes to the "uuid" field.
-func (m *TalentMutation) ResetUUID() {
-	m.uuid = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -10201,12 +9593,12 @@ func (m *TalentMutation) ResetDeletedAt() {
 }
 
 // SetUserID sets the "user_id" field.
-func (m *TalentMutation) SetUserID(i int) {
-	m.user = &i
+func (m *TalentMutation) SetUserID(u uuid.UUID) {
+	m.user = &u
 }
 
 // UserID returns the value of the "user_id" field in the mutation.
-func (m *TalentMutation) UserID() (r int, exists bool) {
+func (m *TalentMutation) UserID() (r uuid.UUID, exists bool) {
 	v := m.user
 	if v == nil {
 		return
@@ -10217,7 +9609,7 @@ func (m *TalentMutation) UserID() (r int, exists bool) {
 // OldUserID returns the old "user_id" field's value of the Talent entity.
 // If the Talent object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TalentMutation) OldUserID(ctx context.Context) (v int, err error) {
+func (m *TalentMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
 	}
@@ -10463,140 +9855,6 @@ func (m *TalentMutation) OldIsAvailable(ctx context.Context) (v bool, err error)
 // ResetIsAvailable resets all changes to the "is_available" field.
 func (m *TalentMutation) ResetIsAvailable() {
 	m.is_available = nil
-}
-
-// SetReferrerID sets the "referrer_id" field.
-func (m *TalentMutation) SetReferrerID(i int) {
-	m.referrer = &i
-}
-
-// ReferrerID returns the value of the "referrer_id" field in the mutation.
-func (m *TalentMutation) ReferrerID() (r int, exists bool) {
-	v := m.referrer
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldReferrerID returns the old "referrer_id" field's value of the Talent entity.
-// If the Talent object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TalentMutation) OldReferrerID(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldReferrerID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldReferrerID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldReferrerID: %w", err)
-	}
-	return oldValue.ReferrerID, nil
-}
-
-// ClearReferrerID clears the value of the "referrer_id" field.
-func (m *TalentMutation) ClearReferrerID() {
-	m.referrer = nil
-	m.clearedFields[talent.FieldReferrerID] = struct{}{}
-}
-
-// ReferrerIDCleared returns if the "referrer_id" field was cleared in this mutation.
-func (m *TalentMutation) ReferrerIDCleared() bool {
-	_, ok := m.clearedFields[talent.FieldReferrerID]
-	return ok
-}
-
-// ResetReferrerID resets all changes to the "referrer_id" field.
-func (m *TalentMutation) ResetReferrerID() {
-	m.referrer = nil
-	delete(m.clearedFields, talent.FieldReferrerID)
-}
-
-// SetReferralCode sets the "referral_code" field.
-func (m *TalentMutation) SetReferralCode(s string) {
-	m.referral_code = &s
-}
-
-// ReferralCode returns the value of the "referral_code" field in the mutation.
-func (m *TalentMutation) ReferralCode() (r string, exists bool) {
-	v := m.referral_code
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldReferralCode returns the old "referral_code" field's value of the Talent entity.
-// If the Talent object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TalentMutation) OldReferralCode(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldReferralCode is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldReferralCode requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldReferralCode: %w", err)
-	}
-	return oldValue.ReferralCode, nil
-}
-
-// ClearReferralCode clears the value of the "referral_code" field.
-func (m *TalentMutation) ClearReferralCode() {
-	m.referral_code = nil
-	m.clearedFields[talent.FieldReferralCode] = struct{}{}
-}
-
-// ReferralCodeCleared returns if the "referral_code" field was cleared in this mutation.
-func (m *TalentMutation) ReferralCodeCleared() bool {
-	_, ok := m.clearedFields[talent.FieldReferralCode]
-	return ok
-}
-
-// ResetReferralCode resets all changes to the "referral_code" field.
-func (m *TalentMutation) ResetReferralCode() {
-	m.referral_code = nil
-	delete(m.clearedFields, talent.FieldReferralCode)
-}
-
-// SetTentnCode sets the "tentn_code" field.
-func (m *TalentMutation) SetTentnCode(s string) {
-	m.tentn_code = &s
-}
-
-// TentnCode returns the value of the "tentn_code" field in the mutation.
-func (m *TalentMutation) TentnCode() (r string, exists bool) {
-	v := m.tentn_code
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldTentnCode returns the old "tentn_code" field's value of the Talent entity.
-// If the Talent object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TalentMutation) OldTentnCode(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTentnCode is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTentnCode requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTentnCode: %w", err)
-	}
-	return oldValue.TentnCode, nil
-}
-
-// ResetTentnCode resets all changes to the "tentn_code" field.
-func (m *TalentMutation) ResetTentnCode() {
-	m.tentn_code = nil
 }
 
 // SetProfessionalStartDate sets the "professional_start_date" field.
@@ -10949,7 +10207,7 @@ func (m *TalentMutation) UserCleared() bool {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *TalentMutation) UserIDs() (ids []int) {
+func (m *TalentMutation) UserIDs() (ids []uuid.UUID) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -10962,90 +10220,10 @@ func (m *TalentMutation) ResetUser() {
 	m.cleareduser = false
 }
 
-// ClearReferrer clears the "referrer" edge to the Talent entity.
-func (m *TalentMutation) ClearReferrer() {
-	m.clearedreferrer = true
-}
-
-// ReferrerCleared reports if the "referrer" edge to the Talent entity was cleared.
-func (m *TalentMutation) ReferrerCleared() bool {
-	return m.ReferrerIDCleared() || m.clearedreferrer
-}
-
-// ReferrerIDs returns the "referrer" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ReferrerID instead. It exists only for internal usage by the builders.
-func (m *TalentMutation) ReferrerIDs() (ids []int) {
-	if id := m.referrer; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetReferrer resets all changes to the "referrer" edge.
-func (m *TalentMutation) ResetReferrer() {
-	m.referrer = nil
-	m.clearedreferrer = false
-}
-
-// AddRefereeIDs adds the "referees" edge to the Talent entity by ids.
-func (m *TalentMutation) AddRefereeIDs(ids ...int) {
-	if m.referees == nil {
-		m.referees = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.referees[ids[i]] = struct{}{}
-	}
-}
-
-// ClearReferees clears the "referees" edge to the Talent entity.
-func (m *TalentMutation) ClearReferees() {
-	m.clearedreferees = true
-}
-
-// RefereesCleared reports if the "referees" edge to the Talent entity was cleared.
-func (m *TalentMutation) RefereesCleared() bool {
-	return m.clearedreferees
-}
-
-// RemoveRefereeIDs removes the "referees" edge to the Talent entity by IDs.
-func (m *TalentMutation) RemoveRefereeIDs(ids ...int) {
-	if m.removedreferees == nil {
-		m.removedreferees = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.referees, ids[i])
-		m.removedreferees[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedReferees returns the removed IDs of the "referees" edge to the Talent entity.
-func (m *TalentMutation) RemovedRefereesIDs() (ids []int) {
-	for id := range m.removedreferees {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// RefereesIDs returns the "referees" edge IDs in the mutation.
-func (m *TalentMutation) RefereesIDs() (ids []int) {
-	for id := range m.referees {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetReferees resets all changes to the "referees" edge.
-func (m *TalentMutation) ResetReferees() {
-	m.referees = nil
-	m.clearedreferees = false
-	m.removedreferees = nil
-}
-
 // AddPortfoliolinkIDs adds the "portfoliolinks" edge to the PortfolioLink entity by ids.
-func (m *TalentMutation) AddPortfoliolinkIDs(ids ...int) {
+func (m *TalentMutation) AddPortfoliolinkIDs(ids ...uuid.UUID) {
 	if m.portfoliolinks == nil {
-		m.portfoliolinks = make(map[int]struct{})
+		m.portfoliolinks = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.portfoliolinks[ids[i]] = struct{}{}
@@ -11063,9 +10241,9 @@ func (m *TalentMutation) PortfoliolinksCleared() bool {
 }
 
 // RemovePortfoliolinkIDs removes the "portfoliolinks" edge to the PortfolioLink entity by IDs.
-func (m *TalentMutation) RemovePortfoliolinkIDs(ids ...int) {
+func (m *TalentMutation) RemovePortfoliolinkIDs(ids ...uuid.UUID) {
 	if m.removedportfoliolinks == nil {
-		m.removedportfoliolinks = make(map[int]struct{})
+		m.removedportfoliolinks = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		delete(m.portfoliolinks, ids[i])
@@ -11074,7 +10252,7 @@ func (m *TalentMutation) RemovePortfoliolinkIDs(ids ...int) {
 }
 
 // RemovedPortfoliolinks returns the removed IDs of the "portfoliolinks" edge to the PortfolioLink entity.
-func (m *TalentMutation) RemovedPortfoliolinksIDs() (ids []int) {
+func (m *TalentMutation) RemovedPortfoliolinksIDs() (ids []uuid.UUID) {
 	for id := range m.removedportfoliolinks {
 		ids = append(ids, id)
 	}
@@ -11082,7 +10260,7 @@ func (m *TalentMutation) RemovedPortfoliolinksIDs() (ids []int) {
 }
 
 // PortfoliolinksIDs returns the "portfoliolinks" edge IDs in the mutation.
-func (m *TalentMutation) PortfoliolinksIDs() (ids []int) {
+func (m *TalentMutation) PortfoliolinksIDs() (ids []uuid.UUID) {
 	for id := range m.portfoliolinks {
 		ids = append(ids, id)
 	}
@@ -11097,9 +10275,9 @@ func (m *TalentMutation) ResetPortfoliolinks() {
 }
 
 // AddSkillIDs adds the "skills" edge to the Skill entity by ids.
-func (m *TalentMutation) AddSkillIDs(ids ...int) {
+func (m *TalentMutation) AddSkillIDs(ids ...uuid.UUID) {
 	if m.skills == nil {
-		m.skills = make(map[int]struct{})
+		m.skills = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.skills[ids[i]] = struct{}{}
@@ -11117,9 +10295,9 @@ func (m *TalentMutation) SkillsCleared() bool {
 }
 
 // RemoveSkillIDs removes the "skills" edge to the Skill entity by IDs.
-func (m *TalentMutation) RemoveSkillIDs(ids ...int) {
+func (m *TalentMutation) RemoveSkillIDs(ids ...uuid.UUID) {
 	if m.removedskills == nil {
-		m.removedskills = make(map[int]struct{})
+		m.removedskills = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		delete(m.skills, ids[i])
@@ -11128,7 +10306,7 @@ func (m *TalentMutation) RemoveSkillIDs(ids ...int) {
 }
 
 // RemovedSkills returns the removed IDs of the "skills" edge to the Skill entity.
-func (m *TalentMutation) RemovedSkillsIDs() (ids []int) {
+func (m *TalentMutation) RemovedSkillsIDs() (ids []uuid.UUID) {
 	for id := range m.removedskills {
 		ids = append(ids, id)
 	}
@@ -11136,7 +10314,7 @@ func (m *TalentMutation) RemovedSkillsIDs() (ids []int) {
 }
 
 // SkillsIDs returns the "skills" edge IDs in the mutation.
-func (m *TalentMutation) SkillsIDs() (ids []int) {
+func (m *TalentMutation) SkillsIDs() (ids []uuid.UUID) {
 	for id := range m.skills {
 		ids = append(ids, id)
 	}
@@ -11151,9 +10329,9 @@ func (m *TalentMutation) ResetSkills() {
 }
 
 // AddJobApplicationIDs adds the "job_applications" edge to the JobApplication entity by ids.
-func (m *TalentMutation) AddJobApplicationIDs(ids ...int) {
+func (m *TalentMutation) AddJobApplicationIDs(ids ...uuid.UUID) {
 	if m.job_applications == nil {
-		m.job_applications = make(map[int]struct{})
+		m.job_applications = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.job_applications[ids[i]] = struct{}{}
@@ -11171,9 +10349,9 @@ func (m *TalentMutation) JobApplicationsCleared() bool {
 }
 
 // RemoveJobApplicationIDs removes the "job_applications" edge to the JobApplication entity by IDs.
-func (m *TalentMutation) RemoveJobApplicationIDs(ids ...int) {
+func (m *TalentMutation) RemoveJobApplicationIDs(ids ...uuid.UUID) {
 	if m.removedjob_applications == nil {
-		m.removedjob_applications = make(map[int]struct{})
+		m.removedjob_applications = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		delete(m.job_applications, ids[i])
@@ -11182,7 +10360,7 @@ func (m *TalentMutation) RemoveJobApplicationIDs(ids ...int) {
 }
 
 // RemovedJobApplications returns the removed IDs of the "job_applications" edge to the JobApplication entity.
-func (m *TalentMutation) RemovedJobApplicationsIDs() (ids []int) {
+func (m *TalentMutation) RemovedJobApplicationsIDs() (ids []uuid.UUID) {
 	for id := range m.removedjob_applications {
 		ids = append(ids, id)
 	}
@@ -11190,7 +10368,7 @@ func (m *TalentMutation) RemovedJobApplicationsIDs() (ids []int) {
 }
 
 // JobApplicationsIDs returns the "job_applications" edge IDs in the mutation.
-func (m *TalentMutation) JobApplicationsIDs() (ids []int) {
+func (m *TalentMutation) JobApplicationsIDs() (ids []uuid.UUID) {
 	for id := range m.job_applications {
 		ids = append(ids, id)
 	}
@@ -11205,9 +10383,9 @@ func (m *TalentMutation) ResetJobApplications() {
 }
 
 // AddWorkExperienceIDs adds the "work_experiences" edge to the WorkExperience entity by ids.
-func (m *TalentMutation) AddWorkExperienceIDs(ids ...int) {
+func (m *TalentMutation) AddWorkExperienceIDs(ids ...uuid.UUID) {
 	if m.work_experiences == nil {
-		m.work_experiences = make(map[int]struct{})
+		m.work_experiences = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.work_experiences[ids[i]] = struct{}{}
@@ -11225,9 +10403,9 @@ func (m *TalentMutation) WorkExperiencesCleared() bool {
 }
 
 // RemoveWorkExperienceIDs removes the "work_experiences" edge to the WorkExperience entity by IDs.
-func (m *TalentMutation) RemoveWorkExperienceIDs(ids ...int) {
+func (m *TalentMutation) RemoveWorkExperienceIDs(ids ...uuid.UUID) {
 	if m.removedwork_experiences == nil {
-		m.removedwork_experiences = make(map[int]struct{})
+		m.removedwork_experiences = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		delete(m.work_experiences, ids[i])
@@ -11236,7 +10414,7 @@ func (m *TalentMutation) RemoveWorkExperienceIDs(ids ...int) {
 }
 
 // RemovedWorkExperiences returns the removed IDs of the "work_experiences" edge to the WorkExperience entity.
-func (m *TalentMutation) RemovedWorkExperiencesIDs() (ids []int) {
+func (m *TalentMutation) RemovedWorkExperiencesIDs() (ids []uuid.UUID) {
 	for id := range m.removedwork_experiences {
 		ids = append(ids, id)
 	}
@@ -11244,7 +10422,7 @@ func (m *TalentMutation) RemovedWorkExperiencesIDs() (ids []int) {
 }
 
 // WorkExperiencesIDs returns the "work_experiences" edge IDs in the mutation.
-func (m *TalentMutation) WorkExperiencesIDs() (ids []int) {
+func (m *TalentMutation) WorkExperiencesIDs() (ids []uuid.UUID) {
 	for id := range m.work_experiences {
 		ids = append(ids, id)
 	}
@@ -11259,9 +10437,9 @@ func (m *TalentMutation) ResetWorkExperiences() {
 }
 
 // AddEducationIDs adds the "educations" edge to the Education entity by ids.
-func (m *TalentMutation) AddEducationIDs(ids ...int) {
+func (m *TalentMutation) AddEducationIDs(ids ...uuid.UUID) {
 	if m.educations == nil {
-		m.educations = make(map[int]struct{})
+		m.educations = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.educations[ids[i]] = struct{}{}
@@ -11279,9 +10457,9 @@ func (m *TalentMutation) EducationsCleared() bool {
 }
 
 // RemoveEducationIDs removes the "educations" edge to the Education entity by IDs.
-func (m *TalentMutation) RemoveEducationIDs(ids ...int) {
+func (m *TalentMutation) RemoveEducationIDs(ids ...uuid.UUID) {
 	if m.removededucations == nil {
-		m.removededucations = make(map[int]struct{})
+		m.removededucations = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		delete(m.educations, ids[i])
@@ -11290,7 +10468,7 @@ func (m *TalentMutation) RemoveEducationIDs(ids ...int) {
 }
 
 // RemovedEducations returns the removed IDs of the "educations" edge to the Education entity.
-func (m *TalentMutation) RemovedEducationsIDs() (ids []int) {
+func (m *TalentMutation) RemovedEducationsIDs() (ids []uuid.UUID) {
 	for id := range m.removededucations {
 		ids = append(ids, id)
 	}
@@ -11298,7 +10476,7 @@ func (m *TalentMutation) RemovedEducationsIDs() (ids []int) {
 }
 
 // EducationsIDs returns the "educations" edge IDs in the mutation.
-func (m *TalentMutation) EducationsIDs() (ids []int) {
+func (m *TalentMutation) EducationsIDs() (ids []uuid.UUID) {
 	for id := range m.educations {
 		ids = append(ids, id)
 	}
@@ -11313,9 +10491,9 @@ func (m *TalentMutation) ResetEducations() {
 }
 
 // AddEmergencyContactIDs adds the "emergency_contacts" edge to the EmergencyContact entity by ids.
-func (m *TalentMutation) AddEmergencyContactIDs(ids ...int) {
+func (m *TalentMutation) AddEmergencyContactIDs(ids ...uuid.UUID) {
 	if m.emergency_contacts == nil {
-		m.emergency_contacts = make(map[int]struct{})
+		m.emergency_contacts = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.emergency_contacts[ids[i]] = struct{}{}
@@ -11333,9 +10511,9 @@ func (m *TalentMutation) EmergencyContactsCleared() bool {
 }
 
 // RemoveEmergencyContactIDs removes the "emergency_contacts" edge to the EmergencyContact entity by IDs.
-func (m *TalentMutation) RemoveEmergencyContactIDs(ids ...int) {
+func (m *TalentMutation) RemoveEmergencyContactIDs(ids ...uuid.UUID) {
 	if m.removedemergency_contacts == nil {
-		m.removedemergency_contacts = make(map[int]struct{})
+		m.removedemergency_contacts = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		delete(m.emergency_contacts, ids[i])
@@ -11344,7 +10522,7 @@ func (m *TalentMutation) RemoveEmergencyContactIDs(ids ...int) {
 }
 
 // RemovedEmergencyContacts returns the removed IDs of the "emergency_contacts" edge to the EmergencyContact entity.
-func (m *TalentMutation) RemovedEmergencyContactsIDs() (ids []int) {
+func (m *TalentMutation) RemovedEmergencyContactsIDs() (ids []uuid.UUID) {
 	for id := range m.removedemergency_contacts {
 		ids = append(ids, id)
 	}
@@ -11352,7 +10530,7 @@ func (m *TalentMutation) RemovedEmergencyContactsIDs() (ids []int) {
 }
 
 // EmergencyContactsIDs returns the "emergency_contacts" edge IDs in the mutation.
-func (m *TalentMutation) EmergencyContactsIDs() (ids []int) {
+func (m *TalentMutation) EmergencyContactsIDs() (ids []uuid.UUID) {
 	for id := range m.emergency_contacts {
 		ids = append(ids, id)
 	}
@@ -11367,9 +10545,9 @@ func (m *TalentMutation) ResetEmergencyContacts() {
 }
 
 // AddMissionIDs adds the "missions" edge to the Mission entity by ids.
-func (m *TalentMutation) AddMissionIDs(ids ...int) {
+func (m *TalentMutation) AddMissionIDs(ids ...uuid.UUID) {
 	if m.missions == nil {
-		m.missions = make(map[int]struct{})
+		m.missions = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.missions[ids[i]] = struct{}{}
@@ -11387,9 +10565,9 @@ func (m *TalentMutation) MissionsCleared() bool {
 }
 
 // RemoveMissionIDs removes the "missions" edge to the Mission entity by IDs.
-func (m *TalentMutation) RemoveMissionIDs(ids ...int) {
+func (m *TalentMutation) RemoveMissionIDs(ids ...uuid.UUID) {
 	if m.removedmissions == nil {
-		m.removedmissions = make(map[int]struct{})
+		m.removedmissions = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		delete(m.missions, ids[i])
@@ -11398,7 +10576,7 @@ func (m *TalentMutation) RemoveMissionIDs(ids ...int) {
 }
 
 // RemovedMissions returns the removed IDs of the "missions" edge to the Mission entity.
-func (m *TalentMutation) RemovedMissionsIDs() (ids []int) {
+func (m *TalentMutation) RemovedMissionsIDs() (ids []uuid.UUID) {
 	for id := range m.removedmissions {
 		ids = append(ids, id)
 	}
@@ -11406,7 +10584,7 @@ func (m *TalentMutation) RemovedMissionsIDs() (ids []int) {
 }
 
 // MissionsIDs returns the "missions" edge IDs in the mutation.
-func (m *TalentMutation) MissionsIDs() (ids []int) {
+func (m *TalentMutation) MissionsIDs() (ids []uuid.UUID) {
 	for id := range m.missions {
 		ids = append(ids, id)
 	}
@@ -11439,10 +10617,7 @@ func (m *TalentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TalentMutation) Fields() []string {
-	fields := make([]string, 0, 23)
-	if m.uuid != nil {
-		fields = append(fields, talent.FieldUUID)
-	}
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, talent.FieldCreatedAt)
 	}
@@ -11472,15 +10647,6 @@ func (m *TalentMutation) Fields() []string {
 	}
 	if m.is_available != nil {
 		fields = append(fields, talent.FieldIsAvailable)
-	}
-	if m.referrer != nil {
-		fields = append(fields, talent.FieldReferrerID)
-	}
-	if m.referral_code != nil {
-		fields = append(fields, talent.FieldReferralCode)
-	}
-	if m.tentn_code != nil {
-		fields = append(fields, talent.FieldTentnCode)
 	}
 	if m.professional_start_date != nil {
 		fields = append(fields, talent.FieldProfessionalStartDate)
@@ -11517,8 +10683,6 @@ func (m *TalentMutation) Fields() []string {
 // schema.
 func (m *TalentMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case talent.FieldUUID:
-		return m.UUID()
 	case talent.FieldCreatedAt:
 		return m.CreatedAt()
 	case talent.FieldUpdatedAt:
@@ -11539,12 +10703,6 @@ func (m *TalentMutation) Field(name string) (ent.Value, bool) {
 		return m.PreferredJobTitle()
 	case talent.FieldIsAvailable:
 		return m.IsAvailable()
-	case talent.FieldReferrerID:
-		return m.ReferrerID()
-	case talent.FieldReferralCode:
-		return m.ReferralCode()
-	case talent.FieldTentnCode:
-		return m.TentnCode()
 	case talent.FieldProfessionalStartDate:
 		return m.ProfessionalStartDate()
 	case talent.FieldEmail:
@@ -11572,8 +10730,6 @@ func (m *TalentMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *TalentMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case talent.FieldUUID:
-		return m.OldUUID(ctx)
 	case talent.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case talent.FieldUpdatedAt:
@@ -11594,12 +10750,6 @@ func (m *TalentMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldPreferredJobTitle(ctx)
 	case talent.FieldIsAvailable:
 		return m.OldIsAvailable(ctx)
-	case talent.FieldReferrerID:
-		return m.OldReferrerID(ctx)
-	case talent.FieldReferralCode:
-		return m.OldReferralCode(ctx)
-	case talent.FieldTentnCode:
-		return m.OldTentnCode(ctx)
 	case talent.FieldProfessionalStartDate:
 		return m.OldProfessionalStartDate(ctx)
 	case talent.FieldEmail:
@@ -11627,13 +10777,6 @@ func (m *TalentMutation) OldField(ctx context.Context, name string) (ent.Value, 
 // type.
 func (m *TalentMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case talent.FieldUUID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUUID(v)
-		return nil
 	case talent.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -11656,7 +10799,7 @@ func (m *TalentMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedAt(v)
 		return nil
 	case talent.FieldUserID:
-		v, ok := value.(int)
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -11703,27 +10846,6 @@ func (m *TalentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsAvailable(v)
-		return nil
-	case talent.FieldReferrerID:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetReferrerID(v)
-		return nil
-	case talent.FieldReferralCode:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetReferralCode(v)
-		return nil
-	case talent.FieldTentnCode:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetTentnCode(v)
 		return nil
 	case talent.FieldProfessionalStartDate:
 		v, ok := value.(time.Time)
@@ -11795,16 +10917,13 @@ func (m *TalentMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *TalentMutation) AddedFields() []string {
-	var fields []string
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *TalentMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	}
 	return nil, false
 }
 
@@ -11826,12 +10945,6 @@ func (m *TalentMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(talent.FieldUserID) {
 		fields = append(fields, talent.FieldUserID)
-	}
-	if m.FieldCleared(talent.FieldReferrerID) {
-		fields = append(fields, talent.FieldReferrerID)
-	}
-	if m.FieldCleared(talent.FieldReferralCode) {
-		fields = append(fields, talent.FieldReferralCode)
 	}
 	if m.FieldCleared(talent.FieldJoinedTentnAt) {
 		fields = append(fields, talent.FieldJoinedTentnAt)
@@ -11856,12 +10969,6 @@ func (m *TalentMutation) ClearField(name string) error {
 	case talent.FieldUserID:
 		m.ClearUserID()
 		return nil
-	case talent.FieldReferrerID:
-		m.ClearReferrerID()
-		return nil
-	case talent.FieldReferralCode:
-		m.ClearReferralCode()
-		return nil
 	case talent.FieldJoinedTentnAt:
 		m.ClearJoinedTentnAt()
 		return nil
@@ -11873,9 +10980,6 @@ func (m *TalentMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *TalentMutation) ResetField(name string) error {
 	switch name {
-	case talent.FieldUUID:
-		m.ResetUUID()
-		return nil
 	case talent.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -11905,15 +11009,6 @@ func (m *TalentMutation) ResetField(name string) error {
 		return nil
 	case talent.FieldIsAvailable:
 		m.ResetIsAvailable()
-		return nil
-	case talent.FieldReferrerID:
-		m.ResetReferrerID()
-		return nil
-	case talent.FieldReferralCode:
-		m.ResetReferralCode()
-		return nil
-	case talent.FieldTentnCode:
-		m.ResetTentnCode()
 		return nil
 	case talent.FieldProfessionalStartDate:
 		m.ResetProfessionalStartDate()
@@ -11948,15 +11043,9 @@ func (m *TalentMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TalentMutation) AddedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 8)
 	if m.user != nil {
 		edges = append(edges, talent.EdgeUser)
-	}
-	if m.referrer != nil {
-		edges = append(edges, talent.EdgeReferrer)
-	}
-	if m.referees != nil {
-		edges = append(edges, talent.EdgeReferees)
 	}
 	if m.portfoliolinks != nil {
 		edges = append(edges, talent.EdgePortfoliolinks)
@@ -11990,16 +11079,6 @@ func (m *TalentMutation) AddedIDs(name string) []ent.Value {
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
 		}
-	case talent.EdgeReferrer:
-		if id := m.referrer; id != nil {
-			return []ent.Value{*id}
-		}
-	case talent.EdgeReferees:
-		ids := make([]ent.Value, 0, len(m.referees))
-		for id := range m.referees {
-			ids = append(ids, id)
-		}
-		return ids
 	case talent.EdgePortfoliolinks:
 		ids := make([]ent.Value, 0, len(m.portfoliolinks))
 		for id := range m.portfoliolinks {
@@ -12048,10 +11127,7 @@ func (m *TalentMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TalentMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 10)
-	if m.removedreferees != nil {
-		edges = append(edges, talent.EdgeReferees)
-	}
+	edges := make([]string, 0, 8)
 	if m.removedportfoliolinks != nil {
 		edges = append(edges, talent.EdgePortfoliolinks)
 	}
@@ -12080,12 +11156,6 @@ func (m *TalentMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *TalentMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case talent.EdgeReferees:
-		ids := make([]ent.Value, 0, len(m.removedreferees))
-		for id := range m.removedreferees {
-			ids = append(ids, id)
-		}
-		return ids
 	case talent.EdgePortfoliolinks:
 		ids := make([]ent.Value, 0, len(m.removedportfoliolinks))
 		for id := range m.removedportfoliolinks {
@@ -12134,15 +11204,9 @@ func (m *TalentMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TalentMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 8)
 	if m.cleareduser {
 		edges = append(edges, talent.EdgeUser)
-	}
-	if m.clearedreferrer {
-		edges = append(edges, talent.EdgeReferrer)
-	}
-	if m.clearedreferees {
-		edges = append(edges, talent.EdgeReferees)
 	}
 	if m.clearedportfoliolinks {
 		edges = append(edges, talent.EdgePortfoliolinks)
@@ -12174,10 +11238,6 @@ func (m *TalentMutation) EdgeCleared(name string) bool {
 	switch name {
 	case talent.EdgeUser:
 		return m.cleareduser
-	case talent.EdgeReferrer:
-		return m.clearedreferrer
-	case talent.EdgeReferees:
-		return m.clearedreferees
 	case talent.EdgePortfoliolinks:
 		return m.clearedportfoliolinks
 	case talent.EdgeSkills:
@@ -12203,9 +11263,6 @@ func (m *TalentMutation) ClearEdge(name string) error {
 	case talent.EdgeUser:
 		m.ClearUser()
 		return nil
-	case talent.EdgeReferrer:
-		m.ClearReferrer()
-		return nil
 	}
 	return fmt.Errorf("unknown Talent unique edge %s", name)
 }
@@ -12216,12 +11273,6 @@ func (m *TalentMutation) ResetEdge(name string) error {
 	switch name {
 	case talent.EdgeUser:
 		m.ResetUser()
-		return nil
-	case talent.EdgeReferrer:
-		m.ResetReferrer()
-		return nil
-	case talent.EdgeReferees:
-		m.ResetReferees()
 		return nil
 	case talent.EdgePortfoliolinks:
 		m.ResetPortfoliolinks()
@@ -12253,15 +11304,14 @@ type TalentCollectionMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
-	uuid          *uuid.UUID
+	id            *uuid.UUID
 	created_at    *time.Time
 	updated_at    *time.Time
 	deleted_at    *time.Time
 	name          *string
 	talent_uuids  *[]string
 	clearedFields map[string]struct{}
-	user          *int
+	user          *uuid.UUID
 	cleareduser   bool
 	done          bool
 	oldValue      func(context.Context) (*TalentCollection, error)
@@ -12288,7 +11338,7 @@ func newTalentCollectionMutation(c config, op Op, opts ...talentcollectionOption
 }
 
 // withTalentCollectionID sets the ID field of the mutation.
-func withTalentCollectionID(id int) talentcollectionOption {
+func withTalentCollectionID(id uuid.UUID) talentcollectionOption {
 	return func(m *TalentCollectionMutation) {
 		var (
 			err   error
@@ -12340,13 +11390,13 @@ func (m TalentCollectionMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of TalentCollection entities.
-func (m *TalentCollectionMutation) SetID(id int) {
+func (m *TalentCollectionMutation) SetID(id uuid.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *TalentCollectionMutation) ID() (id int, exists bool) {
+func (m *TalentCollectionMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -12357,12 +11407,12 @@ func (m *TalentCollectionMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *TalentCollectionMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *TalentCollectionMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uuid.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -12370,42 +11420,6 @@ func (m *TalentCollectionMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetUUID sets the "uuid" field.
-func (m *TalentCollectionMutation) SetUUID(u uuid.UUID) {
-	m.uuid = &u
-}
-
-// UUID returns the value of the "uuid" field in the mutation.
-func (m *TalentCollectionMutation) UUID() (r uuid.UUID, exists bool) {
-	v := m.uuid
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUUID returns the old "uuid" field's value of the TalentCollection entity.
-// If the TalentCollection object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TalentCollectionMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUUID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUUID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
-	}
-	return oldValue.UUID, nil
-}
-
-// ResetUUID resets all changes to the "uuid" field.
-func (m *TalentCollectionMutation) ResetUUID() {
-	m.uuid = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -12530,12 +11544,12 @@ func (m *TalentCollectionMutation) ResetDeletedAt() {
 }
 
 // SetUserID sets the "user_id" field.
-func (m *TalentCollectionMutation) SetUserID(i int) {
-	m.user = &i
+func (m *TalentCollectionMutation) SetUserID(u uuid.UUID) {
+	m.user = &u
 }
 
 // UserID returns the value of the "user_id" field in the mutation.
-func (m *TalentCollectionMutation) UserID() (r int, exists bool) {
+func (m *TalentCollectionMutation) UserID() (r uuid.UUID, exists bool) {
 	v := m.user
 	if v == nil {
 		return
@@ -12546,7 +11560,7 @@ func (m *TalentCollectionMutation) UserID() (r int, exists bool) {
 // OldUserID returns the old "user_id" field's value of the TalentCollection entity.
 // If the TalentCollection object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TalentCollectionMutation) OldUserID(ctx context.Context) (v int, err error) {
+func (m *TalentCollectionMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
 	}
@@ -12663,7 +11677,7 @@ func (m *TalentCollectionMutation) UserCleared() bool {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *TalentCollectionMutation) UserIDs() (ids []int) {
+func (m *TalentCollectionMutation) UserIDs() (ids []uuid.UUID) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -12695,10 +11709,7 @@ func (m *TalentCollectionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TalentCollectionMutation) Fields() []string {
-	fields := make([]string, 0, 7)
-	if m.uuid != nil {
-		fields = append(fields, talentcollection.FieldUUID)
-	}
+	fields := make([]string, 0, 6)
 	if m.created_at != nil {
 		fields = append(fields, talentcollection.FieldCreatedAt)
 	}
@@ -12725,8 +11736,6 @@ func (m *TalentCollectionMutation) Fields() []string {
 // schema.
 func (m *TalentCollectionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case talentcollection.FieldUUID:
-		return m.UUID()
 	case talentcollection.FieldCreatedAt:
 		return m.CreatedAt()
 	case talentcollection.FieldUpdatedAt:
@@ -12748,8 +11757,6 @@ func (m *TalentCollectionMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *TalentCollectionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case talentcollection.FieldUUID:
-		return m.OldUUID(ctx)
 	case talentcollection.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case talentcollection.FieldUpdatedAt:
@@ -12771,13 +11778,6 @@ func (m *TalentCollectionMutation) OldField(ctx context.Context, name string) (e
 // type.
 func (m *TalentCollectionMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case talentcollection.FieldUUID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUUID(v)
-		return nil
 	case talentcollection.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -12800,7 +11800,7 @@ func (m *TalentCollectionMutation) SetField(name string, value ent.Value) error 
 		m.SetDeletedAt(v)
 		return nil
 	case talentcollection.FieldUserID:
-		v, ok := value.(int)
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -12827,16 +11827,13 @@ func (m *TalentCollectionMutation) SetField(name string, value ent.Value) error 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *TalentCollectionMutation) AddedFields() []string {
-	var fields []string
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *TalentCollectionMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	}
 	return nil, false
 }
 
@@ -12887,9 +11884,6 @@ func (m *TalentCollectionMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *TalentCollectionMutation) ResetField(name string) error {
 	switch name {
-	case talentcollection.FieldUUID:
-		m.ResetUUID()
-		return nil
 	case talentcollection.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -12993,8 +11987,7 @@ type UserMutation struct {
 	config
 	op                        Op
 	typ                       string
-	id                        *int
-	uuid                      *uuid.UUID
+	id                        *uuid.UUID
 	created_at                *time.Time
 	updated_at                *time.Time
 	deleted_at                *time.Time
@@ -13003,20 +11996,20 @@ type UserMutation struct {
 	role                      *userrole.Role
 	approved                  *bool
 	clearedFields             map[string]struct{}
-	talents                   map[int]struct{}
-	removedtalents            map[int]struct{}
+	talents                   map[uuid.UUID]struct{}
+	removedtalents            map[uuid.UUID]struct{}
 	clearedtalents            bool
-	slack_app_installs        map[int]struct{}
-	removedslack_app_installs map[int]struct{}
+	slack_app_installs        map[uuid.UUID]struct{}
+	removedslack_app_installs map[uuid.UUID]struct{}
 	clearedslack_app_installs bool
-	jobs                      map[int]struct{}
-	removedjobs               map[int]struct{}
+	jobs                      map[uuid.UUID]struct{}
+	removedjobs               map[uuid.UUID]struct{}
 	clearedjobs               bool
-	email_templates           map[int]struct{}
-	removedemail_templates    map[int]struct{}
+	email_templates           map[uuid.UUID]struct{}
+	removedemail_templates    map[uuid.UUID]struct{}
 	clearedemail_templates    bool
-	talent_collections        map[int]struct{}
-	removedtalent_collections map[int]struct{}
+	talent_collections        map[uuid.UUID]struct{}
+	removedtalent_collections map[uuid.UUID]struct{}
 	clearedtalent_collections bool
 	done                      bool
 	oldValue                  func(context.Context) (*User, error)
@@ -13043,7 +12036,7 @@ func newUserMutation(c config, op Op, opts ...userOption) *UserMutation {
 }
 
 // withUserID sets the ID field of the mutation.
-func withUserID(id int) userOption {
+func withUserID(id uuid.UUID) userOption {
 	return func(m *UserMutation) {
 		var (
 			err   error
@@ -13095,13 +12088,13 @@ func (m UserMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of User entities.
-func (m *UserMutation) SetID(id int) {
+func (m *UserMutation) SetID(id uuid.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *UserMutation) ID() (id int, exists bool) {
+func (m *UserMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -13112,12 +12105,12 @@ func (m *UserMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *UserMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *UserMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uuid.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -13125,42 +12118,6 @@ func (m *UserMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetUUID sets the "uuid" field.
-func (m *UserMutation) SetUUID(u uuid.UUID) {
-	m.uuid = &u
-}
-
-// UUID returns the value of the "uuid" field in the mutation.
-func (m *UserMutation) UUID() (r uuid.UUID, exists bool) {
-	v := m.uuid
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUUID returns the old "uuid" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUUID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUUID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
-	}
-	return oldValue.UUID, nil
-}
-
-// ResetUUID resets all changes to the "uuid" field.
-func (m *UserMutation) ResetUUID() {
-	m.uuid = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -13429,9 +12386,9 @@ func (m *UserMutation) ResetApproved() {
 }
 
 // AddTalentIDs adds the "talents" edge to the Talent entity by ids.
-func (m *UserMutation) AddTalentIDs(ids ...int) {
+func (m *UserMutation) AddTalentIDs(ids ...uuid.UUID) {
 	if m.talents == nil {
-		m.talents = make(map[int]struct{})
+		m.talents = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.talents[ids[i]] = struct{}{}
@@ -13449,9 +12406,9 @@ func (m *UserMutation) TalentsCleared() bool {
 }
 
 // RemoveTalentIDs removes the "talents" edge to the Talent entity by IDs.
-func (m *UserMutation) RemoveTalentIDs(ids ...int) {
+func (m *UserMutation) RemoveTalentIDs(ids ...uuid.UUID) {
 	if m.removedtalents == nil {
-		m.removedtalents = make(map[int]struct{})
+		m.removedtalents = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		delete(m.talents, ids[i])
@@ -13460,7 +12417,7 @@ func (m *UserMutation) RemoveTalentIDs(ids ...int) {
 }
 
 // RemovedTalents returns the removed IDs of the "talents" edge to the Talent entity.
-func (m *UserMutation) RemovedTalentsIDs() (ids []int) {
+func (m *UserMutation) RemovedTalentsIDs() (ids []uuid.UUID) {
 	for id := range m.removedtalents {
 		ids = append(ids, id)
 	}
@@ -13468,7 +12425,7 @@ func (m *UserMutation) RemovedTalentsIDs() (ids []int) {
 }
 
 // TalentsIDs returns the "talents" edge IDs in the mutation.
-func (m *UserMutation) TalentsIDs() (ids []int) {
+func (m *UserMutation) TalentsIDs() (ids []uuid.UUID) {
 	for id := range m.talents {
 		ids = append(ids, id)
 	}
@@ -13483,9 +12440,9 @@ func (m *UserMutation) ResetTalents() {
 }
 
 // AddSlackAppInstallIDs adds the "slack_app_installs" edge to the SlackAppInstall entity by ids.
-func (m *UserMutation) AddSlackAppInstallIDs(ids ...int) {
+func (m *UserMutation) AddSlackAppInstallIDs(ids ...uuid.UUID) {
 	if m.slack_app_installs == nil {
-		m.slack_app_installs = make(map[int]struct{})
+		m.slack_app_installs = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.slack_app_installs[ids[i]] = struct{}{}
@@ -13503,9 +12460,9 @@ func (m *UserMutation) SlackAppInstallsCleared() bool {
 }
 
 // RemoveSlackAppInstallIDs removes the "slack_app_installs" edge to the SlackAppInstall entity by IDs.
-func (m *UserMutation) RemoveSlackAppInstallIDs(ids ...int) {
+func (m *UserMutation) RemoveSlackAppInstallIDs(ids ...uuid.UUID) {
 	if m.removedslack_app_installs == nil {
-		m.removedslack_app_installs = make(map[int]struct{})
+		m.removedslack_app_installs = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		delete(m.slack_app_installs, ids[i])
@@ -13514,7 +12471,7 @@ func (m *UserMutation) RemoveSlackAppInstallIDs(ids ...int) {
 }
 
 // RemovedSlackAppInstalls returns the removed IDs of the "slack_app_installs" edge to the SlackAppInstall entity.
-func (m *UserMutation) RemovedSlackAppInstallsIDs() (ids []int) {
+func (m *UserMutation) RemovedSlackAppInstallsIDs() (ids []uuid.UUID) {
 	for id := range m.removedslack_app_installs {
 		ids = append(ids, id)
 	}
@@ -13522,7 +12479,7 @@ func (m *UserMutation) RemovedSlackAppInstallsIDs() (ids []int) {
 }
 
 // SlackAppInstallsIDs returns the "slack_app_installs" edge IDs in the mutation.
-func (m *UserMutation) SlackAppInstallsIDs() (ids []int) {
+func (m *UserMutation) SlackAppInstallsIDs() (ids []uuid.UUID) {
 	for id := range m.slack_app_installs {
 		ids = append(ids, id)
 	}
@@ -13537,9 +12494,9 @@ func (m *UserMutation) ResetSlackAppInstalls() {
 }
 
 // AddJobIDs adds the "jobs" edge to the Job entity by ids.
-func (m *UserMutation) AddJobIDs(ids ...int) {
+func (m *UserMutation) AddJobIDs(ids ...uuid.UUID) {
 	if m.jobs == nil {
-		m.jobs = make(map[int]struct{})
+		m.jobs = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.jobs[ids[i]] = struct{}{}
@@ -13557,9 +12514,9 @@ func (m *UserMutation) JobsCleared() bool {
 }
 
 // RemoveJobIDs removes the "jobs" edge to the Job entity by IDs.
-func (m *UserMutation) RemoveJobIDs(ids ...int) {
+func (m *UserMutation) RemoveJobIDs(ids ...uuid.UUID) {
 	if m.removedjobs == nil {
-		m.removedjobs = make(map[int]struct{})
+		m.removedjobs = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		delete(m.jobs, ids[i])
@@ -13568,7 +12525,7 @@ func (m *UserMutation) RemoveJobIDs(ids ...int) {
 }
 
 // RemovedJobs returns the removed IDs of the "jobs" edge to the Job entity.
-func (m *UserMutation) RemovedJobsIDs() (ids []int) {
+func (m *UserMutation) RemovedJobsIDs() (ids []uuid.UUID) {
 	for id := range m.removedjobs {
 		ids = append(ids, id)
 	}
@@ -13576,7 +12533,7 @@ func (m *UserMutation) RemovedJobsIDs() (ids []int) {
 }
 
 // JobsIDs returns the "jobs" edge IDs in the mutation.
-func (m *UserMutation) JobsIDs() (ids []int) {
+func (m *UserMutation) JobsIDs() (ids []uuid.UUID) {
 	for id := range m.jobs {
 		ids = append(ids, id)
 	}
@@ -13591,9 +12548,9 @@ func (m *UserMutation) ResetJobs() {
 }
 
 // AddEmailTemplateIDs adds the "email_templates" edge to the EmailTemplate entity by ids.
-func (m *UserMutation) AddEmailTemplateIDs(ids ...int) {
+func (m *UserMutation) AddEmailTemplateIDs(ids ...uuid.UUID) {
 	if m.email_templates == nil {
-		m.email_templates = make(map[int]struct{})
+		m.email_templates = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.email_templates[ids[i]] = struct{}{}
@@ -13611,9 +12568,9 @@ func (m *UserMutation) EmailTemplatesCleared() bool {
 }
 
 // RemoveEmailTemplateIDs removes the "email_templates" edge to the EmailTemplate entity by IDs.
-func (m *UserMutation) RemoveEmailTemplateIDs(ids ...int) {
+func (m *UserMutation) RemoveEmailTemplateIDs(ids ...uuid.UUID) {
 	if m.removedemail_templates == nil {
-		m.removedemail_templates = make(map[int]struct{})
+		m.removedemail_templates = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		delete(m.email_templates, ids[i])
@@ -13622,7 +12579,7 @@ func (m *UserMutation) RemoveEmailTemplateIDs(ids ...int) {
 }
 
 // RemovedEmailTemplates returns the removed IDs of the "email_templates" edge to the EmailTemplate entity.
-func (m *UserMutation) RemovedEmailTemplatesIDs() (ids []int) {
+func (m *UserMutation) RemovedEmailTemplatesIDs() (ids []uuid.UUID) {
 	for id := range m.removedemail_templates {
 		ids = append(ids, id)
 	}
@@ -13630,7 +12587,7 @@ func (m *UserMutation) RemovedEmailTemplatesIDs() (ids []int) {
 }
 
 // EmailTemplatesIDs returns the "email_templates" edge IDs in the mutation.
-func (m *UserMutation) EmailTemplatesIDs() (ids []int) {
+func (m *UserMutation) EmailTemplatesIDs() (ids []uuid.UUID) {
 	for id := range m.email_templates {
 		ids = append(ids, id)
 	}
@@ -13645,9 +12602,9 @@ func (m *UserMutation) ResetEmailTemplates() {
 }
 
 // AddTalentCollectionIDs adds the "talent_collections" edge to the TalentCollection entity by ids.
-func (m *UserMutation) AddTalentCollectionIDs(ids ...int) {
+func (m *UserMutation) AddTalentCollectionIDs(ids ...uuid.UUID) {
 	if m.talent_collections == nil {
-		m.talent_collections = make(map[int]struct{})
+		m.talent_collections = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.talent_collections[ids[i]] = struct{}{}
@@ -13665,9 +12622,9 @@ func (m *UserMutation) TalentCollectionsCleared() bool {
 }
 
 // RemoveTalentCollectionIDs removes the "talent_collections" edge to the TalentCollection entity by IDs.
-func (m *UserMutation) RemoveTalentCollectionIDs(ids ...int) {
+func (m *UserMutation) RemoveTalentCollectionIDs(ids ...uuid.UUID) {
 	if m.removedtalent_collections == nil {
-		m.removedtalent_collections = make(map[int]struct{})
+		m.removedtalent_collections = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		delete(m.talent_collections, ids[i])
@@ -13676,7 +12633,7 @@ func (m *UserMutation) RemoveTalentCollectionIDs(ids ...int) {
 }
 
 // RemovedTalentCollections returns the removed IDs of the "talent_collections" edge to the TalentCollection entity.
-func (m *UserMutation) RemovedTalentCollectionsIDs() (ids []int) {
+func (m *UserMutation) RemovedTalentCollectionsIDs() (ids []uuid.UUID) {
 	for id := range m.removedtalent_collections {
 		ids = append(ids, id)
 	}
@@ -13684,7 +12641,7 @@ func (m *UserMutation) RemovedTalentCollectionsIDs() (ids []int) {
 }
 
 // TalentCollectionsIDs returns the "talent_collections" edge IDs in the mutation.
-func (m *UserMutation) TalentCollectionsIDs() (ids []int) {
+func (m *UserMutation) TalentCollectionsIDs() (ids []uuid.UUID) {
 	for id := range m.talent_collections {
 		ids = append(ids, id)
 	}
@@ -13717,10 +12674,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 8)
-	if m.uuid != nil {
-		fields = append(fields, user.FieldUUID)
-	}
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
 	}
@@ -13750,8 +12704,6 @@ func (m *UserMutation) Fields() []string {
 // schema.
 func (m *UserMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case user.FieldUUID:
-		return m.UUID()
 	case user.FieldCreatedAt:
 		return m.CreatedAt()
 	case user.FieldUpdatedAt:
@@ -13775,8 +12727,6 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case user.FieldUUID:
-		return m.OldUUID(ctx)
 	case user.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case user.FieldUpdatedAt:
@@ -13800,13 +12750,6 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 // type.
 func (m *UserMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case user.FieldUUID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUUID(v)
-		return nil
 	case user.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -13914,9 +12857,6 @@ func (m *UserMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *UserMutation) ResetField(name string) error {
 	switch name {
-	case user.FieldUUID:
-		m.ResetUUID()
-		return nil
 	case user.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -14135,8 +13075,7 @@ type WorkExperienceMutation struct {
 	config
 	op                   Op
 	typ                  string
-	id                   *int
-	uuid                 *uuid.UUID
+	id                   *uuid.UUID
 	created_at           *time.Time
 	updated_at           *time.Time
 	deleted_at           *time.Time
@@ -14148,7 +13087,7 @@ type WorkExperienceMutation struct {
 	end_date             *time.Time
 	primary_technologies *[]string
 	clearedFields        map[string]struct{}
-	talent               *int
+	talent               *uuid.UUID
 	clearedtalent        bool
 	done                 bool
 	oldValue             func(context.Context) (*WorkExperience, error)
@@ -14175,7 +13114,7 @@ func newWorkExperienceMutation(c config, op Op, opts ...workexperienceOption) *W
 }
 
 // withWorkExperienceID sets the ID field of the mutation.
-func withWorkExperienceID(id int) workexperienceOption {
+func withWorkExperienceID(id uuid.UUID) workexperienceOption {
 	return func(m *WorkExperienceMutation) {
 		var (
 			err   error
@@ -14227,13 +13166,13 @@ func (m WorkExperienceMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of WorkExperience entities.
-func (m *WorkExperienceMutation) SetID(id int) {
+func (m *WorkExperienceMutation) SetID(id uuid.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *WorkExperienceMutation) ID() (id int, exists bool) {
+func (m *WorkExperienceMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -14244,12 +13183,12 @@ func (m *WorkExperienceMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *WorkExperienceMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *WorkExperienceMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uuid.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -14257,42 +13196,6 @@ func (m *WorkExperienceMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetUUID sets the "uuid" field.
-func (m *WorkExperienceMutation) SetUUID(u uuid.UUID) {
-	m.uuid = &u
-}
-
-// UUID returns the value of the "uuid" field in the mutation.
-func (m *WorkExperienceMutation) UUID() (r uuid.UUID, exists bool) {
-	v := m.uuid
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUUID returns the old "uuid" field's value of the WorkExperience entity.
-// If the WorkExperience object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkExperienceMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUUID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUUID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
-	}
-	return oldValue.UUID, nil
-}
-
-// ResetUUID resets all changes to the "uuid" field.
-func (m *WorkExperienceMutation) ResetUUID() {
-	m.uuid = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -14417,12 +13320,12 @@ func (m *WorkExperienceMutation) ResetDeletedAt() {
 }
 
 // SetTalentID sets the "talent_id" field.
-func (m *WorkExperienceMutation) SetTalentID(i int) {
-	m.talent = &i
+func (m *WorkExperienceMutation) SetTalentID(u uuid.UUID) {
+	m.talent = &u
 }
 
 // TalentID returns the value of the "talent_id" field in the mutation.
-func (m *WorkExperienceMutation) TalentID() (r int, exists bool) {
+func (m *WorkExperienceMutation) TalentID() (r uuid.UUID, exists bool) {
 	v := m.talent
 	if v == nil {
 		return
@@ -14433,7 +13336,7 @@ func (m *WorkExperienceMutation) TalentID() (r int, exists bool) {
 // OldTalentID returns the old "talent_id" field's value of the WorkExperience entity.
 // If the WorkExperience object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkExperienceMutation) OldTalentID(ctx context.Context) (v int, err error) {
+func (m *WorkExperienceMutation) OldTalentID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTalentID is only allowed on UpdateOne operations")
 	}
@@ -14743,7 +13646,7 @@ func (m *WorkExperienceMutation) TalentCleared() bool {
 // TalentIDs returns the "talent" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TalentID instead. It exists only for internal usage by the builders.
-func (m *WorkExperienceMutation) TalentIDs() (ids []int) {
+func (m *WorkExperienceMutation) TalentIDs() (ids []uuid.UUID) {
 	if id := m.talent; id != nil {
 		ids = append(ids, *id)
 	}
@@ -14775,10 +13678,7 @@ func (m *WorkExperienceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *WorkExperienceMutation) Fields() []string {
-	fields := make([]string, 0, 12)
-	if m.uuid != nil {
-		fields = append(fields, workexperience.FieldUUID)
-	}
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, workexperience.FieldCreatedAt)
 	}
@@ -14820,8 +13720,6 @@ func (m *WorkExperienceMutation) Fields() []string {
 // schema.
 func (m *WorkExperienceMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case workexperience.FieldUUID:
-		return m.UUID()
 	case workexperience.FieldCreatedAt:
 		return m.CreatedAt()
 	case workexperience.FieldUpdatedAt:
@@ -14853,8 +13751,6 @@ func (m *WorkExperienceMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *WorkExperienceMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case workexperience.FieldUUID:
-		return m.OldUUID(ctx)
 	case workexperience.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case workexperience.FieldUpdatedAt:
@@ -14886,13 +13782,6 @@ func (m *WorkExperienceMutation) OldField(ctx context.Context, name string) (ent
 // type.
 func (m *WorkExperienceMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case workexperience.FieldUUID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUUID(v)
-		return nil
 	case workexperience.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -14915,7 +13804,7 @@ func (m *WorkExperienceMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedAt(v)
 		return nil
 	case workexperience.FieldTalentID:
-		v, ok := value.(int)
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -14977,16 +13866,13 @@ func (m *WorkExperienceMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *WorkExperienceMutation) AddedFields() []string {
-	var fields []string
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *WorkExperienceMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	}
 	return nil, false
 }
 
@@ -15043,9 +13929,6 @@ func (m *WorkExperienceMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *WorkExperienceMutation) ResetField(name string) error {
 	switch name {
-	case workexperience.FieldUUID:
-		m.ResetUUID()
-		return nil
 	case workexperience.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil

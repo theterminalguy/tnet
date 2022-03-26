@@ -37,20 +37,6 @@ func (tu *TalentUpdate) Where(ps ...predicate.Talent) *TalentUpdate {
 	return tu
 }
 
-// SetUUID sets the "uuid" field.
-func (tu *TalentUpdate) SetUUID(u uuid.UUID) *TalentUpdate {
-	tu.mutation.SetUUID(u)
-	return tu
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (tu *TalentUpdate) SetNillableUUID(u *uuid.UUID) *TalentUpdate {
-	if u != nil {
-		tu.SetUUID(*u)
-	}
-	return tu
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (tu *TalentUpdate) SetUpdatedAt(t time.Time) *TalentUpdate {
 	tu.mutation.SetUpdatedAt(t)
@@ -78,15 +64,15 @@ func (tu *TalentUpdate) ClearDeletedAt() *TalentUpdate {
 }
 
 // SetUserID sets the "user_id" field.
-func (tu *TalentUpdate) SetUserID(i int) *TalentUpdate {
-	tu.mutation.SetUserID(i)
+func (tu *TalentUpdate) SetUserID(u uuid.UUID) *TalentUpdate {
+	tu.mutation.SetUserID(u)
 	return tu
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (tu *TalentUpdate) SetNillableUserID(i *int) *TalentUpdate {
-	if i != nil {
-		tu.SetUserID(*i)
+func (tu *TalentUpdate) SetNillableUserID(u *uuid.UUID) *TalentUpdate {
+	if u != nil {
+		tu.SetUserID(*u)
 	}
 	return tu
 }
@@ -130,26 +116,6 @@ func (tu *TalentUpdate) SetPreferredJobTitle(s string) *TalentUpdate {
 // SetIsAvailable sets the "is_available" field.
 func (tu *TalentUpdate) SetIsAvailable(b bool) *TalentUpdate {
 	tu.mutation.SetIsAvailable(b)
-	return tu
-}
-
-// SetReferrerID sets the "referrer_id" field.
-func (tu *TalentUpdate) SetReferrerID(i int) *TalentUpdate {
-	tu.mutation.SetReferrerID(i)
-	return tu
-}
-
-// SetNillableReferrerID sets the "referrer_id" field if the given value is not nil.
-func (tu *TalentUpdate) SetNillableReferrerID(i *int) *TalentUpdate {
-	if i != nil {
-		tu.SetReferrerID(*i)
-	}
-	return tu
-}
-
-// ClearReferrerID clears the value of the "referrer_id" field.
-func (tu *TalentUpdate) ClearReferrerID() *TalentUpdate {
-	tu.mutation.ClearReferrerID()
 	return tu
 }
 
@@ -226,35 +192,15 @@ func (tu *TalentUpdate) SetUser(u *User) *TalentUpdate {
 	return tu.SetUserID(u.ID)
 }
 
-// SetReferrer sets the "referrer" edge to the Talent entity.
-func (tu *TalentUpdate) SetReferrer(t *Talent) *TalentUpdate {
-	return tu.SetReferrerID(t.ID)
-}
-
-// AddRefereeIDs adds the "referees" edge to the Talent entity by IDs.
-func (tu *TalentUpdate) AddRefereeIDs(ids ...int) *TalentUpdate {
-	tu.mutation.AddRefereeIDs(ids...)
-	return tu
-}
-
-// AddReferees adds the "referees" edges to the Talent entity.
-func (tu *TalentUpdate) AddReferees(t ...*Talent) *TalentUpdate {
-	ids := make([]int, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return tu.AddRefereeIDs(ids...)
-}
-
 // AddPortfoliolinkIDs adds the "portfoliolinks" edge to the PortfolioLink entity by IDs.
-func (tu *TalentUpdate) AddPortfoliolinkIDs(ids ...int) *TalentUpdate {
+func (tu *TalentUpdate) AddPortfoliolinkIDs(ids ...uuid.UUID) *TalentUpdate {
 	tu.mutation.AddPortfoliolinkIDs(ids...)
 	return tu
 }
 
 // AddPortfoliolinks adds the "portfoliolinks" edges to the PortfolioLink entity.
 func (tu *TalentUpdate) AddPortfoliolinks(p ...*PortfolioLink) *TalentUpdate {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -262,14 +208,14 @@ func (tu *TalentUpdate) AddPortfoliolinks(p ...*PortfolioLink) *TalentUpdate {
 }
 
 // AddSkillIDs adds the "skills" edge to the Skill entity by IDs.
-func (tu *TalentUpdate) AddSkillIDs(ids ...int) *TalentUpdate {
+func (tu *TalentUpdate) AddSkillIDs(ids ...uuid.UUID) *TalentUpdate {
 	tu.mutation.AddSkillIDs(ids...)
 	return tu
 }
 
 // AddSkills adds the "skills" edges to the Skill entity.
 func (tu *TalentUpdate) AddSkills(s ...*Skill) *TalentUpdate {
-	ids := make([]int, len(s))
+	ids := make([]uuid.UUID, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
@@ -277,14 +223,14 @@ func (tu *TalentUpdate) AddSkills(s ...*Skill) *TalentUpdate {
 }
 
 // AddJobApplicationIDs adds the "job_applications" edge to the JobApplication entity by IDs.
-func (tu *TalentUpdate) AddJobApplicationIDs(ids ...int) *TalentUpdate {
+func (tu *TalentUpdate) AddJobApplicationIDs(ids ...uuid.UUID) *TalentUpdate {
 	tu.mutation.AddJobApplicationIDs(ids...)
 	return tu
 }
 
 // AddJobApplications adds the "job_applications" edges to the JobApplication entity.
 func (tu *TalentUpdate) AddJobApplications(j ...*JobApplication) *TalentUpdate {
-	ids := make([]int, len(j))
+	ids := make([]uuid.UUID, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
@@ -292,14 +238,14 @@ func (tu *TalentUpdate) AddJobApplications(j ...*JobApplication) *TalentUpdate {
 }
 
 // AddWorkExperienceIDs adds the "work_experiences" edge to the WorkExperience entity by IDs.
-func (tu *TalentUpdate) AddWorkExperienceIDs(ids ...int) *TalentUpdate {
+func (tu *TalentUpdate) AddWorkExperienceIDs(ids ...uuid.UUID) *TalentUpdate {
 	tu.mutation.AddWorkExperienceIDs(ids...)
 	return tu
 }
 
 // AddWorkExperiences adds the "work_experiences" edges to the WorkExperience entity.
 func (tu *TalentUpdate) AddWorkExperiences(w ...*WorkExperience) *TalentUpdate {
-	ids := make([]int, len(w))
+	ids := make([]uuid.UUID, len(w))
 	for i := range w {
 		ids[i] = w[i].ID
 	}
@@ -307,14 +253,14 @@ func (tu *TalentUpdate) AddWorkExperiences(w ...*WorkExperience) *TalentUpdate {
 }
 
 // AddEducationIDs adds the "educations" edge to the Education entity by IDs.
-func (tu *TalentUpdate) AddEducationIDs(ids ...int) *TalentUpdate {
+func (tu *TalentUpdate) AddEducationIDs(ids ...uuid.UUID) *TalentUpdate {
 	tu.mutation.AddEducationIDs(ids...)
 	return tu
 }
 
 // AddEducations adds the "educations" edges to the Education entity.
 func (tu *TalentUpdate) AddEducations(e ...*Education) *TalentUpdate {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -322,14 +268,14 @@ func (tu *TalentUpdate) AddEducations(e ...*Education) *TalentUpdate {
 }
 
 // AddEmergencyContactIDs adds the "emergency_contacts" edge to the EmergencyContact entity by IDs.
-func (tu *TalentUpdate) AddEmergencyContactIDs(ids ...int) *TalentUpdate {
+func (tu *TalentUpdate) AddEmergencyContactIDs(ids ...uuid.UUID) *TalentUpdate {
 	tu.mutation.AddEmergencyContactIDs(ids...)
 	return tu
 }
 
 // AddEmergencyContacts adds the "emergency_contacts" edges to the EmergencyContact entity.
 func (tu *TalentUpdate) AddEmergencyContacts(e ...*EmergencyContact) *TalentUpdate {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -337,14 +283,14 @@ func (tu *TalentUpdate) AddEmergencyContacts(e ...*EmergencyContact) *TalentUpda
 }
 
 // AddMissionIDs adds the "missions" edge to the Mission entity by IDs.
-func (tu *TalentUpdate) AddMissionIDs(ids ...int) *TalentUpdate {
+func (tu *TalentUpdate) AddMissionIDs(ids ...uuid.UUID) *TalentUpdate {
 	tu.mutation.AddMissionIDs(ids...)
 	return tu
 }
 
 // AddMissions adds the "missions" edges to the Mission entity.
 func (tu *TalentUpdate) AddMissions(m ...*Mission) *TalentUpdate {
-	ids := make([]int, len(m))
+	ids := make([]uuid.UUID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -362,33 +308,6 @@ func (tu *TalentUpdate) ClearUser() *TalentUpdate {
 	return tu
 }
 
-// ClearReferrer clears the "referrer" edge to the Talent entity.
-func (tu *TalentUpdate) ClearReferrer() *TalentUpdate {
-	tu.mutation.ClearReferrer()
-	return tu
-}
-
-// ClearReferees clears all "referees" edges to the Talent entity.
-func (tu *TalentUpdate) ClearReferees() *TalentUpdate {
-	tu.mutation.ClearReferees()
-	return tu
-}
-
-// RemoveRefereeIDs removes the "referees" edge to Talent entities by IDs.
-func (tu *TalentUpdate) RemoveRefereeIDs(ids ...int) *TalentUpdate {
-	tu.mutation.RemoveRefereeIDs(ids...)
-	return tu
-}
-
-// RemoveReferees removes "referees" edges to Talent entities.
-func (tu *TalentUpdate) RemoveReferees(t ...*Talent) *TalentUpdate {
-	ids := make([]int, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return tu.RemoveRefereeIDs(ids...)
-}
-
 // ClearPortfoliolinks clears all "portfoliolinks" edges to the PortfolioLink entity.
 func (tu *TalentUpdate) ClearPortfoliolinks() *TalentUpdate {
 	tu.mutation.ClearPortfoliolinks()
@@ -396,14 +315,14 @@ func (tu *TalentUpdate) ClearPortfoliolinks() *TalentUpdate {
 }
 
 // RemovePortfoliolinkIDs removes the "portfoliolinks" edge to PortfolioLink entities by IDs.
-func (tu *TalentUpdate) RemovePortfoliolinkIDs(ids ...int) *TalentUpdate {
+func (tu *TalentUpdate) RemovePortfoliolinkIDs(ids ...uuid.UUID) *TalentUpdate {
 	tu.mutation.RemovePortfoliolinkIDs(ids...)
 	return tu
 }
 
 // RemovePortfoliolinks removes "portfoliolinks" edges to PortfolioLink entities.
 func (tu *TalentUpdate) RemovePortfoliolinks(p ...*PortfolioLink) *TalentUpdate {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -417,14 +336,14 @@ func (tu *TalentUpdate) ClearSkills() *TalentUpdate {
 }
 
 // RemoveSkillIDs removes the "skills" edge to Skill entities by IDs.
-func (tu *TalentUpdate) RemoveSkillIDs(ids ...int) *TalentUpdate {
+func (tu *TalentUpdate) RemoveSkillIDs(ids ...uuid.UUID) *TalentUpdate {
 	tu.mutation.RemoveSkillIDs(ids...)
 	return tu
 }
 
 // RemoveSkills removes "skills" edges to Skill entities.
 func (tu *TalentUpdate) RemoveSkills(s ...*Skill) *TalentUpdate {
-	ids := make([]int, len(s))
+	ids := make([]uuid.UUID, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
@@ -438,14 +357,14 @@ func (tu *TalentUpdate) ClearJobApplications() *TalentUpdate {
 }
 
 // RemoveJobApplicationIDs removes the "job_applications" edge to JobApplication entities by IDs.
-func (tu *TalentUpdate) RemoveJobApplicationIDs(ids ...int) *TalentUpdate {
+func (tu *TalentUpdate) RemoveJobApplicationIDs(ids ...uuid.UUID) *TalentUpdate {
 	tu.mutation.RemoveJobApplicationIDs(ids...)
 	return tu
 }
 
 // RemoveJobApplications removes "job_applications" edges to JobApplication entities.
 func (tu *TalentUpdate) RemoveJobApplications(j ...*JobApplication) *TalentUpdate {
-	ids := make([]int, len(j))
+	ids := make([]uuid.UUID, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
@@ -459,14 +378,14 @@ func (tu *TalentUpdate) ClearWorkExperiences() *TalentUpdate {
 }
 
 // RemoveWorkExperienceIDs removes the "work_experiences" edge to WorkExperience entities by IDs.
-func (tu *TalentUpdate) RemoveWorkExperienceIDs(ids ...int) *TalentUpdate {
+func (tu *TalentUpdate) RemoveWorkExperienceIDs(ids ...uuid.UUID) *TalentUpdate {
 	tu.mutation.RemoveWorkExperienceIDs(ids...)
 	return tu
 }
 
 // RemoveWorkExperiences removes "work_experiences" edges to WorkExperience entities.
 func (tu *TalentUpdate) RemoveWorkExperiences(w ...*WorkExperience) *TalentUpdate {
-	ids := make([]int, len(w))
+	ids := make([]uuid.UUID, len(w))
 	for i := range w {
 		ids[i] = w[i].ID
 	}
@@ -480,14 +399,14 @@ func (tu *TalentUpdate) ClearEducations() *TalentUpdate {
 }
 
 // RemoveEducationIDs removes the "educations" edge to Education entities by IDs.
-func (tu *TalentUpdate) RemoveEducationIDs(ids ...int) *TalentUpdate {
+func (tu *TalentUpdate) RemoveEducationIDs(ids ...uuid.UUID) *TalentUpdate {
 	tu.mutation.RemoveEducationIDs(ids...)
 	return tu
 }
 
 // RemoveEducations removes "educations" edges to Education entities.
 func (tu *TalentUpdate) RemoveEducations(e ...*Education) *TalentUpdate {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -501,14 +420,14 @@ func (tu *TalentUpdate) ClearEmergencyContacts() *TalentUpdate {
 }
 
 // RemoveEmergencyContactIDs removes the "emergency_contacts" edge to EmergencyContact entities by IDs.
-func (tu *TalentUpdate) RemoveEmergencyContactIDs(ids ...int) *TalentUpdate {
+func (tu *TalentUpdate) RemoveEmergencyContactIDs(ids ...uuid.UUID) *TalentUpdate {
 	tu.mutation.RemoveEmergencyContactIDs(ids...)
 	return tu
 }
 
 // RemoveEmergencyContacts removes "emergency_contacts" edges to EmergencyContact entities.
 func (tu *TalentUpdate) RemoveEmergencyContacts(e ...*EmergencyContact) *TalentUpdate {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -522,14 +441,14 @@ func (tu *TalentUpdate) ClearMissions() *TalentUpdate {
 }
 
 // RemoveMissionIDs removes the "missions" edge to Mission entities by IDs.
-func (tu *TalentUpdate) RemoveMissionIDs(ids ...int) *TalentUpdate {
+func (tu *TalentUpdate) RemoveMissionIDs(ids ...uuid.UUID) *TalentUpdate {
 	tu.mutation.RemoveMissionIDs(ids...)
 	return tu
 }
 
 // RemoveMissions removes "missions" edges to Mission entities.
 func (tu *TalentUpdate) RemoveMissions(m ...*Mission) *TalentUpdate {
-	ids := make([]int, len(m))
+	ids := make([]uuid.UUID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -626,7 +545,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   talent.Table,
 			Columns: talent.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: talent.FieldID,
 			},
 		},
@@ -637,13 +556,6 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := tu.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: talent.FieldUUID,
-		})
 	}
 	if value, ok := tu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -705,12 +617,6 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: talent.FieldIsAvailable,
-		})
-	}
-	if tu.mutation.ReferralCodeCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: talent.FieldReferralCode,
 		})
 	}
 	if value, ok := tu.mutation.ProfessionalStartDate(); ok {
@@ -791,7 +697,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -807,97 +713,8 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if tu.mutation.ReferrerCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   talent.ReferrerTable,
-			Columns: []string{talent.ReferrerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: talent.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tu.mutation.ReferrerIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   talent.ReferrerTable,
-			Columns: []string{talent.ReferrerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: talent.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if tu.mutation.RefereesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   talent.RefereesTable,
-			Columns: []string{talent.RefereesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: talent.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tu.mutation.RemovedRefereesIDs(); len(nodes) > 0 && !tu.mutation.RefereesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   talent.RefereesTable,
-			Columns: []string{talent.RefereesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: talent.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tu.mutation.RefereesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   talent.RefereesTable,
-			Columns: []string{talent.RefereesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: talent.FieldID,
 				},
 			},
 		}
@@ -915,7 +732,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: portfoliolink.FieldID,
 				},
 			},
@@ -931,7 +748,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: portfoliolink.FieldID,
 				},
 			},
@@ -950,7 +767,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: portfoliolink.FieldID,
 				},
 			},
@@ -969,7 +786,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: skill.FieldID,
 				},
 			},
@@ -985,7 +802,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: skill.FieldID,
 				},
 			},
@@ -1004,7 +821,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: skill.FieldID,
 				},
 			},
@@ -1023,7 +840,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: jobapplication.FieldID,
 				},
 			},
@@ -1039,7 +856,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: jobapplication.FieldID,
 				},
 			},
@@ -1058,7 +875,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: jobapplication.FieldID,
 				},
 			},
@@ -1077,7 +894,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: workexperience.FieldID,
 				},
 			},
@@ -1093,7 +910,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: workexperience.FieldID,
 				},
 			},
@@ -1112,7 +929,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: workexperience.FieldID,
 				},
 			},
@@ -1131,7 +948,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: education.FieldID,
 				},
 			},
@@ -1147,7 +964,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: education.FieldID,
 				},
 			},
@@ -1166,7 +983,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: education.FieldID,
 				},
 			},
@@ -1185,7 +1002,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: emergencycontact.FieldID,
 				},
 			},
@@ -1201,7 +1018,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: emergencycontact.FieldID,
 				},
 			},
@@ -1220,7 +1037,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: emergencycontact.FieldID,
 				},
 			},
@@ -1239,7 +1056,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: mission.FieldID,
 				},
 			},
@@ -1255,7 +1072,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: mission.FieldID,
 				},
 			},
@@ -1274,7 +1091,7 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: mission.FieldID,
 				},
 			},
@@ -1301,20 +1118,6 @@ type TalentUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *TalentMutation
-}
-
-// SetUUID sets the "uuid" field.
-func (tuo *TalentUpdateOne) SetUUID(u uuid.UUID) *TalentUpdateOne {
-	tuo.mutation.SetUUID(u)
-	return tuo
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (tuo *TalentUpdateOne) SetNillableUUID(u *uuid.UUID) *TalentUpdateOne {
-	if u != nil {
-		tuo.SetUUID(*u)
-	}
-	return tuo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -1344,15 +1147,15 @@ func (tuo *TalentUpdateOne) ClearDeletedAt() *TalentUpdateOne {
 }
 
 // SetUserID sets the "user_id" field.
-func (tuo *TalentUpdateOne) SetUserID(i int) *TalentUpdateOne {
-	tuo.mutation.SetUserID(i)
+func (tuo *TalentUpdateOne) SetUserID(u uuid.UUID) *TalentUpdateOne {
+	tuo.mutation.SetUserID(u)
 	return tuo
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (tuo *TalentUpdateOne) SetNillableUserID(i *int) *TalentUpdateOne {
-	if i != nil {
-		tuo.SetUserID(*i)
+func (tuo *TalentUpdateOne) SetNillableUserID(u *uuid.UUID) *TalentUpdateOne {
+	if u != nil {
+		tuo.SetUserID(*u)
 	}
 	return tuo
 }
@@ -1396,26 +1199,6 @@ func (tuo *TalentUpdateOne) SetPreferredJobTitle(s string) *TalentUpdateOne {
 // SetIsAvailable sets the "is_available" field.
 func (tuo *TalentUpdateOne) SetIsAvailable(b bool) *TalentUpdateOne {
 	tuo.mutation.SetIsAvailable(b)
-	return tuo
-}
-
-// SetReferrerID sets the "referrer_id" field.
-func (tuo *TalentUpdateOne) SetReferrerID(i int) *TalentUpdateOne {
-	tuo.mutation.SetReferrerID(i)
-	return tuo
-}
-
-// SetNillableReferrerID sets the "referrer_id" field if the given value is not nil.
-func (tuo *TalentUpdateOne) SetNillableReferrerID(i *int) *TalentUpdateOne {
-	if i != nil {
-		tuo.SetReferrerID(*i)
-	}
-	return tuo
-}
-
-// ClearReferrerID clears the value of the "referrer_id" field.
-func (tuo *TalentUpdateOne) ClearReferrerID() *TalentUpdateOne {
-	tuo.mutation.ClearReferrerID()
 	return tuo
 }
 
@@ -1492,35 +1275,15 @@ func (tuo *TalentUpdateOne) SetUser(u *User) *TalentUpdateOne {
 	return tuo.SetUserID(u.ID)
 }
 
-// SetReferrer sets the "referrer" edge to the Talent entity.
-func (tuo *TalentUpdateOne) SetReferrer(t *Talent) *TalentUpdateOne {
-	return tuo.SetReferrerID(t.ID)
-}
-
-// AddRefereeIDs adds the "referees" edge to the Talent entity by IDs.
-func (tuo *TalentUpdateOne) AddRefereeIDs(ids ...int) *TalentUpdateOne {
-	tuo.mutation.AddRefereeIDs(ids...)
-	return tuo
-}
-
-// AddReferees adds the "referees" edges to the Talent entity.
-func (tuo *TalentUpdateOne) AddReferees(t ...*Talent) *TalentUpdateOne {
-	ids := make([]int, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return tuo.AddRefereeIDs(ids...)
-}
-
 // AddPortfoliolinkIDs adds the "portfoliolinks" edge to the PortfolioLink entity by IDs.
-func (tuo *TalentUpdateOne) AddPortfoliolinkIDs(ids ...int) *TalentUpdateOne {
+func (tuo *TalentUpdateOne) AddPortfoliolinkIDs(ids ...uuid.UUID) *TalentUpdateOne {
 	tuo.mutation.AddPortfoliolinkIDs(ids...)
 	return tuo
 }
 
 // AddPortfoliolinks adds the "portfoliolinks" edges to the PortfolioLink entity.
 func (tuo *TalentUpdateOne) AddPortfoliolinks(p ...*PortfolioLink) *TalentUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -1528,14 +1291,14 @@ func (tuo *TalentUpdateOne) AddPortfoliolinks(p ...*PortfolioLink) *TalentUpdate
 }
 
 // AddSkillIDs adds the "skills" edge to the Skill entity by IDs.
-func (tuo *TalentUpdateOne) AddSkillIDs(ids ...int) *TalentUpdateOne {
+func (tuo *TalentUpdateOne) AddSkillIDs(ids ...uuid.UUID) *TalentUpdateOne {
 	tuo.mutation.AddSkillIDs(ids...)
 	return tuo
 }
 
 // AddSkills adds the "skills" edges to the Skill entity.
 func (tuo *TalentUpdateOne) AddSkills(s ...*Skill) *TalentUpdateOne {
-	ids := make([]int, len(s))
+	ids := make([]uuid.UUID, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
@@ -1543,14 +1306,14 @@ func (tuo *TalentUpdateOne) AddSkills(s ...*Skill) *TalentUpdateOne {
 }
 
 // AddJobApplicationIDs adds the "job_applications" edge to the JobApplication entity by IDs.
-func (tuo *TalentUpdateOne) AddJobApplicationIDs(ids ...int) *TalentUpdateOne {
+func (tuo *TalentUpdateOne) AddJobApplicationIDs(ids ...uuid.UUID) *TalentUpdateOne {
 	tuo.mutation.AddJobApplicationIDs(ids...)
 	return tuo
 }
 
 // AddJobApplications adds the "job_applications" edges to the JobApplication entity.
 func (tuo *TalentUpdateOne) AddJobApplications(j ...*JobApplication) *TalentUpdateOne {
-	ids := make([]int, len(j))
+	ids := make([]uuid.UUID, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
@@ -1558,14 +1321,14 @@ func (tuo *TalentUpdateOne) AddJobApplications(j ...*JobApplication) *TalentUpda
 }
 
 // AddWorkExperienceIDs adds the "work_experiences" edge to the WorkExperience entity by IDs.
-func (tuo *TalentUpdateOne) AddWorkExperienceIDs(ids ...int) *TalentUpdateOne {
+func (tuo *TalentUpdateOne) AddWorkExperienceIDs(ids ...uuid.UUID) *TalentUpdateOne {
 	tuo.mutation.AddWorkExperienceIDs(ids...)
 	return tuo
 }
 
 // AddWorkExperiences adds the "work_experiences" edges to the WorkExperience entity.
 func (tuo *TalentUpdateOne) AddWorkExperiences(w ...*WorkExperience) *TalentUpdateOne {
-	ids := make([]int, len(w))
+	ids := make([]uuid.UUID, len(w))
 	for i := range w {
 		ids[i] = w[i].ID
 	}
@@ -1573,14 +1336,14 @@ func (tuo *TalentUpdateOne) AddWorkExperiences(w ...*WorkExperience) *TalentUpda
 }
 
 // AddEducationIDs adds the "educations" edge to the Education entity by IDs.
-func (tuo *TalentUpdateOne) AddEducationIDs(ids ...int) *TalentUpdateOne {
+func (tuo *TalentUpdateOne) AddEducationIDs(ids ...uuid.UUID) *TalentUpdateOne {
 	tuo.mutation.AddEducationIDs(ids...)
 	return tuo
 }
 
 // AddEducations adds the "educations" edges to the Education entity.
 func (tuo *TalentUpdateOne) AddEducations(e ...*Education) *TalentUpdateOne {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -1588,14 +1351,14 @@ func (tuo *TalentUpdateOne) AddEducations(e ...*Education) *TalentUpdateOne {
 }
 
 // AddEmergencyContactIDs adds the "emergency_contacts" edge to the EmergencyContact entity by IDs.
-func (tuo *TalentUpdateOne) AddEmergencyContactIDs(ids ...int) *TalentUpdateOne {
+func (tuo *TalentUpdateOne) AddEmergencyContactIDs(ids ...uuid.UUID) *TalentUpdateOne {
 	tuo.mutation.AddEmergencyContactIDs(ids...)
 	return tuo
 }
 
 // AddEmergencyContacts adds the "emergency_contacts" edges to the EmergencyContact entity.
 func (tuo *TalentUpdateOne) AddEmergencyContacts(e ...*EmergencyContact) *TalentUpdateOne {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -1603,14 +1366,14 @@ func (tuo *TalentUpdateOne) AddEmergencyContacts(e ...*EmergencyContact) *Talent
 }
 
 // AddMissionIDs adds the "missions" edge to the Mission entity by IDs.
-func (tuo *TalentUpdateOne) AddMissionIDs(ids ...int) *TalentUpdateOne {
+func (tuo *TalentUpdateOne) AddMissionIDs(ids ...uuid.UUID) *TalentUpdateOne {
 	tuo.mutation.AddMissionIDs(ids...)
 	return tuo
 }
 
 // AddMissions adds the "missions" edges to the Mission entity.
 func (tuo *TalentUpdateOne) AddMissions(m ...*Mission) *TalentUpdateOne {
-	ids := make([]int, len(m))
+	ids := make([]uuid.UUID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -1628,33 +1391,6 @@ func (tuo *TalentUpdateOne) ClearUser() *TalentUpdateOne {
 	return tuo
 }
 
-// ClearReferrer clears the "referrer" edge to the Talent entity.
-func (tuo *TalentUpdateOne) ClearReferrer() *TalentUpdateOne {
-	tuo.mutation.ClearReferrer()
-	return tuo
-}
-
-// ClearReferees clears all "referees" edges to the Talent entity.
-func (tuo *TalentUpdateOne) ClearReferees() *TalentUpdateOne {
-	tuo.mutation.ClearReferees()
-	return tuo
-}
-
-// RemoveRefereeIDs removes the "referees" edge to Talent entities by IDs.
-func (tuo *TalentUpdateOne) RemoveRefereeIDs(ids ...int) *TalentUpdateOne {
-	tuo.mutation.RemoveRefereeIDs(ids...)
-	return tuo
-}
-
-// RemoveReferees removes "referees" edges to Talent entities.
-func (tuo *TalentUpdateOne) RemoveReferees(t ...*Talent) *TalentUpdateOne {
-	ids := make([]int, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return tuo.RemoveRefereeIDs(ids...)
-}
-
 // ClearPortfoliolinks clears all "portfoliolinks" edges to the PortfolioLink entity.
 func (tuo *TalentUpdateOne) ClearPortfoliolinks() *TalentUpdateOne {
 	tuo.mutation.ClearPortfoliolinks()
@@ -1662,14 +1398,14 @@ func (tuo *TalentUpdateOne) ClearPortfoliolinks() *TalentUpdateOne {
 }
 
 // RemovePortfoliolinkIDs removes the "portfoliolinks" edge to PortfolioLink entities by IDs.
-func (tuo *TalentUpdateOne) RemovePortfoliolinkIDs(ids ...int) *TalentUpdateOne {
+func (tuo *TalentUpdateOne) RemovePortfoliolinkIDs(ids ...uuid.UUID) *TalentUpdateOne {
 	tuo.mutation.RemovePortfoliolinkIDs(ids...)
 	return tuo
 }
 
 // RemovePortfoliolinks removes "portfoliolinks" edges to PortfolioLink entities.
 func (tuo *TalentUpdateOne) RemovePortfoliolinks(p ...*PortfolioLink) *TalentUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -1683,14 +1419,14 @@ func (tuo *TalentUpdateOne) ClearSkills() *TalentUpdateOne {
 }
 
 // RemoveSkillIDs removes the "skills" edge to Skill entities by IDs.
-func (tuo *TalentUpdateOne) RemoveSkillIDs(ids ...int) *TalentUpdateOne {
+func (tuo *TalentUpdateOne) RemoveSkillIDs(ids ...uuid.UUID) *TalentUpdateOne {
 	tuo.mutation.RemoveSkillIDs(ids...)
 	return tuo
 }
 
 // RemoveSkills removes "skills" edges to Skill entities.
 func (tuo *TalentUpdateOne) RemoveSkills(s ...*Skill) *TalentUpdateOne {
-	ids := make([]int, len(s))
+	ids := make([]uuid.UUID, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
@@ -1704,14 +1440,14 @@ func (tuo *TalentUpdateOne) ClearJobApplications() *TalentUpdateOne {
 }
 
 // RemoveJobApplicationIDs removes the "job_applications" edge to JobApplication entities by IDs.
-func (tuo *TalentUpdateOne) RemoveJobApplicationIDs(ids ...int) *TalentUpdateOne {
+func (tuo *TalentUpdateOne) RemoveJobApplicationIDs(ids ...uuid.UUID) *TalentUpdateOne {
 	tuo.mutation.RemoveJobApplicationIDs(ids...)
 	return tuo
 }
 
 // RemoveJobApplications removes "job_applications" edges to JobApplication entities.
 func (tuo *TalentUpdateOne) RemoveJobApplications(j ...*JobApplication) *TalentUpdateOne {
-	ids := make([]int, len(j))
+	ids := make([]uuid.UUID, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
@@ -1725,14 +1461,14 @@ func (tuo *TalentUpdateOne) ClearWorkExperiences() *TalentUpdateOne {
 }
 
 // RemoveWorkExperienceIDs removes the "work_experiences" edge to WorkExperience entities by IDs.
-func (tuo *TalentUpdateOne) RemoveWorkExperienceIDs(ids ...int) *TalentUpdateOne {
+func (tuo *TalentUpdateOne) RemoveWorkExperienceIDs(ids ...uuid.UUID) *TalentUpdateOne {
 	tuo.mutation.RemoveWorkExperienceIDs(ids...)
 	return tuo
 }
 
 // RemoveWorkExperiences removes "work_experiences" edges to WorkExperience entities.
 func (tuo *TalentUpdateOne) RemoveWorkExperiences(w ...*WorkExperience) *TalentUpdateOne {
-	ids := make([]int, len(w))
+	ids := make([]uuid.UUID, len(w))
 	for i := range w {
 		ids[i] = w[i].ID
 	}
@@ -1746,14 +1482,14 @@ func (tuo *TalentUpdateOne) ClearEducations() *TalentUpdateOne {
 }
 
 // RemoveEducationIDs removes the "educations" edge to Education entities by IDs.
-func (tuo *TalentUpdateOne) RemoveEducationIDs(ids ...int) *TalentUpdateOne {
+func (tuo *TalentUpdateOne) RemoveEducationIDs(ids ...uuid.UUID) *TalentUpdateOne {
 	tuo.mutation.RemoveEducationIDs(ids...)
 	return tuo
 }
 
 // RemoveEducations removes "educations" edges to Education entities.
 func (tuo *TalentUpdateOne) RemoveEducations(e ...*Education) *TalentUpdateOne {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -1767,14 +1503,14 @@ func (tuo *TalentUpdateOne) ClearEmergencyContacts() *TalentUpdateOne {
 }
 
 // RemoveEmergencyContactIDs removes the "emergency_contacts" edge to EmergencyContact entities by IDs.
-func (tuo *TalentUpdateOne) RemoveEmergencyContactIDs(ids ...int) *TalentUpdateOne {
+func (tuo *TalentUpdateOne) RemoveEmergencyContactIDs(ids ...uuid.UUID) *TalentUpdateOne {
 	tuo.mutation.RemoveEmergencyContactIDs(ids...)
 	return tuo
 }
 
 // RemoveEmergencyContacts removes "emergency_contacts" edges to EmergencyContact entities.
 func (tuo *TalentUpdateOne) RemoveEmergencyContacts(e ...*EmergencyContact) *TalentUpdateOne {
-	ids := make([]int, len(e))
+	ids := make([]uuid.UUID, len(e))
 	for i := range e {
 		ids[i] = e[i].ID
 	}
@@ -1788,14 +1524,14 @@ func (tuo *TalentUpdateOne) ClearMissions() *TalentUpdateOne {
 }
 
 // RemoveMissionIDs removes the "missions" edge to Mission entities by IDs.
-func (tuo *TalentUpdateOne) RemoveMissionIDs(ids ...int) *TalentUpdateOne {
+func (tuo *TalentUpdateOne) RemoveMissionIDs(ids ...uuid.UUID) *TalentUpdateOne {
 	tuo.mutation.RemoveMissionIDs(ids...)
 	return tuo
 }
 
 // RemoveMissions removes "missions" edges to Mission entities.
 func (tuo *TalentUpdateOne) RemoveMissions(m ...*Mission) *TalentUpdateOne {
-	ids := make([]int, len(m))
+	ids := make([]uuid.UUID, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -1899,7 +1635,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Table:   talent.Table,
 			Columns: talent.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: talent.FieldID,
 			},
 		},
@@ -1927,13 +1663,6 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := tuo.mutation.UUID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: talent.FieldUUID,
-		})
 	}
 	if value, ok := tuo.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -1995,12 +1724,6 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: talent.FieldIsAvailable,
-		})
-	}
-	if tuo.mutation.ReferralCodeCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: talent.FieldReferralCode,
 		})
 	}
 	if value, ok := tuo.mutation.ProfessionalStartDate(); ok {
@@ -2081,7 +1804,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -2097,97 +1820,8 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if tuo.mutation.ReferrerCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   talent.ReferrerTable,
-			Columns: []string{talent.ReferrerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: talent.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tuo.mutation.ReferrerIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   talent.ReferrerTable,
-			Columns: []string{talent.ReferrerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: talent.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if tuo.mutation.RefereesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   talent.RefereesTable,
-			Columns: []string{talent.RefereesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: talent.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tuo.mutation.RemovedRefereesIDs(); len(nodes) > 0 && !tuo.mutation.RefereesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   talent.RefereesTable,
-			Columns: []string{talent.RefereesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: talent.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tuo.mutation.RefereesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   talent.RefereesTable,
-			Columns: []string{talent.RefereesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: talent.FieldID,
 				},
 			},
 		}
@@ -2205,7 +1839,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: portfoliolink.FieldID,
 				},
 			},
@@ -2221,7 +1855,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: portfoliolink.FieldID,
 				},
 			},
@@ -2240,7 +1874,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: portfoliolink.FieldID,
 				},
 			},
@@ -2259,7 +1893,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: skill.FieldID,
 				},
 			},
@@ -2275,7 +1909,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: skill.FieldID,
 				},
 			},
@@ -2294,7 +1928,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: skill.FieldID,
 				},
 			},
@@ -2313,7 +1947,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: jobapplication.FieldID,
 				},
 			},
@@ -2329,7 +1963,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: jobapplication.FieldID,
 				},
 			},
@@ -2348,7 +1982,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: jobapplication.FieldID,
 				},
 			},
@@ -2367,7 +2001,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: workexperience.FieldID,
 				},
 			},
@@ -2383,7 +2017,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: workexperience.FieldID,
 				},
 			},
@@ -2402,7 +2036,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: workexperience.FieldID,
 				},
 			},
@@ -2421,7 +2055,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: education.FieldID,
 				},
 			},
@@ -2437,7 +2071,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: education.FieldID,
 				},
 			},
@@ -2456,7 +2090,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: education.FieldID,
 				},
 			},
@@ -2475,7 +2109,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: emergencycontact.FieldID,
 				},
 			},
@@ -2491,7 +2125,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: emergencycontact.FieldID,
 				},
 			},
@@ -2510,7 +2144,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: emergencycontact.FieldID,
 				},
 			},
@@ -2529,7 +2163,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: mission.FieldID,
 				},
 			},
@@ -2545,7 +2179,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: mission.FieldID,
 				},
 			},
@@ -2564,7 +2198,7 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: mission.FieldID,
 				},
 			},

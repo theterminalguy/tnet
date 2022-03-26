@@ -14,6 +14,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/google/uuid"
 )
 
 // EmergencyContactQuery is the builder for querying EmergencyContact entities.
@@ -109,8 +110,8 @@ func (ecq *EmergencyContactQuery) FirstX(ctx context.Context) *EmergencyContact 
 
 // FirstID returns the first EmergencyContact ID from the query.
 // Returns a *NotFoundError when no EmergencyContact ID was found.
-func (ecq *EmergencyContactQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (ecq *EmergencyContactQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = ecq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -122,7 +123,7 @@ func (ecq *EmergencyContactQuery) FirstID(ctx context.Context) (id int, err erro
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (ecq *EmergencyContactQuery) FirstIDX(ctx context.Context) int {
+func (ecq *EmergencyContactQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := ecq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -160,8 +161,8 @@ func (ecq *EmergencyContactQuery) OnlyX(ctx context.Context) *EmergencyContact {
 // OnlyID is like Only, but returns the only EmergencyContact ID in the query.
 // Returns a *NotSingularError when more than one EmergencyContact ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (ecq *EmergencyContactQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (ecq *EmergencyContactQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = ecq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -177,7 +178,7 @@ func (ecq *EmergencyContactQuery) OnlyID(ctx context.Context) (id int, err error
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (ecq *EmergencyContactQuery) OnlyIDX(ctx context.Context) int {
+func (ecq *EmergencyContactQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := ecq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -203,8 +204,8 @@ func (ecq *EmergencyContactQuery) AllX(ctx context.Context) []*EmergencyContact 
 }
 
 // IDs executes the query and returns a list of EmergencyContact IDs.
-func (ecq *EmergencyContactQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (ecq *EmergencyContactQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := ecq.Select(emergencycontact.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -212,7 +213,7 @@ func (ecq *EmergencyContactQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (ecq *EmergencyContactQuery) IDsX(ctx context.Context) []int {
+func (ecq *EmergencyContactQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := ecq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -291,12 +292,12 @@ func (ecq *EmergencyContactQuery) WithTalent(opts ...func(*TalentQuery)) *Emerge
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.EmergencyContact.Query().
-//		GroupBy(emergencycontact.FieldUUID).
+//		GroupBy(emergencycontact.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -318,11 +319,11 @@ func (ecq *EmergencyContactQuery) GroupBy(field string, fields ...string) *Emerg
 // Example:
 //
 //	var v []struct {
-//		UUID uuid.UUID `json:"uuid,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.EmergencyContact.Query().
-//		Select(emergencycontact.FieldUUID).
+//		Select(emergencycontact.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
 func (ecq *EmergencyContactQuery) Select(fields ...string) *EmergencyContactSelect {
@@ -375,8 +376,8 @@ func (ecq *EmergencyContactQuery) sqlAll(ctx context.Context) ([]*EmergencyConta
 	}
 
 	if query := ecq.withTalent; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*EmergencyContact)
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*EmergencyContact)
 		for i := range nodes {
 			fk := nodes[i].TalentID
 			if _, ok := nodeids[fk]; !ok {
@@ -426,7 +427,7 @@ func (ecq *EmergencyContactQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   emergencycontact.Table,
 			Columns: emergencycontact.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: emergencycontact.FieldID,
 			},
 		},

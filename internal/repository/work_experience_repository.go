@@ -13,17 +13,17 @@ import (
 
 type WorkExperienceQuerier interface {
 	GetAll() ([]*ent.WorkExperience, error)
-	GetAllForTalent(talentID int) ([]*ent.WorkExperience, error)
-	GetByUUID(id uuid.UUID) (*ent.WorkExperience, error)
+	GetAllForTalent(talentID uuid.UUID) ([]*ent.WorkExperience, error)
+	GetByID(id uuid.UUID) (*ent.WorkExperience, error)
 	Create(p WorkExperienceParams) (*ent.WorkExperience, error)
 	Update(id uuid.UUID, p WorkExperienceParams) (*ent.WorkExperience, []error)
-	DeleteByUUID(id uuid.UUID) error
+	DeleteByID(id uuid.UUID) error
 }
 
 type WorkExperienceRepository struct{}
 
 type WorkExperienceParams struct {
-	TalentUUID          uuid.UUID `json:"talent_uuid" validate:"required"`
+	TalentID            uuid.UUID `json:"talent_id" validate:"required"`
 	CompanyName         string    `json:"company_name" validate:"required"`
 	Location            string    `json:"location" validate:"required"`
 	JobTitle            string    `json:"job_title" validate:"required"`
@@ -57,7 +57,7 @@ func (*WorkExperienceRepository) Filter(prd ...predicate.WorkExperience) ([]*ent
 	return wkExps, nil
 }
 
-func (*WorkExperienceRepository) GetAllForTalent(talentID int) ([]*ent.WorkExperience, error) {
+func (*WorkExperienceRepository) GetAllForTalent(talentID uuid.UUID) ([]*ent.WorkExperience, error) {
 	records, err := dBConn.WorkExperience.Query().
 		Where(workexperience.And(
 			workexperience.TalentID(talentID),
@@ -69,9 +69,9 @@ func (*WorkExperienceRepository) GetAllForTalent(talentID int) ([]*ent.WorkExper
 	return records, nil
 }
 
-func (*WorkExperienceRepository) GetByUUID(id uuid.UUID) (*ent.WorkExperience, error) {
+func (*WorkExperienceRepository) GetByID(id uuid.UUID) (*ent.WorkExperience, error) {
 	record, err := dBConn.WorkExperience.Query().
-		Where(workexperience.UUIDEQ(id)).
+		Where(workexperience.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -91,7 +91,7 @@ func (*WorkExperienceRepository) Create(p WorkExperienceParams) (*ent.WorkExperi
 	var sd *time.Time
 	var ed *time.Time
 
-	a, err := NewTalentRepository().GetByUUID(p.TalentUUID)
+	a, err := NewTalentRepository().GetByID(p.TalentID)
 	if err != nil {
 		return nil, err
 	}
@@ -131,11 +131,11 @@ func (*WorkExperienceRepository) Create(p WorkExperienceParams) (*ent.WorkExperi
 }
 
 func (r *WorkExperienceRepository) Update(id uuid.UUID, p WorkExperienceParams) (*ent.WorkExperience, []error) {
-	err := validateParams(p, "TalentUUID")
+	err := validateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -234,8 +234,8 @@ func (r *WorkExperienceRepository) Update(id uuid.UUID, p WorkExperienceParams) 
 	return record, nil
 }
 
-func (r *WorkExperienceRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+func (r *WorkExperienceRepository) DeleteByID(id uuid.UUID) error {
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}
@@ -248,7 +248,7 @@ func (r *WorkExperienceRepository) DeleteByUUID(id uuid.UUID) error {
 	return nil
 }
 
-func (r *WorkExperienceRepository) GetWorkExperienceByTalentUUID(talentID int) (*ent.WorkExperience, error) {
+func (r *WorkExperienceRepository) GetWorkExperienceByTalentID(talentID uuid.UUID) (*ent.WorkExperience, error) {
 	record, err := dBConn.WorkExperience.Query().
 		Where(workexperience.And(
 			workexperience.TalentID(talentID),

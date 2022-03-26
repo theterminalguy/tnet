@@ -23,20 +23,6 @@ type JobApplicationCreate struct {
 	hooks    []Hook
 }
 
-// SetUUID sets the "uuid" field.
-func (jac *JobApplicationCreate) SetUUID(u uuid.UUID) *JobApplicationCreate {
-	jac.mutation.SetUUID(u)
-	return jac
-}
-
-// SetNillableUUID sets the "uuid" field if the given value is not nil.
-func (jac *JobApplicationCreate) SetNillableUUID(u *uuid.UUID) *JobApplicationCreate {
-	if u != nil {
-		jac.SetUUID(*u)
-	}
-	return jac
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (jac *JobApplicationCreate) SetCreatedAt(t time.Time) *JobApplicationCreate {
 	jac.mutation.SetCreatedAt(t)
@@ -80,29 +66,29 @@ func (jac *JobApplicationCreate) SetNillableDeletedAt(t *time.Time) *JobApplicat
 }
 
 // SetTalentID sets the "talent_id" field.
-func (jac *JobApplicationCreate) SetTalentID(i int) *JobApplicationCreate {
-	jac.mutation.SetTalentID(i)
+func (jac *JobApplicationCreate) SetTalentID(u uuid.UUID) *JobApplicationCreate {
+	jac.mutation.SetTalentID(u)
 	return jac
 }
 
 // SetNillableTalentID sets the "talent_id" field if the given value is not nil.
-func (jac *JobApplicationCreate) SetNillableTalentID(i *int) *JobApplicationCreate {
-	if i != nil {
-		jac.SetTalentID(*i)
+func (jac *JobApplicationCreate) SetNillableTalentID(u *uuid.UUID) *JobApplicationCreate {
+	if u != nil {
+		jac.SetTalentID(*u)
 	}
 	return jac
 }
 
 // SetJobID sets the "job_id" field.
-func (jac *JobApplicationCreate) SetJobID(i int) *JobApplicationCreate {
-	jac.mutation.SetJobID(i)
+func (jac *JobApplicationCreate) SetJobID(u uuid.UUID) *JobApplicationCreate {
+	jac.mutation.SetJobID(u)
 	return jac
 }
 
 // SetNillableJobID sets the "job_id" field if the given value is not nil.
-func (jac *JobApplicationCreate) SetNillableJobID(i *int) *JobApplicationCreate {
-	if i != nil {
-		jac.SetJobID(*i)
+func (jac *JobApplicationCreate) SetNillableJobID(u *uuid.UUID) *JobApplicationCreate {
+	if u != nil {
+		jac.SetJobID(*u)
 	}
 	return jac
 }
@@ -142,8 +128,16 @@ func (jac *JobApplicationCreate) SetNillableNote(s *string) *JobApplicationCreat
 }
 
 // SetID sets the "id" field.
-func (jac *JobApplicationCreate) SetID(i int) *JobApplicationCreate {
-	jac.mutation.SetID(i)
+func (jac *JobApplicationCreate) SetID(u uuid.UUID) *JobApplicationCreate {
+	jac.mutation.SetID(u)
+	return jac
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (jac *JobApplicationCreate) SetNillableID(u *uuid.UUID) *JobApplicationCreate {
+	if u != nil {
+		jac.SetID(*u)
+	}
 	return jac
 }
 
@@ -228,10 +222,6 @@ func (jac *JobApplicationCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (jac *JobApplicationCreate) defaults() {
-	if _, ok := jac.mutation.UUID(); !ok {
-		v := jobapplication.DefaultUUID()
-		jac.mutation.SetUUID(v)
-	}
 	if _, ok := jac.mutation.CreatedAt(); !ok {
 		v := jobapplication.DefaultCreatedAt()
 		jac.mutation.SetCreatedAt(v)
@@ -244,13 +234,14 @@ func (jac *JobApplicationCreate) defaults() {
 		v := jobapplication.DefaultStatus
 		jac.mutation.SetStatus(v)
 	}
+	if _, ok := jac.mutation.ID(); !ok {
+		v := jobapplication.DefaultID()
+		jac.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (jac *JobApplicationCreate) check() error {
-	if _, ok := jac.mutation.UUID(); !ok {
-		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "JobApplication.uuid"`)}
-	}
 	if _, ok := jac.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "JobApplication.created_at"`)}
 	}
@@ -279,9 +270,12 @@ func (jac *JobApplicationCreate) sqlSave(ctx context.Context) (*JobApplication, 
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -292,22 +286,14 @@ func (jac *JobApplicationCreate) createSpec() (*JobApplication, *sqlgraph.Create
 		_spec = &sqlgraph.CreateSpec{
 			Table: jobapplication.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: jobapplication.FieldID,
 			},
 		}
 	)
 	if id, ok := jac.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
-	}
-	if value, ok := jac.mutation.UUID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: jobapplication.FieldUUID,
-		})
-		_node.UUID = value
+		_spec.ID.Value = &id
 	}
 	if value, ok := jac.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -366,7 +352,7 @@ func (jac *JobApplicationCreate) createSpec() (*JobApplication, *sqlgraph.Create
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: talent.FieldID,
 				},
 			},
@@ -386,7 +372,7 @@ func (jac *JobApplicationCreate) createSpec() (*JobApplication, *sqlgraph.Create
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: job.FieldID,
 				},
 			},
@@ -442,10 +428,6 @@ func (jacb *JobApplicationCreateBulk) Save(ctx context.Context) ([]*JobApplicati
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {
