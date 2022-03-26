@@ -24,14 +24,18 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
-	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
+	// FirstName holds the value of the "first_name" field.
+	FirstName string `json:"first_name,omitempty"`
+	// LastName holds the value of the "last_name" field.
+	LastName string `json:"last_name,omitempty"`
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
 	// Role holds the value of the "role" field.
 	Role userrole.Role `json:"role,omitempty"`
 	// Approved holds the value of the "approved" field.
 	Approved bool `json:"approved,omitempty"`
+	// PhotoURL holds the value of the "photo_url" field.
+	PhotoURL string `json:"photo_url,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges UserEdges `json:"edges"`
@@ -106,7 +110,7 @@ func (*User) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case user.FieldApproved:
 			values[i] = new(sql.NullBool)
-		case user.FieldName, user.FieldEmail, user.FieldRole:
+		case user.FieldFirstName, user.FieldLastName, user.FieldEmail, user.FieldRole, user.FieldPhotoURL:
 			values[i] = new(sql.NullString)
 		case user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -152,11 +156,17 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 				u.DeletedAt = new(time.Time)
 				*u.DeletedAt = value.Time
 			}
-		case user.FieldName:
+		case user.FieldFirstName:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
+				return fmt.Errorf("unexpected type %T for field first_name", values[i])
 			} else if value.Valid {
-				u.Name = value.String
+				u.FirstName = value.String
+			}
+		case user.FieldLastName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field last_name", values[i])
+			} else if value.Valid {
+				u.LastName = value.String
 			}
 		case user.FieldEmail:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -175,6 +185,12 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field approved", values[i])
 			} else if value.Valid {
 				u.Approved = value.Bool
+			}
+		case user.FieldPhotoURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field photo_url", values[i])
+			} else if value.Valid {
+				u.PhotoURL = value.String
 			}
 		}
 	}
@@ -237,14 +253,18 @@ func (u *User) String() string {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	builder.WriteString(", name=")
-	builder.WriteString(u.Name)
+	builder.WriteString(", first_name=")
+	builder.WriteString(u.FirstName)
+	builder.WriteString(", last_name=")
+	builder.WriteString(u.LastName)
 	builder.WriteString(", email=")
 	builder.WriteString(u.Email)
 	builder.WriteString(", role=")
 	builder.WriteString(fmt.Sprintf("%v", u.Role))
 	builder.WriteString(", approved=")
 	builder.WriteString(fmt.Sprintf("%v", u.Approved))
+	builder.WriteString(", photo_url=")
+	builder.WriteString(u.PhotoURL)
 	builder.WriteByte(')')
 	return builder.String()
 }

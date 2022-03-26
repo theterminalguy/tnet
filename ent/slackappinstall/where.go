@@ -150,6 +150,20 @@ func AuthedUserEmail(v string) predicate.SlackAppInstall {
 	})
 }
 
+// AuthedUserTitle applies equality check predicate on the "authed_user_title" field. It's identical to AuthedUserTitleEQ.
+func AuthedUserTitle(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAuthedUserTitle), v))
+	})
+}
+
+// AuthedUserPhone applies equality check predicate on the "authed_user_phone" field. It's identical to AuthedUserPhoneEQ.
+func AuthedUserPhone(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAuthedUserPhone), v))
+	})
+}
+
 // AppID applies equality check predicate on the "app_id" field. It's identical to AppIDEQ.
 func AppID(v string) predicate.SlackAppInstall {
 	return predicate.SlackAppInstall(func(s *sql.Selector) {
@@ -937,6 +951,256 @@ func AuthedUserEmailEqualFold(v string) predicate.SlackAppInstall {
 func AuthedUserEmailContainsFold(v string) predicate.SlackAppInstall {
 	return predicate.SlackAppInstall(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldAuthedUserEmail), v))
+	})
+}
+
+// AuthedUserTitleEQ applies the EQ predicate on the "authed_user_title" field.
+func AuthedUserTitleEQ(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAuthedUserTitle), v))
+	})
+}
+
+// AuthedUserTitleNEQ applies the NEQ predicate on the "authed_user_title" field.
+func AuthedUserTitleNEQ(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAuthedUserTitle), v))
+	})
+}
+
+// AuthedUserTitleIn applies the In predicate on the "authed_user_title" field.
+func AuthedUserTitleIn(vs ...string) predicate.SlackAppInstall {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAuthedUserTitle), v...))
+	})
+}
+
+// AuthedUserTitleNotIn applies the NotIn predicate on the "authed_user_title" field.
+func AuthedUserTitleNotIn(vs ...string) predicate.SlackAppInstall {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAuthedUserTitle), v...))
+	})
+}
+
+// AuthedUserTitleGT applies the GT predicate on the "authed_user_title" field.
+func AuthedUserTitleGT(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAuthedUserTitle), v))
+	})
+}
+
+// AuthedUserTitleGTE applies the GTE predicate on the "authed_user_title" field.
+func AuthedUserTitleGTE(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAuthedUserTitle), v))
+	})
+}
+
+// AuthedUserTitleLT applies the LT predicate on the "authed_user_title" field.
+func AuthedUserTitleLT(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAuthedUserTitle), v))
+	})
+}
+
+// AuthedUserTitleLTE applies the LTE predicate on the "authed_user_title" field.
+func AuthedUserTitleLTE(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAuthedUserTitle), v))
+	})
+}
+
+// AuthedUserTitleContains applies the Contains predicate on the "authed_user_title" field.
+func AuthedUserTitleContains(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldAuthedUserTitle), v))
+	})
+}
+
+// AuthedUserTitleHasPrefix applies the HasPrefix predicate on the "authed_user_title" field.
+func AuthedUserTitleHasPrefix(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldAuthedUserTitle), v))
+	})
+}
+
+// AuthedUserTitleHasSuffix applies the HasSuffix predicate on the "authed_user_title" field.
+func AuthedUserTitleHasSuffix(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldAuthedUserTitle), v))
+	})
+}
+
+// AuthedUserTitleIsNil applies the IsNil predicate on the "authed_user_title" field.
+func AuthedUserTitleIsNil() predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAuthedUserTitle)))
+	})
+}
+
+// AuthedUserTitleNotNil applies the NotNil predicate on the "authed_user_title" field.
+func AuthedUserTitleNotNil() predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAuthedUserTitle)))
+	})
+}
+
+// AuthedUserTitleEqualFold applies the EqualFold predicate on the "authed_user_title" field.
+func AuthedUserTitleEqualFold(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldAuthedUserTitle), v))
+	})
+}
+
+// AuthedUserTitleContainsFold applies the ContainsFold predicate on the "authed_user_title" field.
+func AuthedUserTitleContainsFold(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldAuthedUserTitle), v))
+	})
+}
+
+// AuthedUserPhoneEQ applies the EQ predicate on the "authed_user_phone" field.
+func AuthedUserPhoneEQ(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAuthedUserPhone), v))
+	})
+}
+
+// AuthedUserPhoneNEQ applies the NEQ predicate on the "authed_user_phone" field.
+func AuthedUserPhoneNEQ(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAuthedUserPhone), v))
+	})
+}
+
+// AuthedUserPhoneIn applies the In predicate on the "authed_user_phone" field.
+func AuthedUserPhoneIn(vs ...string) predicate.SlackAppInstall {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAuthedUserPhone), v...))
+	})
+}
+
+// AuthedUserPhoneNotIn applies the NotIn predicate on the "authed_user_phone" field.
+func AuthedUserPhoneNotIn(vs ...string) predicate.SlackAppInstall {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAuthedUserPhone), v...))
+	})
+}
+
+// AuthedUserPhoneGT applies the GT predicate on the "authed_user_phone" field.
+func AuthedUserPhoneGT(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAuthedUserPhone), v))
+	})
+}
+
+// AuthedUserPhoneGTE applies the GTE predicate on the "authed_user_phone" field.
+func AuthedUserPhoneGTE(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAuthedUserPhone), v))
+	})
+}
+
+// AuthedUserPhoneLT applies the LT predicate on the "authed_user_phone" field.
+func AuthedUserPhoneLT(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAuthedUserPhone), v))
+	})
+}
+
+// AuthedUserPhoneLTE applies the LTE predicate on the "authed_user_phone" field.
+func AuthedUserPhoneLTE(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAuthedUserPhone), v))
+	})
+}
+
+// AuthedUserPhoneContains applies the Contains predicate on the "authed_user_phone" field.
+func AuthedUserPhoneContains(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldAuthedUserPhone), v))
+	})
+}
+
+// AuthedUserPhoneHasPrefix applies the HasPrefix predicate on the "authed_user_phone" field.
+func AuthedUserPhoneHasPrefix(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldAuthedUserPhone), v))
+	})
+}
+
+// AuthedUserPhoneHasSuffix applies the HasSuffix predicate on the "authed_user_phone" field.
+func AuthedUserPhoneHasSuffix(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldAuthedUserPhone), v))
+	})
+}
+
+// AuthedUserPhoneIsNil applies the IsNil predicate on the "authed_user_phone" field.
+func AuthedUserPhoneIsNil() predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAuthedUserPhone)))
+	})
+}
+
+// AuthedUserPhoneNotNil applies the NotNil predicate on the "authed_user_phone" field.
+func AuthedUserPhoneNotNil() predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAuthedUserPhone)))
+	})
+}
+
+// AuthedUserPhoneEqualFold applies the EqualFold predicate on the "authed_user_phone" field.
+func AuthedUserPhoneEqualFold(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldAuthedUserPhone), v))
+	})
+}
+
+// AuthedUserPhoneContainsFold applies the ContainsFold predicate on the "authed_user_phone" field.
+func AuthedUserPhoneContainsFold(v string) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldAuthedUserPhone), v))
 	})
 }
 

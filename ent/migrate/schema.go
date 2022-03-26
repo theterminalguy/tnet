@@ -355,6 +355,8 @@ var (
 		{Name: "team_name", Type: field.TypeString},
 		{Name: "authed_user_id", Type: field.TypeString},
 		{Name: "authed_user_email", Type: field.TypeString},
+		{Name: "authed_user_title", Type: field.TypeString, Nullable: true},
+		{Name: "authed_user_phone", Type: field.TypeString, Nullable: true},
 		{Name: "app_id", Type: field.TypeString},
 		{Name: "bot_user_id", Type: field.TypeString},
 		{Name: "access_token", Type: field.TypeString},
@@ -371,7 +373,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "slack_app_installs_users_slack_app_installs",
-				Columns:    []*schema.Column{SlackAppInstallsColumns[14]},
+				Columns:    []*schema.Column{SlackAppInstallsColumns[16]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -380,7 +382,7 @@ var (
 			{
 				Name:    "slackappinstall_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{SlackAppInstallsColumns[14]},
+				Columns: []*schema.Column{SlackAppInstallsColumns[16]},
 			},
 			{
 				Name:    "slackappinstall_team_id",
@@ -480,10 +482,12 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "name", Type: field.TypeString},
+		{Name: "first_name", Type: field.TypeString},
+		{Name: "last_name", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString},
 		{Name: "role", Type: field.TypeEnum, Enums: []string{"talent", "recruiter"}},
 		{Name: "approved", Type: field.TypeBool, Default: false},
+		{Name: "photo_url", Type: field.TypeString},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -494,12 +498,12 @@ var (
 			{
 				Name:    "user_email",
 				Unique:  true,
-				Columns: []*schema.Column{UsersColumns[5]},
+				Columns: []*schema.Column{UsersColumns[6]},
 			},
 			{
 				Name:    "user_role",
 				Unique:  false,
-				Columns: []*schema.Column{UsersColumns[6]},
+				Columns: []*schema.Column{UsersColumns[7]},
 			},
 		},
 	}

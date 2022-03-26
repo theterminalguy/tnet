@@ -8212,6 +8212,8 @@ type SlackAppInstallMutation struct {
 	team_name             *string
 	authed_user_id        *string
 	authed_user_email     *string
+	authed_user_title     *string
+	authed_user_phone     *string
 	app_id                *string
 	bot_user_id           *string
 	access_token          *string
@@ -8644,6 +8646,104 @@ func (m *SlackAppInstallMutation) ResetAuthedUserEmail() {
 	m.authed_user_email = nil
 }
 
+// SetAuthedUserTitle sets the "authed_user_title" field.
+func (m *SlackAppInstallMutation) SetAuthedUserTitle(s string) {
+	m.authed_user_title = &s
+}
+
+// AuthedUserTitle returns the value of the "authed_user_title" field in the mutation.
+func (m *SlackAppInstallMutation) AuthedUserTitle() (r string, exists bool) {
+	v := m.authed_user_title
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAuthedUserTitle returns the old "authed_user_title" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldAuthedUserTitle(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAuthedUserTitle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAuthedUserTitle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAuthedUserTitle: %w", err)
+	}
+	return oldValue.AuthedUserTitle, nil
+}
+
+// ClearAuthedUserTitle clears the value of the "authed_user_title" field.
+func (m *SlackAppInstallMutation) ClearAuthedUserTitle() {
+	m.authed_user_title = nil
+	m.clearedFields[slackappinstall.FieldAuthedUserTitle] = struct{}{}
+}
+
+// AuthedUserTitleCleared returns if the "authed_user_title" field was cleared in this mutation.
+func (m *SlackAppInstallMutation) AuthedUserTitleCleared() bool {
+	_, ok := m.clearedFields[slackappinstall.FieldAuthedUserTitle]
+	return ok
+}
+
+// ResetAuthedUserTitle resets all changes to the "authed_user_title" field.
+func (m *SlackAppInstallMutation) ResetAuthedUserTitle() {
+	m.authed_user_title = nil
+	delete(m.clearedFields, slackappinstall.FieldAuthedUserTitle)
+}
+
+// SetAuthedUserPhone sets the "authed_user_phone" field.
+func (m *SlackAppInstallMutation) SetAuthedUserPhone(s string) {
+	m.authed_user_phone = &s
+}
+
+// AuthedUserPhone returns the value of the "authed_user_phone" field in the mutation.
+func (m *SlackAppInstallMutation) AuthedUserPhone() (r string, exists bool) {
+	v := m.authed_user_phone
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAuthedUserPhone returns the old "authed_user_phone" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldAuthedUserPhone(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAuthedUserPhone is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAuthedUserPhone requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAuthedUserPhone: %w", err)
+	}
+	return oldValue.AuthedUserPhone, nil
+}
+
+// ClearAuthedUserPhone clears the value of the "authed_user_phone" field.
+func (m *SlackAppInstallMutation) ClearAuthedUserPhone() {
+	m.authed_user_phone = nil
+	m.clearedFields[slackappinstall.FieldAuthedUserPhone] = struct{}{}
+}
+
+// AuthedUserPhoneCleared returns if the "authed_user_phone" field was cleared in this mutation.
+func (m *SlackAppInstallMutation) AuthedUserPhoneCleared() bool {
+	_, ok := m.clearedFields[slackappinstall.FieldAuthedUserPhone]
+	return ok
+}
+
+// ResetAuthedUserPhone resets all changes to the "authed_user_phone" field.
+func (m *SlackAppInstallMutation) ResetAuthedUserPhone() {
+	m.authed_user_phone = nil
+	delete(m.clearedFields, slackappinstall.FieldAuthedUserPhone)
+}
+
 // SetAppID sets the "app_id" field.
 func (m *SlackAppInstallMutation) SetAppID(s string) {
 	m.app_id = &s
@@ -8905,7 +9005,7 @@ func (m *SlackAppInstallMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SlackAppInstallMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, slackappinstall.FieldCreatedAt)
 	}
@@ -8929,6 +9029,12 @@ func (m *SlackAppInstallMutation) Fields() []string {
 	}
 	if m.authed_user_email != nil {
 		fields = append(fields, slackappinstall.FieldAuthedUserEmail)
+	}
+	if m.authed_user_title != nil {
+		fields = append(fields, slackappinstall.FieldAuthedUserTitle)
+	}
+	if m.authed_user_phone != nil {
+		fields = append(fields, slackappinstall.FieldAuthedUserPhone)
 	}
 	if m.app_id != nil {
 		fields = append(fields, slackappinstall.FieldAppID)
@@ -8972,6 +9078,10 @@ func (m *SlackAppInstallMutation) Field(name string) (ent.Value, bool) {
 		return m.AuthedUserID()
 	case slackappinstall.FieldAuthedUserEmail:
 		return m.AuthedUserEmail()
+	case slackappinstall.FieldAuthedUserTitle:
+		return m.AuthedUserTitle()
+	case slackappinstall.FieldAuthedUserPhone:
+		return m.AuthedUserPhone()
 	case slackappinstall.FieldAppID:
 		return m.AppID()
 	case slackappinstall.FieldBotUserID:
@@ -9009,6 +9119,10 @@ func (m *SlackAppInstallMutation) OldField(ctx context.Context, name string) (en
 		return m.OldAuthedUserID(ctx)
 	case slackappinstall.FieldAuthedUserEmail:
 		return m.OldAuthedUserEmail(ctx)
+	case slackappinstall.FieldAuthedUserTitle:
+		return m.OldAuthedUserTitle(ctx)
+	case slackappinstall.FieldAuthedUserPhone:
+		return m.OldAuthedUserPhone(ctx)
 	case slackappinstall.FieldAppID:
 		return m.OldAppID(ctx)
 	case slackappinstall.FieldBotUserID:
@@ -9085,6 +9199,20 @@ func (m *SlackAppInstallMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAuthedUserEmail(v)
+		return nil
+	case slackappinstall.FieldAuthedUserTitle:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAuthedUserTitle(v)
+		return nil
+	case slackappinstall.FieldAuthedUserPhone:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAuthedUserPhone(v)
 		return nil
 	case slackappinstall.FieldAppID:
 		v, ok := value.(string)
@@ -9164,6 +9292,12 @@ func (m *SlackAppInstallMutation) ClearedFields() []string {
 	if m.FieldCleared(slackappinstall.FieldUserID) {
 		fields = append(fields, slackappinstall.FieldUserID)
 	}
+	if m.FieldCleared(slackappinstall.FieldAuthedUserTitle) {
+		fields = append(fields, slackappinstall.FieldAuthedUserTitle)
+	}
+	if m.FieldCleared(slackappinstall.FieldAuthedUserPhone) {
+		fields = append(fields, slackappinstall.FieldAuthedUserPhone)
+	}
 	return fields
 }
 
@@ -9183,6 +9317,12 @@ func (m *SlackAppInstallMutation) ClearField(name string) error {
 		return nil
 	case slackappinstall.FieldUserID:
 		m.ClearUserID()
+		return nil
+	case slackappinstall.FieldAuthedUserTitle:
+		m.ClearAuthedUserTitle()
+		return nil
+	case slackappinstall.FieldAuthedUserPhone:
+		m.ClearAuthedUserPhone()
 		return nil
 	}
 	return fmt.Errorf("unknown SlackAppInstall nullable field %s", name)
@@ -9215,6 +9355,12 @@ func (m *SlackAppInstallMutation) ResetField(name string) error {
 		return nil
 	case slackappinstall.FieldAuthedUserEmail:
 		m.ResetAuthedUserEmail()
+		return nil
+	case slackappinstall.FieldAuthedUserTitle:
+		m.ResetAuthedUserTitle()
+		return nil
+	case slackappinstall.FieldAuthedUserPhone:
+		m.ResetAuthedUserPhone()
 		return nil
 	case slackappinstall.FieldAppID:
 		m.ResetAppID()
@@ -11991,10 +12137,12 @@ type UserMutation struct {
 	created_at                *time.Time
 	updated_at                *time.Time
 	deleted_at                *time.Time
-	name                      *string
+	first_name                *string
+	last_name                 *string
 	email                     *string
 	role                      *userrole.Role
 	approved                  *bool
+	photo_url                 *string
 	clearedFields             map[string]struct{}
 	talents                   map[uuid.UUID]struct{}
 	removedtalents            map[uuid.UUID]struct{}
@@ -12241,40 +12389,76 @@ func (m *UserMutation) ResetDeletedAt() {
 	delete(m.clearedFields, user.FieldDeletedAt)
 }
 
-// SetName sets the "name" field.
-func (m *UserMutation) SetName(s string) {
-	m.name = &s
+// SetFirstName sets the "first_name" field.
+func (m *UserMutation) SetFirstName(s string) {
+	m.first_name = &s
 }
 
-// Name returns the value of the "name" field in the mutation.
-func (m *UserMutation) Name() (r string, exists bool) {
-	v := m.name
+// FirstName returns the value of the "first_name" field in the mutation.
+func (m *UserMutation) FirstName() (r string, exists bool) {
+	v := m.first_name
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldName returns the old "name" field's value of the User entity.
+// OldFirstName returns the old "first_name" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldName(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldFirstName(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldName is only allowed on UpdateOne operations")
+		return v, errors.New("OldFirstName is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldName requires an ID field in the mutation")
+		return v, errors.New("OldFirstName requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldName: %w", err)
+		return v, fmt.Errorf("querying old value for OldFirstName: %w", err)
 	}
-	return oldValue.Name, nil
+	return oldValue.FirstName, nil
 }
 
-// ResetName resets all changes to the "name" field.
-func (m *UserMutation) ResetName() {
-	m.name = nil
+// ResetFirstName resets all changes to the "first_name" field.
+func (m *UserMutation) ResetFirstName() {
+	m.first_name = nil
+}
+
+// SetLastName sets the "last_name" field.
+func (m *UserMutation) SetLastName(s string) {
+	m.last_name = &s
+}
+
+// LastName returns the value of the "last_name" field in the mutation.
+func (m *UserMutation) LastName() (r string, exists bool) {
+	v := m.last_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastName returns the old "last_name" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldLastName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastName: %w", err)
+	}
+	return oldValue.LastName, nil
+}
+
+// ResetLastName resets all changes to the "last_name" field.
+func (m *UserMutation) ResetLastName() {
+	m.last_name = nil
 }
 
 // SetEmail sets the "email" field.
@@ -12383,6 +12567,42 @@ func (m *UserMutation) OldApproved(ctx context.Context) (v bool, err error) {
 // ResetApproved resets all changes to the "approved" field.
 func (m *UserMutation) ResetApproved() {
 	m.approved = nil
+}
+
+// SetPhotoURL sets the "photo_url" field.
+func (m *UserMutation) SetPhotoURL(s string) {
+	m.photo_url = &s
+}
+
+// PhotoURL returns the value of the "photo_url" field in the mutation.
+func (m *UserMutation) PhotoURL() (r string, exists bool) {
+	v := m.photo_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPhotoURL returns the old "photo_url" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldPhotoURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPhotoURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPhotoURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPhotoURL: %w", err)
+	}
+	return oldValue.PhotoURL, nil
+}
+
+// ResetPhotoURL resets all changes to the "photo_url" field.
+func (m *UserMutation) ResetPhotoURL() {
+	m.photo_url = nil
 }
 
 // AddTalentIDs adds the "talents" edge to the Talent entity by ids.
@@ -12674,7 +12894,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
 	}
@@ -12684,8 +12904,11 @@ func (m *UserMutation) Fields() []string {
 	if m.deleted_at != nil {
 		fields = append(fields, user.FieldDeletedAt)
 	}
-	if m.name != nil {
-		fields = append(fields, user.FieldName)
+	if m.first_name != nil {
+		fields = append(fields, user.FieldFirstName)
+	}
+	if m.last_name != nil {
+		fields = append(fields, user.FieldLastName)
 	}
 	if m.email != nil {
 		fields = append(fields, user.FieldEmail)
@@ -12695,6 +12918,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.approved != nil {
 		fields = append(fields, user.FieldApproved)
+	}
+	if m.photo_url != nil {
+		fields = append(fields, user.FieldPhotoURL)
 	}
 	return fields
 }
@@ -12710,14 +12936,18 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case user.FieldDeletedAt:
 		return m.DeletedAt()
-	case user.FieldName:
-		return m.Name()
+	case user.FieldFirstName:
+		return m.FirstName()
+	case user.FieldLastName:
+		return m.LastName()
 	case user.FieldEmail:
 		return m.Email()
 	case user.FieldRole:
 		return m.Role()
 	case user.FieldApproved:
 		return m.Approved()
+	case user.FieldPhotoURL:
+		return m.PhotoURL()
 	}
 	return nil, false
 }
@@ -12733,14 +12963,18 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldUpdatedAt(ctx)
 	case user.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case user.FieldName:
-		return m.OldName(ctx)
+	case user.FieldFirstName:
+		return m.OldFirstName(ctx)
+	case user.FieldLastName:
+		return m.OldLastName(ctx)
 	case user.FieldEmail:
 		return m.OldEmail(ctx)
 	case user.FieldRole:
 		return m.OldRole(ctx)
 	case user.FieldApproved:
 		return m.OldApproved(ctx)
+	case user.FieldPhotoURL:
+		return m.OldPhotoURL(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -12771,12 +13005,19 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case user.FieldName:
+	case user.FieldFirstName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetName(v)
+		m.SetFirstName(v)
+		return nil
+	case user.FieldLastName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastName(v)
 		return nil
 	case user.FieldEmail:
 		v, ok := value.(string)
@@ -12798,6 +13039,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetApproved(v)
+		return nil
+	case user.FieldPhotoURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPhotoURL(v)
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
@@ -12866,8 +13114,11 @@ func (m *UserMutation) ResetField(name string) error {
 	case user.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case user.FieldName:
-		m.ResetName()
+	case user.FieldFirstName:
+		m.ResetFirstName()
+		return nil
+	case user.FieldLastName:
+		m.ResetLastName()
 		return nil
 	case user.FieldEmail:
 		m.ResetEmail()
@@ -12877,6 +13128,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldApproved:
 		m.ResetApproved()
+		return nil
+	case user.FieldPhotoURL:
+		m.ResetPhotoURL()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)

@@ -100,6 +100,46 @@ func (saiu *SlackAppInstallUpdate) SetAuthedUserEmail(s string) *SlackAppInstall
 	return saiu
 }
 
+// SetAuthedUserTitle sets the "authed_user_title" field.
+func (saiu *SlackAppInstallUpdate) SetAuthedUserTitle(s string) *SlackAppInstallUpdate {
+	saiu.mutation.SetAuthedUserTitle(s)
+	return saiu
+}
+
+// SetNillableAuthedUserTitle sets the "authed_user_title" field if the given value is not nil.
+func (saiu *SlackAppInstallUpdate) SetNillableAuthedUserTitle(s *string) *SlackAppInstallUpdate {
+	if s != nil {
+		saiu.SetAuthedUserTitle(*s)
+	}
+	return saiu
+}
+
+// ClearAuthedUserTitle clears the value of the "authed_user_title" field.
+func (saiu *SlackAppInstallUpdate) ClearAuthedUserTitle() *SlackAppInstallUpdate {
+	saiu.mutation.ClearAuthedUserTitle()
+	return saiu
+}
+
+// SetAuthedUserPhone sets the "authed_user_phone" field.
+func (saiu *SlackAppInstallUpdate) SetAuthedUserPhone(s string) *SlackAppInstallUpdate {
+	saiu.mutation.SetAuthedUserPhone(s)
+	return saiu
+}
+
+// SetNillableAuthedUserPhone sets the "authed_user_phone" field if the given value is not nil.
+func (saiu *SlackAppInstallUpdate) SetNillableAuthedUserPhone(s *string) *SlackAppInstallUpdate {
+	if s != nil {
+		saiu.SetAuthedUserPhone(*s)
+	}
+	return saiu
+}
+
+// ClearAuthedUserPhone clears the value of the "authed_user_phone" field.
+func (saiu *SlackAppInstallUpdate) ClearAuthedUserPhone() *SlackAppInstallUpdate {
+	saiu.mutation.ClearAuthedUserPhone()
+	return saiu
+}
+
 // SetAppID sets the "app_id" field.
 func (saiu *SlackAppInstallUpdate) SetAppID(s string) *SlackAppInstallUpdate {
 	saiu.mutation.SetAppID(s)
@@ -281,6 +321,32 @@ func (saiu *SlackAppInstallUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Column: slackappinstall.FieldAuthedUserEmail,
 		})
 	}
+	if value, ok := saiu.mutation.AuthedUserTitle(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: slackappinstall.FieldAuthedUserTitle,
+		})
+	}
+	if saiu.mutation.AuthedUserTitleCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: slackappinstall.FieldAuthedUserTitle,
+		})
+	}
+	if value, ok := saiu.mutation.AuthedUserPhone(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: slackappinstall.FieldAuthedUserPhone,
+		})
+	}
+	if saiu.mutation.AuthedUserPhoneCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: slackappinstall.FieldAuthedUserPhone,
+		})
+	}
 	if value, ok := saiu.mutation.AppID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -444,6 +510,46 @@ func (saiuo *SlackAppInstallUpdateOne) SetAuthedUserID(s string) *SlackAppInstal
 // SetAuthedUserEmail sets the "authed_user_email" field.
 func (saiuo *SlackAppInstallUpdateOne) SetAuthedUserEmail(s string) *SlackAppInstallUpdateOne {
 	saiuo.mutation.SetAuthedUserEmail(s)
+	return saiuo
+}
+
+// SetAuthedUserTitle sets the "authed_user_title" field.
+func (saiuo *SlackAppInstallUpdateOne) SetAuthedUserTitle(s string) *SlackAppInstallUpdateOne {
+	saiuo.mutation.SetAuthedUserTitle(s)
+	return saiuo
+}
+
+// SetNillableAuthedUserTitle sets the "authed_user_title" field if the given value is not nil.
+func (saiuo *SlackAppInstallUpdateOne) SetNillableAuthedUserTitle(s *string) *SlackAppInstallUpdateOne {
+	if s != nil {
+		saiuo.SetAuthedUserTitle(*s)
+	}
+	return saiuo
+}
+
+// ClearAuthedUserTitle clears the value of the "authed_user_title" field.
+func (saiuo *SlackAppInstallUpdateOne) ClearAuthedUserTitle() *SlackAppInstallUpdateOne {
+	saiuo.mutation.ClearAuthedUserTitle()
+	return saiuo
+}
+
+// SetAuthedUserPhone sets the "authed_user_phone" field.
+func (saiuo *SlackAppInstallUpdateOne) SetAuthedUserPhone(s string) *SlackAppInstallUpdateOne {
+	saiuo.mutation.SetAuthedUserPhone(s)
+	return saiuo
+}
+
+// SetNillableAuthedUserPhone sets the "authed_user_phone" field if the given value is not nil.
+func (saiuo *SlackAppInstallUpdateOne) SetNillableAuthedUserPhone(s *string) *SlackAppInstallUpdateOne {
+	if s != nil {
+		saiuo.SetAuthedUserPhone(*s)
+	}
+	return saiuo
+}
+
+// ClearAuthedUserPhone clears the value of the "authed_user_phone" field.
+func (saiuo *SlackAppInstallUpdateOne) ClearAuthedUserPhone() *SlackAppInstallUpdateOne {
+	saiuo.mutation.ClearAuthedUserPhone()
 	return saiuo
 }
 
@@ -650,6 +756,32 @@ func (saiuo *SlackAppInstallUpdateOne) sqlSave(ctx context.Context) (_node *Slac
 			Type:   field.TypeString,
 			Value:  value,
 			Column: slackappinstall.FieldAuthedUserEmail,
+		})
+	}
+	if value, ok := saiuo.mutation.AuthedUserTitle(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: slackappinstall.FieldAuthedUserTitle,
+		})
+	}
+	if saiuo.mutation.AuthedUserTitleCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: slackappinstall.FieldAuthedUserTitle,
+		})
+	}
+	if value, ok := saiuo.mutation.AuthedUserPhone(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: slackappinstall.FieldAuthedUserPhone,
+		})
+	}
+	if saiuo.mutation.AuthedUserPhoneCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: slackappinstall.FieldAuthedUserPhone,
 		})
 	}
 	if value, ok := saiuo.mutation.AppID(); ok {

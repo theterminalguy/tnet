@@ -29,6 +29,10 @@ const (
 	FieldAuthedUserID = "authed_user_id"
 	// FieldAuthedUserEmail holds the string denoting the authed_user_email field in the database.
 	FieldAuthedUserEmail = "authed_user_email"
+	// FieldAuthedUserTitle holds the string denoting the authed_user_title field in the database.
+	FieldAuthedUserTitle = "authed_user_title"
+	// FieldAuthedUserPhone holds the string denoting the authed_user_phone field in the database.
+	FieldAuthedUserPhone = "authed_user_phone"
 	// FieldAppID holds the string denoting the app_id field in the database.
 	FieldAppID = "app_id"
 	// FieldBotUserID holds the string denoting the bot_user_id field in the database.
@@ -65,6 +69,8 @@ var Columns = []string{
 	FieldTeamName,
 	FieldAuthedUserID,
 	FieldAuthedUserEmail,
+	FieldAuthedUserTitle,
+	FieldAuthedUserPhone,
 	FieldAppID,
 	FieldBotUserID,
 	FieldAccessToken,

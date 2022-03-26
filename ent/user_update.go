@@ -61,9 +61,15 @@ func (uu *UserUpdate) ClearDeletedAt() *UserUpdate {
 	return uu
 }
 
-// SetName sets the "name" field.
-func (uu *UserUpdate) SetName(s string) *UserUpdate {
-	uu.mutation.SetName(s)
+// SetFirstName sets the "first_name" field.
+func (uu *UserUpdate) SetFirstName(s string) *UserUpdate {
+	uu.mutation.SetFirstName(s)
+	return uu
+}
+
+// SetLastName sets the "last_name" field.
+func (uu *UserUpdate) SetLastName(s string) *UserUpdate {
+	uu.mutation.SetLastName(s)
 	return uu
 }
 
@@ -90,6 +96,12 @@ func (uu *UserUpdate) SetNillableApproved(b *bool) *UserUpdate {
 	if b != nil {
 		uu.SetApproved(*b)
 	}
+	return uu
+}
+
+// SetPhotoURL sets the "photo_url" field.
+func (uu *UserUpdate) SetPhotoURL(s string) *UserUpdate {
+	uu.mutation.SetPhotoURL(s)
 	return uu
 }
 
@@ -395,11 +407,18 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: user.FieldDeletedAt,
 		})
 	}
-	if value, ok := uu.mutation.Name(); ok {
+	if value, ok := uu.mutation.FirstName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: user.FieldName,
+			Column: user.FieldFirstName,
+		})
+	}
+	if value, ok := uu.mutation.LastName(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldLastName,
 		})
 	}
 	if value, ok := uu.mutation.Email(); ok {
@@ -421,6 +440,13 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: user.FieldApproved,
+		})
+	}
+	if value, ok := uu.mutation.PhotoURL(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldPhotoURL,
 		})
 	}
 	if uu.mutation.TalentsCleared() {
@@ -738,9 +764,15 @@ func (uuo *UserUpdateOne) ClearDeletedAt() *UserUpdateOne {
 	return uuo
 }
 
-// SetName sets the "name" field.
-func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
-	uuo.mutation.SetName(s)
+// SetFirstName sets the "first_name" field.
+func (uuo *UserUpdateOne) SetFirstName(s string) *UserUpdateOne {
+	uuo.mutation.SetFirstName(s)
+	return uuo
+}
+
+// SetLastName sets the "last_name" field.
+func (uuo *UserUpdateOne) SetLastName(s string) *UserUpdateOne {
+	uuo.mutation.SetLastName(s)
 	return uuo
 }
 
@@ -767,6 +799,12 @@ func (uuo *UserUpdateOne) SetNillableApproved(b *bool) *UserUpdateOne {
 	if b != nil {
 		uuo.SetApproved(*b)
 	}
+	return uuo
+}
+
+// SetPhotoURL sets the "photo_url" field.
+func (uuo *UserUpdateOne) SetPhotoURL(s string) *UserUpdateOne {
+	uuo.mutation.SetPhotoURL(s)
 	return uuo
 }
 
@@ -1096,11 +1134,18 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Column: user.FieldDeletedAt,
 		})
 	}
-	if value, ok := uuo.mutation.Name(); ok {
+	if value, ok := uuo.mutation.FirstName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: user.FieldName,
+			Column: user.FieldFirstName,
+		})
+	}
+	if value, ok := uuo.mutation.LastName(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldLastName,
 		})
 	}
 	if value, ok := uuo.mutation.Email(); ok {
@@ -1122,6 +1167,13 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: user.FieldApproved,
+		})
+	}
+	if value, ok := uuo.mutation.PhotoURL(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldPhotoURL,
 		})
 	}
 	if uuo.mutation.TalentsCleared() {

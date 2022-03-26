@@ -3,9 +3,11 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/service"
@@ -79,10 +81,24 @@ func (s *SlackOauth2Client) Exchange(code string) (*SlackOauthResponse, error) {
 
 type SlackUserProfile struct {
 	Profile struct {
-		RealName string `json:"real_name"`
-		Email    string `json:"email"`
-		Title    string `json:"title"`
+		FirstName string `json:"first_name"`
+		LastName  string `json:"last_name"`
+		PhotoURL  string `json:"image_192"`
+		Email     string `json:"email"`
+		Title     string `json:"title"`
+		Phone     string `json:"phone"`
 	} `json:"profile"`
+}
+
+func (s *SlackUserProfile) FullName() string {
+	return fmt.Sprintf("%s %s", s.Profile.FirstName, s.Profile.LastName)
+}
+
+func (s *SlackUserProfile) GetPhotoURL() string {
+	if s.Profile.PhotoURL == "" || strings.Contains(s.Profile.PhotoURL, "gravatar") {
+		return fmt.Sprintf("https://ui-avatars.com/api/?name=%s&background=random&size=64", s.FullName())
+	}
+	return s.Profile.PhotoURL
 }
 
 func (s *SlackOauth2Client) GetUsersProfile(slackUserID, accessToken string) (*SlackUserProfile, error) {
@@ -130,16 +146,21 @@ func SlackOauth2CallbackHandler(c echo.Context) error {
 		return err
 	}
 	rs := service.NewRecruiterService()
+	log.Println("PHOTO URL >>", slackUserProfile.GetPhotoURL())
 	recruiter, err := rs.InstallSlackApp(
 		repo.UserParams{
-			Name:  slackUserProfile.Profile.RealName,
-			Email: oauthResp.GetRecruitersEmail(),
+			FirstName: slackUserProfile.Profile.FirstName,
+			LastName:  slackUserProfile.Profile.LastName,
+			PhotoURL:  slackUserProfile.GetPhotoURL(),
+			Email:     oauthResp.GetRecruitersEmail(),
 		},
 		repo.SlackAppInstallParams{
 			TeamID:              oauthResp.Team.ID,
 			TeamName:            oauthResp.Team.Name,
 			AuthedUserID:        oauthResp.AuthedUser.ID,
 			AuthedUserEmail:     slackUserProfile.Profile.Email,
+			AuthedUserTitle:     slackUserProfile.Profile.Title,
+			AuthedUserPhone:     slackUserProfile.Profile.Phone,
 			AppID:               oauthResp.AppID,
 			BotUserID:           oauthResp.BotUserID,
 			AccessToken:         oauthResp.AccessToken,
