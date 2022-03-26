@@ -13,7 +13,7 @@ import (
 )
 
 type JobQuerier interface {
-	GetAllForRecruiter(id int) ([]*ent.Job, error)
+	GetAllForRecruiter(id uuid.UUID) ([]*ent.Job, error)
 	GetAll(page string) (*paginator.OffsetPaginater, error)
 	GetByID(id uuid.UUID) (*ent.Job, error)
 	Create(p JobParams) (*ent.Job, error)

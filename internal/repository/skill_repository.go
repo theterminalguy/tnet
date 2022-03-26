@@ -13,7 +13,7 @@ import (
 
 type SkillQuerier interface {
 	GetAll() ([]*ent.Skill, error)
-	GetAllForTalent(talentID int) ([]*ent.Skill, error)
+	GetAllForTalent(talentID uuid.UUID) ([]*ent.Skill, error)
 	GetByID(id uuid.UUID) (*ent.Skill, error)
 	Create(p SkillParams) (*ent.Skill, error)
 	Update(id uuid.UUID, p SkillParams) (*ent.Skill, []error)

@@ -63,7 +63,7 @@ func (t *TalentCollectionRepository) Create(p TalentCollectionParams) (*ent.Tale
 		Create().
 		SetName(p.Name).
 		SetUserID(p.UserID).
-		SetTalentIDs(TalentIDs).
+		SetTalentUuids(TalentIDs).
 		Save(dBContext)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (r *TalentCollectionRepository) Update(id uuid.UUID, p TalentCollectionPara
 	setUUIDsForUpdate(record, p.TalentIDS)
 	_, err = record.Update().
 		SetName(p.Name).
-		SetTalentIDs(record.TalentIDs).
+		SetTalentUuids(record.TalentUuids).
 		Save(dBContext)
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func (r *TalentCollectionRepository) DeleteByID(id uuid.UUID) error {
 }
 
 func (r *TalentCollectionRepository) RemoveTalents(t *ent.TalentCollection, talentIDs []uuid.UUID) (*ent.TalentCollection, error) {
-	if len(t.TalentIDs) == 0 {
+	if len(t.TalentUuids) == 0 {
 		return nil, errors.New("talent collection is empty")
 	}
 	// convert uuids to strings
@@ -116,14 +116,14 @@ func (r *TalentCollectionRepository) RemoveTalents(t *ent.TalentCollection, tale
 		TalentIDs[i] = TalentID.String()
 	}
 	var newTalentIDs []string
-	for _, TalentID := range t.TalentIDs {
+	for _, TalentID := range t.TalentUuids {
 		if !collection.Contains(TalentIDs, TalentID) {
 			newTalentIDs = append(newTalentIDs, TalentID)
 		}
 	}
-	t.TalentIDs = newTalentIDs
+	t.TalentUuids = newTalentIDs
 	_, err := t.Update().
-		SetTalentIDs(t.TalentIDs).
+		SetTalentUuids(t.TalentUuids).
 		Save(dBContext)
 	if err != nil {
 		return nil, err
@@ -150,8 +150,8 @@ func (t *TalentCollectionRepository) validateScopedUniquenessOfName(name string,
 
 func setUUIDsForUpdate(t *ent.TalentCollection, newUUIDs []uuid.UUID) {
 	// convert uuids to strings
-	oldUUIDs := make([]uuid.UUID, len(t.TalentIDs))
-	for i, TalentID := range t.TalentIDs {
+	oldUUIDs := make([]uuid.UUID, len(t.TalentUuids))
+	for i, TalentID := range t.TalentUuids {
 		oldUUIDs[i] = uuid.MustParse(TalentID)
 	}
 
@@ -164,6 +164,6 @@ func setUUIDsForUpdate(t *ent.TalentCollection, newUUIDs []uuid.UUID) {
 		for i, uuid := range newTalentIDs {
 			newTalentIDsStr[i] = uuid.String()
 		}
-		t.TalentIDs = append(t.TalentIDs, newTalentIDsStr...)
+		t.TalentUuids = append(t.TalentUuids, newTalentIDsStr...)
 	}
 }

@@ -11,7 +11,7 @@ import (
 )
 
 type PortfolioLinkQuerier interface {
-	GetAllForTalent(talentID int) ([]*ent.PortfolioLink, error)
+	GetAllForTalent(talentID uuid.UUID) ([]*ent.PortfolioLink, error)
 	GetAll() ([]*ent.PortfolioLink, error)
 	GetByID(id uuid.UUID) (*ent.PortfolioLink, error)
 	Create(p PortfolioLinkParams) (*ent.PortfolioLink, error)

@@ -10,7 +10,7 @@ import (
 )
 
 type EmergencyContactQuerier interface {
-	GetAllForTalent(talentID int) ([]*ent.EmergencyContact, error)
+	GetAllForTalent(talentID uuid.UUID) ([]*ent.EmergencyContact, error)
 	GetAll() ([]*ent.EmergencyContact, error)
 	GetByID(id uuid.UUID) (*ent.EmergencyContact, error)
 	Create(p EmergencyContactParams) (*ent.EmergencyContact, error)

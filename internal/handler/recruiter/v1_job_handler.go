@@ -97,7 +97,7 @@ func (h *V1RecruiterJobHandler) UpdateByID(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	j, vldErrs := h.JobRepository.Update(job.UUID, *params)
+	j, vldErrs := h.JobRepository.Update(job.ID, *params)
 	if vldErrs != nil {
 		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
 	}
@@ -118,7 +118,7 @@ func (h *V1RecruiterJobHandler) DeleteOne(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.JobRepository.DeleteByID(job.UUID)
+	err = h.JobRepository.DeleteByID(job.ID)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

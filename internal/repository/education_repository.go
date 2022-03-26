@@ -12,7 +12,7 @@ import (
 )
 
 type EducationQuerier interface {
-	GetAllForTalent(talentID int) ([]*ent.Education, error)
+	GetAllForTalent(talentID uuid.UUID) ([]*ent.Education, error)
 	GetAll() ([]*ent.Education, error)
 	GetByID(id uuid.UUID) (*ent.Education, error)
 	Create(p EducationParams) (*ent.Education, error)

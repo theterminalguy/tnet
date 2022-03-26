@@ -13,7 +13,7 @@ import (
 
 type WorkExperienceQuerier interface {
 	GetAll() ([]*ent.WorkExperience, error)
-	GetAllForTalent(talentID int) ([]*ent.WorkExperience, error)
+	GetAllForTalent(talentID uuid.UUID) ([]*ent.WorkExperience, error)
 	GetByID(id uuid.UUID) (*ent.WorkExperience, error)
 	Create(p WorkExperienceParams) (*ent.WorkExperience, error)
 	Update(id uuid.UUID, p WorkExperienceParams) (*ent.WorkExperience, []error)

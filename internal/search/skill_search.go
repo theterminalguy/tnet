@@ -40,9 +40,9 @@ func (s *SkillSearch) Search(qs string) ([]*ent.Skill, []error) {
 			v := vv[0]
 			switch filter {
 			case UUID_EQ:
-				ps = append(ps, skill.UUIDEQ(uuid.MustParse(v)))
+				ps = append(ps, skill.ID(uuid.MustParse(v)))
 			case UUID_NEQ:
-				ps = append(ps, skill.UUIDNEQ(uuid.MustParse(v)))
+				ps = append(ps, skill.ID(uuid.MustParse(v)))
 			case NAME_EQ:
 				ps = append(ps, skill.NameEQ(v))
 			case NAME_NEQ:

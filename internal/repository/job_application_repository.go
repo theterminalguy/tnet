@@ -12,7 +12,7 @@ import (
 )
 
 type JobApplicationQuerier interface {
-	GetAllForTalent(talentID int) ([]*ent.JobApplication, error)
+	GetAllForTalent(talentID uuid.UUID) ([]*ent.JobApplication, error)
 	GetAll() ([]*ent.JobApplication, error)
 	GetByID(id uuid.UUID) (*ent.JobApplication, error)
 	Create(p JobApplicationParams) (*ent.JobApplication, error)
