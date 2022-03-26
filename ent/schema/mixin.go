@@ -40,16 +40,10 @@ type UUIDMixin struct {
 func (UUIDMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).
+			Immutable().
 			Default(uuid.New),
 	}
 }
-
-// func (UUIDMixin) Indexes() []ent.Index {
-// 	return []ent.Index{
-// 		index.Fields("uuid").
-// 			Unique(),
-// 	}
-// }
 
 // TODO: Blog post on creating resuable mixins
 type BelongsToMixin struct {
