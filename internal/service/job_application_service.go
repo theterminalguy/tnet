@@ -36,7 +36,7 @@ func NewJobApplicationService() *JobApplicationService {
 	}
 }
 
-func (*JobApplicationService) Apply(jobUUID, TalentUUID uuid.UUID) {
+func (*JobApplicationService) Apply(jobUUID, TalentID uuid.UUID) {
 	// TODO
 	// user must have a linkedin profile
 	// user must have a GitHub profile for Enginering role
@@ -110,7 +110,7 @@ func contains(s []string, str string) bool {
 }
 
 func (j *JobApplicationService) Create(p repo.JobApplicationParams) (*ent.JobApplication, error) {
-	err := j.Validate(p.TalentUUID, p.JobUUID)
+	err := j.Validate(p.TalentID, p.JobUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -121,9 +121,9 @@ func (j *JobApplicationService) Create(p repo.JobApplicationParams) (*ent.JobApp
 	return record, nil
 }
 
-func (j *JobApplicationService) Validate(talentUUID, jobUUID uuid.UUID) error {
+func (j *JobApplicationService) Validate(TalentID, jobUUID uuid.UUID) error {
 	// check if talent exists
-	talent, err := j.TalentRepository.GetByID(talentUUID)
+	talent, err := j.TalentRepository.GetByID(TalentID)
 	if err != nil {
 		return err
 	}
@@ -142,7 +142,7 @@ func (j *JobApplicationService) Validate(talentUUID, jobUUID uuid.UUID) error {
 		return errors.New("education not found")
 	}
 	// check if user has work experience
-	_, err = j.WorkExperienceRepository.GetWorkExperienceByTalentUUID(talent.ID)
+	_, err = j.WorkExperienceRepository.GetWorkExperienceByTalentID(talent.ID)
 	if err != nil {
 		return err
 	}
@@ -160,7 +160,7 @@ func (j *JobApplicationService) Validate(talentUUID, jobUUID uuid.UUID) error {
 
 func (j *JobApplicationService) UpdateStatus(user *scope.RecruiterScope, id uuid.UUID, params repo.JobApplicationParams) (*ent.JobApplication, []error) {
 	//update the status
-	record, err := user.GetJobApplicationByUUID(id)
+	record, err := user.GetJobApplicationByID(id)
 	if err != nil {
 		return nil, []error{err}
 	}

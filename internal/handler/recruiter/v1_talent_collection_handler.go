@@ -44,7 +44,7 @@ func (h *V1TalentCollectionHandler) ReadByID(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := currentRecruiter.GetTalentCollectionByUUID(id)
+	record, err := currentRecruiter.GetTalentCollectionByID(id)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
@@ -83,7 +83,7 @@ func (h *V1TalentCollectionHandler) UpdateByID(c echo.Context) error {
 	}
 	if action := c.QueryParam("action"); action == "delete" {
 		// Removes talents from the collection
-		record, err := currentRecruiter.DeleteTalentsFromCollection(id, params.TalentUUIDS)
+		record, err := currentRecruiter.DeleteTalentsFromCollection(id, params.TalentIDS)
 		if err != nil {
 			return c.String(http.StatusBadRequest, err.Error())
 		}

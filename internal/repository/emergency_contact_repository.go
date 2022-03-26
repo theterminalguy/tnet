@@ -15,13 +15,13 @@ type EmergencyContactQuerier interface {
 	GetByID(id uuid.UUID) (*ent.EmergencyContact, error)
 	Create(p EmergencyContactParams) (*ent.EmergencyContact, error)
 	Update(id uuid.UUID, p EmergencyContactParams) (*ent.EmergencyContact, []error)
-	DeleteByUUID(id uuid.UUID) error
+	DeleteByID(id uuid.UUID) error
 }
 
 type EmergencyContactRepository struct{}
 
 type EmergencyContactParams struct {
-	TalentUUID   uuid.UUID `json:"talent_uuid" validate:"required"`
+	TalentID     uuid.UUID `json:"talent_id" validate:"required"`
 	Name         string    `json:"name" validate:"required"`
 	PhoneNumber  string    `json:"phone_number" validate:"required"`
 	Address      string    `json:"address" validate:"required"`
@@ -62,7 +62,7 @@ func (*EmergencyContactRepository) Create(p EmergencyContactParams) (*ent.Emerge
 		return nil, err
 	}
 
-	a, err := NewTalentRepository().GetByID(p.TalentUUID)
+	a, err := NewTalentRepository().GetByID(p.TalentID)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func (*EmergencyContactRepository) Create(p EmergencyContactParams) (*ent.Emerge
 }
 
 func (r *EmergencyContactRepository) Update(id uuid.UUID, p EmergencyContactParams) (*ent.EmergencyContact, []error) {
-	err := validateParams(p, "TalentUUID")
+	err := validateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -169,7 +169,7 @@ func (r *EmergencyContactRepository) Update(id uuid.UUID, p EmergencyContactPara
 	return record, nil
 }
 
-func (r *EmergencyContactRepository) DeleteByUUID(id uuid.UUID) error {
+func (r *EmergencyContactRepository) DeleteByID(id uuid.UUID) error {
 	record, err := r.GetByID(id)
 	if err != nil {
 		return err

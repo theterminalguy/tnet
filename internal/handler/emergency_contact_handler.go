@@ -76,7 +76,7 @@ func (h *EmergencyContactHandler) DeleteOne(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.EmergencyContactRepository.DeleteByUUID(id)
+	err = h.EmergencyContactRepository.DeleteByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

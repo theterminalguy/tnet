@@ -76,7 +76,7 @@ func (h *UserHandler) DeleteOne(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.UserRepository.DeleteByUUID(id)
+	err = h.UserRepository.DeleteByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

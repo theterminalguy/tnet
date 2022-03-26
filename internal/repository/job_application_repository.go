@@ -17,14 +17,14 @@ type JobApplicationQuerier interface {
 	GetByID(id uuid.UUID) (*ent.JobApplication, error)
 	Create(p JobApplicationParams) (*ent.JobApplication, error)
 	Update(id uuid.UUID, p JobApplicationParams) (*ent.JobApplication, []error)
-	DeleteByUUID(id uuid.UUID) error
+	DeleteByID(id uuid.UUID) error
 }
 
 type JobApplicationRepository struct{}
 
 type JobApplicationParams struct {
 	JobUUID        uuid.UUID `json:"job_uuid" validate:"required"`
-	TalentUUID     uuid.UUID `json:"talent_uuid" validate:"required"`
+	TalentID       uuid.UUID `json:"talent_id" validate:"required"`
 	ReferralSource string    `json:"referral_source"`
 
 	// The Note field is only used internal by 10HL admins/recruiters
@@ -88,7 +88,7 @@ func (*JobApplicationRepository) Create(p JobApplicationParams) (*ent.JobApplica
 	if err != nil {
 		return nil, err
 	}
-	a, err := NewTalentRepository().GetByID(p.TalentUUID)
+	a, err := NewTalentRepository().GetByID(p.TalentID)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +109,7 @@ func (*JobApplicationRepository) Create(p JobApplicationParams) (*ent.JobApplica
 }
 
 func (r *JobApplicationRepository) Update(id uuid.UUID, p JobApplicationParams) (*ent.JobApplication, []error) {
-	err := validateParams(p, "TalentUUID")
+	err := validateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -162,7 +162,7 @@ func (r *JobApplicationRepository) Update(id uuid.UUID, p JobApplicationParams) 
 	return record, nil
 }
 
-func (r *JobApplicationRepository) DeleteByUUID(id uuid.UUID) error {
+func (r *JobApplicationRepository) DeleteByID(id uuid.UUID) error {
 	record, err := r.GetByID(id)
 	if err != nil {
 		return err

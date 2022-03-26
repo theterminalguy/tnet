@@ -160,7 +160,7 @@ func (r *PartnerRepository) Update(id uuid.UUID, p PartnerParams) (*ent.Partner,
 	return record, nil
 }
 
-func (r *PartnerRepository) DeleteByUUID(id uuid.UUID) error {
+func (r *PartnerRepository) DeleteByID(id uuid.UUID) error {
 	record, err := r.GetByID(id)
 	if err != nil {
 		return err

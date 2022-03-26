@@ -101,7 +101,7 @@ func (r *EmailTemplateRepository) Update(id uuid.UUID, p EmailTemplateParams) (*
 	return record, nil
 }
 
-func (r *EmailTemplateRepository) DeleteByUUID(id uuid.UUID) error {
+func (r *EmailTemplateRepository) DeleteByID(id uuid.UUID) error {
 	record, err := r.GetByID(id)
 	if err != nil {
 		return err

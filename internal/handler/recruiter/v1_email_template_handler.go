@@ -84,7 +84,7 @@ func (h *V1RecruiterEmailTemplateHandler) DeleteOne(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.EmailTemplateRepository.DeleteByUUID(id)
+	err = h.EmailTemplateRepository.DeleteByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

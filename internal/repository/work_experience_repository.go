@@ -17,7 +17,7 @@ type WorkExperienceQuerier interface {
 	GetByID(id uuid.UUID) (*ent.WorkExperience, error)
 	Create(p WorkExperienceParams) (*ent.WorkExperience, error)
 	Update(id uuid.UUID, p WorkExperienceParams) (*ent.WorkExperience, []error)
-	DeleteByUUID(id uuid.UUID) error
+	DeleteByID(id uuid.UUID) error
 }
 
 type WorkExperienceRepository struct{}
@@ -131,7 +131,7 @@ func (*WorkExperienceRepository) Create(p WorkExperienceParams) (*ent.WorkExperi
 }
 
 func (r *WorkExperienceRepository) Update(id uuid.UUID, p WorkExperienceParams) (*ent.WorkExperience, []error) {
-	err := validateParams(p, "TalentUUID")
+	err := validateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -234,7 +234,7 @@ func (r *WorkExperienceRepository) Update(id uuid.UUID, p WorkExperienceParams) 
 	return record, nil
 }
 
-func (r *WorkExperienceRepository) DeleteByUUID(id uuid.UUID) error {
+func (r *WorkExperienceRepository) DeleteByID(id uuid.UUID) error {
 	record, err := r.GetByID(id)
 	if err != nil {
 		return err
@@ -248,7 +248,7 @@ func (r *WorkExperienceRepository) DeleteByUUID(id uuid.UUID) error {
 	return nil
 }
 
-func (r *WorkExperienceRepository) GetWorkExperienceByTalentUUID(talentID uuid.UUID) (*ent.WorkExperience, error) {
+func (r *WorkExperienceRepository) GetWorkExperienceByTalentID(talentID uuid.UUID) (*ent.WorkExperience, error) {
 	record, err := dBConn.WorkExperience.Query().
 		Where(workexperience.And(
 			workexperience.TalentID(talentID),

@@ -55,7 +55,7 @@ func (h *V1JobApplicationHandler) ReadByID(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := talent.GetJobApplicationByUUID(id)
+	record, err := talent.GetJobApplicationByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -71,7 +71,7 @@ func (h *V1JobApplicationHandler) CreateOne(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	params.TalentUUID = talent.Talent.UUID
+	params.TalentID = talent.Talent.ID
 	record, err := h.JobApplicationRepository.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())

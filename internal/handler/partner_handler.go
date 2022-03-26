@@ -76,7 +76,7 @@ func (h *PartnerHandler) DeleteOne(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.PartnerRepository.DeleteByUUID(id)
+	err = h.PartnerRepository.DeleteByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

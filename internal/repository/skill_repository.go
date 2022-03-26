@@ -17,13 +17,13 @@ type SkillQuerier interface {
 	GetByID(id uuid.UUID) (*ent.Skill, error)
 	Create(p SkillParams) (*ent.Skill, error)
 	Update(id uuid.UUID, p SkillParams) (*ent.Skill, []error)
-	DeleteByUUID(id uuid.UUID) error
+	DeleteByID(id uuid.UUID) error
 }
 
 type SkillRepository struct{}
 
 type SkillParams struct {
-	TalentID uuid.UUID `json:"talent_uuid" validate:"required"`
+	TalentID uuid.UUID `json:"talent_id" validate:"required"`
 
 	// Talent can specify years of experience in decimal where 1.5 equals 1 and a half year
 	YearsOfExperience float32 `json:"years_of_experience" validate:"gte=1.0"`
@@ -60,8 +60,8 @@ func (*SkillRepository) GetAll() ([]*ent.Skill, error) {
 	return records, nil
 }
 
-func (*SkillRepository) GetAllByTalentUUID(TalentUUID uuid.UUID) ([]*ent.Skill, error) {
-	a, err := NewTalentRepository().GetByID(TalentUUID)
+func (*SkillRepository) GetAllByTalentID(TalentID uuid.UUID) ([]*ent.Skill, error) {
+	a, err := NewTalentRepository().GetByID(TalentID)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +121,7 @@ func (*SkillRepository) Create(p SkillParams) (*ent.Skill, error) {
 }
 
 func (r *SkillRepository) Update(id uuid.UUID, p SkillParams) (*ent.Skill, []error) {
-	err := validateParams(p, "TalentUUID")
+	err := validateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -195,7 +195,7 @@ func (r *SkillRepository) Update(id uuid.UUID, p SkillParams) (*ent.Skill, []err
 	return record, nil
 }
 
-func (r *SkillRepository) DeleteByUUID(id uuid.UUID) error {
+func (r *SkillRepository) DeleteByID(id uuid.UUID) error {
 	record, err := r.GetByID(id)
 	if err != nil {
 		return err

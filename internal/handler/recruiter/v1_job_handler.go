@@ -54,7 +54,7 @@ func (h *V1RecruiterJobHandler) ReadByID(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	j, err := user.GetJobByUUID(id)
+	j, err := user.GetJobByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -93,7 +93,7 @@ func (h *V1RecruiterJobHandler) UpdateByID(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	job, err := user.GetJobByUUID(id)
+	job, err := user.GetJobByID(id)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -114,11 +114,11 @@ func (h *V1RecruiterJobHandler) DeleteOne(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	job, err := user.GetJobByUUID(id)
+	job, err := user.GetJobByID(id)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.JobRepository.DeleteByUUID(job.UUID)
+	err = h.JobRepository.DeleteByID(job.UUID)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

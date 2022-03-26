@@ -18,10 +18,10 @@ var ErrInvalidReferralCode error = errors.New("invalid referral code")
 type TalentQuerier interface {
 	GetAll() ([]*ent.Talent, error)
 	GetByID(id uuid.UUID) (*ent.Talent, error)
-	GetTalentByUserID(userId int) (*ent.Talent, error)
+	GetTalentByUserID(userID uuid.UUID) (*ent.Talent, error)
 	Create(p TalentParams) (*TalentResponse, error)
 	Update(id uuid.UUID, p TalentParams) (*TalentResponse, []error)
-	DeleteByUUID(id uuid.UUID) error
+	DeleteByID(id uuid.UUID) error
 }
 
 type TalentRepository struct{}
@@ -94,45 +94,6 @@ func (*TalentRepository) GetByEmail(email string) (*TalentResponse, error) {
 	return response, nil
 }
 
-func (*TalentRepository) GetTalentByUUID(id uuid.UUID) (*TalentResponse, error) {
-	a, err := dBConn.Talent.Query().
-		Where(talent.ID(id)).
-		Only(dBContext)
-	if err != nil {
-		return nil, err
-	}
-	if a.DeletedAt != nil {
-		return nil, ErrRecordDeleted
-	}
-	skills, err := a.QuerySkills().All(dBContext)
-	if err != nil {
-		return nil, err
-	}
-	//a.Edges.Skills = append(a.Edges.Skills, skills...)
-	// TODO: this code serves as a how to on how to
-	// add edges to a node
-	//```
-	// peeps, _ := a.QueryReferees().All(dBContext)
-	// log.Println("Peeps", peeps)
-	// a.Edges = ent.ApplicantEdges{
-	// 	Referees: peeps,
-	// }
-
-	pLinks, _ := a.QueryPortfoliolinks().All(dBContext)
-	eduLinks, _ := a.QueryEducations().All(dBContext)
-	wrkExpLinks, _ := a.QueryWorkExperiences().All(dBContext)
-
-	a.Edges = ent.TalentEdges{
-		Portfoliolinks:  pLinks,
-		Educations:      eduLinks,
-		WorkExperiences: wrkExpLinks,
-		Skills:          skills,
-	}
-	response := BuildTalentResponse(a)
-
-	return response, nil
-}
-
 func (*TalentRepository) GetByID(id uuid.UUID) (*ent.Talent, error) {
 	a, err := dBConn.Talent.Query().
 		Where(talent.ID(id)).
@@ -144,20 +105,9 @@ func (*TalentRepository) GetByID(id uuid.UUID) (*ent.Talent, error) {
 	if err != nil {
 		return nil, err
 	}
-	//a.Edges.Skills = append(a.Edges.Skills, skills...)
-	// TODO: this code serves as a how to on how to
-	// add edges to a node
-	//```
-	// peeps, _ := a.QueryReferees().All(dBContext)
-	// log.Println("Peeps", peeps)
-	// a.Edges = ent.ApplicantEdges{
-	// 	Referees: peeps,
-	// }
-
 	pLinks, _ := a.QueryPortfoliolinks().All(dBContext)
 	eduLinks, _ := a.QueryEducations().All(dBContext)
 	wrkExpLinks, _ := a.QueryWorkExperiences().All(dBContext)
-
 	a.Edges = ent.TalentEdges{
 		Portfoliolinks:  pLinks,
 		Educations:      eduLinks,
@@ -209,7 +159,7 @@ func (r *TalentRepository) Create(p TalentParams) (*TalentResponse, error) {
 }
 
 func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*TalentResponse, []error) {
-	err := validateParams(p, "TalentUUID")
+	err := validateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -382,7 +332,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*TalentResponse
 	return response, nil
 }
 
-func (r *TalentRepository) DeleteByUUID(id uuid.UUID) error {
+func (r *TalentRepository) DeleteByID(id uuid.UUID) error {
 	record, err := r.GetByID(id)
 	if err != nil {
 		return err

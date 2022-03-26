@@ -16,14 +16,14 @@ type PortfolioLinkQuerier interface {
 	GetByID(id uuid.UUID) (*ent.PortfolioLink, error)
 	Create(p PortfolioLinkParams) (*ent.PortfolioLink, error)
 	Update(id uuid.UUID, p PortfolioLinkParams) (*ent.PortfolioLink, []error)
-	DeleteByUUID(id uuid.UUID) error
+	DeleteByID(id uuid.UUID) error
 }
 
 type PortfolioLinkRepository struct{}
 
 type PortfolioLinkParams struct {
 	URL      string    `json:"url" validate:"required,url"`
-	TalentID uuid.UUID `json:"talent_uuid"`
+	TalentID uuid.UUID `json:"talent_id"`
 	Name     string    `json:"name"`
 }
 
@@ -98,7 +98,7 @@ func (*PortfolioLinkRepository) Create(p PortfolioLinkParams) (*ent.PortfolioLin
 }
 
 func (r *PortfolioLinkRepository) Update(id uuid.UUID, p PortfolioLinkParams) (*ent.PortfolioLink, []error) {
-	err := validateParams(p, "TalentUUID")
+	err := validateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -148,7 +148,7 @@ func (r *PortfolioLinkRepository) Update(id uuid.UUID, p PortfolioLinkParams) (*
 	return record, nil
 }
 
-func (r *PortfolioLinkRepository) DeleteByUUID(id uuid.UUID) error {
+func (r *PortfolioLinkRepository) DeleteByID(id uuid.UUID) error {
 	record, err := r.GetByID(id)
 	if err != nil {
 		return err
@@ -162,7 +162,7 @@ func (r *PortfolioLinkRepository) DeleteByUUID(id uuid.UUID) error {
 	return nil
 }
 
-func (r *PortfolioLinkRepository) GetPortfolioLinkByTalentUUID(talentID uuid.UUID) (*ent.PortfolioLink, error) {
+func (r *PortfolioLinkRepository) GetPortfolioLinkByTalentID(talentID uuid.UUID) (*ent.PortfolioLink, error) {
 	record, err := dBConn.PortfolioLink.Query().
 		Where(portfoliolink.And(
 			portfoliolink.TalentID(talentID),

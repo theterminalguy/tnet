@@ -47,7 +47,7 @@ func (h *V1RecruiterJobApplicationHandler) ReadByID(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := user.GetJobApplicationByUUID(id)
+	record, err := user.GetJobApplicationByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

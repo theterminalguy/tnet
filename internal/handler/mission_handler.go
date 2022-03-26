@@ -76,7 +76,7 @@ func (h *MissionHandler) DeleteOne(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.MissionRepository.DeleteByUUID(id)
+	err = h.MissionRepository.DeleteByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

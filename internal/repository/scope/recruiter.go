@@ -26,7 +26,7 @@ func (r *RecruiterScope) GetJobs() ([]*ent.Job, error) {
 		}).All(repo.GetDBContext())
 }
 
-func (r *RecruiterScope) GetJobByUUID(id uuid.UUID) (*ent.Job, error) {
+func (r *RecruiterScope) GetJobByID(id uuid.UUID) (*ent.Job, error) {
 	return r.Recruiter.QueryJobs().
 		Where(job.ID(id)).
 		WithApplications(func(jaq *ent.JobApplicationQuery) {
@@ -35,7 +35,7 @@ func (r *RecruiterScope) GetJobByUUID(id uuid.UUID) (*ent.Job, error) {
 		First(repo.GetDBContext())
 }
 
-func (r *RecruiterScope) GetJobApplicationByUUID(id uuid.UUID) (*ent.JobApplication, error) {
+func (r *RecruiterScope) GetJobApplicationByID(id uuid.UUID) (*ent.JobApplication, error) {
 	return r.Recruiter.QueryJobs().QueryApplications().WithTalent().WithJob().
 		Where(jobapplication.ID(id)).
 		First(repo.GetDBContext())
@@ -45,7 +45,7 @@ func (r *RecruiterScope) GetTalentCollections() ([]*ent.TalentCollection, error)
 	return r.Recruiter.QueryTalentCollections().All(repo.GetDBContext())
 }
 
-func (r *RecruiterScope) GetTalentCollectionByUUID(id uuid.UUID) (*ent.TalentCollection, error) {
+func (r *RecruiterScope) GetTalentCollectionByID(id uuid.UUID) (*ent.TalentCollection, error) {
 	return r.Recruiter.QueryTalentCollections().
 		Where(
 			talentcollection.And(
@@ -63,7 +63,7 @@ func (r *RecruiterScope) DeleteCollection(id uuid.UUID) error {
 		return err
 	}
 	tRepo := repo.NewTalentCollectionRepository()
-	return tRepo.DeleteByUUID(record.ID)
+	return tRepo.DeleteByID(record.ID)
 }
 
 func (r *RecruiterScope) DeleteTalentsFromCollection(collectionID uuid.UUID, talentIDs []uuid.UUID) (*ent.TalentCollection, error) {

@@ -107,7 +107,7 @@ func (r *SlackAppInstallRepository) Update(id uuid.UUID, p SlackAppInstallParams
 	return record, nil
 }
 
-func (r *SlackAppInstallRepository) DeleteByUUID(id uuid.UUID) error {
+func (r *SlackAppInstallRepository) DeleteByID(id uuid.UUID) error {
 	record, err := r.GetByID(id)
 	if err != nil {
 		return err

@@ -17,13 +17,13 @@ type EducationQuerier interface {
 	GetByID(id uuid.UUID) (*ent.Education, error)
 	Create(p EducationParams) (*ent.Education, error)
 	Update(id uuid.UUID, p EducationParams) (*ent.Education, []error)
-	DeleteByUUID(id uuid.UUID) error
+	DeleteByID(id uuid.UUID) error
 }
 
 type EducationRepository struct{}
 
 type EducationParams struct {
-	TalentUUID      uuid.UUID `json:"talent_uuid" validate:"required"`
+	TalentID        uuid.UUID `json:"talent_id" validate:"required"`
 	InstitutionName string    `json:"institution_name" validate:"required"`
 	Location        string    `json:"location" validate:"required"`
 	Degree          string    `json:"degree" validate:"required"`
@@ -91,7 +91,7 @@ func (*EducationRepository) Create(p EducationParams) (*ent.Education, error) {
 	var sd *time.Time
 	var ed *time.Time
 
-	a, err := NewTalentRepository().GetByID(p.TalentUUID)
+	a, err := NewTalentRepository().GetByID(p.TalentID)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +130,7 @@ func (*EducationRepository) Create(p EducationParams) (*ent.Education, error) {
 }
 
 func (r *EducationRepository) Update(id uuid.UUID, p EducationParams) (*ent.Education, []error) {
-	err := validateParams(p, "TalentUUID")
+	err := validateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -233,7 +233,7 @@ func (r *EducationRepository) Update(id uuid.UUID, p EducationParams) (*ent.Educ
 	return record, nil
 }
 
-func (r *EducationRepository) DeleteByUUID(id uuid.UUID) error {
+func (r *EducationRepository) DeleteByID(id uuid.UUID) error {
 	record, err := r.GetByID(id)
 	if err != nil {
 		return err
@@ -247,7 +247,7 @@ func (r *EducationRepository) DeleteByUUID(id uuid.UUID) error {
 	return nil
 }
 
-func (r *EducationRepository) GetEducationByTalentUUID(talentID uuid.UUID) (*ent.Education, error) {
+func (r *EducationRepository) GetEducationByTalentID(talentID uuid.UUID) (*ent.Education, error) {
 	record, err := dBConn.Education.Query().
 		Where(education.And(
 			education.TalentID(talentID),

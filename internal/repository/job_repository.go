@@ -18,7 +18,7 @@ type JobQuerier interface {
 	GetByID(id uuid.UUID) (*ent.Job, error)
 	Create(p JobParams) (*ent.Job, error)
 	Update(id uuid.UUID, p JobParams) (*ent.Job, []error)
-	DeleteByUUID(id uuid.UUID) error
+	DeleteByID(id uuid.UUID) error
 }
 
 type JobRepository struct{}
@@ -288,7 +288,7 @@ func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
 	return record, nil
 }
 
-func (r *JobRepository) DeleteByUUID(id uuid.UUID) error {
+func (r *JobRepository) DeleteByID(id uuid.UUID) error {
 	record, err := r.GetByID(id)
 	if err != nil {
 		return err

@@ -94,7 +94,7 @@ func (r *UserRepository) Update(id uuid.UUID, p UserParams) (*ent.User, error) {
 	return record, nil
 }
 
-func (r *UserRepository) DeleteByUUID(id uuid.UUID) error {
+func (r *UserRepository) DeleteByID(id uuid.UUID) error {
 	record, err := r.GetByID(id)
 	if err != nil {
 		return err
