@@ -102,6 +102,34 @@ func (saic *SlackAppInstallCreate) SetAuthedUserEmail(s string) *SlackAppInstall
 	return saic
 }
 
+// SetAuthedUserTitle sets the "authed_user_title" field.
+func (saic *SlackAppInstallCreate) SetAuthedUserTitle(s string) *SlackAppInstallCreate {
+	saic.mutation.SetAuthedUserTitle(s)
+	return saic
+}
+
+// SetNillableAuthedUserTitle sets the "authed_user_title" field if the given value is not nil.
+func (saic *SlackAppInstallCreate) SetNillableAuthedUserTitle(s *string) *SlackAppInstallCreate {
+	if s != nil {
+		saic.SetAuthedUserTitle(*s)
+	}
+	return saic
+}
+
+// SetAuthedUserPhone sets the "authed_user_phone" field.
+func (saic *SlackAppInstallCreate) SetAuthedUserPhone(s string) *SlackAppInstallCreate {
+	saic.mutation.SetAuthedUserPhone(s)
+	return saic
+}
+
+// SetNillableAuthedUserPhone sets the "authed_user_phone" field if the given value is not nil.
+func (saic *SlackAppInstallCreate) SetNillableAuthedUserPhone(s *string) *SlackAppInstallCreate {
+	if s != nil {
+		saic.SetAuthedUserPhone(*s)
+	}
+	return saic
+}
+
 // SetAppID sets the "app_id" field.
 func (saic *SlackAppInstallCreate) SetAppID(s string) *SlackAppInstallCreate {
 	saic.mutation.SetAppID(s)
@@ -371,6 +399,22 @@ func (saic *SlackAppInstallCreate) createSpec() (*SlackAppInstall, *sqlgraph.Cre
 			Column: slackappinstall.FieldAuthedUserEmail,
 		})
 		_node.AuthedUserEmail = value
+	}
+	if value, ok := saic.mutation.AuthedUserTitle(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: slackappinstall.FieldAuthedUserTitle,
+		})
+		_node.AuthedUserTitle = value
+	}
+	if value, ok := saic.mutation.AuthedUserPhone(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: slackappinstall.FieldAuthedUserPhone,
+		})
+		_node.AuthedUserPhone = value
 	}
 	if value, ok := saic.mutation.AppID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

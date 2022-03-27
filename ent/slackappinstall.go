@@ -34,6 +34,10 @@ type SlackAppInstall struct {
 	AuthedUserID string `json:"authed_user_id,omitempty"`
 	// AuthedUserEmail holds the value of the "authed_user_email" field.
 	AuthedUserEmail string `json:"authed_user_email,omitempty"`
+	// AuthedUserTitle holds the value of the "authed_user_title" field.
+	AuthedUserTitle string `json:"authed_user_title,omitempty"`
+	// AuthedUserPhone holds the value of the "authed_user_phone" field.
+	AuthedUserPhone string `json:"authed_user_phone,omitempty"`
 	// AppID holds the value of the "app_id" field.
 	AppID string `json:"app_id,omitempty"`
 	// BotUserID holds the value of the "bot_user_id" field.
@@ -81,7 +85,7 @@ func (*SlackAppInstall) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case slackappinstall.FieldIsEnterpriseInstall:
 			values[i] = new(sql.NullBool)
-		case slackappinstall.FieldTeamID, slackappinstall.FieldTeamName, slackappinstall.FieldAuthedUserID, slackappinstall.FieldAuthedUserEmail, slackappinstall.FieldAppID, slackappinstall.FieldBotUserID, slackappinstall.FieldAccessToken, slackappinstall.FieldTokenType, slackappinstall.FieldScope:
+		case slackappinstall.FieldTeamID, slackappinstall.FieldTeamName, slackappinstall.FieldAuthedUserID, slackappinstall.FieldAuthedUserEmail, slackappinstall.FieldAuthedUserTitle, slackappinstall.FieldAuthedUserPhone, slackappinstall.FieldAppID, slackappinstall.FieldBotUserID, slackappinstall.FieldAccessToken, slackappinstall.FieldTokenType, slackappinstall.FieldScope:
 			values[i] = new(sql.NullString)
 		case slackappinstall.FieldCreatedAt, slackappinstall.FieldUpdatedAt, slackappinstall.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -156,6 +160,18 @@ func (sai *SlackAppInstall) assignValues(columns []string, values []interface{})
 				return fmt.Errorf("unexpected type %T for field authed_user_email", values[i])
 			} else if value.Valid {
 				sai.AuthedUserEmail = value.String
+			}
+		case slackappinstall.FieldAuthedUserTitle:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field authed_user_title", values[i])
+			} else if value.Valid {
+				sai.AuthedUserTitle = value.String
+			}
+		case slackappinstall.FieldAuthedUserPhone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field authed_user_phone", values[i])
+			} else if value.Valid {
+				sai.AuthedUserPhone = value.String
 			}
 		case slackappinstall.FieldAppID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -244,6 +260,10 @@ func (sai *SlackAppInstall) String() string {
 	builder.WriteString(sai.AuthedUserID)
 	builder.WriteString(", authed_user_email=")
 	builder.WriteString(sai.AuthedUserEmail)
+	builder.WriteString(", authed_user_title=")
+	builder.WriteString(sai.AuthedUserTitle)
+	builder.WriteString(", authed_user_phone=")
+	builder.WriteString(sai.AuthedUserPhone)
 	builder.WriteString(", app_id=")
 	builder.WriteString(sai.AppID)
 	builder.WriteString(", bot_user_id=")

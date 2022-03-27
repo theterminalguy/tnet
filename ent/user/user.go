@@ -21,14 +21,18 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldName holds the string denoting the name field in the database.
-	FieldName = "name"
+	// FieldFirstName holds the string denoting the first_name field in the database.
+	FieldFirstName = "first_name"
+	// FieldLastName holds the string denoting the last_name field in the database.
+	FieldLastName = "last_name"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
 	// FieldRole holds the string denoting the role field in the database.
 	FieldRole = "role"
 	// FieldApproved holds the string denoting the approved field in the database.
 	FieldApproved = "approved"
+	// FieldPhotoURL holds the string denoting the photo_url field in the database.
+	FieldPhotoURL = "photo_url"
 	// EdgeTalents holds the string denoting the talents edge name in mutations.
 	EdgeTalents = "talents"
 	// EdgeSlackAppInstalls holds the string denoting the slack_app_installs edge name in mutations.
@@ -84,10 +88,12 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldName,
+	FieldFirstName,
+	FieldLastName,
 	FieldEmail,
 	FieldRole,
 	FieldApproved,
+	FieldPhotoURL,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

@@ -37,6 +37,12 @@ func (t *TalentService) RegisterTalent(up *repo.UserParams) (*ent.User, error) {
 }
 
 func (t *TalentService) CreateProfile(user *ent.User, p repo.TalentParams) (*repo.TalentResponse, error) {
+	if p.FirstName == "" {
+		p.FirstName = user.FirstName
+	}
+	if p.LastName == "" {
+		p.LastName = user.LastName
+	}
 	p.Email = user.Email
 	p.UserID = user.ID
 

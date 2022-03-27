@@ -12,10 +12,12 @@ import (
 type UserRepository struct{}
 
 type UserParams struct {
-	Name     string        `json:"name" validate:"required"`
-	Email    string        `json:"email" validate:"required,email"`
-	Role     userrole.Role `json:"role"`
-	Approved bool
+	FirstName string        `json:"first_name" validate:"required"`
+	LastName  string        `json:"last_name" validate:"required"`
+	PhotoURL  string        `json:"photo_url" validate:"required"`
+	Email     string        `json:"email" validate:"required,email"`
+	Role      userrole.Role `json:"role"`
+	Approved  bool
 }
 
 func NewUserRepository() *UserRepository {
@@ -65,7 +67,9 @@ func (*UserRepository) Create(p UserParams) (*ent.User, error) {
 	}
 	record, err := dBConn.User.
 		Create().
-		SetName(p.Name).
+		SetFirstName(p.FirstName).
+		SetLastName(p.LastName).
+		SetPhotoURL(p.PhotoURL).
 		SetEmail(p.Email).
 		SetRole(p.Role).
 		SetApproved(p.Approved).

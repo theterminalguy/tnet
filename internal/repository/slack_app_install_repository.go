@@ -16,6 +16,8 @@ type SlackAppInstallParams struct {
 	TeamName            string `json:"team_name" validate:"required"`
 	AuthedUserID        string `json:"authed_user_id" validate:"required"`
 	AuthedUserEmail     string `json:"email" validate:"required,email"`
+	AuthedUserTitle     string `json:"title"`
+	AuthedUserPhone     string `json:"phone"`
 	AppID               string `json:"app_id" validate:"required"`
 	BotUserID           string `json:"bot_user_id" validate:"required"`
 	AccessToken         string `json:"access_token" validate:"required"`
@@ -76,6 +78,8 @@ func (*SlackAppInstallRepository) Create(p SlackAppInstallParams) (*ent.SlackApp
 		SetTeamName(p.TeamName).
 		SetAuthedUserID(p.AuthedUserID).
 		SetAuthedUserEmail(p.AuthedUserEmail).
+		SetAuthedUserTitle(p.AuthedUserTitle).
+		SetAuthedUserPhone(p.AuthedUserPhone).
 		SetAppID(p.AppID).
 		SetBotUserID(p.BotUserID).
 		SetAccessToken(p.AccessToken).

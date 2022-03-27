@@ -69,9 +69,15 @@ func (uc *UserCreate) SetNillableDeletedAt(t *time.Time) *UserCreate {
 	return uc
 }
 
-// SetName sets the "name" field.
-func (uc *UserCreate) SetName(s string) *UserCreate {
-	uc.mutation.SetName(s)
+// SetFirstName sets the "first_name" field.
+func (uc *UserCreate) SetFirstName(s string) *UserCreate {
+	uc.mutation.SetFirstName(s)
+	return uc
+}
+
+// SetLastName sets the "last_name" field.
+func (uc *UserCreate) SetLastName(s string) *UserCreate {
+	uc.mutation.SetLastName(s)
 	return uc
 }
 
@@ -98,6 +104,12 @@ func (uc *UserCreate) SetNillableApproved(b *bool) *UserCreate {
 	if b != nil {
 		uc.SetApproved(*b)
 	}
+	return uc
+}
+
+// SetPhotoURL sets the "photo_url" field.
+func (uc *UserCreate) SetPhotoURL(s string) *UserCreate {
+	uc.mutation.SetPhotoURL(s)
 	return uc
 }
 
@@ -287,8 +299,11 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "User.updated_at"`)}
 	}
-	if _, ok := uc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "User.name"`)}
+	if _, ok := uc.mutation.FirstName(); !ok {
+		return &ValidationError{Name: "first_name", err: errors.New(`ent: missing required field "User.first_name"`)}
+	}
+	if _, ok := uc.mutation.LastName(); !ok {
+		return &ValidationError{Name: "last_name", err: errors.New(`ent: missing required field "User.last_name"`)}
 	}
 	if _, ok := uc.mutation.Email(); !ok {
 		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "User.email"`)}
@@ -303,6 +318,9 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.Approved(); !ok {
 		return &ValidationError{Name: "approved", err: errors.New(`ent: missing required field "User.approved"`)}
+	}
+	if _, ok := uc.mutation.PhotoURL(); !ok {
+		return &ValidationError{Name: "photo_url", err: errors.New(`ent: missing required field "User.photo_url"`)}
 	}
 	return nil
 }
@@ -364,13 +382,21 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		})
 		_node.DeletedAt = &value
 	}
-	if value, ok := uc.mutation.Name(); ok {
+	if value, ok := uc.mutation.FirstName(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: user.FieldName,
+			Column: user.FieldFirstName,
 		})
-		_node.Name = value
+		_node.FirstName = value
+	}
+	if value, ok := uc.mutation.LastName(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldLastName,
+		})
+		_node.LastName = value
 	}
 	if value, ok := uc.mutation.Email(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -395,6 +421,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldApproved,
 		})
 		_node.Approved = value
+	}
+	if value, ok := uc.mutation.PhotoURL(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldPhotoURL,
+		})
+		_node.PhotoURL = value
 	}
 	if nodes := uc.mutation.TalentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

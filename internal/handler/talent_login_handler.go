@@ -21,6 +21,13 @@ type GoogleOauth2Client struct {
 	*oauth2.Config
 }
 
+type UserInfo struct {
+	GivenName  string `json:"given_name"`
+	FamilyName string `json:"family_name"`
+	Picture    string `json:"picture"`
+	Email      string `json:"email"`
+}
+
 var gconf *GoogleOauth2Client = &GoogleOauth2Client{
 	Config: &oauth2.Config{
 		ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
@@ -41,11 +48,16 @@ func (s *GoogleOauth2Client) GetUsersProfile(tok *oauth2.Token) (*repo.UserParam
 		return nil, err
 	}
 	defer resp.Body.Close()
-	var userInfo repo.UserParams
+	var userInfo UserInfo
 	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
 		return nil, err
 	}
-	return &userInfo, nil
+	return &repo.UserParams{
+		FirstName: userInfo.GivenName,
+		LastName:  userInfo.FamilyName,
+		Email:     userInfo.Email,
+		PhotoURL:  userInfo.Picture,
+	}, nil
 }
 
 // GoogleOauth2CallbackHandler handles the callback from Google OAuth2

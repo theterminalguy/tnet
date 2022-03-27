@@ -331,7 +331,7 @@ func init() {
 	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	user.UpdateDefaultUpdatedAt = userDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// userDescApproved is the schema descriptor for approved field.
-	userDescApproved := userFields[3].Descriptor()
+	userDescApproved := userFields[4].Descriptor()
 	// user.DefaultApproved holds the default value on creation for the approved field.
 	user.DefaultApproved = userDescApproved.Default.(bool)
 	// userDescID is the schema descriptor for id field.

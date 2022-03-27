@@ -33,6 +33,8 @@ func (SlackAppInstall) Fields() []ent.Field {
 
 		field.String("authed_user_id"),
 		field.String("authed_user_email"),
+		field.String("authed_user_title").Optional(),
+		field.String("authed_user_phone").Optional(),
 
 		field.String("app_id"),
 		field.String("bot_user_id"),
