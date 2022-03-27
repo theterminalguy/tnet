@@ -146,7 +146,7 @@ func SlackOauth2CallbackHandler(c echo.Context) error {
 		return err
 	}
 	rs := service.NewRecruiterService()
-	recruiter, err := rs.InstallSlackApp(
+	_, err = rs.InstallSlackApp(
 		repo.UserParams{
 			FirstName: slackUserProfile.Profile.FirstName,
 			LastName:  slackUserProfile.Profile.LastName,
@@ -170,12 +170,13 @@ func SlackOauth2CallbackHandler(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	claims := NewJWTClaims(recruiter, c)
+	/*claims := NewJWTClaims(recruiter, c)
 	tok, err := claims.GenerateToken()
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, echo.Map{"token": tok})
+	//return c.JSON(http.StatusOK, echo.Map{"token": tok})*/
+	return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("https://slack.com/app_redirect?app=%s", oauthResp.AppID))
 }
 
 func RecruiterLoginHanlder(c echo.Context) error {
