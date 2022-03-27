@@ -149,26 +149,6 @@ func (tu *TalentUpdate) SetCity(s string) *TalentUpdate {
 	return tu
 }
 
-// SetJoinedTentnAt sets the "joined_tentn_at" field.
-func (tu *TalentUpdate) SetJoinedTentnAt(t time.Time) *TalentUpdate {
-	tu.mutation.SetJoinedTentnAt(t)
-	return tu
-}
-
-// SetNillableJoinedTentnAt sets the "joined_tentn_at" field if the given value is not nil.
-func (tu *TalentUpdate) SetNillableJoinedTentnAt(t *time.Time) *TalentUpdate {
-	if t != nil {
-		tu.SetJoinedTentnAt(*t)
-	}
-	return tu
-}
-
-// ClearJoinedTentnAt clears the value of the "joined_tentn_at" field.
-func (tu *TalentUpdate) ClearJoinedTentnAt() *TalentUpdate {
-	tu.mutation.ClearJoinedTentnAt()
-	return tu
-}
-
 // SetJobPreference sets the "job_preference" field.
 func (tu *TalentUpdate) SetJobPreference(tp talent.JobPreference) *TalentUpdate {
 	tu.mutation.SetJobPreference(tp)
@@ -652,19 +632,6 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: talent.FieldCity,
-		})
-	}
-	if value, ok := tu.mutation.JoinedTentnAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: talent.FieldJoinedTentnAt,
-		})
-	}
-	if tu.mutation.JoinedTentnAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: talent.FieldJoinedTentnAt,
 		})
 	}
 	if value, ok := tu.mutation.JobPreference(); ok {
@@ -1232,26 +1199,6 @@ func (tuo *TalentUpdateOne) SetCity(s string) *TalentUpdateOne {
 	return tuo
 }
 
-// SetJoinedTentnAt sets the "joined_tentn_at" field.
-func (tuo *TalentUpdateOne) SetJoinedTentnAt(t time.Time) *TalentUpdateOne {
-	tuo.mutation.SetJoinedTentnAt(t)
-	return tuo
-}
-
-// SetNillableJoinedTentnAt sets the "joined_tentn_at" field if the given value is not nil.
-func (tuo *TalentUpdateOne) SetNillableJoinedTentnAt(t *time.Time) *TalentUpdateOne {
-	if t != nil {
-		tuo.SetJoinedTentnAt(*t)
-	}
-	return tuo
-}
-
-// ClearJoinedTentnAt clears the value of the "joined_tentn_at" field.
-func (tuo *TalentUpdateOne) ClearJoinedTentnAt() *TalentUpdateOne {
-	tuo.mutation.ClearJoinedTentnAt()
-	return tuo
-}
-
 // SetJobPreference sets the "job_preference" field.
 func (tuo *TalentUpdateOne) SetJobPreference(tp talent.JobPreference) *TalentUpdateOne {
 	tuo.mutation.SetJobPreference(tp)
@@ -1759,19 +1706,6 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Type:   field.TypeString,
 			Value:  value,
 			Column: talent.FieldCity,
-		})
-	}
-	if value, ok := tuo.mutation.JoinedTentnAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: talent.FieldJoinedTentnAt,
-		})
-	}
-	if tuo.mutation.JoinedTentnAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: talent.FieldJoinedTentnAt,
 		})
 	}
 	if value, ok := tuo.mutation.JobPreference(); ok {

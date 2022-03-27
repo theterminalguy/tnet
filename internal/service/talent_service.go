@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
+	"github.com/10hourlabs/tentn/internal/decorator"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 )
 
@@ -36,7 +37,7 @@ func (t *TalentService) RegisterTalent(up *repo.UserParams) (*ent.User, error) {
 	return nil, err
 }
 
-func (t *TalentService) CreateProfile(user *ent.User, p repo.TalentParams) (*repo.TalentResponse, error) {
+func (t *TalentService) CreateProfile(user *ent.User, p repo.TalentParams) (*decorator.TalentResponse, error) {
 	if p.FirstName == "" {
 		p.FirstName = user.FirstName
 	}
@@ -45,6 +46,7 @@ func (t *TalentService) CreateProfile(user *ent.User, p repo.TalentParams) (*rep
 	}
 	p.Email = user.Email
 	p.UserID = user.ID
+	p.Available = true
 
 	a, err := t.TalentRepo.Create(p)
 	if err != nil {
@@ -53,7 +55,7 @@ func (t *TalentService) CreateProfile(user *ent.User, p repo.TalentParams) (*rep
 	return a, nil
 }
 
-func (t *TalentService) UpdateProfile(user *ent.User, p *repo.TalentParams) (*repo.TalentResponse, []error) {
+func (t *TalentService) UpdateProfile(user *ent.User, p *repo.TalentParams) (*decorator.TalentResponse, []error) {
 	p.Email = user.Email
 	talent, err := t.TalentRepo.GetTalentByUserID(user.ID)
 	if err != nil {

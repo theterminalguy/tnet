@@ -199,13 +199,6 @@ func City(v string) predicate.Talent {
 	})
 }
 
-// JoinedTentnAt applies equality check predicate on the "joined_tentn_at" field. It's identical to JoinedTentnAtEQ.
-func JoinedTentnAt(v time.Time) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldJoinedTentnAt), v))
-	})
-}
-
 // Timezone applies equality check predicate on the "timezone" field. It's identical to TimezoneEQ.
 func Timezone(v string) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
@@ -1610,96 +1603,6 @@ func CityEqualFold(v string) predicate.Talent {
 func CityContainsFold(v string) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldCity), v))
-	})
-}
-
-// JoinedTentnAtEQ applies the EQ predicate on the "joined_tentn_at" field.
-func JoinedTentnAtEQ(v time.Time) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldJoinedTentnAt), v))
-	})
-}
-
-// JoinedTentnAtNEQ applies the NEQ predicate on the "joined_tentn_at" field.
-func JoinedTentnAtNEQ(v time.Time) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldJoinedTentnAt), v))
-	})
-}
-
-// JoinedTentnAtIn applies the In predicate on the "joined_tentn_at" field.
-func JoinedTentnAtIn(vs ...time.Time) predicate.Talent {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Talent(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldJoinedTentnAt), v...))
-	})
-}
-
-// JoinedTentnAtNotIn applies the NotIn predicate on the "joined_tentn_at" field.
-func JoinedTentnAtNotIn(vs ...time.Time) predicate.Talent {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Talent(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldJoinedTentnAt), v...))
-	})
-}
-
-// JoinedTentnAtGT applies the GT predicate on the "joined_tentn_at" field.
-func JoinedTentnAtGT(v time.Time) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldJoinedTentnAt), v))
-	})
-}
-
-// JoinedTentnAtGTE applies the GTE predicate on the "joined_tentn_at" field.
-func JoinedTentnAtGTE(v time.Time) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldJoinedTentnAt), v))
-	})
-}
-
-// JoinedTentnAtLT applies the LT predicate on the "joined_tentn_at" field.
-func JoinedTentnAtLT(v time.Time) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldJoinedTentnAt), v))
-	})
-}
-
-// JoinedTentnAtLTE applies the LTE predicate on the "joined_tentn_at" field.
-func JoinedTentnAtLTE(v time.Time) predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldJoinedTentnAt), v))
-	})
-}
-
-// JoinedTentnAtIsNil applies the IsNil predicate on the "joined_tentn_at" field.
-func JoinedTentnAtIsNil() predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldJoinedTentnAt)))
-	})
-}
-
-// JoinedTentnAtNotNil applies the NotNil predicate on the "joined_tentn_at" field.
-func JoinedTentnAtNotNil() predicate.Talent {
-	return predicate.Talent(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldJoinedTentnAt)))
 	})
 }
 

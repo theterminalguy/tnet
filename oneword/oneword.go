@@ -33,7 +33,6 @@ const (
 	ReferralCode          string = "referral_code"
 	Requirements          string = "requirements"
 	PreferredName         string = "preferred_name"
-	JoinedTenTNAt         string = "joined_tentn_at"
 	ReferralSource        string = "referral_source"
 	YearsOfExperience     string = "years_of_experience"
 	PreferredJobTitle     string = "preferred_job_title"

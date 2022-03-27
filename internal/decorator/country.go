@@ -1,6 +1,13 @@
-package repository
+package decorator
 
-var countryRepo = map[string]string{
+type Country struct {
+	Code  string `json:"code"`
+	Name  string `json:"name"`
+	City  string `json:"city"`
+	State string `json:"state"`
+}
+
+var CountryLookup = map[string]string{
 	"AF": "Afghanistan",
 
 	"AL": "Albania",
