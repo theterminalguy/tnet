@@ -124,3 +124,18 @@ Now head over to https://localhost:`<YOUR_HTTP_PORT>` and you should be able to 
 docker build . -t tenweb --target prod --build-arg GITHUB_USER=<your_username> --build-arg GITHUB_PERSONAL_TOKEN=<your_token>
 
 STAGE=prod docker-compose build --build-arg GITHUB_USER=<your_username> --build-arg GITHUB_PERSONAL_TOKEN=<your_token> web
+
+
+## Generating JWT Tokens locally
+
+You can generate a token for a recruiter using the command:
+
+```shell
+$ make task name=tokgen params="type=recruiter,email=youremail@example.com"
+```
+
+To generate a token for a talent use:
+
+```shell
+$ make task name=tokgen params="type=talent,email=youremail@example.com" 
+```
