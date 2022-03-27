@@ -66,6 +66,19 @@ func (*SlackAppInstallRepository) GetByEmail(email string) (*ent.SlackAppInstall
 	return record, nil
 }
 
+func (*SlackAppInstallRepository) GetRecruiterByEmail(email string) (*ent.User, error) {
+	record, err := dBConn.SlackAppInstall.Query().
+		Where(slackappinstall.AuthedUserEmailEQ(email)).
+		WithUser().
+		Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	if record.DeletedAt != nil {
+		return nil, ErrRecordDeleted
+	}
+	return record.Edges.User, nil
+}
 func (*SlackAppInstallRepository) Create(p SlackAppInstallParams) (*ent.SlackAppInstall, error) {
 	err := validateParams(p)
 	if err != nil {

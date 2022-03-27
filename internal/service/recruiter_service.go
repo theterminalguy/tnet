@@ -24,7 +24,7 @@ func (rs *RecruiterService) InstallSlackApp(up repo.UserParams, sp repo.SlackApp
 		return record, nil
 	}
 	if ent.IsNotFound(err) {
-		up.Approved = true
+		up.Approved = true // Approve recruiter
 		up.Role = userrole.Recruiter
 		recruiter, err := rs.UserRepo.Create(up)
 		if err != nil {
