@@ -44,8 +44,6 @@ const (
 	FieldCountryCode = "country_code"
 	// FieldCity holds the string denoting the city field in the database.
 	FieldCity = "city"
-	// FieldJoinedTentnAt holds the string denoting the joined_tentn_at field in the database.
-	FieldJoinedTentnAt = "joined_tentn_at"
 	// FieldJobPreference holds the string denoting the job_preference field in the database.
 	FieldJobPreference = "job_preference"
 	// FieldTimezone holds the string denoting the timezone field in the database.
@@ -146,7 +144,6 @@ var Columns = []string{
 	FieldPhone,
 	FieldCountryCode,
 	FieldCity,
-	FieldJoinedTentnAt,
 	FieldJobPreference,
 	FieldTimezone,
 	FieldState,

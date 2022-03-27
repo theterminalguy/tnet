@@ -7,6 +7,7 @@ import (
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/10hourlabs/tentn/internal/decorator"
 	"github.com/10hourlabs/tentn/internal/paginator"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/10hourlabs/tentn/util/date"
@@ -18,9 +19,9 @@ var ErrInvalidReferralCode error = errors.New("invalid referral code")
 type TalentQuerier interface {
 	GetAll() ([]*ent.Talent, error)
 	GetByID(id uuid.UUID) (*ent.Talent, error)
-	GetTalentByUserID(userID uuid.UUID) (*ent.Talent, error)
-	Create(p TalentParams) (*TalentResponse, error)
-	Update(id uuid.UUID, p TalentParams) (*TalentResponse, []error)
+	GetTalentByUserID(userID uuid.UUID) (*decorator.TalentResponse, error)
+	Create(p TalentParams) (*decorator.TalentResponse, error)
+	Update(id uuid.UUID, p TalentParams) (*decorator.TalentResponse, []error)
 	DeleteByID(id uuid.UUID) error
 }
 
@@ -49,12 +50,23 @@ func NewTalentRepository() *TalentRepository {
 }
 
 func (*TalentRepository) Filter(page string, prd ...predicate.Talent) (*paginator.OffsetPaginater, error) {
+	// TODO: It would be nice to not load all this association
+	// except ONLY when asked
+	// this will reduce the number of queries and joins
 	// TODO: remove debug
 	pager, err := paginator.NewOffsetPaginater(page)
 	if err != nil {
 		return nil, err
 	}
-	talents, err := dBConn.Debug().Talent.Query().
+	talents, err := dBConn.
+		Debug(). // TODO: remove
+		Talent.
+		Query().
+		WithUser().
+		WithEducations().
+		WithWorkExperiences().
+		WithPortfoliolinks().
+		WithSkills().
 		Where(prd...).
 		Limit(paginator.MaxResults).
 		Offset(pager.GetOffset()).
@@ -64,7 +76,7 @@ func (*TalentRepository) Filter(page string, prd ...predicate.Talent) (*paginato
 	}
 	var talentList []interface{}
 	for _, t := range talents {
-		response := BuildTalentResponse(t)
+		response := decorator.DecorateTalent(t)
 		talentList = append(talentList, response)
 	}
 	return pager.Paginate(talentList), nil
@@ -80,7 +92,7 @@ func (*TalentRepository) GetAll() ([]*ent.Talent, error) {
 	return Talents, nil
 }
 
-func (*TalentRepository) GetByEmail(email string) (*TalentResponse, error) {
+func (*TalentRepository) GetByEmail(email string) (*decorator.TalentResponse, error) {
 	record, err := dBConn.Talent.Query().
 		Where(talent.And(
 			talent.EmailEQ(email),
@@ -89,29 +101,24 @@ func (*TalentRepository) GetByEmail(email string) (*TalentResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	response := BuildTalentResponse(record)
+	response := decorator.DecorateTalent(record)
 	return response, nil
 }
 
 func (*TalentRepository) GetByID(id uuid.UUID) (*ent.Talent, error) {
+	// TODO: It would be nice to not load all this association
+	// except ONLY when asked
+	// this will reduce the number of queries and joins
 	a, err := dBConn.Talent.Query().
+		WithUser().
+		WithEducations().
+		WithWorkExperiences().
+		WithPortfoliolinks().
+		WithSkills().
 		Where(talent.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
-	}
-	skills, err := a.QuerySkills().All(dBContext)
-	if err != nil {
-		return nil, err
-	}
-	pLinks, _ := a.QueryPortfoliolinks().All(dBContext)
-	eduLinks, _ := a.QueryEducations().All(dBContext)
-	wrkExpLinks, _ := a.QueryWorkExperiences().All(dBContext)
-	a.Edges = ent.TalentEdges{
-		Portfoliolinks:  pLinks,
-		Educations:      eduLinks,
-		WorkExperiences: wrkExpLinks,
-		Skills:          skills,
 	}
 	if a.DeletedAt != nil {
 		return nil, ErrRecordDeleted
@@ -119,7 +126,7 @@ func (*TalentRepository) GetByID(id uuid.UUID) (*ent.Talent, error) {
 	return a, nil
 }
 
-func (r *TalentRepository) Create(p TalentParams) (*TalentResponse, error) {
+func (r *TalentRepository) Create(p TalentParams) (*decorator.TalentResponse, error) {
 	err := validateParams(p)
 	if err != nil {
 		return nil, err
@@ -153,11 +160,11 @@ func (r *TalentRepository) Create(p TalentParams) (*TalentResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	response := BuildTalentResponse(a)
+	response := decorator.DecorateTalent(a)
 	return response, nil
 }
 
-func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*TalentResponse, []error) {
+func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.TalentResponse, []error) {
 	err := validateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
@@ -327,12 +334,12 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*TalentResponse
 	if err != nil {
 		return nil, []error{err}
 	}
-	response := BuildTalentResponse(record)
+	response := decorator.DecorateTalent(record)
 	return response, nil
 }
 
 func (r *TalentRepository) DeleteByID(id uuid.UUID) error {
-	record, err := r.GetByID(id)
+	record, err := dBConn.Talent.Get(dBContext, id)
 	if err != nil {
 		return err
 	}
@@ -345,8 +352,16 @@ func (r *TalentRepository) DeleteByID(id uuid.UUID) error {
 	return nil
 }
 
-func (r *TalentRepository) GetTalentByUserID(userID uuid.UUID) (*ent.Talent, error) {
+func (r *TalentRepository) GetTalentByUserID(userID uuid.UUID) (*decorator.TalentResponse, error) {
+	// TODO: It would be nice to not load all this association
+	// except ONLY when asked
+	// this will reduce the number of queries and joins
 	record, err := dBConn.Talent.Query().
+		WithUser().
+		WithPortfoliolinks().
+		WithEducations().
+		WithWorkExperiences().
+		WithSkills().
 		Where(talent.And(
 			talent.UserIDEQ(userID),
 			talent.DeletedAtIsNil())).
@@ -354,60 +369,5 @@ func (r *TalentRepository) GetTalentByUserID(userID uuid.UUID) (*ent.Talent, err
 	if err != nil {
 		return nil, err
 	}
-	return record, nil
-}
-
-type TalentResponse struct {
-	ID                uuid.UUID            `json:"id"`
-	CreatedAt         time.Time            `json:"created_at"`
-	UpdatedAt         time.Time            `json:"updated_at"`
-	DeletedAt         *time.Time           `json:"deleted_at"`
-	FirstName         string               `json:"first_name"`
-	LastName          string               `json:"last_name"`
-	PreferredName     string               `json:"preferred_name"`
-	Pronoun           string               `json:"pronoun"`
-	PreferredJobTitle string               `json:"preferred_job_title"`
-	IsAvailable       bool                 `json:"is_available"`
-	CareerStartDate   time.Time            `json:"career_start_date"`
-	Email             string               `json:"email"`
-	Phone             string               `json:"phone"`
-	Country           Country              `json:"country"`
-	JoinedTentnAt     *time.Time           `json:"joined_tentn_at"`
-	JobPreference     talent.JobPreference `json:"job_preference"`
-	Edges             *ent.TalentEdges     `json:"edges"`
-	TimeZone          string               `json:"timezone"`
-}
-
-type Country struct {
-	Code  string `json:"code"`
-	Name  string `json:"name"`
-	City  string `json:"city"`
-	State string `json:"state"`
-}
-
-func BuildTalentResponse(talent *ent.Talent) *TalentResponse {
-	return &TalentResponse{
-		ID:                talent.ID,
-		CreatedAt:         talent.CreatedAt,
-		DeletedAt:         talent.DeletedAt,
-		FirstName:         talent.FirstName,
-		LastName:          talent.LastName,
-		PreferredName:     talent.PreferredName,
-		Pronoun:           talent.Pronoun,
-		PreferredJobTitle: talent.PreferredJobTitle,
-		IsAvailable:       talent.IsAvailable,
-		CareerStartDate:   talent.ProfessionalStartDate,
-		Email:             talent.Email,
-		Phone:             talent.Phone,
-		Country: Country{
-			Code:  talent.CountryCode,
-			Name:  countryRepo[talent.CountryCode],
-			City:  talent.City,
-			State: talent.State,
-		},
-		JoinedTentnAt: talent.JoinedTentnAt,
-		JobPreference: talent.JobPreference,
-		TimeZone:      talent.Timezone,
-		Edges:         &talent.Edges,
-	}
+	return decorator.DecorateTalent(record), nil
 }

@@ -151,20 +151,6 @@ func (tc *TalentCreate) SetCity(s string) *TalentCreate {
 	return tc
 }
 
-// SetJoinedTentnAt sets the "joined_tentn_at" field.
-func (tc *TalentCreate) SetJoinedTentnAt(t time.Time) *TalentCreate {
-	tc.mutation.SetJoinedTentnAt(t)
-	return tc
-}
-
-// SetNillableJoinedTentnAt sets the "joined_tentn_at" field if the given value is not nil.
-func (tc *TalentCreate) SetNillableJoinedTentnAt(t *time.Time) *TalentCreate {
-	if t != nil {
-		tc.SetJoinedTentnAt(*t)
-	}
-	return tc
-}
-
 // SetJobPreference sets the "job_preference" field.
 func (tc *TalentCreate) SetJobPreference(tp talent.JobPreference) *TalentCreate {
 	tc.mutation.SetJobPreference(tp)
@@ -599,14 +585,6 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Column: talent.FieldCity,
 		})
 		_node.City = value
-	}
-	if value, ok := tc.mutation.JoinedTentnAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: talent.FieldJoinedTentnAt,
-		})
-		_node.JoinedTentnAt = &value
 	}
 	if value, ok := tc.mutation.JobPreference(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

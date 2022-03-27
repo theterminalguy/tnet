@@ -48,8 +48,6 @@ type Talent struct {
 	CountryCode string `json:"country_code,omitempty"`
 	// City holds the value of the "city" field.
 	City string `json:"city,omitempty"`
-	// JoinedTentnAt holds the value of the "joined_tentn_at" field.
-	JoinedTentnAt *time.Time `json:"joined_tentn_at,omitempty"`
 	// JobPreference holds the value of the "job_preference" field.
 	JobPreference talent.JobPreference `json:"job_preference,omitempty"`
 	// Timezone holds the value of the "timezone" field.
@@ -170,7 +168,7 @@ func (*Talent) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity, talent.FieldJobPreference, talent.FieldTimezone, talent.FieldState:
 			values[i] = new(sql.NullString)
-		case talent.FieldCreatedAt, talent.FieldUpdatedAt, talent.FieldDeletedAt, talent.FieldProfessionalStartDate, talent.FieldJoinedTentnAt:
+		case talent.FieldCreatedAt, talent.FieldUpdatedAt, talent.FieldDeletedAt, talent.FieldProfessionalStartDate:
 			values[i] = new(sql.NullTime)
 		case talent.FieldID, talent.FieldUserID:
 			values[i] = new(uuid.UUID)
@@ -285,13 +283,6 @@ func (t *Talent) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field city", values[i])
 			} else if value.Valid {
 				t.City = value.String
-			}
-		case talent.FieldJoinedTentnAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field joined_tentn_at", values[i])
-			} else if value.Valid {
-				t.JoinedTentnAt = new(time.Time)
-				*t.JoinedTentnAt = value.Time
 			}
 		case talent.FieldJobPreference:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -411,10 +402,6 @@ func (t *Talent) String() string {
 	builder.WriteString(t.CountryCode)
 	builder.WriteString(", city=")
 	builder.WriteString(t.City)
-	if v := t.JoinedTentnAt; v != nil {
-		builder.WriteString(", joined_tentn_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
 	builder.WriteString(", job_preference=")
 	builder.WriteString(fmt.Sprintf("%v", t.JobPreference))
 	builder.WriteString(", timezone=")

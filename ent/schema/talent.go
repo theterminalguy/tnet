@@ -55,10 +55,6 @@ func (Talent) Fields() []ent.Field {
 
 		field.String(oneword.City),
 
-		field.Time(oneword.JoinedTenTNAt).
-			Nillable().
-			Optional(),
-
 		field.Enum("job_preference").Values(JobPreferences()...),
 
 		field.String("timezone"),

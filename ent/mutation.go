@@ -9480,7 +9480,6 @@ type TalentMutation struct {
 	phone                     *string
 	country_code              *string
 	city                      *string
-	joined_tentn_at           *time.Time
 	job_preference            *talent.JobPreference
 	timezone                  *string
 	state                     *string
@@ -10183,55 +10182,6 @@ func (m *TalentMutation) ResetCity() {
 	m.city = nil
 }
 
-// SetJoinedTentnAt sets the "joined_tentn_at" field.
-func (m *TalentMutation) SetJoinedTentnAt(t time.Time) {
-	m.joined_tentn_at = &t
-}
-
-// JoinedTentnAt returns the value of the "joined_tentn_at" field in the mutation.
-func (m *TalentMutation) JoinedTentnAt() (r time.Time, exists bool) {
-	v := m.joined_tentn_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldJoinedTentnAt returns the old "joined_tentn_at" field's value of the Talent entity.
-// If the Talent object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TalentMutation) OldJoinedTentnAt(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldJoinedTentnAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldJoinedTentnAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldJoinedTentnAt: %w", err)
-	}
-	return oldValue.JoinedTentnAt, nil
-}
-
-// ClearJoinedTentnAt clears the value of the "joined_tentn_at" field.
-func (m *TalentMutation) ClearJoinedTentnAt() {
-	m.joined_tentn_at = nil
-	m.clearedFields[talent.FieldJoinedTentnAt] = struct{}{}
-}
-
-// JoinedTentnAtCleared returns if the "joined_tentn_at" field was cleared in this mutation.
-func (m *TalentMutation) JoinedTentnAtCleared() bool {
-	_, ok := m.clearedFields[talent.FieldJoinedTentnAt]
-	return ok
-}
-
-// ResetJoinedTentnAt resets all changes to the "joined_tentn_at" field.
-func (m *TalentMutation) ResetJoinedTentnAt() {
-	m.joined_tentn_at = nil
-	delete(m.clearedFields, talent.FieldJoinedTentnAt)
-}
-
 // SetJobPreference sets the "job_preference" field.
 func (m *TalentMutation) SetJobPreference(tp talent.JobPreference) {
 	m.job_preference = &tp
@@ -10763,7 +10713,7 @@ func (m *TalentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TalentMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, talent.FieldCreatedAt)
 	}
@@ -10808,9 +10758,6 @@ func (m *TalentMutation) Fields() []string {
 	}
 	if m.city != nil {
 		fields = append(fields, talent.FieldCity)
-	}
-	if m.joined_tentn_at != nil {
-		fields = append(fields, talent.FieldJoinedTentnAt)
 	}
 	if m.job_preference != nil {
 		fields = append(fields, talent.FieldJobPreference)
@@ -10859,8 +10806,6 @@ func (m *TalentMutation) Field(name string) (ent.Value, bool) {
 		return m.CountryCode()
 	case talent.FieldCity:
 		return m.City()
-	case talent.FieldJoinedTentnAt:
-		return m.JoinedTentnAt()
 	case talent.FieldJobPreference:
 		return m.JobPreference()
 	case talent.FieldTimezone:
@@ -10906,8 +10851,6 @@ func (m *TalentMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldCountryCode(ctx)
 	case talent.FieldCity:
 		return m.OldCity(ctx)
-	case talent.FieldJoinedTentnAt:
-		return m.OldJoinedTentnAt(ctx)
 	case talent.FieldJobPreference:
 		return m.OldJobPreference(ctx)
 	case talent.FieldTimezone:
@@ -11028,13 +10971,6 @@ func (m *TalentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCity(v)
 		return nil
-	case talent.FieldJoinedTentnAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetJoinedTentnAt(v)
-		return nil
 	case talent.FieldJobPreference:
 		v, ok := value.(talent.JobPreference)
 		if !ok {
@@ -11092,9 +11028,6 @@ func (m *TalentMutation) ClearedFields() []string {
 	if m.FieldCleared(talent.FieldUserID) {
 		fields = append(fields, talent.FieldUserID)
 	}
-	if m.FieldCleared(talent.FieldJoinedTentnAt) {
-		fields = append(fields, talent.FieldJoinedTentnAt)
-	}
 	return fields
 }
 
@@ -11114,9 +11047,6 @@ func (m *TalentMutation) ClearField(name string) error {
 		return nil
 	case talent.FieldUserID:
 		m.ClearUserID()
-		return nil
-	case talent.FieldJoinedTentnAt:
-		m.ClearJoinedTentnAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Talent nullable field %s", name)
@@ -11170,9 +11100,6 @@ func (m *TalentMutation) ResetField(name string) error {
 		return nil
 	case talent.FieldCity:
 		m.ResetCity()
-		return nil
-	case talent.FieldJoinedTentnAt:
-		m.ResetJoinedTentnAt()
 		return nil
 	case talent.FieldJobPreference:
 		m.ResetJobPreference()

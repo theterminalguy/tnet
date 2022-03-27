@@ -13,10 +13,10 @@ func GetCurrentTalent(c echo.Context) (*scope.TalentScope, error) {
 	if err != nil {
 		return nil, err
 	}
-	talent, err := repo.NewTalentRepository().GetTalentByUserID(user.ID)
+	decorator, err := repo.NewTalentRepository().GetTalentByUserID(user.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	return scope.NewTalentScope(talent), nil
+	return scope.NewTalentScope(decorator.GetTalent()), nil
 }
