@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -132,6 +131,7 @@ func SlackOauth2CallbackHandler(c echo.Context) error {
 		return echo.ErrUnauthorized
 	}
 	if err := c.QueryParam("error"); err != "" {
+		// TODO: return a better error message
 		return c.String(http.StatusOK, fmt.Sprintf("You denied access to your Slack account: %s", err))
 	}
 	// Exchange code for token
@@ -146,7 +146,6 @@ func SlackOauth2CallbackHandler(c echo.Context) error {
 		return err
 	}
 	rs := service.NewRecruiterService()
-	log.Println("PHOTO URL >>", slackUserProfile.GetPhotoURL())
 	recruiter, err := rs.InstallSlackApp(
 		repo.UserParams{
 			FirstName: slackUserProfile.Profile.FirstName,

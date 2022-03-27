@@ -25,6 +25,9 @@ stop: ## Stop all services
 destroy: ## Remove all containers and images. Also, destroy all volumes
 	STAGE=app-build docker-compose -f docker-compose.yml down -v --remove-orphans --rmi all
 
+remove-volume:
+	docker volume rm $(docker volume ls -q)
+
 scaffold: ## Generate a new resource scaffold
 	go run cmd/generate/main.go $(resource)
 
