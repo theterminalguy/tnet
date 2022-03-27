@@ -34,6 +34,7 @@ func (t *TalentResponse) GetTalent() *ent.Talent {
 	return t.talent
 }
 
+// TODO: decorator can accept relations to load/add to the response
 func DecorateTalent(t *ent.Talent) *TalentResponse {
 	return &TalentResponse{
 		talent:            t,
@@ -58,6 +59,11 @@ func DecorateTalent(t *ent.Talent) *TalentResponse {
 		},
 		JobPreference: t.JobPreference,
 		TimeZone:      t.Timezone,
-		Edges:         &ent.TalentEdges{},
+		Edges: &ent.TalentEdges{
+			Educations:      t.Edges.Educations,
+			WorkExperiences: t.Edges.WorkExperiences,
+			Portfoliolinks:  t.Edges.Portfoliolinks,
+			Skills:          t.Edges.Skills,
+		},
 	}
 }

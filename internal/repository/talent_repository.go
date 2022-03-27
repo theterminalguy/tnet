@@ -50,16 +50,23 @@ func NewTalentRepository() *TalentRepository {
 }
 
 func (*TalentRepository) Filter(page string, prd ...predicate.Talent) (*paginator.OffsetPaginater, error) {
+	// TODO: It would be nice to not load all this association
+	// except ONLY when asked
+	// this will reduce the number of queries and joins
 	// TODO: remove debug
 	pager, err := paginator.NewOffsetPaginater(page)
 	if err != nil {
 		return nil, err
 	}
 	talents, err := dBConn.
-		Debug().
+		Debug(). // TODO: remove
 		Talent.
 		Query().
 		WithUser().
+		WithEducations().
+		WithWorkExperiences().
+		WithPortfoliolinks().
+		WithSkills().
 		Where(prd...).
 		Limit(paginator.MaxResults).
 		Offset(pager.GetOffset()).
@@ -99,24 +106,19 @@ func (*TalentRepository) GetByEmail(email string) (*decorator.TalentResponse, er
 }
 
 func (*TalentRepository) GetByID(id uuid.UUID) (*ent.Talent, error) {
+	// TODO: It would be nice to not load all this association
+	// except ONLY when asked
+	// this will reduce the number of queries and joins
 	a, err := dBConn.Talent.Query().
+		WithUser().
+		WithEducations().
+		WithWorkExperiences().
+		WithPortfoliolinks().
+		WithSkills().
 		Where(talent.ID(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
-	}
-	skills, err := a.QuerySkills().All(dBContext)
-	if err != nil {
-		return nil, err
-	}
-	pLinks, _ := a.QueryPortfoliolinks().All(dBContext)
-	eduLinks, _ := a.QueryEducations().All(dBContext)
-	wrkExpLinks, _ := a.QueryWorkExperiences().All(dBContext)
-	a.Edges = ent.TalentEdges{
-		Portfoliolinks:  pLinks,
-		Educations:      eduLinks,
-		WorkExperiences: wrkExpLinks,
-		Skills:          skills,
 	}
 	if a.DeletedAt != nil {
 		return nil, ErrRecordDeleted
@@ -337,7 +339,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 }
 
 func (r *TalentRepository) DeleteByID(id uuid.UUID) error {
-	record, err := r.GetByID(id)
+	record, err := dBConn.Talent.Get(dBContext, id)
 	if err != nil {
 		return err
 	}
@@ -351,8 +353,15 @@ func (r *TalentRepository) DeleteByID(id uuid.UUID) error {
 }
 
 func (r *TalentRepository) GetTalentByUserID(userID uuid.UUID) (*decorator.TalentResponse, error) {
+	// TODO: It would be nice to not load all this association
+	// except ONLY when asked
+	// this will reduce the number of queries and joins
 	record, err := dBConn.Talent.Query().
 		WithUser().
+		WithPortfoliolinks().
+		WithEducations().
+		WithWorkExperiences().
+		WithSkills().
 		Where(talent.And(
 			talent.UserIDEQ(userID),
 			talent.DeletedAtIsNil())).
