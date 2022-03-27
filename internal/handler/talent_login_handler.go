@@ -9,6 +9,7 @@ import (
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/service"
+	"github.com/10hourlabs/tentn/internal/tokgen"
 	"github.com/10hourlabs/tentn/randutil"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
@@ -87,7 +88,10 @@ func GoogleOauth2CallbackHandler(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	claims := NewJWTClaims(talent, c)
+	claims := tokgen.NewJWTClaims(talent, &tokgen.JWTMeta{
+		Audience: c.Request().Host,
+		Issuer:   c.Request().Host,
+	})
 	token, err := claims.GenerateToken()
 	if err != nil {
 		return err

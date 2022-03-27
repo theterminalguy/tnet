@@ -29,10 +29,12 @@ func (t *CreateFakeTalents) CreateFakeTalent() error {
 	fName := faker.FirstName()
 	lName := faker.LastName()
 	userParams := repo.UserParams{
-		Name:     fName + " " + lName,
-		Email:    faker.Email(),
-		Role:     "talent",
-		Approved: true,
+		FirstName: fName,
+		LastName:  lName,
+		PhotoURL:  faker.ImageURL(128, 128),
+		Email:     faker.Email(),
+		Role:      "talent",
+		Approved:  true,
 	}
 	user, err := t.UserRepo.Create(userParams)
 	if err != nil {
@@ -61,7 +63,7 @@ func (t *CreateFakeTalents) CreateFakeTalent() error {
 			return []string{"UTC", "WAT", "EET", "AET"}[rand.Intn(2)]
 		})(),
 		Available: faker.Bool(),
-		State: faker.State(),
+		State:     faker.State(),
 	}
 	_, err = t.TalentService.CreateProfile(user, talentParams)
 	if err != nil {

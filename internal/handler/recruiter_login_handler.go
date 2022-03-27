@@ -170,12 +170,6 @@ func SlackOauth2CallbackHandler(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	/*claims := NewJWTClaims(recruiter, c)
-	tok, err := claims.GenerateToken()
-	if err != nil {
-		return err
-	}
-	//return c.JSON(http.StatusOK, echo.Map{"token": tok})*/
 	return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("https://slack.com/app_redirect?app=%s", oauthResp.AppID))
 }
 

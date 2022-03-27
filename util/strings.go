@@ -49,3 +49,12 @@ func ExtractFirstNumbers(s string) string {
 	}
 	return strings.Join(nums, "")
 }
+
+func StringParamsToMap(params string) map[string]string {
+	result := make(map[string]string)
+	for _, param := range strings.Split(params, ",") {
+		kv := strings.Split(param, "=")
+		result[kv[0]] = kv[1]
+	}
+	return result
+}

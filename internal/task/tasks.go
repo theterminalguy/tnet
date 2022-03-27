@@ -1,7 +1,7 @@
 package task
 
 var Lookup = map[string]Tasker{
-	"create-fake-users":   NewCreateFakeUsers(),
+	"tokgen":              NewTokGen(),
 	"create-fake-talents": NewCreateFakeTalents(),
 	"create-fake-jobs":    NewCreateFakeJob(),
 	"create-fake-skills":  NewCreateFakeSkill(),
