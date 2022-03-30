@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
@@ -20,6 +22,7 @@ type SlackAppInstallCreate struct {
 	config
 	mutation *SlackAppInstallMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -340,6 +343,7 @@ func (saic *SlackAppInstallCreate) createSpec() (*SlackAppInstall, *sqlgraph.Cre
 			},
 		}
 	)
+	_spec.OnConflict = saic.conflict
 	if id, ok := saic.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
@@ -487,10 +491,621 @@ func (saic *SlackAppInstallCreate) createSpec() (*SlackAppInstall, *sqlgraph.Cre
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.SlackAppInstall.Create().
+//		SetCreatedAt(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.SlackAppInstallUpsert) {
+//			SetCreatedAt(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (saic *SlackAppInstallCreate) OnConflict(opts ...sql.ConflictOption) *SlackAppInstallUpsertOne {
+	saic.conflict = opts
+	return &SlackAppInstallUpsertOne{
+		create: saic,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.SlackAppInstall.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (saic *SlackAppInstallCreate) OnConflictColumns(columns ...string) *SlackAppInstallUpsertOne {
+	saic.conflict = append(saic.conflict, sql.ConflictColumns(columns...))
+	return &SlackAppInstallUpsertOne{
+		create: saic,
+	}
+}
+
+type (
+	// SlackAppInstallUpsertOne is the builder for "upsert"-ing
+	//  one SlackAppInstall node.
+	SlackAppInstallUpsertOne struct {
+		create *SlackAppInstallCreate
+	}
+
+	// SlackAppInstallUpsert is the "OnConflict" setter.
+	SlackAppInstallUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetCreatedAt sets the "created_at" field.
+func (u *SlackAppInstallUpsert) SetCreatedAt(v time.Time) *SlackAppInstallUpsert {
+	u.Set(slackappinstall.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *SlackAppInstallUpsert) UpdateCreatedAt() *SlackAppInstallUpsert {
+	u.SetExcluded(slackappinstall.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *SlackAppInstallUpsert) SetUpdatedAt(v time.Time) *SlackAppInstallUpsert {
+	u.Set(slackappinstall.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *SlackAppInstallUpsert) UpdateUpdatedAt() *SlackAppInstallUpsert {
+	u.SetExcluded(slackappinstall.FieldUpdatedAt)
+	return u
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *SlackAppInstallUpsert) SetDeletedAt(v time.Time) *SlackAppInstallUpsert {
+	u.Set(slackappinstall.FieldDeletedAt, v)
+	return u
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *SlackAppInstallUpsert) UpdateDeletedAt() *SlackAppInstallUpsert {
+	u.SetExcluded(slackappinstall.FieldDeletedAt)
+	return u
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (u *SlackAppInstallUpsert) ClearDeletedAt() *SlackAppInstallUpsert {
+	u.SetNull(slackappinstall.FieldDeletedAt)
+	return u
+}
+
+// SetUserID sets the "user_id" field.
+func (u *SlackAppInstallUpsert) SetUserID(v uuid.UUID) *SlackAppInstallUpsert {
+	u.Set(slackappinstall.FieldUserID, v)
+	return u
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *SlackAppInstallUpsert) UpdateUserID() *SlackAppInstallUpsert {
+	u.SetExcluded(slackappinstall.FieldUserID)
+	return u
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (u *SlackAppInstallUpsert) ClearUserID() *SlackAppInstallUpsert {
+	u.SetNull(slackappinstall.FieldUserID)
+	return u
+}
+
+// SetTeamID sets the "team_id" field.
+func (u *SlackAppInstallUpsert) SetTeamID(v string) *SlackAppInstallUpsert {
+	u.Set(slackappinstall.FieldTeamID, v)
+	return u
+}
+
+// UpdateTeamID sets the "team_id" field to the value that was provided on create.
+func (u *SlackAppInstallUpsert) UpdateTeamID() *SlackAppInstallUpsert {
+	u.SetExcluded(slackappinstall.FieldTeamID)
+	return u
+}
+
+// SetTeamName sets the "team_name" field.
+func (u *SlackAppInstallUpsert) SetTeamName(v string) *SlackAppInstallUpsert {
+	u.Set(slackappinstall.FieldTeamName, v)
+	return u
+}
+
+// UpdateTeamName sets the "team_name" field to the value that was provided on create.
+func (u *SlackAppInstallUpsert) UpdateTeamName() *SlackAppInstallUpsert {
+	u.SetExcluded(slackappinstall.FieldTeamName)
+	return u
+}
+
+// SetAuthedUserID sets the "authed_user_id" field.
+func (u *SlackAppInstallUpsert) SetAuthedUserID(v string) *SlackAppInstallUpsert {
+	u.Set(slackappinstall.FieldAuthedUserID, v)
+	return u
+}
+
+// UpdateAuthedUserID sets the "authed_user_id" field to the value that was provided on create.
+func (u *SlackAppInstallUpsert) UpdateAuthedUserID() *SlackAppInstallUpsert {
+	u.SetExcluded(slackappinstall.FieldAuthedUserID)
+	return u
+}
+
+// SetAuthedUserEmail sets the "authed_user_email" field.
+func (u *SlackAppInstallUpsert) SetAuthedUserEmail(v string) *SlackAppInstallUpsert {
+	u.Set(slackappinstall.FieldAuthedUserEmail, v)
+	return u
+}
+
+// UpdateAuthedUserEmail sets the "authed_user_email" field to the value that was provided on create.
+func (u *SlackAppInstallUpsert) UpdateAuthedUserEmail() *SlackAppInstallUpsert {
+	u.SetExcluded(slackappinstall.FieldAuthedUserEmail)
+	return u
+}
+
+// SetAuthedUserTitle sets the "authed_user_title" field.
+func (u *SlackAppInstallUpsert) SetAuthedUserTitle(v string) *SlackAppInstallUpsert {
+	u.Set(slackappinstall.FieldAuthedUserTitle, v)
+	return u
+}
+
+// UpdateAuthedUserTitle sets the "authed_user_title" field to the value that was provided on create.
+func (u *SlackAppInstallUpsert) UpdateAuthedUserTitle() *SlackAppInstallUpsert {
+	u.SetExcluded(slackappinstall.FieldAuthedUserTitle)
+	return u
+}
+
+// ClearAuthedUserTitle clears the value of the "authed_user_title" field.
+func (u *SlackAppInstallUpsert) ClearAuthedUserTitle() *SlackAppInstallUpsert {
+	u.SetNull(slackappinstall.FieldAuthedUserTitle)
+	return u
+}
+
+// SetAuthedUserPhone sets the "authed_user_phone" field.
+func (u *SlackAppInstallUpsert) SetAuthedUserPhone(v string) *SlackAppInstallUpsert {
+	u.Set(slackappinstall.FieldAuthedUserPhone, v)
+	return u
+}
+
+// UpdateAuthedUserPhone sets the "authed_user_phone" field to the value that was provided on create.
+func (u *SlackAppInstallUpsert) UpdateAuthedUserPhone() *SlackAppInstallUpsert {
+	u.SetExcluded(slackappinstall.FieldAuthedUserPhone)
+	return u
+}
+
+// ClearAuthedUserPhone clears the value of the "authed_user_phone" field.
+func (u *SlackAppInstallUpsert) ClearAuthedUserPhone() *SlackAppInstallUpsert {
+	u.SetNull(slackappinstall.FieldAuthedUserPhone)
+	return u
+}
+
+// SetAppID sets the "app_id" field.
+func (u *SlackAppInstallUpsert) SetAppID(v string) *SlackAppInstallUpsert {
+	u.Set(slackappinstall.FieldAppID, v)
+	return u
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *SlackAppInstallUpsert) UpdateAppID() *SlackAppInstallUpsert {
+	u.SetExcluded(slackappinstall.FieldAppID)
+	return u
+}
+
+// SetBotUserID sets the "bot_user_id" field.
+func (u *SlackAppInstallUpsert) SetBotUserID(v string) *SlackAppInstallUpsert {
+	u.Set(slackappinstall.FieldBotUserID, v)
+	return u
+}
+
+// UpdateBotUserID sets the "bot_user_id" field to the value that was provided on create.
+func (u *SlackAppInstallUpsert) UpdateBotUserID() *SlackAppInstallUpsert {
+	u.SetExcluded(slackappinstall.FieldBotUserID)
+	return u
+}
+
+// SetAccessToken sets the "access_token" field.
+func (u *SlackAppInstallUpsert) SetAccessToken(v string) *SlackAppInstallUpsert {
+	u.Set(slackappinstall.FieldAccessToken, v)
+	return u
+}
+
+// UpdateAccessToken sets the "access_token" field to the value that was provided on create.
+func (u *SlackAppInstallUpsert) UpdateAccessToken() *SlackAppInstallUpsert {
+	u.SetExcluded(slackappinstall.FieldAccessToken)
+	return u
+}
+
+// SetTokenType sets the "token_type" field.
+func (u *SlackAppInstallUpsert) SetTokenType(v string) *SlackAppInstallUpsert {
+	u.Set(slackappinstall.FieldTokenType, v)
+	return u
+}
+
+// UpdateTokenType sets the "token_type" field to the value that was provided on create.
+func (u *SlackAppInstallUpsert) UpdateTokenType() *SlackAppInstallUpsert {
+	u.SetExcluded(slackappinstall.FieldTokenType)
+	return u
+}
+
+// SetScope sets the "scope" field.
+func (u *SlackAppInstallUpsert) SetScope(v string) *SlackAppInstallUpsert {
+	u.Set(slackappinstall.FieldScope, v)
+	return u
+}
+
+// UpdateScope sets the "scope" field to the value that was provided on create.
+func (u *SlackAppInstallUpsert) UpdateScope() *SlackAppInstallUpsert {
+	u.SetExcluded(slackappinstall.FieldScope)
+	return u
+}
+
+// SetIsEnterpriseInstall sets the "is_enterprise_install" field.
+func (u *SlackAppInstallUpsert) SetIsEnterpriseInstall(v bool) *SlackAppInstallUpsert {
+	u.Set(slackappinstall.FieldIsEnterpriseInstall, v)
+	return u
+}
+
+// UpdateIsEnterpriseInstall sets the "is_enterprise_install" field to the value that was provided on create.
+func (u *SlackAppInstallUpsert) UpdateIsEnterpriseInstall() *SlackAppInstallUpsert {
+	u.SetExcluded(slackappinstall.FieldIsEnterpriseInstall)
+	return u
+}
+
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.SlackAppInstall.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(slackappinstall.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *SlackAppInstallUpsertOne) UpdateNewValues() *SlackAppInstallUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(slackappinstall.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(slackappinstall.FieldCreatedAt)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.SlackAppInstall.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *SlackAppInstallUpsertOne) Ignore() *SlackAppInstallUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *SlackAppInstallUpsertOne) DoNothing() *SlackAppInstallUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the SlackAppInstallCreate.OnConflict
+// documentation for more info.
+func (u *SlackAppInstallUpsertOne) Update(set func(*SlackAppInstallUpsert)) *SlackAppInstallUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&SlackAppInstallUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *SlackAppInstallUpsertOne) SetCreatedAt(v time.Time) *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertOne) UpdateCreatedAt() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *SlackAppInstallUpsertOne) SetUpdatedAt(v time.Time) *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertOne) UpdateUpdatedAt() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *SlackAppInstallUpsertOne) SetDeletedAt(v time.Time) *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetDeletedAt(v)
+	})
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertOne) UpdateDeletedAt() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateDeletedAt()
+	})
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (u *SlackAppInstallUpsertOne) ClearDeletedAt() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.ClearDeletedAt()
+	})
+}
+
+// SetUserID sets the "user_id" field.
+func (u *SlackAppInstallUpsertOne) SetUserID(v uuid.UUID) *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetUserID(v)
+	})
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertOne) UpdateUserID() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateUserID()
+	})
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (u *SlackAppInstallUpsertOne) ClearUserID() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.ClearUserID()
+	})
+}
+
+// SetTeamID sets the "team_id" field.
+func (u *SlackAppInstallUpsertOne) SetTeamID(v string) *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetTeamID(v)
+	})
+}
+
+// UpdateTeamID sets the "team_id" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertOne) UpdateTeamID() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateTeamID()
+	})
+}
+
+// SetTeamName sets the "team_name" field.
+func (u *SlackAppInstallUpsertOne) SetTeamName(v string) *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetTeamName(v)
+	})
+}
+
+// UpdateTeamName sets the "team_name" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertOne) UpdateTeamName() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateTeamName()
+	})
+}
+
+// SetAuthedUserID sets the "authed_user_id" field.
+func (u *SlackAppInstallUpsertOne) SetAuthedUserID(v string) *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetAuthedUserID(v)
+	})
+}
+
+// UpdateAuthedUserID sets the "authed_user_id" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertOne) UpdateAuthedUserID() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateAuthedUserID()
+	})
+}
+
+// SetAuthedUserEmail sets the "authed_user_email" field.
+func (u *SlackAppInstallUpsertOne) SetAuthedUserEmail(v string) *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetAuthedUserEmail(v)
+	})
+}
+
+// UpdateAuthedUserEmail sets the "authed_user_email" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertOne) UpdateAuthedUserEmail() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateAuthedUserEmail()
+	})
+}
+
+// SetAuthedUserTitle sets the "authed_user_title" field.
+func (u *SlackAppInstallUpsertOne) SetAuthedUserTitle(v string) *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetAuthedUserTitle(v)
+	})
+}
+
+// UpdateAuthedUserTitle sets the "authed_user_title" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertOne) UpdateAuthedUserTitle() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateAuthedUserTitle()
+	})
+}
+
+// ClearAuthedUserTitle clears the value of the "authed_user_title" field.
+func (u *SlackAppInstallUpsertOne) ClearAuthedUserTitle() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.ClearAuthedUserTitle()
+	})
+}
+
+// SetAuthedUserPhone sets the "authed_user_phone" field.
+func (u *SlackAppInstallUpsertOne) SetAuthedUserPhone(v string) *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetAuthedUserPhone(v)
+	})
+}
+
+// UpdateAuthedUserPhone sets the "authed_user_phone" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertOne) UpdateAuthedUserPhone() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateAuthedUserPhone()
+	})
+}
+
+// ClearAuthedUserPhone clears the value of the "authed_user_phone" field.
+func (u *SlackAppInstallUpsertOne) ClearAuthedUserPhone() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.ClearAuthedUserPhone()
+	})
+}
+
+// SetAppID sets the "app_id" field.
+func (u *SlackAppInstallUpsertOne) SetAppID(v string) *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetAppID(v)
+	})
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertOne) UpdateAppID() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateAppID()
+	})
+}
+
+// SetBotUserID sets the "bot_user_id" field.
+func (u *SlackAppInstallUpsertOne) SetBotUserID(v string) *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetBotUserID(v)
+	})
+}
+
+// UpdateBotUserID sets the "bot_user_id" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertOne) UpdateBotUserID() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateBotUserID()
+	})
+}
+
+// SetAccessToken sets the "access_token" field.
+func (u *SlackAppInstallUpsertOne) SetAccessToken(v string) *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetAccessToken(v)
+	})
+}
+
+// UpdateAccessToken sets the "access_token" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertOne) UpdateAccessToken() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateAccessToken()
+	})
+}
+
+// SetTokenType sets the "token_type" field.
+func (u *SlackAppInstallUpsertOne) SetTokenType(v string) *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetTokenType(v)
+	})
+}
+
+// UpdateTokenType sets the "token_type" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertOne) UpdateTokenType() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateTokenType()
+	})
+}
+
+// SetScope sets the "scope" field.
+func (u *SlackAppInstallUpsertOne) SetScope(v string) *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetScope(v)
+	})
+}
+
+// UpdateScope sets the "scope" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertOne) UpdateScope() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateScope()
+	})
+}
+
+// SetIsEnterpriseInstall sets the "is_enterprise_install" field.
+func (u *SlackAppInstallUpsertOne) SetIsEnterpriseInstall(v bool) *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetIsEnterpriseInstall(v)
+	})
+}
+
+// UpdateIsEnterpriseInstall sets the "is_enterprise_install" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertOne) UpdateIsEnterpriseInstall() *SlackAppInstallUpsertOne {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateIsEnterpriseInstall()
+	})
+}
+
+// Exec executes the query.
+func (u *SlackAppInstallUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for SlackAppInstallCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *SlackAppInstallUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *SlackAppInstallUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: SlackAppInstallUpsertOne.ID is not supported by MySQL driver. Use SlackAppInstallUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *SlackAppInstallUpsertOne) IDX(ctx context.Context) uuid.UUID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // SlackAppInstallCreateBulk is the builder for creating many SlackAppInstall entities in bulk.
 type SlackAppInstallCreateBulk struct {
 	config
 	builders []*SlackAppInstallCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the SlackAppInstall entities in the database.
@@ -517,6 +1132,7 @@ func (saicb *SlackAppInstallCreateBulk) Save(ctx context.Context) ([]*SlackAppIn
 					_, err = mutators[i+1].Mutate(root, saicb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = saicb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, saicb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -563,6 +1179,377 @@ func (saicb *SlackAppInstallCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (saicb *SlackAppInstallCreateBulk) ExecX(ctx context.Context) {
 	if err := saicb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.SlackAppInstall.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.SlackAppInstallUpsert) {
+//			SetCreatedAt(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (saicb *SlackAppInstallCreateBulk) OnConflict(opts ...sql.ConflictOption) *SlackAppInstallUpsertBulk {
+	saicb.conflict = opts
+	return &SlackAppInstallUpsertBulk{
+		create: saicb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.SlackAppInstall.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (saicb *SlackAppInstallCreateBulk) OnConflictColumns(columns ...string) *SlackAppInstallUpsertBulk {
+	saicb.conflict = append(saicb.conflict, sql.ConflictColumns(columns...))
+	return &SlackAppInstallUpsertBulk{
+		create: saicb,
+	}
+}
+
+// SlackAppInstallUpsertBulk is the builder for "upsert"-ing
+// a bulk of SlackAppInstall nodes.
+type SlackAppInstallUpsertBulk struct {
+	create *SlackAppInstallCreateBulk
+}
+
+// UpdateNewValues updates the mutable fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.SlackAppInstall.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(slackappinstall.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *SlackAppInstallUpsertBulk) UpdateNewValues() *SlackAppInstallUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(slackappinstall.FieldID)
+				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(slackappinstall.FieldCreatedAt)
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.SlackAppInstall.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *SlackAppInstallUpsertBulk) Ignore() *SlackAppInstallUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *SlackAppInstallUpsertBulk) DoNothing() *SlackAppInstallUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the SlackAppInstallCreateBulk.OnConflict
+// documentation for more info.
+func (u *SlackAppInstallUpsertBulk) Update(set func(*SlackAppInstallUpsert)) *SlackAppInstallUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&SlackAppInstallUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *SlackAppInstallUpsertBulk) SetCreatedAt(v time.Time) *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertBulk) UpdateCreatedAt() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *SlackAppInstallUpsertBulk) SetUpdatedAt(v time.Time) *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertBulk) UpdateUpdatedAt() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *SlackAppInstallUpsertBulk) SetDeletedAt(v time.Time) *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetDeletedAt(v)
+	})
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertBulk) UpdateDeletedAt() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateDeletedAt()
+	})
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (u *SlackAppInstallUpsertBulk) ClearDeletedAt() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.ClearDeletedAt()
+	})
+}
+
+// SetUserID sets the "user_id" field.
+func (u *SlackAppInstallUpsertBulk) SetUserID(v uuid.UUID) *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetUserID(v)
+	})
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertBulk) UpdateUserID() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateUserID()
+	})
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (u *SlackAppInstallUpsertBulk) ClearUserID() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.ClearUserID()
+	})
+}
+
+// SetTeamID sets the "team_id" field.
+func (u *SlackAppInstallUpsertBulk) SetTeamID(v string) *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetTeamID(v)
+	})
+}
+
+// UpdateTeamID sets the "team_id" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertBulk) UpdateTeamID() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateTeamID()
+	})
+}
+
+// SetTeamName sets the "team_name" field.
+func (u *SlackAppInstallUpsertBulk) SetTeamName(v string) *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetTeamName(v)
+	})
+}
+
+// UpdateTeamName sets the "team_name" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertBulk) UpdateTeamName() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateTeamName()
+	})
+}
+
+// SetAuthedUserID sets the "authed_user_id" field.
+func (u *SlackAppInstallUpsertBulk) SetAuthedUserID(v string) *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetAuthedUserID(v)
+	})
+}
+
+// UpdateAuthedUserID sets the "authed_user_id" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertBulk) UpdateAuthedUserID() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateAuthedUserID()
+	})
+}
+
+// SetAuthedUserEmail sets the "authed_user_email" field.
+func (u *SlackAppInstallUpsertBulk) SetAuthedUserEmail(v string) *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetAuthedUserEmail(v)
+	})
+}
+
+// UpdateAuthedUserEmail sets the "authed_user_email" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertBulk) UpdateAuthedUserEmail() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateAuthedUserEmail()
+	})
+}
+
+// SetAuthedUserTitle sets the "authed_user_title" field.
+func (u *SlackAppInstallUpsertBulk) SetAuthedUserTitle(v string) *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetAuthedUserTitle(v)
+	})
+}
+
+// UpdateAuthedUserTitle sets the "authed_user_title" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertBulk) UpdateAuthedUserTitle() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateAuthedUserTitle()
+	})
+}
+
+// ClearAuthedUserTitle clears the value of the "authed_user_title" field.
+func (u *SlackAppInstallUpsertBulk) ClearAuthedUserTitle() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.ClearAuthedUserTitle()
+	})
+}
+
+// SetAuthedUserPhone sets the "authed_user_phone" field.
+func (u *SlackAppInstallUpsertBulk) SetAuthedUserPhone(v string) *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetAuthedUserPhone(v)
+	})
+}
+
+// UpdateAuthedUserPhone sets the "authed_user_phone" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertBulk) UpdateAuthedUserPhone() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateAuthedUserPhone()
+	})
+}
+
+// ClearAuthedUserPhone clears the value of the "authed_user_phone" field.
+func (u *SlackAppInstallUpsertBulk) ClearAuthedUserPhone() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.ClearAuthedUserPhone()
+	})
+}
+
+// SetAppID sets the "app_id" field.
+func (u *SlackAppInstallUpsertBulk) SetAppID(v string) *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetAppID(v)
+	})
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertBulk) UpdateAppID() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateAppID()
+	})
+}
+
+// SetBotUserID sets the "bot_user_id" field.
+func (u *SlackAppInstallUpsertBulk) SetBotUserID(v string) *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetBotUserID(v)
+	})
+}
+
+// UpdateBotUserID sets the "bot_user_id" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertBulk) UpdateBotUserID() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateBotUserID()
+	})
+}
+
+// SetAccessToken sets the "access_token" field.
+func (u *SlackAppInstallUpsertBulk) SetAccessToken(v string) *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetAccessToken(v)
+	})
+}
+
+// UpdateAccessToken sets the "access_token" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertBulk) UpdateAccessToken() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateAccessToken()
+	})
+}
+
+// SetTokenType sets the "token_type" field.
+func (u *SlackAppInstallUpsertBulk) SetTokenType(v string) *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetTokenType(v)
+	})
+}
+
+// UpdateTokenType sets the "token_type" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertBulk) UpdateTokenType() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateTokenType()
+	})
+}
+
+// SetScope sets the "scope" field.
+func (u *SlackAppInstallUpsertBulk) SetScope(v string) *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetScope(v)
+	})
+}
+
+// UpdateScope sets the "scope" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertBulk) UpdateScope() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateScope()
+	})
+}
+
+// SetIsEnterpriseInstall sets the "is_enterprise_install" field.
+func (u *SlackAppInstallUpsertBulk) SetIsEnterpriseInstall(v bool) *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.SetIsEnterpriseInstall(v)
+	})
+}
+
+// UpdateIsEnterpriseInstall sets the "is_enterprise_install" field to the value that was provided on create.
+func (u *SlackAppInstallUpsertBulk) UpdateIsEnterpriseInstall() *SlackAppInstallUpsertBulk {
+	return u.Update(func(s *SlackAppInstallUpsert) {
+		s.UpdateIsEnterpriseInstall()
+	})
+}
+
+// Exec executes the query.
+func (u *SlackAppInstallUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the SlackAppInstallCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for SlackAppInstallCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *SlackAppInstallUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
