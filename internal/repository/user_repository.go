@@ -12,6 +12,7 @@ import (
 type UserRepository struct{}
 
 type UserParams struct {
+	ID        uuid.UUID
 	FirstName string        `json:"first_name" validate:"required"`
 	LastName  string        `json:"last_name" validate:"required"`
 	PhotoURL  string        `json:"photo_url" validate:"required"`
@@ -110,4 +111,26 @@ func (r *UserRepository) DeleteByID(id uuid.UUID) error {
 		return err
 	}
 	return nil
+}
+
+// UpsertMany create or update many users.
+func (*UserRepository) UpsertMany(params []UserParams) error {
+	// TODO: should we skip existing users? i.e. users with the same email
+	builders := make([]*ent.UserCreate, len(params))
+	for i, p := range params {
+		builders[i] = dBConn.User.
+			Create().
+			SetID(p.ID).
+			SetFirstName(p.FirstName).
+			SetLastName(p.LastName).
+			SetPhotoURL(p.PhotoURL). // Fetch from Github or use default
+			SetEmail(p.Email).
+			SetRole(userrole.Talent).
+			SetApproved(true)
+	}
+	//users, err := dBConn.User.CreateBulk(builders...).Save(dBContext)
+	return dBConn.User.CreateBulk(builders...).
+		OnConflictColumns(user.FieldEmail).
+		UpdateNewValues().
+		Exec(dBContext)
 }
