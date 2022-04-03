@@ -8,19 +8,26 @@ import (
 	"os"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/google/uuid"
 )
 
 type ImportTalents struct {
-	UserRepo      *repo.UserRepository
-	TalentService *service.TalentService
+	UserRepo   *repo.UserRepository
+	TalentRepo *repo.TalentRepository
+	SkillsRepo *repo.SkillRepository
+	EduRepo   *repo.EducationRepository
+	WorkRepo  *repo.WorkExperienceRepository
+	PortfolioRepo *repo.PortfolioLinkRepository
 }
 
 func NewImportTalents() *ImportTalents {
 	return &ImportTalents{
-		UserRepo:      repo.NewUserRepository(),
-		TalentService: service.NewTalentService(),
+		UserRepo:   repo.NewUserRepository(),
+		TalentRepo: repo.NewTalentRepository(),
+		SkillsRepo: repo.NewSkillRepository(),
+		EduRepo:   repo.NewEducationRepository(),
+		WorkRepo: repo.NewWorkExperienceRepository(),
+		PortfolioRepo: repo.NewPortfolioLinkRepository(),
 	}
 }
 
@@ -49,7 +56,14 @@ func (t *ImportTalents) Run(_ string) error {
 	}
 	defer f.Close()
 
-	var tds []*TalentData
+	var td *TalentData
+	manyUsers := make([]*repo.UserParams, 0)
+	manyTalents := make([]*repo.TalentParams, 0)
+	manySkills := make([]*repo.SkillParams, 0)
+	manyPortfolios := make([]*repo.PortfolioLinkParams, 0)
+	manyEducations := make([]*repo.EducationParams, 0)
+	manyWorkExperiences := make([]*repo.WorkExperienceParams, 0)
+
 	csvReader := csv.NewReader(f)
 	index := 0
 	for {
@@ -61,13 +75,38 @@ func (t *ImportTalents) Run(_ string) error {
 			return err
 		}
 		payload := []byte(record[1])
-		tds = append(tds, extractTalentData(payload))
+		td = extractTalentData(payload)
+		manyUsers = append(manyUsers, td.User)
+		manyTalents = append(manyTalents, td.Talent)
+		manySkills = append(manySkills, td.Skills...)
+		manyPortfolios = append(manyPortfolios, td.Portfolios...)
+		manyEducations = append(manyEducations, td.Educations...)
+		manyWorkExperiences = append(manyWorkExperiences, td.WorkExperiences...)
 		if index == 20 {
 			break
 		}
 		index++
 	}
-	fmt.Println(tds)
+	// Bulk Upsert Users
+	t.UserRepo.UpsertMany(manyUsers)
+
+	// Bulk Upsert Talents
+	t.TalentRepo.UpsertMany(manyTalents)
+
+	// Bulk Upsert Skills
+	t.SkillsRepo.UpsertMany(manySkills)
+
+	// Bulk Upsert Portfolios
+	t.PortfolioRepo.UpsertMany(manyPortfolios)
+
+	// Bulk Upsert Educations
+	t.EduRepo.UpsertMany(manyEducations)
+
+	// Bulk Upsert Work Experiences
+	t.WorkRepo.UpsertMany(manyWorkExperiences)
+
+
+
 	return nil
 }
 

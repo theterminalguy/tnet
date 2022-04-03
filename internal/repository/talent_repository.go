@@ -381,7 +381,7 @@ func (r *TalentRepository) GetTalentByUserID(userID uuid.UUID) (*decorator.Talen
 }
 
 // UpsertMany create or update many talents.
-func (*TalentRepository) UpsertMany(params []TalentParams) error {
+func (*TalentRepository) UpsertMany(params []*TalentParams) error {
 	builders := make([]*ent.TalentCreate, len(params))
 	for i, p := range params {
 		startDate, err := time.Parse(date.ISOLayout, p.ProfessionalStartDate)
@@ -405,7 +405,6 @@ func (*TalentRepository) UpsertMany(params []TalentParams) error {
 			SetUserID(p.UserID).
 			SetJobPreference(p.JobPreference).
 			SetIsAvailable(p.Available).
-			SetTimezone("WAT").
 			SetState(p.State).
 			SetProfessionalSummary(p.ProfessionalSummary)
 	}

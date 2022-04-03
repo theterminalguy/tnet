@@ -262,7 +262,7 @@ func (r *WorkExperienceRepository) GetWorkExperienceByTalentID(talentID uuid.UUI
 }
 
 // UpsertMany create or update many skills.
-func (*WorkExperienceRepository) UpsertMany(params []WorkExperienceParams) error {
+func (*WorkExperienceRepository) UpsertMany(params []*WorkExperienceParams) error {
 	builders := make([]*ent.WorkExperienceCreate, len(params))
 	for i, p := range params {
 		sd, err := date.JSStringToRFC3339(p.StartDate)

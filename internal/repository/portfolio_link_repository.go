@@ -176,7 +176,7 @@ func (r *PortfolioLinkRepository) GetPortfolioLinkByTalentID(talentID uuid.UUID)
 }
 
 // UpsertMany create or update many portfolio links
-func (*PortfolioLinkRepository) UpsertMany(params []PortfolioLinkParams) error {
+func (*PortfolioLinkRepository) UpsertMany(params []*PortfolioLinkParams) error {
 	builders := make([]*ent.PortfolioLinkCreate, len(params))
 	for i, p := range params {
 		builders[i] = dBConn.PortfolioLink.

@@ -116,7 +116,7 @@ func (r *UserRepository) DeleteByID(id uuid.UUID) error {
 }
 
 // UpsertMany create or update many users.
-func (*UserRepository) UpsertMany(params []UserParams) error {
+func (*UserRepository) UpsertMany(params []*UserParams) error {
 	builders := make([]*ent.UserCreate, len(params))
 	for i, p := range params {
 		builders[i] = dBConn.User.
@@ -127,7 +127,7 @@ func (*UserRepository) UpsertMany(params []UserParams) error {
 			SetPhotoURL(p.PhotoURL).
 			SetEmail(strings.ToLower(p.Email)).
 			SetRole(userrole.Talent).
-			SetApproved(true)
+			SetApproved(p.Approved)
 	}
 	return dBConn.User.CreateBulk(builders...).
 		OnConflictColumns(user.FieldEmail).

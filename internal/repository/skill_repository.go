@@ -211,7 +211,7 @@ func (r *SkillRepository) DeleteByID(id uuid.UUID) error {
 }
 
 // UpsertMany create or update many skills.
-func (*SkillRepository) UpsertMany(params []SkillParams) error {
+func (*SkillRepository) UpsertMany(params []*SkillParams) error {
 	builders := make([]*ent.SkillCreate, len(params))
 	for i, p := range params {
 		builders[i] = dBConn.Skill.
@@ -220,7 +220,7 @@ func (*SkillRepository) UpsertMany(params []SkillParams) error {
 			SetTalentID(p.TalentID).
 			SetName(p.Name).
 			SetYearsOfExperience(p.YearsOfExperience).
-			SetPreferred(true)
+			SetPreferred(p.Preferred)
 	}
 	return dBConn.Skill.CreateBulk(builders...).
 		OnConflictColumns(skill.FieldName).

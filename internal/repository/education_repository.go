@@ -261,7 +261,7 @@ func (r *EducationRepository) GetEducationByTalentID(talentID uuid.UUID) (*ent.E
 }
 
 // UpsertMany create or update many Education.
-func (*EducationRepository) UpsertMany(params []EducationParams) error {
+func (*EducationRepository) UpsertMany(params []*EducationParams) error {
 	builders := make([]*ent.EducationCreate, len(params))
 	for i, p := range params {
 		sd, err := date.JSStringToRFC3339(p.StartDate)
