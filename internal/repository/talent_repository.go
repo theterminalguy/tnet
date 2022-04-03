@@ -45,7 +45,7 @@ type TalentParams struct {
 	Available             bool                 `json:"available"`
 	TimeZone              string               `json:"timezone" validate:"required"`
 	State                 string               `json:"state" validate:"required"`
-	ProfessionalSummary   string               `json:"professional_summary" validate:"required"`
+	ProfessionalSummary   string               `json:"professional_summary"`
 }
 
 func NewTalentRepository() *TalentRepository {
@@ -158,7 +158,8 @@ func (r *TalentRepository) Create(p TalentParams) (*decorator.TalentResponse, er
 		SetJobPreference(p.JobPreference).
 		SetIsAvailable(p.Available).
 		SetTimezone(timeZoneName[1]).
-		SetState(p.State)
+		SetState(p.State).
+		SetProfessionalSummary(p.ProfessionalSummary)
 	a, err := q.Save(dBContext)
 	if err != nil {
 		return nil, err
@@ -315,6 +316,10 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 		vldErrs = append(vldErrs, vldErr)
 	}
 
+	if p.ProfessionalSummary != "" {
+		bldr.SetProfessionalSummary(p.ProfessionalSummary)
+	}
+
 	// Set and Validate IsAvailable if provided
 	if vldErr := setNillableBoolField(p.Available, func(v bool) error {
 		err := validateParams(p, "IsAvailable")
@@ -401,7 +406,8 @@ func (*TalentRepository) UpsertMany(params []TalentParams) error {
 			SetJobPreference(p.JobPreference).
 			SetIsAvailable(p.Available).
 			SetTimezone("WAT").
-			SetState(p.State)
+			SetState(p.State).
+			SetProfessionalSummary(p.ProfessionalSummary)
 	}
 	return dBConn.Talent.CreateBulk(builders...).
 		OnConflictColumns(talent.FieldEmail).
