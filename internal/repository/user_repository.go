@@ -1,11 +1,13 @@
 package repository
 
 import (
+	"strings"
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/ent/user"
+	"github.com/10hourlabs/tentn/util"
 	"github.com/google/uuid"
 )
 
@@ -120,10 +122,10 @@ func (*UserRepository) UpsertMany(params []UserParams) error {
 		builders[i] = dBConn.User.
 			Create().
 			SetID(p.ID).
-			SetFirstName(p.FirstName).
-			SetLastName(p.LastName).
+			SetFirstName(util.Titlelize(p.FirstName)).
+			SetLastName(util.Titlelize(p.LastName)).
 			SetPhotoURL(p.PhotoURL).
-			SetEmail(p.Email).
+			SetEmail(strings.ToLower(p.Email)).
 			SetRole(userrole.Talent).
 			SetApproved(true)
 	}
