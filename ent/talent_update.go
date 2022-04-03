@@ -167,26 +167,6 @@ func (tu *TalentUpdate) SetState(s string) *TalentUpdate {
 	return tu
 }
 
-// SetProfessionalSummary sets the "professional_summary" field.
-func (tu *TalentUpdate) SetProfessionalSummary(s string) *TalentUpdate {
-	tu.mutation.SetProfessionalSummary(s)
-	return tu
-}
-
-// SetNillableProfessionalSummary sets the "professional_summary" field if the given value is not nil.
-func (tu *TalentUpdate) SetNillableProfessionalSummary(s *string) *TalentUpdate {
-	if s != nil {
-		tu.SetProfessionalSummary(*s)
-	}
-	return tu
-}
-
-// ClearProfessionalSummary clears the value of the "professional_summary" field.
-func (tu *TalentUpdate) ClearProfessionalSummary() *TalentUpdate {
-	tu.mutation.ClearProfessionalSummary()
-	return tu
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (tu *TalentUpdate) SetUser(u *User) *TalentUpdate {
 	return tu.SetUserID(u.ID)
@@ -673,19 +653,6 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: talent.FieldState,
-		})
-	}
-	if value, ok := tu.mutation.ProfessionalSummary(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: talent.FieldProfessionalSummary,
-		})
-	}
-	if tu.mutation.ProfessionalSummaryCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: talent.FieldProfessionalSummary,
 		})
 	}
 	if tu.mutation.UserCleared() {
@@ -1250,26 +1217,6 @@ func (tuo *TalentUpdateOne) SetState(s string) *TalentUpdateOne {
 	return tuo
 }
 
-// SetProfessionalSummary sets the "professional_summary" field.
-func (tuo *TalentUpdateOne) SetProfessionalSummary(s string) *TalentUpdateOne {
-	tuo.mutation.SetProfessionalSummary(s)
-	return tuo
-}
-
-// SetNillableProfessionalSummary sets the "professional_summary" field if the given value is not nil.
-func (tuo *TalentUpdateOne) SetNillableProfessionalSummary(s *string) *TalentUpdateOne {
-	if s != nil {
-		tuo.SetProfessionalSummary(*s)
-	}
-	return tuo
-}
-
-// ClearProfessionalSummary clears the value of the "professional_summary" field.
-func (tuo *TalentUpdateOne) ClearProfessionalSummary() *TalentUpdateOne {
-	tuo.mutation.ClearProfessionalSummary()
-	return tuo
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (tuo *TalentUpdateOne) SetUser(u *User) *TalentUpdateOne {
 	return tuo.SetUserID(u.ID)
@@ -1780,19 +1727,6 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Type:   field.TypeString,
 			Value:  value,
 			Column: talent.FieldState,
-		})
-	}
-	if value, ok := tuo.mutation.ProfessionalSummary(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: talent.FieldProfessionalSummary,
-		})
-	}
-	if tuo.mutation.ProfessionalSummaryCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: talent.FieldProfessionalSummary,
 		})
 	}
 	if tuo.mutation.UserCleared() {

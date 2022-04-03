@@ -46,8 +46,9 @@ func (Talent) Fields() []ent.Field {
 		field.String(oneword.Email).
 			Unique(),
 
-		field.String(oneword.Phone).
-			Unique(),
+		//TODO: phone number unique validation
+		// was removed due to unique validation error
+		field.String(oneword.Phone),
 
 		field.String(oneword.CoutryCode).
 			MinLen(2).
@@ -60,8 +61,6 @@ func (Talent) Fields() []ent.Field {
 		field.String("timezone"),
 
 		field.String("state"),
-
-		field.String("professional_summary").Optional(),
 	}
 }
 

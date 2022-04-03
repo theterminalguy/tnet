@@ -254,9 +254,6 @@ func extractTalentData(record []byte) *TalentData {
 
 	// fmt.Println("\tEducations: ")
 	for _, ed := range uup.Educations {
-		if ed.StartDate == ed.EndDate {
-			fmt.Println("nope")
-		}
 		// update education IDs
 		ed.ID = uuid.New()
 		ed.TalentID = talent.ID
