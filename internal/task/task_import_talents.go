@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"os"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
@@ -12,21 +13,21 @@ import (
 )
 
 type ImportTalents struct {
-	UserRepo   *repo.UserRepository
-	TalentRepo *repo.TalentRepository
-	SkillsRepo *repo.SkillRepository
-	EduRepo   *repo.EducationRepository
-	WorkRepo  *repo.WorkExperienceRepository
+	UserRepo      *repo.UserRepository
+	TalentRepo    *repo.TalentRepository
+	SkillsRepo    *repo.SkillRepository
+	EduRepo       *repo.EducationRepository
+	WorkRepo      *repo.WorkExperienceRepository
 	PortfolioRepo *repo.PortfolioLinkRepository
 }
 
 func NewImportTalents() *ImportTalents {
 	return &ImportTalents{
-		UserRepo:   repo.NewUserRepository(),
-		TalentRepo: repo.NewTalentRepository(),
-		SkillsRepo: repo.NewSkillRepository(),
-		EduRepo:   repo.NewEducationRepository(),
-		WorkRepo: repo.NewWorkExperienceRepository(),
+		UserRepo:      repo.NewUserRepository(),
+		TalentRepo:    repo.NewTalentRepository(),
+		SkillsRepo:    repo.NewSkillRepository(),
+		EduRepo:       repo.NewEducationRepository(),
+		WorkRepo:      repo.NewWorkExperienceRepository(),
 		PortfolioRepo: repo.NewPortfolioLinkRepository(),
 	}
 }
@@ -65,7 +66,6 @@ func (t *ImportTalents) Run(_ string) error {
 	manyWorkExperiences := make([]*repo.WorkExperienceParams, 0)
 
 	csvReader := csv.NewReader(f)
-	index := 0
 	for {
 		record, err := csvReader.Read()
 		if err == io.EOF {
@@ -82,30 +82,36 @@ func (t *ImportTalents) Run(_ string) error {
 		manyPortfolios = append(manyPortfolios, td.Portfolios...)
 		manyEducations = append(manyEducations, td.Educations...)
 		manyWorkExperiences = append(manyWorkExperiences, td.WorkExperiences...)
-		if index == 20 {
-			break
-		}
-		index++
 	}
 	// Bulk Upsert Users
-	t.UserRepo.UpsertMany(manyUsers)
+	if err := t.UserRepo.UpsertMany(manyUsers); err != nil {
+		log.Println("Error upserting users:", err)
+	}
 
 	// Bulk Upsert Talents
-	t.TalentRepo.UpsertMany(manyTalents)
+	if err := t.TalentRepo.UpsertMany(manyTalents); err != nil {
+		log.Println("Error upserting talents:", err)
+	}
 
 	// Bulk Upsert Skills
-	t.SkillsRepo.UpsertMany(manySkills)
+	if err := t.SkillsRepo.UpsertMany(manySkills); err != nil {
+		log.Println("Error upserting skills:", err)
+	}
 
 	// Bulk Upsert Portfolios
-	t.PortfolioRepo.UpsertMany(manyPortfolios)
+	if err := t.PortfolioRepo.UpsertMany(manyPortfolios); err != nil {
+		log.Println("Error upserting portfolios:", err)
+	}
 
 	// Bulk Upsert Educations
-	t.EduRepo.UpsertMany(manyEducations)
+	if err := t.EduRepo.UpsertMany(manyEducations); err != nil {
+		log.Println("Error upserting educations:", err)
+	}
 
 	// Bulk Upsert Work Experiences
-	t.WorkRepo.UpsertMany(manyWorkExperiences)
-
-
+	if err := t.WorkRepo.UpsertMany(manyWorkExperiences); err != nil {
+		log.Println("Error upserting work experiences:", err)
+	}
 
 	return nil
 }
