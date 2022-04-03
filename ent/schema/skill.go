@@ -37,7 +37,7 @@ func (Skill) Fields() []ent.Field {
 		field.Bool(oneword.Preferred).
 			Default(false),
 
-		field.Text(oneword.Note),
+		field.String(oneword.Note).Optional(),
 	}
 }
 

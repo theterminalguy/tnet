@@ -46,8 +46,9 @@ func (Talent) Fields() []ent.Field {
 		field.String(oneword.Email).
 			Unique(),
 
-		field.String(oneword.Phone).
-			Unique(),
+		// TODO: remove unique constraint
+		// due to migration erro
+		field.String(oneword.Phone),
 
 		field.String(oneword.CoutryCode).
 			MinLen(2).
@@ -60,6 +61,8 @@ func (Talent) Fields() []ent.Field {
 		field.String("timezone"),
 
 		field.String("state"),
+
+		field.String("professional_summary").Optional(),
 	}
 }
 

@@ -23,6 +23,7 @@ type WorkExperienceQuerier interface {
 type WorkExperienceRepository struct{}
 
 type WorkExperienceParams struct {
+	ID                  uuid.UUID
 	TalentID            uuid.UUID `json:"talent_id" validate:"required"`
 	CompanyName         string    `json:"company_name" validate:"required"`
 	Location            string    `json:"location" validate:"required"`
@@ -258,4 +259,37 @@ func (r *WorkExperienceRepository) GetWorkExperienceByTalentID(talentID uuid.UUI
 		return nil, err
 	}
 	return record, nil
+}
+
+// UpsertMany create or update many skills.
+func (*WorkExperienceRepository) UpsertMany(params []*WorkExperienceParams) error {
+	builders := make([]*ent.WorkExperienceCreate, len(params))
+	for i, p := range params {
+		sd, err := date.DateStringToTime(p.StartDate)
+		if err != nil {
+			return err
+		}
+
+		var ed *time.Time
+		if p.EndDate != "" {
+			ed, err = date.DateStringToTime(p.EndDate)
+			if err != nil {
+				return err
+			}
+		}
+		builders[i] = dBConn.WorkExperience.
+			Create().
+			SetID(p.ID).
+			SetTalentID(p.TalentID).
+			SetCompanyName(p.CompanyName).
+			SetLocation(p.Location).
+			SetJobTitle(p.JobTitle).
+			SetPrimaryTechnologies(p.PrimaryTechnologies).
+			SetDescription(p.Description).
+			SetStartDate(*sd).
+			SetNillableEndDate(ed)
+
+	}
+	return dBConn.WorkExperience.CreateBulk(builders...).
+		Exec(dBContext)
 }

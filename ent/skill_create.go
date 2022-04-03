@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/skill"
@@ -20,6 +22,7 @@ type SkillCreate struct {
 	config
 	mutation *SkillMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -107,6 +110,14 @@ func (sc *SkillCreate) SetNillablePreferred(b *bool) *SkillCreate {
 // SetNote sets the "note" field.
 func (sc *SkillCreate) SetNote(s string) *SkillCreate {
 	sc.mutation.SetNote(s)
+	return sc
+}
+
+// SetNillableNote sets the "note" field if the given value is not nil.
+func (sc *SkillCreate) SetNillableNote(s *string) *SkillCreate {
+	if s != nil {
+		sc.SetNote(*s)
+	}
 	return sc
 }
 
@@ -240,9 +251,6 @@ func (sc *SkillCreate) check() error {
 	if _, ok := sc.mutation.Preferred(); !ok {
 		return &ValidationError{Name: "preferred", err: errors.New(`ent: missing required field "Skill.preferred"`)}
 	}
-	if _, ok := sc.mutation.Note(); !ok {
-		return &ValidationError{Name: "note", err: errors.New(`ent: missing required field "Skill.note"`)}
-	}
 	return nil
 }
 
@@ -275,6 +283,7 @@ func (sc *SkillCreate) createSpec() (*Skill, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.OnConflict = sc.conflict
 	if id, ok := sc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
@@ -358,10 +367,413 @@ func (sc *SkillCreate) createSpec() (*Skill, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Skill.Create().
+//		SetCreatedAt(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.SkillUpsert) {
+//			SetCreatedAt(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (sc *SkillCreate) OnConflict(opts ...sql.ConflictOption) *SkillUpsertOne {
+	sc.conflict = opts
+	return &SkillUpsertOne{
+		create: sc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Skill.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (sc *SkillCreate) OnConflictColumns(columns ...string) *SkillUpsertOne {
+	sc.conflict = append(sc.conflict, sql.ConflictColumns(columns...))
+	return &SkillUpsertOne{
+		create: sc,
+	}
+}
+
+type (
+	// SkillUpsertOne is the builder for "upsert"-ing
+	//  one Skill node.
+	SkillUpsertOne struct {
+		create *SkillCreate
+	}
+
+	// SkillUpsert is the "OnConflict" setter.
+	SkillUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetCreatedAt sets the "created_at" field.
+func (u *SkillUpsert) SetCreatedAt(v time.Time) *SkillUpsert {
+	u.Set(skill.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *SkillUpsert) UpdateCreatedAt() *SkillUpsert {
+	u.SetExcluded(skill.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *SkillUpsert) SetUpdatedAt(v time.Time) *SkillUpsert {
+	u.Set(skill.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *SkillUpsert) UpdateUpdatedAt() *SkillUpsert {
+	u.SetExcluded(skill.FieldUpdatedAt)
+	return u
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *SkillUpsert) SetDeletedAt(v time.Time) *SkillUpsert {
+	u.Set(skill.FieldDeletedAt, v)
+	return u
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *SkillUpsert) UpdateDeletedAt() *SkillUpsert {
+	u.SetExcluded(skill.FieldDeletedAt)
+	return u
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (u *SkillUpsert) ClearDeletedAt() *SkillUpsert {
+	u.SetNull(skill.FieldDeletedAt)
+	return u
+}
+
+// SetTalentID sets the "talent_id" field.
+func (u *SkillUpsert) SetTalentID(v uuid.UUID) *SkillUpsert {
+	u.Set(skill.FieldTalentID, v)
+	return u
+}
+
+// UpdateTalentID sets the "talent_id" field to the value that was provided on create.
+func (u *SkillUpsert) UpdateTalentID() *SkillUpsert {
+	u.SetExcluded(skill.FieldTalentID)
+	return u
+}
+
+// ClearTalentID clears the value of the "talent_id" field.
+func (u *SkillUpsert) ClearTalentID() *SkillUpsert {
+	u.SetNull(skill.FieldTalentID)
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *SkillUpsert) SetName(v string) *SkillUpsert {
+	u.Set(skill.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *SkillUpsert) UpdateName() *SkillUpsert {
+	u.SetExcluded(skill.FieldName)
+	return u
+}
+
+// SetYearsOfExperience sets the "years_of_experience" field.
+func (u *SkillUpsert) SetYearsOfExperience(v float32) *SkillUpsert {
+	u.Set(skill.FieldYearsOfExperience, v)
+	return u
+}
+
+// UpdateYearsOfExperience sets the "years_of_experience" field to the value that was provided on create.
+func (u *SkillUpsert) UpdateYearsOfExperience() *SkillUpsert {
+	u.SetExcluded(skill.FieldYearsOfExperience)
+	return u
+}
+
+// AddYearsOfExperience adds v to the "years_of_experience" field.
+func (u *SkillUpsert) AddYearsOfExperience(v float32) *SkillUpsert {
+	u.Add(skill.FieldYearsOfExperience, v)
+	return u
+}
+
+// SetPreferred sets the "preferred" field.
+func (u *SkillUpsert) SetPreferred(v bool) *SkillUpsert {
+	u.Set(skill.FieldPreferred, v)
+	return u
+}
+
+// UpdatePreferred sets the "preferred" field to the value that was provided on create.
+func (u *SkillUpsert) UpdatePreferred() *SkillUpsert {
+	u.SetExcluded(skill.FieldPreferred)
+	return u
+}
+
+// SetNote sets the "note" field.
+func (u *SkillUpsert) SetNote(v string) *SkillUpsert {
+	u.Set(skill.FieldNote, v)
+	return u
+}
+
+// UpdateNote sets the "note" field to the value that was provided on create.
+func (u *SkillUpsert) UpdateNote() *SkillUpsert {
+	u.SetExcluded(skill.FieldNote)
+	return u
+}
+
+// ClearNote clears the value of the "note" field.
+func (u *SkillUpsert) ClearNote() *SkillUpsert {
+	u.SetNull(skill.FieldNote)
+	return u
+}
+
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.Skill.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(skill.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *SkillUpsertOne) UpdateNewValues() *SkillUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(skill.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(skill.FieldCreatedAt)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.Skill.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *SkillUpsertOne) Ignore() *SkillUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *SkillUpsertOne) DoNothing() *SkillUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the SkillCreate.OnConflict
+// documentation for more info.
+func (u *SkillUpsertOne) Update(set func(*SkillUpsert)) *SkillUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&SkillUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *SkillUpsertOne) SetCreatedAt(v time.Time) *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *SkillUpsertOne) UpdateCreatedAt() *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *SkillUpsertOne) SetUpdatedAt(v time.Time) *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *SkillUpsertOne) UpdateUpdatedAt() *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *SkillUpsertOne) SetDeletedAt(v time.Time) *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetDeletedAt(v)
+	})
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *SkillUpsertOne) UpdateDeletedAt() *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdateDeletedAt()
+	})
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (u *SkillUpsertOne) ClearDeletedAt() *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.ClearDeletedAt()
+	})
+}
+
+// SetTalentID sets the "talent_id" field.
+func (u *SkillUpsertOne) SetTalentID(v uuid.UUID) *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetTalentID(v)
+	})
+}
+
+// UpdateTalentID sets the "talent_id" field to the value that was provided on create.
+func (u *SkillUpsertOne) UpdateTalentID() *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdateTalentID()
+	})
+}
+
+// ClearTalentID clears the value of the "talent_id" field.
+func (u *SkillUpsertOne) ClearTalentID() *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.ClearTalentID()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *SkillUpsertOne) SetName(v string) *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *SkillUpsertOne) UpdateName() *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetYearsOfExperience sets the "years_of_experience" field.
+func (u *SkillUpsertOne) SetYearsOfExperience(v float32) *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetYearsOfExperience(v)
+	})
+}
+
+// AddYearsOfExperience adds v to the "years_of_experience" field.
+func (u *SkillUpsertOne) AddYearsOfExperience(v float32) *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.AddYearsOfExperience(v)
+	})
+}
+
+// UpdateYearsOfExperience sets the "years_of_experience" field to the value that was provided on create.
+func (u *SkillUpsertOne) UpdateYearsOfExperience() *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdateYearsOfExperience()
+	})
+}
+
+// SetPreferred sets the "preferred" field.
+func (u *SkillUpsertOne) SetPreferred(v bool) *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetPreferred(v)
+	})
+}
+
+// UpdatePreferred sets the "preferred" field to the value that was provided on create.
+func (u *SkillUpsertOne) UpdatePreferred() *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdatePreferred()
+	})
+}
+
+// SetNote sets the "note" field.
+func (u *SkillUpsertOne) SetNote(v string) *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetNote(v)
+	})
+}
+
+// UpdateNote sets the "note" field to the value that was provided on create.
+func (u *SkillUpsertOne) UpdateNote() *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdateNote()
+	})
+}
+
+// ClearNote clears the value of the "note" field.
+func (u *SkillUpsertOne) ClearNote() *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.ClearNote()
+	})
+}
+
+// Exec executes the query.
+func (u *SkillUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for SkillCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *SkillUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *SkillUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: SkillUpsertOne.ID is not supported by MySQL driver. Use SkillUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *SkillUpsertOne) IDX(ctx context.Context) uuid.UUID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // SkillCreateBulk is the builder for creating many Skill entities in bulk.
 type SkillCreateBulk struct {
 	config
 	builders []*SkillCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the Skill entities in the database.
@@ -388,6 +800,7 @@ func (scb *SkillCreateBulk) Save(ctx context.Context) ([]*Skill, error) {
 					_, err = mutators[i+1].Mutate(root, scb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = scb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, scb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -434,6 +847,265 @@ func (scb *SkillCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (scb *SkillCreateBulk) ExecX(ctx context.Context) {
 	if err := scb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Skill.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.SkillUpsert) {
+//			SetCreatedAt(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (scb *SkillCreateBulk) OnConflict(opts ...sql.ConflictOption) *SkillUpsertBulk {
+	scb.conflict = opts
+	return &SkillUpsertBulk{
+		create: scb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Skill.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (scb *SkillCreateBulk) OnConflictColumns(columns ...string) *SkillUpsertBulk {
+	scb.conflict = append(scb.conflict, sql.ConflictColumns(columns...))
+	return &SkillUpsertBulk{
+		create: scb,
+	}
+}
+
+// SkillUpsertBulk is the builder for "upsert"-ing
+// a bulk of Skill nodes.
+type SkillUpsertBulk struct {
+	create *SkillCreateBulk
+}
+
+// UpdateNewValues updates the mutable fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.Skill.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(skill.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *SkillUpsertBulk) UpdateNewValues() *SkillUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(skill.FieldID)
+				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(skill.FieldCreatedAt)
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.Skill.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *SkillUpsertBulk) Ignore() *SkillUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *SkillUpsertBulk) DoNothing() *SkillUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the SkillCreateBulk.OnConflict
+// documentation for more info.
+func (u *SkillUpsertBulk) Update(set func(*SkillUpsert)) *SkillUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&SkillUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *SkillUpsertBulk) SetCreatedAt(v time.Time) *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *SkillUpsertBulk) UpdateCreatedAt() *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *SkillUpsertBulk) SetUpdatedAt(v time.Time) *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *SkillUpsertBulk) UpdateUpdatedAt() *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *SkillUpsertBulk) SetDeletedAt(v time.Time) *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetDeletedAt(v)
+	})
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *SkillUpsertBulk) UpdateDeletedAt() *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdateDeletedAt()
+	})
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (u *SkillUpsertBulk) ClearDeletedAt() *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.ClearDeletedAt()
+	})
+}
+
+// SetTalentID sets the "talent_id" field.
+func (u *SkillUpsertBulk) SetTalentID(v uuid.UUID) *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetTalentID(v)
+	})
+}
+
+// UpdateTalentID sets the "talent_id" field to the value that was provided on create.
+func (u *SkillUpsertBulk) UpdateTalentID() *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdateTalentID()
+	})
+}
+
+// ClearTalentID clears the value of the "talent_id" field.
+func (u *SkillUpsertBulk) ClearTalentID() *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.ClearTalentID()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *SkillUpsertBulk) SetName(v string) *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *SkillUpsertBulk) UpdateName() *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetYearsOfExperience sets the "years_of_experience" field.
+func (u *SkillUpsertBulk) SetYearsOfExperience(v float32) *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetYearsOfExperience(v)
+	})
+}
+
+// AddYearsOfExperience adds v to the "years_of_experience" field.
+func (u *SkillUpsertBulk) AddYearsOfExperience(v float32) *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.AddYearsOfExperience(v)
+	})
+}
+
+// UpdateYearsOfExperience sets the "years_of_experience" field to the value that was provided on create.
+func (u *SkillUpsertBulk) UpdateYearsOfExperience() *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdateYearsOfExperience()
+	})
+}
+
+// SetPreferred sets the "preferred" field.
+func (u *SkillUpsertBulk) SetPreferred(v bool) *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetPreferred(v)
+	})
+}
+
+// UpdatePreferred sets the "preferred" field to the value that was provided on create.
+func (u *SkillUpsertBulk) UpdatePreferred() *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdatePreferred()
+	})
+}
+
+// SetNote sets the "note" field.
+func (u *SkillUpsertBulk) SetNote(v string) *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetNote(v)
+	})
+}
+
+// UpdateNote sets the "note" field to the value that was provided on create.
+func (u *SkillUpsertBulk) UpdateNote() *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdateNote()
+	})
+}
+
+// ClearNote clears the value of the "note" field.
+func (u *SkillUpsertBulk) ClearNote() *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.ClearNote()
+	})
+}
+
+// Exec executes the query.
+func (u *SkillUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the SkillCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for SkillCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *SkillUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

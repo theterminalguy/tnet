@@ -23,6 +23,7 @@ type EducationQuerier interface {
 type EducationRepository struct{}
 
 type EducationParams struct {
+	ID              uuid.UUID
 	TalentID        uuid.UUID `json:"talent_id" validate:"required"`
 	InstitutionName string    `json:"institution_name" validate:"required"`
 	Location        string    `json:"location" validate:"required"`
@@ -257,4 +258,36 @@ func (r *EducationRepository) GetEducationByTalentID(talentID uuid.UUID) (*ent.E
 		return nil, err
 	}
 	return record, nil
+}
+
+// UpsertMany create or update many Education.
+func (*EducationRepository) UpsertMany(params []*EducationParams) error {
+	builders := make([]*ent.EducationCreate, len(params))
+	for i, p := range params {
+		sd, err := date.DateStringToTime(p.StartDate)
+		if err != nil {
+			return err
+		}
+
+		var ed *time.Time
+		if p.EndDate != "" {
+			ed, err = date.DateStringToTime(p.EndDate)
+			if err != nil {
+				return err
+			}
+		}
+		builders[i] = dBConn.Education.
+			Create().
+			SetID(p.ID).
+			SetTalentID(p.TalentID).
+			SetDegree(p.Degree).
+			SetInstitutionName(p.InstitutionName).
+			SetLocation(p.Location).
+			SetProgram(p.Program).
+			SetOverview(p.Overview).
+			SetStartDate(*sd).
+			SetNillableEndDate(ed)
+	}
+	return dBConn.Education.CreateBulk(builders...).
+		Exec(dBContext)
 }

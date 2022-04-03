@@ -316,7 +316,7 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "years_of_experience", Type: field.TypeFloat32},
 		{Name: "preferred", Type: field.TypeBool, Default: false},
-		{Name: "note", Type: field.TypeString, Size: 2147483647},
+		{Name: "note", Type: field.TypeString, Nullable: true},
 		{Name: "talent_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// SkillsTable holds the schema information for the "skills" table.
@@ -410,12 +410,13 @@ var (
 		{Name: "is_available", Type: field.TypeBool},
 		{Name: "professional_start_date", Type: field.TypeTime},
 		{Name: "email", Type: field.TypeString, Unique: true},
-		{Name: "phone", Type: field.TypeString, Unique: true},
+		{Name: "phone", Type: field.TypeString},
 		{Name: "country_code", Type: field.TypeString, Size: 2},
 		{Name: "city", Type: field.TypeString},
 		{Name: "job_preference", Type: field.TypeEnum, Enums: []string{"remote", "onsite", "flexible"}},
 		{Name: "timezone", Type: field.TypeString},
 		{Name: "state", Type: field.TypeString},
+		{Name: "professional_summary", Type: field.TypeString, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// TalentsTable holds the schema information for the "talents" table.
@@ -426,7 +427,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "talents_users_talents",
-				Columns:    []*schema.Column{TalentsColumns[18]},
+				Columns:    []*schema.Column{TalentsColumns[19]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -435,7 +436,7 @@ var (
 			{
 				Name:    "talent_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{TalentsColumns[18]},
+				Columns: []*schema.Column{TalentsColumns[19]},
 			},
 			{
 				Name:    "talent_email_phone",

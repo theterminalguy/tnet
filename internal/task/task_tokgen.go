@@ -32,7 +32,7 @@ func (t *TokGen) Run(params string) error {
 		if !ok {
 			return fmt.Errorf("provide a recruiter's email address")
 		}
-		tok, err := util.GenerateRecruiterJWT(recruiterEmail, meta)
+		tok, err := tokgen.GenerateRecruiterJWT(recruiterEmail, meta)
 		if err != nil {
 			return err
 		}
@@ -43,7 +43,7 @@ func (t *TokGen) Run(params string) error {
 	if !ok {
 		return fmt.Errorf("provide a talent's email address")
 	}
-	tok, err := util.GenerateTalentJWT(talentEmail, meta)
+	tok, err := tokgen.GenerateTalentJWT(talentEmail, meta)
 	if err != nil {
 		return err
 	}

@@ -58,3 +58,7 @@ func StringParamsToMap(params string) map[string]string {
 	}
 	return result
 }
+
+func Titlelize(s string) string {
+	return strings.Title(strings.ToLower(s))
+}

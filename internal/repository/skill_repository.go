@@ -23,6 +23,7 @@ type SkillQuerier interface {
 type SkillRepository struct{}
 
 type SkillParams struct {
+	ID       uuid.UUID
 	TalentID uuid.UUID `json:"talent_id" validate:"required"`
 
 	// Talent can specify years of experience in decimal where 1.5 equals 1 and a half year
@@ -207,4 +208,20 @@ func (r *SkillRepository) DeleteByID(id uuid.UUID) error {
 		return err
 	}
 	return nil
+}
+
+// UpsertMany create or update many skills.
+func (*SkillRepository) UpsertMany(params []*SkillParams) error {
+	builders := make([]*ent.SkillCreate, len(params))
+	for i, p := range params {
+		builders[i] = dBConn.Skill.
+			Create().
+			SetID(p.ID).
+			SetTalentID(p.TalentID).
+			SetName(p.Name).
+			SetYearsOfExperience(p.YearsOfExperience).
+			SetPreferred(p.Preferred)
+	}
+	return dBConn.Skill.CreateBulk(builders...).
+		Exec(dBContext)
 }

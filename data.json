@@ -1,0 +1,222 @@
+[
+    {
+        "country_code": "NG",
+        "educations": [
+            {
+                "institution_name": "Federal university Ndufu-Alike Ikwo",
+                "location": "Ebonyi",
+                "degree": "Computer Science",
+                "program": "BSc",
+                "start_date": "2010-09-13",
+                "end_date": "2013-10-09"
+            }
+        ],
+        "experiences": [
+            {
+                "primary_technologies": [],
+                "company_name": "DIGITAL DREAM ICT ACADEMY",
+                "job_title": "Industrial Training",
+                "location": "NaN",
+                "start_date": "2018-04-17",
+                "end_date": "2018-10-09",
+                "description": "NaN"
+            },
+            {
+                "primary_technologies": [],
+                "company_name": "TECHO CRAFT",
+                "location": "Enugu",
+                "job_title": "Web Development Engineer and Web Development Instructor. ",
+                "start_date": "2018-11-12",
+                "end_date": "2021-03-14",
+                "description": "Development of various Web Projects for clients"
+            },
+            {
+                "company_name": "DES & DEV LTD",
+                "location": "NaN",
+                "job_title": "Web Development Engineer",
+                "start_date": "2021-04-12",
+                "end_date": "2021-11-15",
+                "description": "Development of various Web Projects for  Clients."
+            },
+            {
+                "company_name": "OMNISWIFT",
+                "location": "Abuja",
+                "job_title": "Software Engineer",
+                "start_date": "2021-11-10",
+                "end_date": "2022-03-19",
+                "description": "NAN"
+            }
+        ],
+        "skills": [
+            {
+                "name": "PHP/Laravel",
+                "years_of_experience": 4,
+                "note": "Backend"
+            },
+            {
+                "name": "MySQL",
+                "years_of_experience": 3,
+                "note": "Database"
+            },
+            {
+                "name": "Bootstrap",
+                "years_of_experience": 3,
+                "note": "Frontend"
+            },
+            {
+                "name": "Postgres",
+                "years_of_experience": 2,
+                "note": "Database"
+            }
+        ],
+        "portfolios": [
+            {
+                "name": "Linkedin",
+                "url": "https://www.linkedin.com/in/ogechukwu-nwoye-4a2271159"
+            }
+        ],
+        "first_name": "NWOYE",
+        "last_name": "OGECHUKWU",
+        "preferred_name": "OGECHUKWU",
+        "email": "nwoyeogeemilia@gmail.com",
+        "pronoun": "She/Her",
+        "phone": "2349078207469",
+        "professional_summary": "• Awesome ability to work both independently and also work effectively with a team.  • Ability to communicate effectively with clients through emails and written letters.  • Excellent listening, communication and presentation skills.  • Computer proficiency in the following HTML/PHP, Use of MS Word, Excel, Power point,  Access.  • Professional knowledge of web development (front-end: HTML, CSS, and JAVASCRIPT.  Back-end: PHP, JAVASCRIPT, MYSQL, POSTGRESQL, CODEIGNITER, LARAVEL) • Excellent instructor on Full stack web development • Excellent instructor on Microsoft Office Desktop Applications • Proficient in English Language  • Good verbal and written communication skills and able to optimally communicate with  team members and build positive relationships • Excellent Database Management with MySQL and PostgreSQL • Excellent use of laravel Eloquent and Relationships",
+        "city": "NaN",
+        "professional_start_date": "2018-04-17",
+        "preferred_job_title": "Software Developer"
+    },
+    {
+        "country_code": "NG",
+        "educations": [
+            {
+                "institution_name": "University of Ibadan",
+                "location": "Ibadan",
+                "degree": "Computer Science",
+                "program": "BSc",
+                "start_date": "2014-08-19",
+                "end_date": "2019-11-15",
+                "overview": "B.Sc. in Computer Science"
+            }
+        ],
+        "experiences": [
+            {
+                "primary_technologies": [
+                    "Django"
+                ],
+                "company_name": "Cowrywise",
+                "location": "Lagos",
+                "job_title": "Senior Software Engineer",
+                "start_date": "2020-01-13",
+                "end_date": "2022-03-29",
+                "description": "• Working on implementing new features with Django on the backend • Managing the deployment of internal services and monitoring tools like Kibana • Managing CI/CD of the Android application • Working on Integrating Third-party APIs with the Backend codebase and vice versa • Built V1 of the in-house fraud-detection and monitoring system • Built the Cowrywise Badges reward system • Led the backend Integration with ARM Investment Managers to introduce 6 of their mutual funds to the Cowrywise Platform"
+            },
+            {
+                "primary_technologies": [
+                    "Heroku"
+                ],
+                "company_name": "GitStart",
+                "job_title": "Tech Lead",
+                "location": "San Francisco, California, United States",
+                "start_date": "2019-01-13",
+                "end_date": "2019-06-17",
+                "description": "• Created Tickets for Developers to work on • Handled client communication on Slack and Jira/Trello Handled Code reviews internally and gave feedback from clients • Wrote Technical Specications for client features. Created Heroku pipelines for each application which also creates PR review apps • Worked with a team of developers to push out new product features each week."
+            },
+            {
+                "location": "Nigeria",
+                "company_name": "Andela",
+                "job_title": "Learning Community Ambassador",
+                "start_date": "2019-01-16",
+                "end_date": "2019-06-17",
+                "description": "earning Community Ambassador roles were offered to highly skilled individuals by the Andela community to assist with organising events, meetups and providing remote support as mentors so other individuals could push their submissions for the community challenges and exercises."
+            },
+            {
+                "primary_technologies": [
+                    "GCP"
+                ],
+                "company_name": "Diamond Acre Software",
+                "location": "Lagos",
+                "job_title": "Lead Software Developer",
+                "start_date": "2018-02-16",
+                "end_date": "2019-01-19",
+                "description": "• Software Developer II • Setup Backend infrastructure of the Company's lead product with Django and Django rest framework • Managed CI/CD of different company projects using aws elastic beanstalk, docker, Gcloud and Travis whilst maintaining a test coverage of over 90% • Lead Android Development using Kotlin and Android Architecture Components • Handled code reviews on other projects in the Company • Built Slackbot to deploy APKs to slack from Travis CI"
+            },
+            {
+                "primary_technologies": [
+                    "Django",
+                    "React js"
+                ],
+                "company_name": "Tuteria",
+                "location": "Lagos",
+                "job_title": "Software Engineer",
+                "start_date": "2017-05-12",
+                "end_date": "2018-03-14",
+                "description": "• Responsible for writing various microservices using (Python) Django, Flask with Graphql, REST, etc. • Writing of database (Postgres) migration scripts. • Day to day bug fixing on the site (https://tuteria.com)  • Hooking up frontend javascript code (Reactjs) to backend code, etc"
+            },
+            {
+                "primary_technologies": [
+                    "Html/css/js"
+                ],
+                "company_name": "International Institute of Tropical Agriculture (IITA)",
+                "location": "Ibadan",
+                "job_title": "IT Consultant",
+                "start_date": "2017-04-15",
+                "end_date": "2017-08-07",
+                "description": "• Technologies used: Spring Framework, Structs 2, Hibernate, Servelets etc • Involved in the aesthetic redesign of the whole Training Database System using CSS, Javascript and Bootstrap • Participated in the Development and programming of various training form elements to be used by the training participants and supervisors of the trainees. • Participated in the building of seamless authorized access to data among all stakeholders of the system. • Handled code documentation"
+            },
+            {
+                "primary_technologies": [
+                    "C#"
+                ],
+                "company_name": "CELLCORE Ltd",
+                "job_title": "Mobile Developer",
+                "location": "Ibadan",
+                "start_date": "2017-02-14",
+                "end_date": "2017-05-15",
+                "description": "• Technologies used : Java (Android Development) , C# (Windows Silverlight and UWP)  • Development of 'PushIt' push notifications windows library • Development of U-Lottoking android lotto application."
+            },
+            {
+                "company_name": "Toast Creative Studios",
+                "location": "Ibadan, Nigeria",
+                "job_title": "Web Developer",
+                "start_date": "2016-02-14",
+                "end_date": "2016-07-16",
+                "description": "nan"
+            },
+            {
+                "job_title": "Junior Software Developer",
+                "company_name": "Vasiti.com",
+                "location": "Ibadan, Nigeria",
+                "start_date": "2016-01-13",
+                "end_date": "2016-06-17",
+                "description": "• Development of Magazine and general site maintainence"
+            }
+        ],
+        "skills": [
+            {
+                "name": "java",
+                "years_of_experience": 8,
+                "note": "Development"
+            },
+            {
+                "name": "Python",
+                "years_of_experience": 6
+            },
+            {
+                "name": "Kotlin",
+                "years_of_experience": 5,
+                "note": "Mobile Development"
+            }
+        ],
+        "first_name": "Obi",
+        "last_name": "Uchenna",
+        "preferred_name": "David",
+        "pronoun": "He/Him",
+        "email": "daviduchenna@outlook.com",
+        "phone": "+234",
+        "city": "Lagos",
+        "preferred_job_title": "Senior Software Engineer",
+        "professional_summary": "Fullstack Developer responsible for developing backend solutions using Python, JavaScript, and creating mobile applications with Kotlin, Swift, Dart and Java. Adept at developing server-side logic, ensuring high performance and responsiveness to requests from the front-end. Track record of writing high quality software that deliver direct impact on the bottom line of the company",
+        "professional_start_date": "2016-02-14"
+    }
+]

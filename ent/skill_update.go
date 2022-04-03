@@ -115,6 +115,20 @@ func (su *SkillUpdate) SetNote(s string) *SkillUpdate {
 	return su
 }
 
+// SetNillableNote sets the "note" field if the given value is not nil.
+func (su *SkillUpdate) SetNillableNote(s *string) *SkillUpdate {
+	if s != nil {
+		su.SetNote(*s)
+	}
+	return su
+}
+
+// ClearNote clears the value of the "note" field.
+func (su *SkillUpdate) ClearNote() *SkillUpdate {
+	su.mutation.ClearNote()
+	return su
+}
+
 // SetTalent sets the "talent" edge to the Talent entity.
 func (su *SkillUpdate) SetTalent(t *Talent) *SkillUpdate {
 	return su.SetTalentID(t.ID)
@@ -283,6 +297,12 @@ func (su *SkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: skill.FieldNote,
 		})
 	}
+	if su.mutation.NoteCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: skill.FieldNote,
+		})
+	}
 	if su.mutation.TalentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -419,6 +439,20 @@ func (suo *SkillUpdateOne) SetNillablePreferred(b *bool) *SkillUpdateOne {
 // SetNote sets the "note" field.
 func (suo *SkillUpdateOne) SetNote(s string) *SkillUpdateOne {
 	suo.mutation.SetNote(s)
+	return suo
+}
+
+// SetNillableNote sets the "note" field if the given value is not nil.
+func (suo *SkillUpdateOne) SetNillableNote(s *string) *SkillUpdateOne {
+	if s != nil {
+		suo.SetNote(*s)
+	}
+	return suo
+}
+
+// ClearNote clears the value of the "note" field.
+func (suo *SkillUpdateOne) ClearNote() *SkillUpdateOne {
+	suo.mutation.ClearNote()
 	return suo
 }
 
@@ -611,6 +645,12 @@ func (suo *SkillUpdateOne) sqlSave(ctx context.Context) (_node *Skill, err error
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: skill.FieldNote,
+		})
+	}
+	if suo.mutation.NoteCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: skill.FieldNote,
 		})
 	}

@@ -7827,9 +7827,22 @@ func (m *SkillMutation) OldNote(ctx context.Context) (v string, err error) {
 	return oldValue.Note, nil
 }
 
+// ClearNote clears the value of the "note" field.
+func (m *SkillMutation) ClearNote() {
+	m.note = nil
+	m.clearedFields[skill.FieldNote] = struct{}{}
+}
+
+// NoteCleared returns if the "note" field was cleared in this mutation.
+func (m *SkillMutation) NoteCleared() bool {
+	_, ok := m.clearedFields[skill.FieldNote]
+	return ok
+}
+
 // ResetNote resets all changes to the "note" field.
 func (m *SkillMutation) ResetNote() {
 	m.note = nil
+	delete(m.clearedFields, skill.FieldNote)
 }
 
 // ClearTalent clears the "talent" edge to the Talent entity.
@@ -8067,6 +8080,9 @@ func (m *SkillMutation) ClearedFields() []string {
 	if m.FieldCleared(skill.FieldTalentID) {
 		fields = append(fields, skill.FieldTalentID)
 	}
+	if m.FieldCleared(skill.FieldNote) {
+		fields = append(fields, skill.FieldNote)
+	}
 	return fields
 }
 
@@ -8086,6 +8102,9 @@ func (m *SkillMutation) ClearField(name string) error {
 		return nil
 	case skill.FieldTalentID:
 		m.ClearTalentID()
+		return nil
+	case skill.FieldNote:
+		m.ClearNote()
 		return nil
 	}
 	return fmt.Errorf("unknown Skill nullable field %s", name)
@@ -9483,6 +9502,7 @@ type TalentMutation struct {
 	job_preference            *talent.JobPreference
 	timezone                  *string
 	state                     *string
+	professional_summary      *string
 	clearedFields             map[string]struct{}
 	user                      *uuid.UUID
 	cleareduser               bool
@@ -10290,6 +10310,55 @@ func (m *TalentMutation) ResetState() {
 	m.state = nil
 }
 
+// SetProfessionalSummary sets the "professional_summary" field.
+func (m *TalentMutation) SetProfessionalSummary(s string) {
+	m.professional_summary = &s
+}
+
+// ProfessionalSummary returns the value of the "professional_summary" field in the mutation.
+func (m *TalentMutation) ProfessionalSummary() (r string, exists bool) {
+	v := m.professional_summary
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProfessionalSummary returns the old "professional_summary" field's value of the Talent entity.
+// If the Talent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TalentMutation) OldProfessionalSummary(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProfessionalSummary is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProfessionalSummary requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProfessionalSummary: %w", err)
+	}
+	return oldValue.ProfessionalSummary, nil
+}
+
+// ClearProfessionalSummary clears the value of the "professional_summary" field.
+func (m *TalentMutation) ClearProfessionalSummary() {
+	m.professional_summary = nil
+	m.clearedFields[talent.FieldProfessionalSummary] = struct{}{}
+}
+
+// ProfessionalSummaryCleared returns if the "professional_summary" field was cleared in this mutation.
+func (m *TalentMutation) ProfessionalSummaryCleared() bool {
+	_, ok := m.clearedFields[talent.FieldProfessionalSummary]
+	return ok
+}
+
+// ResetProfessionalSummary resets all changes to the "professional_summary" field.
+func (m *TalentMutation) ResetProfessionalSummary() {
+	m.professional_summary = nil
+	delete(m.clearedFields, talent.FieldProfessionalSummary)
+}
+
 // ClearUser clears the "user" edge to the User entity.
 func (m *TalentMutation) ClearUser() {
 	m.cleareduser = true
@@ -10713,7 +10782,7 @@ func (m *TalentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TalentMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, talent.FieldCreatedAt)
 	}
@@ -10768,6 +10837,9 @@ func (m *TalentMutation) Fields() []string {
 	if m.state != nil {
 		fields = append(fields, talent.FieldState)
 	}
+	if m.professional_summary != nil {
+		fields = append(fields, talent.FieldProfessionalSummary)
+	}
 	return fields
 }
 
@@ -10812,6 +10884,8 @@ func (m *TalentMutation) Field(name string) (ent.Value, bool) {
 		return m.Timezone()
 	case talent.FieldState:
 		return m.State()
+	case talent.FieldProfessionalSummary:
+		return m.ProfessionalSummary()
 	}
 	return nil, false
 }
@@ -10857,6 +10931,8 @@ func (m *TalentMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldTimezone(ctx)
 	case talent.FieldState:
 		return m.OldState(ctx)
+	case talent.FieldProfessionalSummary:
+		return m.OldProfessionalSummary(ctx)
 	}
 	return nil, fmt.Errorf("unknown Talent field %s", name)
 }
@@ -10992,6 +11068,13 @@ func (m *TalentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetState(v)
 		return nil
+	case talent.FieldProfessionalSummary:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProfessionalSummary(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Talent field %s", name)
 }
@@ -11028,6 +11111,9 @@ func (m *TalentMutation) ClearedFields() []string {
 	if m.FieldCleared(talent.FieldUserID) {
 		fields = append(fields, talent.FieldUserID)
 	}
+	if m.FieldCleared(talent.FieldProfessionalSummary) {
+		fields = append(fields, talent.FieldProfessionalSummary)
+	}
 	return fields
 }
 
@@ -11047,6 +11133,9 @@ func (m *TalentMutation) ClearField(name string) error {
 		return nil
 	case talent.FieldUserID:
 		m.ClearUserID()
+		return nil
+	case talent.FieldProfessionalSummary:
+		m.ClearProfessionalSummary()
 		return nil
 	}
 	return fmt.Errorf("unknown Talent nullable field %s", name)
@@ -11109,6 +11198,9 @@ func (m *TalentMutation) ResetField(name string) error {
 		return nil
 	case talent.FieldState:
 		m.ResetState()
+		return nil
+	case talent.FieldProfessionalSummary:
+		m.ResetProfessionalSummary()
 		return nil
 	}
 	return fmt.Errorf("unknown Talent field %s", name)

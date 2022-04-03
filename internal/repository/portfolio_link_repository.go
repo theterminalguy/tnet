@@ -22,6 +22,7 @@ type PortfolioLinkQuerier interface {
 type PortfolioLinkRepository struct{}
 
 type PortfolioLinkParams struct {
+	ID       uuid.UUID
 	URL      string    `json:"url" validate:"required,url"`
 	TalentID uuid.UUID `json:"talent_id"`
 	Name     string    `json:"name"`
@@ -172,4 +173,19 @@ func (r *PortfolioLinkRepository) GetPortfolioLinkByTalentID(talentID uuid.UUID)
 		return nil, err
 	}
 	return record, nil
+}
+
+// UpsertMany create or update many portfolio links
+func (*PortfolioLinkRepository) UpsertMany(params []*PortfolioLinkParams) error {
+	builders := make([]*ent.PortfolioLinkCreate, len(params))
+	for i, p := range params {
+		builders[i] = dBConn.PortfolioLink.
+			Create().
+			SetID(p.ID).
+			SetTalentID(p.TalentID).
+			SetName(p.Name).
+			SetURL(p.URL)
+	}
+	return dBConn.PortfolioLink.CreateBulk(builders...).
+		Exec(dBContext)
 }

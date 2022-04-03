@@ -1,17 +1,20 @@
 package repository
 
 import (
+	"strings"
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/ent/user"
+	"github.com/10hourlabs/tentn/util"
 	"github.com/google/uuid"
 )
 
 type UserRepository struct{}
 
 type UserParams struct {
+	ID        uuid.UUID
 	FirstName string        `json:"first_name" validate:"required"`
 	LastName  string        `json:"last_name" validate:"required"`
 	PhotoURL  string        `json:"photo_url" validate:"required"`
@@ -110,4 +113,21 @@ func (r *UserRepository) DeleteByID(id uuid.UUID) error {
 		return err
 	}
 	return nil
+}
+
+// UpsertMany create or update many users.
+func (*UserRepository) UpsertMany(params []*UserParams) error {
+	builders := make([]*ent.UserCreate, len(params))
+	for i, p := range params {
+		builders[i] = dBConn.User.
+			Create().
+			SetID(p.ID).
+			SetFirstName(util.Titlelize(p.FirstName)).
+			SetLastName(util.Titlelize(p.LastName)).
+			SetPhotoURL(p.PhotoURL).
+			SetEmail(strings.ToLower(p.Email)).
+			SetRole(userrole.Talent).
+			SetApproved(p.Approved)
+	}
+	return dBConn.User.CreateBulk(builders...).Exec(dBContext)
 }

@@ -2,6 +2,8 @@ package repository
 
 import (
 	"errors"
+	"fmt"
+	"log"
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
@@ -28,6 +30,7 @@ type TalentQuerier interface {
 type TalentRepository struct{}
 
 type TalentParams struct {
+	ID                    uuid.UUID
 	UserID                uuid.UUID            `json:"user_id" validate:"required"`
 	FirstName             string               `json:"first_name" validate:"required"`
 	LastName              string               `json:"last_name" validate:"required"`
@@ -43,6 +46,7 @@ type TalentParams struct {
 	Available             bool                 `json:"available"`
 	TimeZone              string               `json:"timezone" validate:"required"`
 	State                 string               `json:"state" validate:"required"`
+	ProfessionalSummary   string               `json:"professional_summary"`
 }
 
 func NewTalentRepository() *TalentRepository {
@@ -155,7 +159,8 @@ func (r *TalentRepository) Create(p TalentParams) (*decorator.TalentResponse, er
 		SetJobPreference(p.JobPreference).
 		SetIsAvailable(p.Available).
 		SetTimezone(timeZoneName[1]).
-		SetState(p.State)
+		SetState(p.State).
+		SetProfessionalSummary(p.ProfessionalSummary)
 	a, err := q.Save(dBContext)
 	if err != nil {
 		return nil, err
@@ -312,6 +317,10 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 		vldErrs = append(vldErrs, vldErr)
 	}
 
+	if p.ProfessionalSummary != "" {
+		bldr.SetProfessionalSummary(p.ProfessionalSummary)
+	}
+
 	// Set and Validate IsAvailable if provided
 	if vldErr := setNillableBoolField(p.Available, func(v bool) error {
 		err := validateParams(p, "IsAvailable")
@@ -356,6 +365,8 @@ func (r *TalentRepository) GetTalentByUserID(userID uuid.UUID) (*decorator.Talen
 	// TODO: It would be nice to not load all this association
 	// except ONLY when asked
 	// this will reduce the number of queries and joins
+	fmt.Println("I made it here")
+	fmt.Println("userID: ", userID)
 	record, err := dBConn.Talent.Query().
 		WithUser().
 		WithPortfoliolinks().
@@ -370,4 +381,37 @@ func (r *TalentRepository) GetTalentByUserID(userID uuid.UUID) (*decorator.Talen
 		return nil, err
 	}
 	return decorator.DecorateTalent(record), nil
+}
+
+// UpsertMany create or update many talents.
+func (*TalentRepository) UpsertMany(params []*TalentParams) error {
+	builders := make([]*ent.TalentCreate, len(params))
+	for i, p := range params {
+		startDate, err := time.Parse(date.ISOLayout, p.ProfessionalStartDate)
+		if err != nil {
+			log.Println("Error parsing date", err)
+		}
+		builders[i] = dBConn.Talent.
+			Create().
+			SetID(p.ID).
+			SetUserID(p.UserID).
+			SetFirstName(p.FirstName).
+			SetLastName(p.LastName).
+			SetPreferredName(p.PreferredName).
+			SetPronoun(p.Pronoun).
+			SetPreferredJobTitle(p.PreferredJobTitle).
+			SetProfessionalStartDate(startDate).
+			SetEmail(p.Email).
+			SetPhone(p.Phone).
+			SetCountryCode(p.CountryCode).
+			SetCity(p.City).
+			SetUserID(p.UserID).
+			SetJobPreference(p.JobPreference).
+			SetIsAvailable(p.Available).
+			SetTimezone(p.TimeZone).
+			SetState(p.State).
+			SetProfessionalSummary(p.ProfessionalSummary)
+	}
+	return dBConn.Talent.CreateBulk(builders...).
+		Exec(dBContext)
 }
