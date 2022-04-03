@@ -26,3 +26,4 @@ playground.go
 ./rql
 
 routes.json
+data/emails.cache

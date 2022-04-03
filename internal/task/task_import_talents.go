@@ -1,6 +1,7 @@
 package task
 
 import (
+	"bufio"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
@@ -51,7 +52,7 @@ type UpsertUserParams struct {
 }
 
 func (t *ImportTalents) Run(_ string) error {
-	f, err := os.Open("/home/theterminalguy/Downloads/talents.csv")
+	f, err := os.Open("data/talents.csv")
 	if err != nil {
 		return err
 	}
@@ -66,7 +67,18 @@ func (t *ImportTalents) Run(_ string) error {
 	manyWorkExperiences := make([]*repo.WorkExperienceParams, 0)
 
 	csvReader := csv.NewReader(f)
-	emails := make(map[string]bool)
+	// load a file of emails
+	emailFile, err := os.OpenFile("data/emails.cache", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		return err
+	}
+	defer emailFile.Close()
+	// convert the emails to a map
+	emailMap := make(map[string]bool)
+	scanner := bufio.NewScanner(emailFile)
+	for scanner.Scan() {
+		emailMap[scanner.Text()] = true
+	}
 	for {
 		record, err := csvReader.Read()
 		if err == io.EOF {
@@ -78,12 +90,14 @@ func (t *ImportTalents) Run(_ string) error {
 		payload := []byte(record[1])
 		td = extractTalentData(payload)
 		talentsEmail := td.User.Email
-		if ok := emails[talentsEmail]; ok {
+		if ok := emailMap[talentsEmail]; ok {
 			log.Printf("skipping duplicate email: %s", talentsEmail)
 			continue
 		}
 		// update emails map
-		emails[talentsEmail] = true
+		emailMap[talentsEmail] = true
+		// write the new email to the file
+		emailFile.WriteString(talentsEmail + "\n")
 		manyUsers = append(manyUsers, td.User)
 		manyTalents = append(manyTalents, td.Talent)
 		manySkills = append(manySkills, td.Skills...)
@@ -93,6 +107,13 @@ func (t *ImportTalents) Run(_ string) error {
 	}
 	var errs []error
 
+	if len(manyUsers) < 1 {
+		// TODO: this does not check if the users exists in the database,
+		// it only checks if the email already exists in the emails.cache file
+		// not a big deal, since we would throw away this script anyway
+		fmt.Println("No users to upsert. You might want to consider deleting the cache file and resetting the database.")
+		return nil
+	}
 	// Bulk Upsert Users
 	if err := t.UserRepo.UpsertMany(manyUsers); err != nil {
 		errs = append(errs, err)
