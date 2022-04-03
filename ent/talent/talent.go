@@ -50,6 +50,8 @@ const (
 	FieldTimezone = "timezone"
 	// FieldState holds the string denoting the state field in the database.
 	FieldState = "state"
+	// FieldProfessionalSummary holds the string denoting the professional_summary field in the database.
+	FieldProfessionalSummary = "professional_summary"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgePortfoliolinks holds the string denoting the portfoliolinks edge name in mutations.
@@ -147,6 +149,7 @@ var Columns = []string{
 	FieldJobPreference,
 	FieldTimezone,
 	FieldState,
+	FieldProfessionalSummary,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

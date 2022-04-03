@@ -54,6 +54,8 @@ type Talent struct {
 	Timezone string `json:"timezone,omitempty"`
 	// State holds the value of the "state" field.
 	State string `json:"state,omitempty"`
+	// ProfessionalSummary holds the value of the "professional_summary" field.
+	ProfessionalSummary string `json:"professional_summary,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TalentQuery when eager-loading is set.
 	Edges TalentEdges `json:"edges"`
@@ -166,7 +168,7 @@ func (*Talent) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case talent.FieldIsAvailable:
 			values[i] = new(sql.NullBool)
-		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity, talent.FieldJobPreference, talent.FieldTimezone, talent.FieldState:
+		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity, talent.FieldJobPreference, talent.FieldTimezone, talent.FieldState, talent.FieldProfessionalSummary:
 			values[i] = new(sql.NullString)
 		case talent.FieldCreatedAt, talent.FieldUpdatedAt, talent.FieldDeletedAt, talent.FieldProfessionalStartDate:
 			values[i] = new(sql.NullTime)
@@ -302,6 +304,12 @@ func (t *Talent) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				t.State = value.String
 			}
+		case talent.FieldProfessionalSummary:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field professional_summary", values[i])
+			} else if value.Valid {
+				t.ProfessionalSummary = value.String
+			}
 		}
 	}
 	return nil
@@ -408,6 +416,8 @@ func (t *Talent) String() string {
 	builder.WriteString(t.Timezone)
 	builder.WriteString(", state=")
 	builder.WriteString(t.State)
+	builder.WriteString(", professional_summary=")
+	builder.WriteString(t.ProfessionalSummary)
 	builder.WriteByte(')')
 	return builder.String()
 }
