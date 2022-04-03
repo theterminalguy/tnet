@@ -238,6 +238,7 @@ func extractTalentData(record []byte) *TalentData {
 		fmt.Println("\t\tOverview: ", ed.Overview)
 		fmt.Println("\t\tStartDate: ", ed.StartDate)
 		fmt.Println("\t\tEndDate: ", ed.EndDate)
+		fmt.Print("\t\t==========================\n\n")
 	}
 
 	fmt.Println("\tPortfolios: ")
@@ -249,6 +250,7 @@ func extractTalentData(record []byte) *TalentData {
 		fmt.Println("\t\tTalentID: ", p.TalentID)
 		fmt.Println("\t\tName: ", p.Name)
 		fmt.Println("\t\tURL: ", p.URL)
+		fmt.Print("\t\t==========================\n\n")
 	}
 
 	fmt.Println("")

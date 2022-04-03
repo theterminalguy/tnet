@@ -405,6 +405,7 @@ func (*TalentRepository) UpsertMany(params []*TalentParams) error {
 			SetUserID(p.UserID).
 			SetJobPreference(p.JobPreference).
 			SetIsAvailable(p.Available).
+			SetTimezone(p.TimeZone).
 			SetState(p.State).
 			SetProfessionalSummary(p.ProfessionalSummary)
 	}

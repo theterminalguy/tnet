@@ -7827,9 +7827,22 @@ func (m *SkillMutation) OldNote(ctx context.Context) (v string, err error) {
 	return oldValue.Note, nil
 }
 
+// ClearNote clears the value of the "note" field.
+func (m *SkillMutation) ClearNote() {
+	m.note = nil
+	m.clearedFields[skill.FieldNote] = struct{}{}
+}
+
+// NoteCleared returns if the "note" field was cleared in this mutation.
+func (m *SkillMutation) NoteCleared() bool {
+	_, ok := m.clearedFields[skill.FieldNote]
+	return ok
+}
+
 // ResetNote resets all changes to the "note" field.
 func (m *SkillMutation) ResetNote() {
 	m.note = nil
+	delete(m.clearedFields, skill.FieldNote)
 }
 
 // ClearTalent clears the "talent" edge to the Talent entity.
@@ -8067,6 +8080,9 @@ func (m *SkillMutation) ClearedFields() []string {
 	if m.FieldCleared(skill.FieldTalentID) {
 		fields = append(fields, skill.FieldTalentID)
 	}
+	if m.FieldCleared(skill.FieldNote) {
+		fields = append(fields, skill.FieldNote)
+	}
 	return fields
 }
 
@@ -8086,6 +8102,9 @@ func (m *SkillMutation) ClearField(name string) error {
 		return nil
 	case skill.FieldTalentID:
 		m.ClearTalentID()
+		return nil
+	case skill.FieldNote:
+		m.ClearNote()
 		return nil
 	}
 	return fmt.Errorf("unknown Skill nullable field %s", name)

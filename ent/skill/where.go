@@ -752,6 +752,20 @@ func NoteHasSuffix(v string) predicate.Skill {
 	})
 }
 
+// NoteIsNil applies the IsNil predicate on the "note" field.
+func NoteIsNil() predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldNote)))
+	})
+}
+
+// NoteNotNil applies the NotNil predicate on the "note" field.
+func NoteNotNil() predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldNote)))
+	})
+}
+
 // NoteEqualFold applies the EqualFold predicate on the "note" field.
 func NoteEqualFold(v string) predicate.Skill {
 	return predicate.Skill(func(s *sql.Selector) {

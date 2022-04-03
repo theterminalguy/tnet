@@ -316,7 +316,7 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "years_of_experience", Type: field.TypeFloat32},
 		{Name: "preferred", Type: field.TypeBool, Default: false},
-		{Name: "note", Type: field.TypeString, Size: 2147483647},
+		{Name: "note", Type: field.TypeString, Nullable: true},
 		{Name: "talent_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// SkillsTable holds the schema information for the "skills" table.
