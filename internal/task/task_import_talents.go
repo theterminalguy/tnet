@@ -2,6 +2,7 @@ package task
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -35,18 +36,13 @@ type UsertUserParams struct {
 	PreferredJobTitle     string `json:"preferred_job_title"`
 	Email                 string `json:"email"`
 	Phone                 string `json:"phone"`
-	ProfessionSummary     string `json:"profession_summary"`
+	ProfessionalSummary   string `json:"professional_summary"`
 	City                  string `json:"city"`
 	CountryCode           string `json:"country_code"`
 	ProfessionalStartDate string `json:"professional_start_date"`
 }
 
 func (t *ImportTalents) Run(_ string) error {
-	// read CSV file
-	// for each row
-	//   create user
-	//   create talent
-
 	f, err := os.Open("/home/theterminalguy/Downloads/talents.csv")
 	if err != nil {
 		return err
@@ -57,17 +53,44 @@ func (t *ImportTalents) Run(_ string) error {
 	index := 0
 	for {
 		record, err := csvReader.Read()
+		// skip header
+		if index == 0 {
+			index++
+			continue
+		}
 		if err == io.EOF {
 			break
 		}
 		if err != nil {
 			return err
 		}
-		fmt.Println(record[1])
+		payload := record[1]
+		extractUserParams([]byte(payload))
 		if index == 5 {
 			break
 		}
 		index++
 	}
 	return nil
+}
+
+func extractUserParams(record []byte) {
+	var newUser UsertUserParams
+	err := json.Unmarshal(record, &newUser)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("ID: ", newUser.ID)
+	fmt.Println("First Name: ", newUser.FirstName)
+	fmt.Println("Last Name: ", newUser.LastName)
+	fmt.Println("Pronoun: ", newUser.Pronoun)
+	fmt.Println("Preferred Job Title: ", newUser.PreferredJobTitle)
+	fmt.Println("Email: ", newUser.Email)
+	fmt.Println("Phone: ", newUser.Phone)
+	fmt.Println("Professional Summary", newUser.ProfessionalSummary)
+	fmt.Println("City: ", newUser.City)
+	fmt.Println("Country Code: ", newUser.CountryCode)
+	fmt.Println("Start Date: ", newUser.ProfessionalStartDate)
+	fmt.Println("==========================")
+	fmt.Print("\n")
 }
