@@ -172,6 +172,20 @@ func (tc *TalentCreate) SetState(s string) *TalentCreate {
 	return tc
 }
 
+// SetProfessionalSummary sets the "professional_summary" field.
+func (tc *TalentCreate) SetProfessionalSummary(s string) *TalentCreate {
+	tc.mutation.SetProfessionalSummary(s)
+	return tc
+}
+
+// SetNillableProfessionalSummary sets the "professional_summary" field if the given value is not nil.
+func (tc *TalentCreate) SetNillableProfessionalSummary(s *string) *TalentCreate {
+	if s != nil {
+		tc.SetProfessionalSummary(*s)
+	}
+	return tc
+}
+
 // SetID sets the "id" field.
 func (tc *TalentCreate) SetID(u uuid.UUID) *TalentCreate {
 	tc.mutation.SetID(u)
@@ -614,6 +628,14 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 		})
 		_node.State = value
 	}
+	if value, ok := tc.mutation.ProfessionalSummary(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: talent.FieldProfessionalSummary,
+		})
+		_node.ProfessionalSummary = value
+	}
 	if nodes := tc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1049,6 +1071,24 @@ func (u *TalentUpsert) UpdateState() *TalentUpsert {
 	return u
 }
 
+// SetProfessionalSummary sets the "professional_summary" field.
+func (u *TalentUpsert) SetProfessionalSummary(v string) *TalentUpsert {
+	u.Set(talent.FieldProfessionalSummary, v)
+	return u
+}
+
+// UpdateProfessionalSummary sets the "professional_summary" field to the value that was provided on create.
+func (u *TalentUpsert) UpdateProfessionalSummary() *TalentUpsert {
+	u.SetExcluded(talent.FieldProfessionalSummary)
+	return u
+}
+
+// ClearProfessionalSummary clears the value of the "professional_summary" field.
+func (u *TalentUpsert) ClearProfessionalSummary() *TalentUpsert {
+	u.SetNull(talent.FieldProfessionalSummary)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -1365,6 +1405,27 @@ func (u *TalentUpsertOne) SetState(v string) *TalentUpsertOne {
 func (u *TalentUpsertOne) UpdateState() *TalentUpsertOne {
 	return u.Update(func(s *TalentUpsert) {
 		s.UpdateState()
+	})
+}
+
+// SetProfessionalSummary sets the "professional_summary" field.
+func (u *TalentUpsertOne) SetProfessionalSummary(v string) *TalentUpsertOne {
+	return u.Update(func(s *TalentUpsert) {
+		s.SetProfessionalSummary(v)
+	})
+}
+
+// UpdateProfessionalSummary sets the "professional_summary" field to the value that was provided on create.
+func (u *TalentUpsertOne) UpdateProfessionalSummary() *TalentUpsertOne {
+	return u.Update(func(s *TalentUpsert) {
+		s.UpdateProfessionalSummary()
+	})
+}
+
+// ClearProfessionalSummary clears the value of the "professional_summary" field.
+func (u *TalentUpsertOne) ClearProfessionalSummary() *TalentUpsertOne {
+	return u.Update(func(s *TalentUpsert) {
+		s.ClearProfessionalSummary()
 	})
 }
 
@@ -1850,6 +1911,27 @@ func (u *TalentUpsertBulk) SetState(v string) *TalentUpsertBulk {
 func (u *TalentUpsertBulk) UpdateState() *TalentUpsertBulk {
 	return u.Update(func(s *TalentUpsert) {
 		s.UpdateState()
+	})
+}
+
+// SetProfessionalSummary sets the "professional_summary" field.
+func (u *TalentUpsertBulk) SetProfessionalSummary(v string) *TalentUpsertBulk {
+	return u.Update(func(s *TalentUpsert) {
+		s.SetProfessionalSummary(v)
+	})
+}
+
+// UpdateProfessionalSummary sets the "professional_summary" field to the value that was provided on create.
+func (u *TalentUpsertBulk) UpdateProfessionalSummary() *TalentUpsertBulk {
+	return u.Update(func(s *TalentUpsert) {
+		s.UpdateProfessionalSummary()
+	})
+}
+
+// ClearProfessionalSummary clears the value of the "professional_summary" field.
+func (u *TalentUpsertBulk) ClearProfessionalSummary() *TalentUpsertBulk {
+	return u.Update(func(s *TalentUpsert) {
+		s.ClearProfessionalSummary()
 	})
 }
 

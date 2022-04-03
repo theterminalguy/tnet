@@ -286,6 +286,10 @@ func extractTalentData(record []byte) *TalentData {
 
 	//fmt.Println("")
 
+	fmt.Println("User ID: ", user.ID)
+	fmt.Println("Talent ID: ", talent.ID)
+	fmt.Print("==========================\n\n")
+
 	return &TalentData{
 		User:            user,
 		Talent:          talent,
