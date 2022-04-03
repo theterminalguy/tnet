@@ -265,19 +265,14 @@ func (r *WorkExperienceRepository) GetWorkExperienceByTalentID(talentID uuid.UUI
 func (*WorkExperienceRepository) UpsertMany(params []*WorkExperienceParams) error {
 	builders := make([]*ent.WorkExperienceCreate, len(params))
 	for i, p := range params {
-		sd, err := date.JSStringToRFC3339(p.StartDate)
+		sd, err := date.DateStringToTime(p.StartDate)
 		if err != nil {
 			return err
 		}
 
 		var ed *time.Time
 		if p.EndDate != "" {
-			ed, err = date.JSStringToRFC3339(p.EndDate)
-			if err != nil {
-				return err
-			}
-
-			err = IsEqual(*sd, *ed)
+			ed, err = date.DateStringToTime(p.EndDate)
 			if err != nil {
 				return err
 			}
@@ -296,7 +291,5 @@ func (*WorkExperienceRepository) UpsertMany(params []*WorkExperienceParams) erro
 
 	}
 	return dBConn.WorkExperience.CreateBulk(builders...).
-		OnConflictColumns(workexperience.FieldCompanyName, workexperience.FieldJobTitle).
-		UpdateNewValues().
 		Exec(dBContext)
 }

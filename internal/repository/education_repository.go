@@ -264,19 +264,14 @@ func (r *EducationRepository) GetEducationByTalentID(talentID uuid.UUID) (*ent.E
 func (*EducationRepository) UpsertMany(params []*EducationParams) error {
 	builders := make([]*ent.EducationCreate, len(params))
 	for i, p := range params {
-		sd, err := date.JSStringToRFC3339(p.StartDate)
+		sd, err := date.DateStringToTime(p.StartDate)
 		if err != nil {
 			return err
 		}
 
 		var ed *time.Time
 		if p.EndDate != "" {
-			ed, err = date.JSStringToRFC3339(p.EndDate)
-			if err != nil {
-				return err
-			}
-
-			err = IsEqual(*sd, *ed)
+			ed, err = date.DateStringToTime(p.EndDate)
 			if err != nil {
 				return err
 			}
@@ -294,7 +289,5 @@ func (*EducationRepository) UpsertMany(params []*EducationParams) error {
 			SetNillableEndDate(ed)
 	}
 	return dBConn.Education.CreateBulk(builders...).
-		OnConflictColumns(education.FieldInstitutionName, education.FieldDegree).
-		UpdateNewValues().
 		Exec(dBContext)
 }

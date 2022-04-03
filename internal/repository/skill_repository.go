@@ -223,7 +223,5 @@ func (*SkillRepository) UpsertMany(params []*SkillParams) error {
 			SetPreferred(p.Preferred)
 	}
 	return dBConn.Skill.CreateBulk(builders...).
-		OnConflictColumns(skill.FieldName).
-		UpdateNewValues().
 		Exec(dBContext)
 }

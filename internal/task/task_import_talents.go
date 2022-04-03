@@ -66,6 +66,7 @@ func (t *ImportTalents) Run(_ string) error {
 	manyWorkExperiences := make([]*repo.WorkExperienceParams, 0)
 
 	csvReader := csv.NewReader(f)
+	emails := make(map[string]bool)
 	for {
 		record, err := csvReader.Read()
 		if err == io.EOF {
@@ -76,6 +77,13 @@ func (t *ImportTalents) Run(_ string) error {
 		}
 		payload := []byte(record[1])
 		td = extractTalentData(payload)
+		talentsEmail := td.User.Email
+		if ok := emails[talentsEmail]; ok {
+			log.Printf("skipping duplicate email: %s", talentsEmail)
+			continue
+		}
+		// update emails map
+		emails[talentsEmail] = true
 		manyUsers = append(manyUsers, td.User)
 		manyTalents = append(manyTalents, td.Talent)
 		manySkills = append(manySkills, td.Skills...)
@@ -83,36 +91,47 @@ func (t *ImportTalents) Run(_ string) error {
 		manyEducations = append(manyEducations, td.Educations...)
 		manyWorkExperiences = append(manyWorkExperiences, td.WorkExperiences...)
 	}
+	var errs []error
+
 	// Bulk Upsert Users
 	if err := t.UserRepo.UpsertMany(manyUsers); err != nil {
+		errs = append(errs, err)
 		log.Println("Error upserting users:", err)
 	}
 
 	// Bulk Upsert Talents
 	if err := t.TalentRepo.UpsertMany(manyTalents); err != nil {
+		errs = append(errs, err)
 		log.Println("Error upserting talents:", err)
 	}
 
 	// Bulk Upsert Skills
 	if err := t.SkillsRepo.UpsertMany(manySkills); err != nil {
+		errs = append(errs, err)
 		log.Println("Error upserting skills:", err)
 	}
 
 	// Bulk Upsert Portfolios
 	if err := t.PortfolioRepo.UpsertMany(manyPortfolios); err != nil {
+		errs = append(errs, err)
 		log.Println("Error upserting portfolios:", err)
 	}
 
 	// Bulk Upsert Educations
 	if err := t.EduRepo.UpsertMany(manyEducations); err != nil {
+		errs = append(errs, err)
 		log.Println("Error upserting educations:", err)
 	}
 
 	// Bulk Upsert Work Experiences
 	if err := t.WorkRepo.UpsertMany(manyWorkExperiences); err != nil {
+		errs = append(errs, err)
 		log.Println("Error upserting work experiences:", err)
 	}
 
+	if len(errs) > 0 {
+		return fmt.Errorf("%v", errs)
+	}
 	return nil
 }
 
@@ -145,7 +164,7 @@ func extractTalentData(record []byte) *TalentData {
 		Approved: true,
 	}
 
-	fmt.Println(user.FirstName + " " + user.LastName)
+	/*fmt.Println(user.FirstName + " " + user.LastName)
 	fmt.Println("\tID: ", user.ID)
 	fmt.Println("\tFirst Name: ", user.FirstName)
 	fmt.Println("\tLast Name: ", user.LastName)
@@ -153,7 +172,7 @@ func extractTalentData(record []byte) *TalentData {
 	fmt.Println("\tEmail: ", user.Email)
 	fmt.Println("\tRole: ", user.Role)
 	fmt.Println("\tApproved: ", user.Approved)
-	fmt.Print("\t==========================\n\n")
+	fmt.Print("\t==========================\n\n")*/
 
 	talent := &repo.TalentParams{
 		ID:                    uuid.New(),
@@ -175,85 +194,100 @@ func extractTalentData(record []byte) *TalentData {
 		ProfessionalSummary:   fmt.Sprintf("An experienced %s", uup.PreferredJobTitle),
 	}
 
-	fmt.Println("\tTalent: ")
-	fmt.Println("\t\tID: ", talent.ID)
-	fmt.Println("\t\tUserID: ", talent.UserID)
-	fmt.Println("\t\tFirst Name: ", talent.FirstName)
-	fmt.Println("\t\tLast Name: ", talent.LastName)
-	fmt.Println("\t\tEmail: ", talent.Email)
-	fmt.Println("\t\tPreferred Name: ", talent.PreferredName)
-	fmt.Println("\t\tPronoun: ", talent.Pronoun)
-	fmt.Println("\t\tPreferred Job Title: ", talent.PreferredJobTitle)
-	fmt.Println("\t\tPhone: ", talent.Phone)
-	fmt.Println("\t\tCountry Code: ", talent.CountryCode)
-	fmt.Println("\t\tCity: ", talent.City)
-	fmt.Println("\t\tState: ", talent.State)
-	fmt.Println("\t\tTimeZone: ", talent.TimeZone)
-	fmt.Println("\t\tJob Preference: ", talent.JobPreference)
-	fmt.Println("\t\tAvailable: ", talent.Available)
-	fmt.Println("\t\tProfessional Summary: ", talent.ProfessionalSummary)
+	/*
+		fmt.Println("\tTalent: ")
+		fmt.Println("\t\tID: ", talent.ID)
+		fmt.Println("\t\tUserID: ", talent.UserID)
+		fmt.Println("\t\tFirst Name: ", talent.FirstName)
+		fmt.Println("\t\tLast Name: ", talent.LastName)
+		fmt.Println("\t\tEmail: ", talent.Email)
+		fmt.Println("\t\tPreferred Name: ", talent.PreferredName)
+		fmt.Println("\t\tPronoun: ", talent.Pronoun)
+		fmt.Println("\t\tPreferred Job Title: ", talent.PreferredJobTitle)
+		fmt.Println("\t\tPhone: ", talent.Phone)
+		fmt.Println("\t\tCountry Code: ", talent.CountryCode)
+		fmt.Println("\t\tCity: ", talent.City)
+		fmt.Println("\t\tState: ", talent.State)
+		fmt.Println("\t\tTimeZone: ", talent.TimeZone)
+		fmt.Println("\t\tJob Preference: ", talent.JobPreference)
+		fmt.Println("\t\tAvailable: ", talent.Available)
+		fmt.Println("\t\tProfessional Summary: ", talent.ProfessionalSummary)
 
-	fmt.Println("\tSkills: ")
+		fmt.Println("\tSkills: ")
+	*/
 	for _, skill := range uup.Skills {
 		// update skill IDs
 		skill.ID = uuid.New()
 		skill.TalentID = talent.ID
 		skill.Preferred = true
-		fmt.Println("\t\tID: ", skill.ID)
-		fmt.Println("\t\tTalentID: ", skill.TalentID)
-		fmt.Println("\t\tYears Of Experience: ", skill.YearsOfExperience)
-		fmt.Println("\t\tPreferred: ", skill.Preferred)
-		fmt.Println("\t\tNote: ", skill.Note)
-		fmt.Println("\t\tName: ", skill.Name)
-		fmt.Print("\t\t==========================\n\n")
+		if skill.YearsOfExperience < 1.0 {
+			skill.YearsOfExperience = 1.0
+		}
+		/*
+			fmt.Println("\t\tID: ", skill.ID)
+			fmt.Println("\t\tTalentID: ", skill.TalentID)
+			fmt.Println("\t\tYears Of Experience: ", skill.YearsOfExperience)
+			fmt.Println("\t\tPreferred: ", skill.Preferred)
+			fmt.Println("\t\tNote: ", skill.Note)
+			fmt.Println("\t\tName: ", skill.Name)
+			fmt.Print("\t\t==========================\n\n")
+		*/
 	}
 
-	fmt.Println("\tWork Experiences: ")
+	//fmt.Println("\tWork Experiences: ")
 	for _, we := range uup.WorkExperiences {
 		// update work experience IDs
 		we.ID = uuid.New()
 		we.TalentID = talent.ID
-		fmt.Println("\t\tID: ", we.ID)
-		fmt.Println("\t\tTalentID: ", we.TalentID)
-		fmt.Println("\t\tCompany: ", we.CompanyName)
-		fmt.Println("\t\tJob Title: ", we.JobTitle)
-		fmt.Println("\t\tPrimary Technologies: ", we.PrimaryTechnologies)
-		fmt.Println("\t\tDescription: ", we.Description)
-		fmt.Println("\t\tStartDate: ", we.StartDate)
-		fmt.Println("\t\tEndDate: ", we.EndDate)
-		fmt.Print("\t\t==========================\n\n")
+		/*
+			fmt.Println("\t\tID: ", we.ID)
+			fmt.Println("\t\tTalentID: ", we.TalentID)
+			fmt.Println("\t\tCompany: ", we.CompanyName)
+			fmt.Println("\t\tJob Title: ", we.JobTitle)
+			fmt.Println("\t\tPrimary Technologies: ", we.PrimaryTechnologies)
+			fmt.Println("\t\tDescription: ", we.Description)
+			fmt.Println("\t\tStartDate: ", we.StartDate)
+			fmt.Println("\t\tEndDate: ", we.EndDate)
+			fmt.Print("\t\t==========================\n\n")
+		*/
 	}
 
-	fmt.Println("\tEducations: ")
+	// fmt.Println("\tEducations: ")
 	for _, ed := range uup.Educations {
+		if ed.StartDate == ed.EndDate {
+			fmt.Println("nope")
+		}
 		// update education IDs
 		ed.ID = uuid.New()
 		ed.TalentID = talent.ID
-		fmt.Println("\t\tID: ", ed.ID)
-		fmt.Println("\t\tTalentID: ", ed.TalentID)
-		fmt.Println("\t\tInstitution Name: ", ed.InstitutionName)
-		fmt.Println("\t\tLocation: ", ed.Location)
-		fmt.Println("\t\tDegree: ", ed.Degree)
-		fmt.Println("\t\tProgram: ", ed.Program)
-		fmt.Println("\t\tOverview: ", ed.Overview)
-		fmt.Println("\t\tStartDate: ", ed.StartDate)
-		fmt.Println("\t\tEndDate: ", ed.EndDate)
-		fmt.Print("\t\t==========================\n\n")
+		/*
+			fmt.Println("\t\tID: ", ed.ID)
+			fmt.Println("\t\tTalentID: ", ed.TalentID)
+			fmt.Println("\t\tInstitution Name: ", ed.InstitutionName)
+			fmt.Println("\t\tLocation: ", ed.Location)
+			fmt.Println("\t\tDegree: ", ed.Degree)
+			fmt.Println("\t\tProgram: ", ed.Program)
+			fmt.Println("\t\tOverview: ", ed.Overview)
+			fmt.Println("\t\tStartDate: ", ed.StartDate)
+			fmt.Println("\t\tEndDate: ", ed.EndDate)
+			fmt.Print("\t\t==========================\n\n")
+		*/
 	}
 
-	fmt.Println("\tPortfolios: ")
+	// fmt.Println("\tPortfolios: ")
 	for _, p := range uup.Portfolios {
 		// update portfolio IDs
 		p.ID = uuid.New()
 		p.TalentID = talent.ID
-		fmt.Println("\t\tID: ", p.ID)
+		/*fmt.Println("\t\tID: ", p.ID)
 		fmt.Println("\t\tTalentID: ", p.TalentID)
 		fmt.Println("\t\tName: ", p.Name)
 		fmt.Println("\t\tURL: ", p.URL)
 		fmt.Print("\t\t==========================\n\n")
+		*/
 	}
 
-	fmt.Println("")
+	//fmt.Println("")
 
 	return &TalentData{
 		User:            user,

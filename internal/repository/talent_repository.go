@@ -410,7 +410,5 @@ func (*TalentRepository) UpsertMany(params []*TalentParams) error {
 			SetProfessionalSummary(p.ProfessionalSummary)
 	}
 	return dBConn.Talent.CreateBulk(builders...).
-		OnConflictColumns(talent.FieldEmail).
-		UpdateNewValues().
 		Exec(dBContext)
 }

@@ -129,8 +129,5 @@ func (*UserRepository) UpsertMany(params []*UserParams) error {
 			SetRole(userrole.Talent).
 			SetApproved(p.Approved)
 	}
-	return dBConn.User.CreateBulk(builders...).
-		OnConflictColumns(user.FieldEmail).
-		UpdateNewValues().
-		Exec(dBContext)
+	return dBConn.User.CreateBulk(builders...).Exec(dBContext)
 }

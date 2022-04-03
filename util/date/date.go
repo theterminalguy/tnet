@@ -18,3 +18,11 @@ func JSStringToRFC3339(dt string) (*time.Time, error) {
 func ToRFC3339(dt time.Time) string {
 	return dt.Format(time.RFC3339)
 }
+
+func DateStringToTime(dt string) (*time.Time, error) {
+	t, err := time.Parse(ISOLayout, dt)
+	if err != nil {
+		return nil, err
+	}
+	return &t, nil
+}

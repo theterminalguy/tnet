@@ -187,7 +187,5 @@ func (*PortfolioLinkRepository) UpsertMany(params []*PortfolioLinkParams) error 
 			SetURL(p.URL)
 	}
 	return dBConn.PortfolioLink.CreateBulk(builders...).
-		OnConflictColumns(portfoliolink.FieldURL).
-		UpdateNewValues().
 		Exec(dBContext)
 }
