@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"log"
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
@@ -28,6 +29,7 @@ type TalentQuerier interface {
 type TalentRepository struct{}
 
 type TalentParams struct {
+	ID                    uuid.UUID
 	UserID                uuid.UUID            `json:"user_id" validate:"required"`
 	FirstName             string               `json:"first_name" validate:"required"`
 	LastName              string               `json:"last_name" validate:"required"`
@@ -370,4 +372,38 @@ func (r *TalentRepository) GetTalentByUserID(userID uuid.UUID) (*decorator.Talen
 		return nil, err
 	}
 	return decorator.DecorateTalent(record), nil
+}
+
+// UpsertMany create or update many talents.
+func (*TalentRepository) UpsertMany(params []TalentParams) error {
+	builders := make([]*ent.TalentCreate, len(params))
+	for i, p := range params {
+		startDate, err := time.Parse(date.ISOLayout, p.ProfessionalStartDate)
+		if err != nil {
+			log.Println("Error parsing date", err)
+		}
+		builders[i] = dBConn.Talent.
+			Create().
+			SetID(p.ID).
+			SetUserID(p.UserID).
+			SetFirstName(p.FirstName).
+			SetLastName(p.LastName).
+			SetPreferredName(p.PreferredName).
+			SetPronoun(p.Pronoun).
+			SetPreferredJobTitle(p.PreferredJobTitle).
+			SetProfessionalStartDate(startDate).
+			SetEmail(p.Email).
+			SetPhone(p.Phone).
+			SetCountryCode(p.CountryCode).
+			SetCity(p.City).
+			SetUserID(p.UserID).
+			SetJobPreference(p.JobPreference).
+			SetIsAvailable(p.Available).
+			SetTimezone("WAT").
+			SetState(p.State)
+	}
+	return dBConn.Talent.CreateBulk(builders...).
+		OnConflictColumns(talent.FieldEmail).
+		UpdateNewValues().
+		Exec(dBContext)
 }

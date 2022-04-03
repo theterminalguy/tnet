@@ -115,7 +115,6 @@ func (r *UserRepository) DeleteByID(id uuid.UUID) error {
 
 // UpsertMany create or update many users.
 func (*UserRepository) UpsertMany(params []UserParams) error {
-	// TODO: should we skip existing users? i.e. users with the same email
 	builders := make([]*ent.UserCreate, len(params))
 	for i, p := range params {
 		builders[i] = dBConn.User.
@@ -123,12 +122,11 @@ func (*UserRepository) UpsertMany(params []UserParams) error {
 			SetID(p.ID).
 			SetFirstName(p.FirstName).
 			SetLastName(p.LastName).
-			SetPhotoURL(p.PhotoURL). // Fetch from Github or use default
+			SetPhotoURL(p.PhotoURL).
 			SetEmail(p.Email).
 			SetRole(userrole.Talent).
 			SetApproved(true)
 	}
-	//users, err := dBConn.User.CreateBulk(builders...).Save(dBContext)
 	return dBConn.User.CreateBulk(builders...).
 		OnConflictColumns(user.FieldEmail).
 		UpdateNewValues().
