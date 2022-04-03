@@ -28,7 +28,7 @@ func (t *ImportTalents) CreateFakeTalent() error {
 	return nil
 }
 
-type UsertUserParams struct {
+type UpsertUserParams struct {
 	ID                    uuid.UUID
 	FirstName             string `json:"first_name"`
 	LastName              string `json:"last_name"`
@@ -40,6 +40,11 @@ type UsertUserParams struct {
 	City                  string `json:"city"`
 	CountryCode           string `json:"country_code"`
 	ProfessionalStartDate string `json:"professional_start_date"`
+	Talent                *repo.TalentParams
+	Educations            []repo.EducationParams      `json:"educations"`
+	WorkExperiences       []repo.WorkExperienceParams `json:"experiences"`
+	Skills                []repo.SkillParams          `json:"skills"`
+	Portfolios            []repo.PortfolioLinkParams  `json:"portfolios"`
 }
 
 func (t *ImportTalents) Run(_ string) error {
@@ -53,11 +58,6 @@ func (t *ImportTalents) Run(_ string) error {
 	index := 0
 	for {
 		record, err := csvReader.Read()
-		// skip header
-		if index == 0 {
-			index++
-			continue
-		}
 		if err == io.EOF {
 			break
 		}
@@ -65,7 +65,7 @@ func (t *ImportTalents) Run(_ string) error {
 			return err
 		}
 		payload := record[1]
-		extractUserParams([]byte(payload))
+		bulkUpsertTalent([]byte(payload))
 		if index == 5 {
 			break
 		}
@@ -74,8 +74,8 @@ func (t *ImportTalents) Run(_ string) error {
 	return nil
 }
 
-func extractUserParams(record []byte) {
-	var newUser UsertUserParams
+func bulkUpsertTalent(record []byte) {
+	var newUser UpsertUserParams
 	err := json.Unmarshal(record, &newUser)
 	if err != nil {
 		panic(err)
