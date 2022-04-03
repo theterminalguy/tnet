@@ -45,6 +45,7 @@ type TalentParams struct {
 	Available             bool                 `json:"available"`
 	TimeZone              string               `json:"timezone" validate:"required"`
 	State                 string               `json:"state" validate:"required"`
+	ProfessionalSummary   string               `json:"professional_summary" validate:"required"`
 }
 
 func NewTalentRepository() *TalentRepository {
