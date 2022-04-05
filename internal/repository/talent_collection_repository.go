@@ -5,6 +5,7 @@ import (
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/talentcollection"
+	"github.com/10hourlabs/tentn/oneword"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
 )
@@ -85,8 +86,11 @@ func (r *TalentCollectionRepository) Update(id uuid.UUID, p TalentCollectionPara
 		return nil, err
 	}
 	prevName := record.Name
-	if p.Name == "" {
+	if prevName == oneword.Favorite {
 		p.Name = prevName
+	}
+	if p.Name == "" {
+		return nil, errors.New("name is required")
 	}
 	setUUIDsForUpdate(record, p.TalentIDS)
 	_, err = record.Update().
