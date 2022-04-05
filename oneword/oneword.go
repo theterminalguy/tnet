@@ -60,4 +60,6 @@ const (
 
 	// Others
 	Jobs string = "jobs"
+
+	Favorite = "favorite"
 )

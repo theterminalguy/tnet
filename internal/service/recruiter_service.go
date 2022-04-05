@@ -4,11 +4,13 @@ import (
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/oneword"
 )
 
 type RecruiterService struct {
-	UserRepo     *repo.UserRepository
-	SlackAppRepo *repo.SlackAppInstallRepository
+	UserRepo       *repo.UserRepository
+	SlackAppRepo   *repo.SlackAppInstallRepository
+	CollectionRepo *repo.TalentCollectionRepository
 }
 
 func NewRecruiterService() *RecruiterService {
@@ -36,6 +38,11 @@ func (rs *RecruiterService) InstallSlackApp(up repo.UserParams, sp repo.SlackApp
 		if _, err := rs.SlackAppRepo.Create(sp); err != nil {
 			return nil, err
 		}
+		// create a new "Favorite" collection for the recruiter
+		rs.CollectionRepo.Create(repo.TalentCollectionParams{
+			UserID: recruiter.ID,
+			Name:   oneword.Favorite,
+		})
 		return recruiter, nil
 	}
 	return nil, err

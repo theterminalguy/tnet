@@ -4,18 +4,21 @@ import (
 	"net/http"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 type V1TalentCollectionHandler struct {
-	TalentCollectionRepo repo.TalentCollectionRepository
+	TalentCollectionRepo    repo.TalentCollectionRepository
+	TalentCollectionService service.TalentCollectionService
 }
 
 func NewV1TalentCollectionHandler() *V1TalentCollectionHandler {
 	return &V1TalentCollectionHandler{
-		TalentCollectionRepo: *repo.NewTalentCollectionRepository(),
+		TalentCollectionRepo:    *repo.NewTalentCollectionRepository(),
+		TalentCollectionService: *service.NewTalentCollectionService(),
 	}
 }
 
@@ -89,7 +92,16 @@ func (h *V1TalentCollectionHandler) UpdateByID(c echo.Context) error {
 		}
 		return c.JSON(http.StatusOK, record)
 	}
-	record, err := currentRecruiter.UpdateTalentCollection(id, *params)
+	// TODO: Add support for adding talents to the collection
+	//record, err := currentRecruiter.UpdateTalentCollection(id, *params)
+	record, err := currentRecruiter.GetTalentCollectionByID(id)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	if record.Name != oneword.Favorite {
+		return c.String(http.StatusBadRequest, "Only favorite collection can be updated")
+	}
+	record, err = h.TalentCollectionService.AddToFavorite(id, *params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
