@@ -72,6 +72,7 @@ func (*TalentRepository) Filter(page string, prd ...predicate.Talent) (*paginato
 		WithPortfoliolinks().
 		WithSkills().
 		Where(prd...).
+		Order(ent.Desc(talent.FieldProfessionalStartDate)).
 		Limit(paginator.MaxResults).
 		Offset(pager.GetOffset()).
 		All(dBContext)
