@@ -35,6 +35,9 @@ func (t *TalentCollectionService) AddToFavorite(id uuid.UUID, p repo.TalentColle
 	if len(collection.TalentUuids) >= MaxNumOfFavoriteTalents {
 		return nil, ErrFavoriteCollectionExceedsMaxNumOfTalents
 	}
+	if len(p.TalentIDS) > MaxNumOfFavoriteTalents {
+		return nil, ErrFavoriteCollectionExceedsMaxNumOfTalents
+	}
 	record, err := t.TalentCollectionRepo.Update(id, p)
 	if err != nil {
 		return nil, err

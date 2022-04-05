@@ -84,6 +84,10 @@ func (r *TalentCollectionRepository) Update(id uuid.UUID, p TalentCollectionPara
 	if err != nil {
 		return nil, err
 	}
+	prevName := record.Name
+	if p.Name == "" {
+		p.Name = prevName
+	}
 	setUUIDsForUpdate(record, p.TalentIDS)
 	_, err = record.Update().
 		SetName(p.Name).
