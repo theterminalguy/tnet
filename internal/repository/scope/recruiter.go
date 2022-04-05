@@ -6,6 +6,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/talentcollection"
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/google/uuid"
 )
 
@@ -86,6 +87,9 @@ func (r *RecruiterScope) UpdateTalentCollection(collectionID uuid.UUID, params r
 	if err != nil {
 		return nil, err
 	}
-	tRepo := repo.NewTalentCollectionRepository()
-	return tRepo.Update(talentCollection.ID, params)
+	// TODO: uncomment the below lines when we support multiple collections
+	// tRepo := repo.NewTalentCollectionRepository()
+	// return tRepo.Update(talentCollection.ID, params)
+	tcs := service.NewTalentCollectionService()
+	return tcs.AddToFavorite(talentCollection.ID, params)
 }
