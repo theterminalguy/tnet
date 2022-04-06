@@ -132,7 +132,7 @@ func (*TalentRepository) GetByID(id uuid.UUID) (*ent.Talent, error) {
 }
 
 func (r *TalentRepository) Create(p TalentParams) (*decorator.TalentResponse, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}
@@ -171,7 +171,7 @@ func (r *TalentRepository) Create(p TalentParams) (*decorator.TalentResponse, er
 }
 
 func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.TalentResponse, []error) {
-	err := validateParams(p, "TalentID")
+	err := ValidateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -184,7 +184,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 
 	// Set and Validate FirstName if provided
 	if vldErr := setNillableStringField(p.FirstName, func(v string) error {
-		err := validateParams(p, "FirstName")
+		err := ValidateParams(p, "FirstName")
 		if err != nil {
 			return err
 		}
@@ -196,7 +196,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 
 	// Set and Validate LastName if provided
 	if vldErr := setNillableStringField(p.LastName, func(v string) error {
-		err := validateParams(p, "LastName")
+		err := ValidateParams(p, "LastName")
 		if err != nil {
 			return err
 		}
@@ -208,7 +208,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 
 	// Set and Validate PreferredName if provided
 	if vldErr := setNillableStringField(p.PreferredName, func(program string) error {
-		err := validateParams(p, "PreferredName")
+		err := ValidateParams(p, "PreferredName")
 		if err != nil {
 			return err
 		}
@@ -220,7 +220,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 
 	// Set and Validate Pronoun if provided
 	if vldErr := setNillableStringField(p.Pronoun, func(v string) error {
-		err := validateParams(p, "Pronoun")
+		err := ValidateParams(p, "Pronoun")
 		if err != nil {
 			return err
 		}
@@ -232,7 +232,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 
 	// Set and Validate PreferredJobTitle if provided
 	if vldErr := setNillableStringField(p.PreferredJobTitle, func(v string) error {
-		err := validateParams(p, "PreferredJobTitle")
+		err := ValidateParams(p, "PreferredJobTitle")
 		if err != nil {
 			return err
 		}
@@ -244,7 +244,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 
 	// Set and Validate Phone if provided
 	if vldErr := setNillableStringField(p.Phone, func(v string) error {
-		err := validateParams(p, "Phone")
+		err := ValidateParams(p, "Phone")
 		if err != nil {
 			return err
 		}
@@ -256,7 +256,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 
 	// Set and Validate CountryCode if provided
 	if vldErr := setNillableStringField(p.CountryCode, func(v string) error {
-		err := validateParams(p, "CountryCode")
+		err := ValidateParams(p, "CountryCode")
 		if err != nil {
 			return err
 		}
@@ -268,7 +268,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 
 	// Set and Validate City if provided
 	if vldErr := setNillableStringField(p.City, func(v string) error {
-		err := validateParams(p, "City")
+		err := ValidateParams(p, "City")
 		if err != nil {
 			return err
 		}
@@ -280,7 +280,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 
 	// Set and Validate JobPreference if provided
 	if vldErr := setNillableStringField(string(p.JobPreference), func(v string) error {
-		err := validateParams(p, "JobPreference")
+		err := ValidateParams(p, "JobPreference")
 		if err != nil {
 			return err
 		}
@@ -292,7 +292,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 
 	// Set and Validate TimeZone if provided
 	if vldErr := setNillableStringField(p.TimeZone, func(v string) error {
-		err := validateParams(p, "TimeZone")
+		err := ValidateParams(p, "TimeZone")
 		if err != nil {
 			return err
 		}
@@ -308,7 +308,7 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 
 	// Set and Validate State if provided
 	if vldErr := setNillableStringField(p.State, func(v string) error {
-		err := validateParams(p, "State")
+		err := ValidateParams(p, "State")
 		if err != nil {
 			return err
 		}
@@ -322,9 +322,25 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 		bldr.SetProfessionalSummary(p.ProfessionalSummary)
 	}
 
+	// Set and Validate JobPreference if provided
+	/*if vldErr := setNillableJSONArrayField(p.JobPreference, func(v []string) error {
+		res := LinearCheckElemArray(p.JobPreference, schema.EmploymentTypes())
+		if !res {
+			return errors.New("unknown job preference")
+		}
+		err := ValidateParams(p, "JobPreference")
+		if err != nil {
+			return err
+		}
+		bldr.SetJobPreference(p.JobPreference)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}*/
+
 	// Set and Validate IsAvailable if provided
 	if vldErr := setNillableBoolField(p.Available, func(v bool) error {
-		err := validateParams(p, "IsAvailable")
+		err := ValidateParams(p, "IsAvailable")
 		if err != nil {
 			return err
 		}

@@ -41,7 +41,7 @@ func (*{{.Entity}}Repository) GetByUUID(id uuid.UUID) (*ent.{{.Entity}}, error) 
 }
 
 func (*{{.Entity}}Repository) Create(p {{.Entity}}Params) (*ent.{{.Entity}}, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (*{{.Entity}}Repository) Create(p {{.Entity}}Params) (*ent.{{.Entity}}, err
 }
 
 func (r *{{.Entity}}Repository) Update(id uuid.UUID, p {{.Entity}}Params) (*ent.{{.Entity}}, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}

@@ -63,7 +63,7 @@ func (*EmailTemplateRepository) GetByID(id uuid.UUID) (*ent.EmailTemplate, error
 }
 
 func (*EmailTemplateRepository) Create(p EmailTemplateParams) (*ent.EmailTemplate, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (*EmailTemplateRepository) Create(p EmailTemplateParams) (*ent.EmailTemplat
 }
 
 func (r *EmailTemplateRepository) Update(id uuid.UUID, p EmailTemplateParams) (*ent.EmailTemplate, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}

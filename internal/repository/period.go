@@ -21,7 +21,7 @@ func (p *DatePeriod) IsValid(cb func(startdate, enddate *time.Time)) error {
 
 	var sd, ed *time.Time
 	if p.StartDate != "" {
-		err := validateParams(p, "StartDate")
+		err := ValidateParams(p, "StartDate")
 		if err != nil {
 			return err
 		}
@@ -32,7 +32,7 @@ func (p *DatePeriod) IsValid(cb func(startdate, enddate *time.Time)) error {
 	}
 
 	if p.EndDate != "" {
-		err := validateParams(p, "EndDate")
+		err := ValidateParams(p, "EndDate")
 		if err != nil {
 			return err
 		}
@@ -55,7 +55,7 @@ func (p *DatePeriod) IsValidStrict(cb func(startdate, enddate time.Time)) error 
 
 	var sd, ed *time.Time
 
-	err := validateParams(p, "StartDate")
+	err := ValidateParams(p, "StartDate")
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (p *DatePeriod) IsValidStrict(cb func(startdate, enddate time.Time)) error 
 		return err
 	}
 
-	err = validateParams(p, "EndDate")
+	err = ValidateParams(p, "EndDate")
 	if err != nil {
 		return err
 	}

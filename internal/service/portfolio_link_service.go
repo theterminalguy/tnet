@@ -6,19 +6,27 @@ import (
 
 	"github.com/10hourlabs/tentn/ent"
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/google/uuid"
+	"github.com/labstack/gommon/log"
 )
 
 type PortfolioLinkService struct {
 	PortfolioLinkRepository *repo.PortfolioLinkRepository
+	TalentRepo              *repo.TalentRepository
+	UserRepo                *repo.UserRepository
+	GithubService           *GithubService
 }
 
 func NewPortfolioLinkService() *PortfolioLinkService {
 	return &PortfolioLinkService{
 		PortfolioLinkRepository: repo.NewPortfolioLinkRepository(),
+		TalentRepo:              repo.NewTalentRepository(),
+		UserRepo:                repo.NewUserRepository(),
+		GithubService:           NewGithubService(),
 	}
 }
 
-func (h PortfolioLinkService) Create(p repo.PortfolioLinkParams) (*ent.PortfolioLink, error) {
+func (h *PortfolioLinkService) Create(p repo.PortfolioLinkParams) (*ent.PortfolioLink, error) {
 	// convert the name in the params to lower case
 	name := strings.ToLower(p.Name)
 
@@ -34,4 +42,15 @@ func (h PortfolioLinkService) Create(p repo.PortfolioLinkParams) (*ent.Portfolio
 	}
 
 	return record, nil
+}
+
+func (h *PortfolioLinkService) UpdateWithGithubProfilePicture(talentID uuid.UUID, profilePictureURL string) {
+	if strings.Contains(profilePictureURL, "github.com") {
+		avatarURL, err := h.GithubService.FetchUserGitHubAvatar(profilePictureURL)
+		log.Print(err)
+		_, vldErr := h.UserRepo.Update(talentID, repo.UserParams{PhotoURL: avatarURL})
+		if vldErr != nil {
+			log.Print(err)
+		}
+	}
 }

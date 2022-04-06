@@ -84,7 +84,7 @@ func (*WorkExperienceRepository) GetByID(id uuid.UUID) (*ent.WorkExperience, err
 }
 
 func (*WorkExperienceRepository) Create(p WorkExperienceParams) (*ent.WorkExperience, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +132,7 @@ func (*WorkExperienceRepository) Create(p WorkExperienceParams) (*ent.WorkExperi
 }
 
 func (r *WorkExperienceRepository) Update(id uuid.UUID, p WorkExperienceParams) (*ent.WorkExperience, []error) {
-	err := validateParams(p, "TalentID")
+	err := ValidateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -164,7 +164,7 @@ func (r *WorkExperienceRepository) Update(id uuid.UUID, p WorkExperienceParams) 
 
 	// Set and Validate Location if provided
 	if vldErr := setNillableStringField(p.Location, func(v string) error {
-		err := validateParams(p, "Location")
+		err := ValidateParams(p, "Location")
 		if err != nil {
 			return err
 		}
@@ -176,7 +176,7 @@ func (r *WorkExperienceRepository) Update(id uuid.UUID, p WorkExperienceParams) 
 
 	// Set and Validate CompanyName if provided
 	if vldErr := setNillableStringField(p.CompanyName, func(v string) error {
-		err := validateParams(p, "CompanyName")
+		err := ValidateParams(p, "CompanyName")
 		if err != nil {
 			return err
 		}
@@ -188,7 +188,7 @@ func (r *WorkExperienceRepository) Update(id uuid.UUID, p WorkExperienceParams) 
 
 	// Set and Validate Description if provided
 	if vldErr := setNillableStringField(p.Description, func(program string) error {
-		err := validateParams(p, "Description")
+		err := ValidateParams(p, "Description")
 		if err != nil {
 			return err
 		}
@@ -200,7 +200,7 @@ func (r *WorkExperienceRepository) Update(id uuid.UUID, p WorkExperienceParams) 
 
 	// Set and Validate JobTitle if provided
 	if vldErr := setNillableStringField(p.JobTitle, func(v string) error {
-		err := validateParams(p, "JobTitle")
+		err := ValidateParams(p, "JobTitle")
 		if err != nil {
 			return err
 		}
@@ -212,7 +212,7 @@ func (r *WorkExperienceRepository) Update(id uuid.UUID, p WorkExperienceParams) 
 
 	// Set and Validate PrimaryTechnology if provided
 	if vldErr := setNillableJSONArrayField(p.PrimaryTechnologies, func(v []string) error {
-		err := validateParams(p, "PrimaryTechnologies")
+		err := ValidateParams(p, "PrimaryTechnologies")
 		if err != nil {
 			return err
 		}

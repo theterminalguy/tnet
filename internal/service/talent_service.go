@@ -47,7 +47,6 @@ func (t *TalentService) CreateProfile(user *ent.User, p repo.TalentParams) (*dec
 	p.Email = user.Email
 	p.UserID = user.ID
 	p.Available = true
-
 	a, err := t.TalentRepo.Create(p)
 	if err != nil {
 		return nil, err
@@ -65,6 +64,5 @@ func (t *TalentService) UpdateProfile(user *ent.User, p *repo.TalentParams) (*de
 	if vldErrs != nil {
 		return nil, vldErrs
 	}
-
 	return a, nil
 }

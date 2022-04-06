@@ -46,7 +46,7 @@ func (*TalentCollectionRepository) GetByID(id uuid.UUID) (*ent.TalentCollection,
 }
 
 func (t *TalentCollectionRepository) Create(p TalentCollectionParams) (*ent.TalentCollection, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (t *TalentCollectionRepository) Create(p TalentCollectionParams) (*ent.Tale
 }
 
 func (r *TalentCollectionRepository) Update(id uuid.UUID, p TalentCollectionParams) (*ent.TalentCollection, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}

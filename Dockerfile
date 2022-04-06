@@ -59,5 +59,6 @@ RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=app-build /web /web
+COPY ./public/views/*.html ./public/views/*.html
 
 CMD ["/web"]

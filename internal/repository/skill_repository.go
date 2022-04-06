@@ -99,7 +99,7 @@ func (*SkillRepository) GetByID(id uuid.UUID) (*ent.Skill, error) {
 }
 
 func (*SkillRepository) Create(p SkillParams) (*ent.Skill, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func (*SkillRepository) Create(p SkillParams) (*ent.Skill, error) {
 }
 
 func (r *SkillRepository) Update(id uuid.UUID, p SkillParams) (*ent.Skill, []error) {
-	err := validateParams(p, "TalentID")
+	err := ValidateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -136,7 +136,7 @@ func (r *SkillRepository) Update(id uuid.UUID, p SkillParams) (*ent.Skill, []err
 
 	// Set and Validate YearsOfExperience if provided
 	if vldErr := setNillableYearsOfExperience(&p.YearsOfExperience, func(v *float32) error {
-		err := validateParams(p, "YearsOfExperience")
+		err := ValidateParams(p, "YearsOfExperience")
 		if err != nil {
 			return err
 		}
@@ -148,7 +148,7 @@ func (r *SkillRepository) Update(id uuid.UUID, p SkillParams) (*ent.Skill, []err
 
 	// Set and Validate Name if provided
 	if vldErr := setNillableStringField(p.Name, func(v string) error {
-		err := validateParams(p, "Name")
+		err := ValidateParams(p, "Name")
 		if err != nil {
 			return err
 		}
@@ -160,7 +160,7 @@ func (r *SkillRepository) Update(id uuid.UUID, p SkillParams) (*ent.Skill, []err
 
 	// Set and Validate Preferred if provided
 	if vldErr := setNillableBoolField(p.Preferred, func(v bool) error {
-		err := validateParams(p, "Preferred")
+		err := ValidateParams(p, "Preferred")
 		if err != nil {
 			return err
 		}
@@ -172,7 +172,7 @@ func (r *SkillRepository) Update(id uuid.UUID, p SkillParams) (*ent.Skill, []err
 
 	// Set and Validate Note if provided
 	if vldErr := setNillableStringField(p.Note, func(v string) error {
-		err := validateParams(p, "Note")
+		err := ValidateParams(p, "Note")
 		if err != nil {
 			return err
 		}

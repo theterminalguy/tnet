@@ -84,7 +84,7 @@ func (*EducationRepository) GetByID(id uuid.UUID) (*ent.Education, error) {
 }
 
 func (*EducationRepository) Create(p EducationParams) (*ent.Education, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +131,7 @@ func (*EducationRepository) Create(p EducationParams) (*ent.Education, error) {
 }
 
 func (r *EducationRepository) Update(id uuid.UUID, p EducationParams) (*ent.Education, []error) {
-	err := validateParams(p, "TalentID")
+	err := ValidateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -163,7 +163,7 @@ func (r *EducationRepository) Update(id uuid.UUID, p EducationParams) (*ent.Educ
 
 	// Set and Validate Location if provided
 	if vldErr := setNillableStringField(p.Location, func(v string) error {
-		err := validateParams(p, "Location")
+		err := ValidateParams(p, "Location")
 		if err != nil {
 			return err
 		}
@@ -175,7 +175,7 @@ func (r *EducationRepository) Update(id uuid.UUID, p EducationParams) (*ent.Educ
 
 	// Set and Validate Degree if provided
 	if vldErr := setNillableStringField(p.Degree, func(v string) error {
-		err := validateParams(p, "Degree")
+		err := ValidateParams(p, "Degree")
 		if err != nil {
 			return err
 		}
@@ -187,7 +187,7 @@ func (r *EducationRepository) Update(id uuid.UUID, p EducationParams) (*ent.Educ
 
 	// Set and Validate Program if provided
 	if vldErr := setNillableStringField(p.Program, func(program string) error {
-		err := validateParams(p, "Program")
+		err := ValidateParams(p, "Program")
 		if err != nil {
 			return err
 		}
@@ -199,7 +199,7 @@ func (r *EducationRepository) Update(id uuid.UUID, p EducationParams) (*ent.Educ
 
 	// Set and Validate Overview if provided
 	if vldErr := setNillableStringField(p.Overview, func(v string) error {
-		err := validateParams(p, "Overview")
+		err := ValidateParams(p, "Overview")
 		if err != nil {
 			return err
 		}
@@ -211,7 +211,7 @@ func (r *EducationRepository) Update(id uuid.UUID, p EducationParams) (*ent.Educ
 
 	// Set and Validate InsitutionName if provided
 	if vldErr := setNillableStringField(p.InstitutionName, func(v string) error {
-		err := validateParams(p, "InstitutionName")
+		err := ValidateParams(p, "InstitutionName")
 		if err != nil {
 			return err
 		}

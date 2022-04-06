@@ -49,7 +49,7 @@ func (*MissionRepository) GetByID(id uuid.UUID) (*ent.Mission, error) {
 }
 
 func (*MissionRepository) Create(p MissionParams) (*ent.Mission, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}
@@ -109,12 +109,12 @@ func (*MissionRepository) Create(p MissionParams) (*ent.Mission, error) {
 }
 
 func (r *MissionRepository) Update(id uuid.UUID, p MissionParams) (*ent.Mission, []error) {
-	err := validateParams(p, "TalentID")
+	err := ValidateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
 
-	err = validateParams(p, "PartnerUUID")
+	err = ValidateParams(p, "PartnerUUID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -147,7 +147,7 @@ func (r *MissionRepository) Update(id uuid.UUID, p MissionParams) (*ent.Mission,
 
 	// Set and Validate MissionType if provided
 	if vldErr := setNillableStringField(p.MissionType, func(v string) error {
-		err := validateParams(p, "MissionType")
+		err := ValidateParams(p, "MissionType")
 		if err != nil {
 			return err
 		}

@@ -80,7 +80,7 @@ func (*SlackAppInstallRepository) GetRecruiterByEmail(email string) (*ent.User, 
 	return record.Edges.User, nil
 }
 func (*SlackAppInstallRepository) Create(p SlackAppInstallParams) (*ent.SlackAppInstall, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ func (*SlackAppInstallRepository) Create(p SlackAppInstallParams) (*ent.SlackApp
 }
 
 func (r *SlackAppInstallRepository) Update(id uuid.UUID, p SlackAppInstallParams) (*ent.SlackAppInstall, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}

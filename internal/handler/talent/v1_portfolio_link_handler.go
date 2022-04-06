@@ -65,7 +65,7 @@ func (h *V1PortfolioLinkHandler) CreateOne(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	params.TalentID = talent.Talent.ID
-	record, err := h.PortfolioLinkRepository.Create(*params)
+	record, err := h.PortfolioLinkService.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

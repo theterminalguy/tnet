@@ -50,7 +50,6 @@ func DecorateTalent(t *ent.Talent) *TalentResponse {
 		CareerStartDate:   t.ProfessionalStartDate,
 		Email:             t.Email,
 		Phone:             t.Phone,
-		ProfilePicture:    t.Edges.User.PhotoURL,
 		Country: Country{
 			Code:  t.CountryCode,
 			Name:  CountryLookup[t.CountryCode],

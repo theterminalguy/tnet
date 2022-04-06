@@ -48,7 +48,7 @@ func (*PartnerRepository) GetByID(id uuid.UUID) (*ent.Partner, error) {
 }
 
 func (*PartnerRepository) Create(p PartnerParams) (*ent.Partner, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (r *PartnerRepository) Update(id uuid.UUID, p PartnerParams) (*ent.Partner,
 
 	// Set and Validate CompanyName if provided
 	if vldErr := setNillableStringField(p.CompanyName, func(v string) error {
-		err := validateParams(p, "CompanyName")
+		err := ValidateParams(p, "CompanyName")
 		if err != nil {
 			return err
 		}
@@ -89,7 +89,7 @@ func (r *PartnerRepository) Update(id uuid.UUID, p PartnerParams) (*ent.Partner,
 
 	// Set and Validate CompanyLocation if provided
 	if vldErr := setNillableStringField(p.CompanyLocation, func(v string) error {
-		err := validateParams(p, "LastName")
+		err := ValidateParams(p, "LastName")
 		if err != nil {
 			return err
 		}
@@ -101,7 +101,7 @@ func (r *PartnerRepository) Update(id uuid.UUID, p PartnerParams) (*ent.Partner,
 
 	// Set and Validate WebsiteUrl if provided
 	if vldErr := setNillableStringField(p.WebsiteUrl, func(program string) error {
-		err := validateParams(p, "WebsiteUrl")
+		err := ValidateParams(p, "WebsiteUrl")
 		if err != nil {
 			return err
 		}
@@ -113,7 +113,7 @@ func (r *PartnerRepository) Update(id uuid.UUID, p PartnerParams) (*ent.Partner,
 
 	// Set and Validate ContactPersonName if provided
 	if vldErr := setNillableStringField(p.ContactPersonName, func(v string) error {
-		err := validateParams(p, "ContactPersonName")
+		err := ValidateParams(p, "ContactPersonName")
 		if err != nil {
 			return err
 		}
@@ -125,7 +125,7 @@ func (r *PartnerRepository) Update(id uuid.UUID, p PartnerParams) (*ent.Partner,
 
 	// Set and Validate ContactPersonPhoneNumber if provided
 	if vldErr := setNillableStringField(p.ContactPersonPhoneNumber, func(v string) error {
-		err := validateParams(p, "ContactPersonPhoneNumber")
+		err := ValidateParams(p, "ContactPersonPhoneNumber")
 		if err != nil {
 			return err
 		}
@@ -137,7 +137,7 @@ func (r *PartnerRepository) Update(id uuid.UUID, p PartnerParams) (*ent.Partner,
 
 	// Set and Validate ContactPersonEmail if provided
 	if vldErr := setNillableStringField(p.ContactPersonEmail, func(v string) error {
-		err := validateParams(p, "ContactPersonEmail")
+		err := ValidateParams(p, "ContactPersonEmail")
 		if err != nil {
 			return err
 		}

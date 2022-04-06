@@ -8,6 +8,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/10hourlabs/tentn/util"
+	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
 )
 
@@ -64,7 +65,7 @@ func (*UserRepository) GetByEmail(email string) (*ent.User, error) {
 }
 
 func (*UserRepository) Create(p UserParams) (*ent.User, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}
@@ -83,20 +84,37 @@ func (*UserRepository) Create(p UserParams) (*ent.User, error) {
 	return record, err
 }
 
-func (r *UserRepository) Update(id uuid.UUID, p UserParams) (*ent.User, error) {
-	err := validateParams(p)
+func (r *UserRepository) Update(id uuid.UUID, p UserParams) (*ent.User, []error) {
+	err := ValidateParams(p, "ID")
 	if err != nil {
-		return nil, err
+		return nil, []error{err}
 	}
 	record, err := r.GetByID(id)
 	if err != nil {
-		return nil, err
+		return nil, []error{err}
 	}
-	_, err = record.Update().
-		// TODO: set other fields here
-		Save(dBContext)
+	var vldErrs []error
+	bldr := record.Update()
+
+	// Set and Validate PhotoURL if provided
+	if vldErr := setNillableStringField(p.PhotoURL, func(v string) error {
+		err := ValidateParams(p, "PictureUrl")
+		if err != nil {
+			return err
+		}
+		bldr.SetPhotoURL(p.PhotoURL)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
+	if collection.HasAny(vldErrs) {
+		return nil, vldErrs
+	}
+
+	record, err = bldr.Save(dBContext)
 	if err != nil {
-		return nil, err
+		return nil, []error{err}
 	}
 	return record, nil
 }
@@ -130,4 +148,18 @@ func (*UserRepository) UpsertMany(params []*UserParams) error {
 			SetApproved(p.Approved)
 	}
 	return dBConn.User.CreateBulk(builders...).Exec(dBContext)
+}
+
+func (r *UserRepository) DeleteProfilePictureUrl(id uuid.UUID) error {
+	record, err := r.GetByID(id)
+	if err != nil {
+		return err
+	}
+	_, err = record.Update().
+		SetPhotoURL("").
+		Save(dBContext)
+	if err != nil {
+		return err
+	}
+	return nil
 }

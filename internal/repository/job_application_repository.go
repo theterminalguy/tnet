@@ -84,7 +84,7 @@ func (*JobApplicationRepository) GetByID(id uuid.UUID) (*ent.JobApplication, err
 }
 
 func (*JobApplicationRepository) Create(p JobApplicationParams) (*ent.JobApplication, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}
@@ -109,12 +109,12 @@ func (*JobApplicationRepository) Create(p JobApplicationParams) (*ent.JobApplica
 }
 
 func (r *JobApplicationRepository) Update(id uuid.UUID, p JobApplicationParams) (*ent.JobApplication, []error) {
-	err := validateParams(p, "TalentID")
+	err := ValidateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
 
-	err = validateParams(p, "JobUUID")
+	err = ValidateParams(p, "JobUUID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -129,7 +129,7 @@ func (r *JobApplicationRepository) Update(id uuid.UUID, p JobApplicationParams) 
 
 	// Set and Validate Note if provided
 	if vldErr := setNillableStringField(p.Note, func(v string) error {
-		err := validateParams(p, "Note")
+		err := ValidateParams(p, "Note")
 		if err != nil {
 			return err
 		}
@@ -141,7 +141,7 @@ func (r *JobApplicationRepository) Update(id uuid.UUID, p JobApplicationParams) 
 
 	// Set and Validate Status if provided
 	if vldErr := setNillableStringField(p.Status, func(v string) error {
-		err := validateParams(p, "Status")
+		err := ValidateParams(p, "Status")
 		if err != nil {
 			return err
 		}

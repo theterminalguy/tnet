@@ -78,7 +78,7 @@ func (*PortfolioLinkRepository) GetByID(id uuid.UUID) (*ent.PortfolioLink, error
 }
 
 func (*PortfolioLinkRepository) Create(p PortfolioLinkParams) (*ent.PortfolioLink, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +99,7 @@ func (*PortfolioLinkRepository) Create(p PortfolioLinkParams) (*ent.PortfolioLin
 }
 
 func (r *PortfolioLinkRepository) Update(id uuid.UUID, p PortfolioLinkParams) (*ent.PortfolioLink, []error) {
-	err := validateParams(p, "TalentID")
+	err := ValidateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -113,7 +113,7 @@ func (r *PortfolioLinkRepository) Update(id uuid.UUID, p PortfolioLinkParams) (*
 
 	// Set and Validate URL if provided
 	if vldErr := setNillableStringField(p.URL, func(v string) error {
-		err := validateParams(p, "URL")
+		err := ValidateParams(p, "URL")
 		if err != nil {
 			return err
 		}
@@ -125,7 +125,7 @@ func (r *PortfolioLinkRepository) Update(id uuid.UUID, p PortfolioLinkParams) (*
 
 	// Set and Validate Name if provided
 	if vldErr := setNillableStringField(p.Name, func(v string) error {
-		err := validateParams(p, "Name")
+		err := ValidateParams(p, "Name")
 		if err != nil {
 			return err
 		}

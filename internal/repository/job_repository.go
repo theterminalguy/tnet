@@ -110,7 +110,7 @@ func (*JobRepository) GetByID(id uuid.UUID) (*ent.Job, error) {
 }
 
 func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}
@@ -152,7 +152,7 @@ func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
 
 	// Set and Validate Hiring if provided
 	if vldErr := setNillableBoolField(p.Hiring, func(v bool) error {
-		err := validateParams(p, "Hiring")
+		err := ValidateParams(p, "Hiring")
 		if err != nil {
 			return err
 		}
@@ -164,7 +164,7 @@ func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
 
 	// Set and Validate Title if provided
 	if vldErr := setNillableStringField(p.Title, func(v string) error {
-		err := validateParams(p, "Title")
+		err := ValidateParams(p, "Title")
 		if err != nil {
 			return err
 		}
@@ -176,7 +176,7 @@ func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
 
 	// Set and Validate Summary if provided
 	if vldErr := setNillableStringField(p.Summary, func(v string) error {
-		err := validateParams(p, "Summary")
+		err := ValidateParams(p, "Summary")
 		if err != nil {
 			return err
 		}
@@ -188,7 +188,7 @@ func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
 
 	// Set and Validate Employment if provided
 	if vldErr := setNillableStringField(p.Employment, func(v string) error {
-		err := validateParams(p, "Employment")
+		err := ValidateParams(p, "Employment")
 		if err != nil {
 			return err
 		}
@@ -200,7 +200,7 @@ func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
 
 	// Set and Validate Category if provided
 	if vldErr := setNillableStringField(p.Category, func(v string) error {
-		err := validateParams(p, "Category")
+		err := ValidateParams(p, "Category")
 		if err != nil {
 			return err
 		}
@@ -212,7 +212,7 @@ func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
 
 	// Set and Validate Thumbnail if provided
 	if vldErr := setNillableStringField(p.Thumbnail, func(v string) error {
-		err := validateParams(p, "Thumbnail")
+		err := ValidateParams(p, "Thumbnail")
 		if err != nil {
 			return err
 		}
@@ -224,7 +224,7 @@ func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
 
 	// Set and Validate WeHave if provided
 	if vldErr := setNillableJSONArrayField(p.WeHave, func(v []string) error {
-		err := validateParams(p, "WeHave")
+		err := ValidateParams(p, "WeHave")
 		if err != nil {
 			return err
 		}
@@ -236,7 +236,7 @@ func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
 
 	// Set and Validate Requirements if provided
 	if vldErr := setNillableJSONArrayField(p.Requirements, func(v []string) error {
-		err := validateParams(p, "Requirements")
+		err := ValidateParams(p, "Requirements")
 		if err != nil {
 			return err
 		}
@@ -248,7 +248,7 @@ func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
 
 	// Set and Validate YouHave if provided
 	if vldErr := setNillableJSONArrayField(p.YouHave, func(v []string) error {
-		err := validateParams(p, "YouHave")
+		err := ValidateParams(p, "YouHave")
 		if err != nil {
 			return err
 		}
@@ -260,7 +260,7 @@ func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
 
 	// Set and Validate TimeZone if provided
 	if vldErr := setNillableStringField(string(p.TimeZone), func(v string) error {
-		err := validateParams(p, "TimeZone")
+		err := ValidateParams(p, "TimeZone")
 		if err != nil {
 			return err
 		}

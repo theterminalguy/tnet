@@ -86,6 +86,12 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 				Handler:     talent_handler.NewV1JobApplicationHandler(repo.NewJobApplicationRepository()),
 				Middlewares: nil,
 			},
+			{
+				SingularPath: "profile-picture",
+				Only:         []Request{UPDATE, DELETE_BY_ID},
+				Handler:      talent_handler.NewV1ProfilePictureHandler(),
+				Middlewares:  nil,
+			},
 		},
 	}
 	talentRouter.BuildRoutes()

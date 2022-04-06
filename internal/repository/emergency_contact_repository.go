@@ -57,7 +57,7 @@ func (*EmergencyContactRepository) GetByID(id uuid.UUID) (*ent.EmergencyContact,
 }
 
 func (*EmergencyContactRepository) Create(p EmergencyContactParams) (*ent.EmergencyContact, error) {
-	err := validateParams(p)
+	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func (*EmergencyContactRepository) Create(p EmergencyContactParams) (*ent.Emerge
 }
 
 func (r *EmergencyContactRepository) Update(id uuid.UUID, p EmergencyContactParams) (*ent.EmergencyContact, []error) {
-	err := validateParams(p, "TalentID")
+	err := ValidateParams(p, "TalentID")
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -97,7 +97,7 @@ func (r *EmergencyContactRepository) Update(id uuid.UUID, p EmergencyContactPara
 
 	// Set and Validate Address if provided
 	if vldErr := setNillableStringField(p.Address, func(v string) error {
-		err := validateParams(p, "Address")
+		err := ValidateParams(p, "Address")
 		if err != nil {
 			return err
 		}
@@ -109,7 +109,7 @@ func (r *EmergencyContactRepository) Update(id uuid.UUID, p EmergencyContactPara
 
 	// Set and Validate Name if provided
 	if vldErr := setNillableStringField(p.Name, func(v string) error {
-		err := validateParams(p, "Name")
+		err := ValidateParams(p, "Name")
 		if err != nil {
 			return err
 		}
@@ -121,7 +121,7 @@ func (r *EmergencyContactRepository) Update(id uuid.UUID, p EmergencyContactPara
 
 	// Set and Validate PhoneNumber if provided
 	if vldErr := setNillableStringField(p.PhoneNumber, func(v string) error {
-		err := validateParams(p, "PhoneNumber")
+		err := ValidateParams(p, "PhoneNumber")
 		if err != nil {
 			return err
 		}
@@ -133,7 +133,7 @@ func (r *EmergencyContactRepository) Update(id uuid.UUID, p EmergencyContactPara
 
 	// Set and Validate Relationship if provided
 	if vldErr := setNillableStringField(p.Relationship, func(v string) error {
-		err := validateParams(p, "Relationship")
+		err := ValidateParams(p, "Relationship")
 		if err != nil {
 			return err
 		}
@@ -145,7 +145,7 @@ func (r *EmergencyContactRepository) Update(id uuid.UUID, p EmergencyContactPara
 
 	// Set and Validate Email if provided
 	if vldErr := setNillableStringField(p.Email, func(v string) error {
-		err := validateParams(p, "Email")
+		err := ValidateParams(p, "Email")
 		if err != nil {
 			return err
 		}

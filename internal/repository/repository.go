@@ -50,7 +50,7 @@ func slugify(title string, id uuid.UUID) string {
 	return slug.Make(fmt.Sprintf("%v %v", title, id))
 }
 
-func validateParams(s interface{}, fields ...string) error {
+func ValidateParams(s interface{}, fields ...string) error {
 	validate := validator.New()
 	if len(fields) > 0 {
 		if err := validate.StructPartial(s, fields...); err != nil {
