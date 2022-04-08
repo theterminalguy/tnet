@@ -45,6 +45,12 @@ func (r *RecruiterScope) GetTalentCollections() ([]*ent.TalentCollection, error)
 	return r.Recruiter.QueryTalentCollections().All(repo.GetDBContext())
 }
 
+func (r *RecruiterScope) GetTalentCollectionByName(name string) (*ent.TalentCollection, error) {
+	return r.Recruiter.QueryTalentCollections().
+		Where(talentcollection.Name(name)).
+		First(repo.GetDBContext())
+}
+
 func (r *RecruiterScope) GetTalentCollectionByID(id uuid.UUID) (*ent.TalentCollection, error) {
 	return r.Recruiter.QueryTalentCollections().
 		Where(
