@@ -23,7 +23,7 @@ func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c 
 func main() {
 	e := router.DefineRoutes()
 	renderer := &TemplateRenderer{
-		templates: template.Must(template.ParseGlob("/Users/sunnyokoro/Documents/tentn/public/views/index.html")),
+		templates: template.Must(template.ParseGlob("public/views/index.html")),
 	}
 	e.Renderer = renderer
 

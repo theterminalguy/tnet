@@ -33,7 +33,7 @@ func (h *V1TalentCollectionHandler) ReadAll(c echo.Context) error {
 	}
 	name := c.QueryParam("name")
 	if name != "" {
-		records, err := currentRecruiter.GetTalentCollections()
+		records, err := currentRecruiter.GetTalentCollectionByName(name)
 		if err != nil {
 			return c.String(http.StatusBadRequest, err.Error())
 		}
