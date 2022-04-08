@@ -8,9 +8,12 @@ import (
 	"os"
 	"strings"
 
+	"github.com/10hourlabs/tentn/internal/entsm"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/service"
+	"github.com/10hourlabs/tentn/internal/tokgen"
 	"github.com/10hourlabs/tentn/randutil"
+	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 )
@@ -122,6 +125,10 @@ func (s *SlackOauth2Client) GetUsersProfile(slackUserID, accessToken string) (*S
 	return &up, nil
 }
 
+var (
+	session *sessions.Session
+)
+
 // SlackOauth2CallbackHandler handles the callback from Slack OAuth2
 // anyone who signs up with Slack will be redirected to this handler
 // and will be automatically created with the "Recruiter" role
@@ -146,7 +153,7 @@ func SlackOauth2CallbackHandler(c echo.Context) error {
 		return err
 	}
 	rs := service.NewRecruiterService()
-	_, err = rs.InstallSlackApp(
+	u, err := rs.InstallSlackApp(
 		repo.UserParams{
 			FirstName: slackUserProfile.Profile.FirstName,
 			LastName:  slackUserProfile.Profile.LastName,
@@ -170,11 +177,46 @@ func SlackOauth2CallbackHandler(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	ses, err := repo.NewSessionRepository().GetSessionByTeamID(oauthResp.Team.ID)
+	if ses != nil && ses.DeletedAt == nil {
+		return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("https://slack.com/app_redirect?app=%s", oauthResp.AppID))
+	}
+	if err != nil {
+		store := entsm.GetSessionStore()
+		session, _ = store.Get(c.Request(), "tentn-session")
+		session.Values["authenticated"] = true
+		session.Values["team_id"] = oauthResp.Team.ID
+	}
+	claims := tokgen.NewJWTClaims(u, &tokgen.JWTMeta{
+		Audience: c.Request().Host,
+		Issuer:   c.Request().Host,
+	})
+	token, err := claims.GenerateToken()
+	if err != nil {
+		return err
+	}
+	session.Values["token"] = token
+	session.Options.Domain = os.Getenv("APP_HOST")
+	session.Save(c.Request(), c.Response())
 	return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("https://slack.com/app_redirect?app=%s", oauthResp.AppID))
 }
 
 func RecruiterLoginHanlder(c echo.Context) error {
+	store := entsm.GetSessionStore()
+	session, _ := store.Get(c.Request(), "tentn-session")
+	if auth, ok := session.Values["authenticated"].(bool); ok || auth {
+		return c.Redirect(http.StatusTemporaryRedirect, os.Getenv("APP_HOST"))
+	}
 	slackOauth2StateToken = randutil.GenerateOauthStateToken()
 	url := slackConf.AuthCodeURL(slackOauth2StateToken)
 	return c.Redirect(http.StatusTemporaryRedirect, url)
+}
+
+func LogoutHandler(c echo.Context) error {
+	store := entsm.GetSessionStore()
+	session, _ := store.Get(c.Request(), "tentn-session")
+	// Revoke users authentication
+	session.Options.MaxAge = -1
+	session.Save(c.Request(), c.Response())
+	return c.JSON(http.StatusOK, "logged out")
 }

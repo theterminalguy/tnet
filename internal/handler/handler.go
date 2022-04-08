@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/10hourlabs/tentn/ent"
+	"github.com/10hourlabs/tentn/internal/middleware"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
@@ -11,8 +12,11 @@ import (
 )
 
 func GetCurrentUser(c echo.Context) (*ent.User, error) {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
+	token, err := middleware.ExtractToken(c)
+	if err != nil {
+		return nil, err
+	}
+	claims := token.Claims.(jwt.MapClaims)
 	sub := claims["sub"]
 	userUUID := fmt.Sprintf("%v", sub)
 

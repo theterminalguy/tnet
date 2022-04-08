@@ -16,6 +16,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
+	"github.com/10hourlabs/tentn/ent/session"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/talent"
@@ -50,6 +51,7 @@ func columnChecker(table string) func(string) error {
 		mission.Table:          mission.ValidColumn,
 		partner.Table:          partner.ValidColumn,
 		portfoliolink.Table:    portfoliolink.ValidColumn,
+		session.Table:          session.ValidColumn,
 		skill.Table:            skill.ValidColumn,
 		slackappinstall.Table:  slackappinstall.ValidColumn,
 		talent.Table:           talent.ValidColumn,

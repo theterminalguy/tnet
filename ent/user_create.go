@@ -13,6 +13,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
+	"github.com/10hourlabs/tentn/ent/session"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/talentcollection"
@@ -200,6 +201,21 @@ func (uc *UserCreate) AddTalentCollections(t ...*TalentCollection) *UserCreate {
 		ids[i] = t[i].ID
 	}
 	return uc.AddTalentCollectionIDs(ids...)
+}
+
+// AddSessionIDs adds the "sessions" edge to the Session entity by IDs.
+func (uc *UserCreate) AddSessionIDs(ids ...uuid.UUID) *UserCreate {
+	uc.mutation.AddSessionIDs(ids...)
+	return uc
+}
+
+// AddSessions adds the "sessions" edges to the Session entity.
+func (uc *UserCreate) AddSessions(s ...*Session) *UserCreate {
+	ids := make([]uuid.UUID, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uc.AddSessionIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -517,6 +533,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: talentcollection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.SessionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SessionsTable,
+			Columns: []string{user.SessionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: session.FieldID,
 				},
 			},
 		}

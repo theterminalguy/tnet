@@ -28,6 +28,8 @@ type Tx struct {
 	Partner *PartnerClient
 	// PortfolioLink is the client for interacting with the PortfolioLink builders.
 	PortfolioLink *PortfolioLinkClient
+	// Session is the client for interacting with the Session builders.
+	Session *SessionClient
 	// Skill is the client for interacting with the Skill builders.
 	Skill *SkillClient
 	// SlackAppInstall is the client for interacting with the SlackAppInstall builders.
@@ -183,6 +185,7 @@ func (tx *Tx) init() {
 	tx.Mission = NewMissionClient(tx.config)
 	tx.Partner = NewPartnerClient(tx.config)
 	tx.PortfolioLink = NewPortfolioLinkClient(tx.config)
+	tx.Session = NewSessionClient(tx.config)
 	tx.Skill = NewSkillClient(tx.config)
 	tx.SlackAppInstall = NewSlackAppInstallClient(tx.config)
 	tx.Talent = NewTalentClient(tx.config)

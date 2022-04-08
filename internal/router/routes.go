@@ -19,6 +19,9 @@ func DefineRoutes() *echo.Echo {
 
 	e.GET("/recruiter/auth", handler.RecruiterLoginHanlder)
 	e.GET("/oauth2/slack/callback", handler.SlackOauth2CallbackHandler)
+
+	// recruiter logout
+	e.GET("/recruiter/auth/logout", handler.LogoutHandler)
 	e = DefineV1Routes(e)
 	return e
 }

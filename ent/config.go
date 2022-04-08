@@ -32,6 +32,7 @@ type hooks struct {
 	Mission          []ent.Hook
 	Partner          []ent.Hook
 	PortfolioLink    []ent.Hook
+	Session          []ent.Hook
 	Skill            []ent.Hook
 	SlackAppInstall  []ent.Hook
 	Talent           []ent.Hook

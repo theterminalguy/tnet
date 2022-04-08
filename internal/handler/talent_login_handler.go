@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/10hourlabs/tentn/internal/entsm"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/internal/tokgen"
@@ -96,10 +97,21 @@ func GoogleOauth2CallbackHandler(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, echo.Map{"token": token})
+	store := entsm.GetSessionStore()
+	session, _ := store.Get(c.Request(), "tentn-session")
+	session.Values["authenticated"] = true
+	session.Values["token"] = token
+	session.Options.Domain = os.Getenv("APP_HOST")
+	session.Save(c.Request(), c.Response())
+	return c.Redirect(http.StatusTemporaryRedirect, "https://labs5.docs.apiary.io/")
 }
 
 func TalentLoginHanlder(c echo.Context) error {
+	store := entsm.GetSessionStore()
+	session, _ := store.Get(c.Request(), "tentn-session")
+	if auth, ok := session.Values["authenticated"].(bool); ok || auth {
+		return c.Redirect(http.StatusTemporaryRedirect, os.Getenv("APP_HOST"))
+	}
 	googleOauth2StateToken = randutil.GenerateOauthStateToken()
 	url := gconf.AuthCodeURL(googleOauth2StateToken)
 	return c.Redirect(http.StatusTemporaryRedirect, url)

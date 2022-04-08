@@ -1,6 +1,10 @@
 package middleware
 
 import (
+	"fmt"
+	"os"
+	"strings"
+
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
@@ -9,8 +13,11 @@ import (
 func EnforceApprovedRecruiter() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			user := c.Get("user").(*jwt.Token)
-			claims := user.Claims.(jwt.MapClaims)
+			tok, err := ExtractToken(c)
+			if err != nil {
+				return err
+			}
+			claims := tok.Claims.(jwt.MapClaims)
 			if claims["role"] != string(userrole.Recruiter) {
 				return echo.ErrUnauthorized
 			}
@@ -29,4 +36,20 @@ func EnforceApprovedRecruiter() echo.MiddlewareFunc {
 			return next(c)
 		}
 	}
+}
+
+func ExtractToken(c echo.Context) (*jwt.Token, error) {
+	auth := c.Request().Header.Get("Authorization")
+	if auth == "" {
+		return nil, echo.ErrUnauthorized
+	}
+	tok := strings.SplitAfter(auth, "Bearer ")
+	// parse token
+	token, err := jwt.Parse(tok[1], func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(os.Getenv("JWT_SIGNED_SECRET")), nil
+	})
+	return token, err
 }

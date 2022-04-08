@@ -34,7 +34,7 @@ func (h *V1ProfilePictureHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *V1ProfilePictureHandler) UpdateByID(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
+	record, err := GetCurrentTalent(c)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -44,7 +44,7 @@ func (h *V1ProfilePictureHandler) UpdateByID(c echo.Context) error {
 		return err
 	}
 	params.Image = file
-	vldErrs := h.PictureService.UpdateProfilePicture(*talent, *params)
+	vldErrs := h.PictureService.UpdateProfilePicture(record.Talent.ID, record.Talent.PhotoURL, *params)
 	if vldErrs != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
@@ -52,11 +52,11 @@ func (h *V1ProfilePictureHandler) UpdateByID(c echo.Context) error {
 }
 
 func (h *V1ProfilePictureHandler) DeleteOne(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
+	record, err := GetCurrentTalent(c)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = h.PictureService.DeleteFile(*talent)
+	err = h.PictureService.DeleteFile(record.Talent.ID)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}

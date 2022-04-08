@@ -18,6 +18,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
+	"github.com/10hourlabs/tentn/ent/session"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/talent"
@@ -51,6 +52,8 @@ type Client struct {
 	Partner *PartnerClient
 	// PortfolioLink is the client for interacting with the PortfolioLink builders.
 	PortfolioLink *PortfolioLinkClient
+	// Session is the client for interacting with the Session builders.
+	Session *SessionClient
 	// Skill is the client for interacting with the Skill builders.
 	Skill *SkillClient
 	// SlackAppInstall is the client for interacting with the SlackAppInstall builders.
@@ -84,6 +87,7 @@ func (c *Client) init() {
 	c.Mission = NewMissionClient(c.config)
 	c.Partner = NewPartnerClient(c.config)
 	c.PortfolioLink = NewPortfolioLinkClient(c.config)
+	c.Session = NewSessionClient(c.config)
 	c.Skill = NewSkillClient(c.config)
 	c.SlackAppInstall = NewSlackAppInstallClient(c.config)
 	c.Talent = NewTalentClient(c.config)
@@ -131,6 +135,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Mission:          NewMissionClient(cfg),
 		Partner:          NewPartnerClient(cfg),
 		PortfolioLink:    NewPortfolioLinkClient(cfg),
+		Session:          NewSessionClient(cfg),
 		Skill:            NewSkillClient(cfg),
 		SlackAppInstall:  NewSlackAppInstallClient(cfg),
 		Talent:           NewTalentClient(cfg),
@@ -164,6 +169,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Mission:          NewMissionClient(cfg),
 		Partner:          NewPartnerClient(cfg),
 		PortfolioLink:    NewPortfolioLinkClient(cfg),
+		Session:          NewSessionClient(cfg),
 		Skill:            NewSkillClient(cfg),
 		SlackAppInstall:  NewSlackAppInstallClient(cfg),
 		Talent:           NewTalentClient(cfg),
@@ -207,6 +213,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Mission.Use(hooks...)
 	c.Partner.Use(hooks...)
 	c.PortfolioLink.Use(hooks...)
+	c.Session.Use(hooks...)
 	c.Skill.Use(hooks...)
 	c.SlackAppInstall.Use(hooks...)
 	c.Talent.Use(hooks...)
@@ -1111,6 +1118,112 @@ func (c *PortfolioLinkClient) Hooks() []Hook {
 	return c.hooks.PortfolioLink
 }
 
+// SessionClient is a client for the Session schema.
+type SessionClient struct {
+	config
+}
+
+// NewSessionClient returns a client for the Session from the given config.
+func NewSessionClient(c config) *SessionClient {
+	return &SessionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `session.Hooks(f(g(h())))`.
+func (c *SessionClient) Use(hooks ...Hook) {
+	c.hooks.Session = append(c.hooks.Session, hooks...)
+}
+
+// Create returns a create builder for Session.
+func (c *SessionClient) Create() *SessionCreate {
+	mutation := newSessionMutation(c.config, OpCreate)
+	return &SessionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Session entities.
+func (c *SessionClient) CreateBulk(builders ...*SessionCreate) *SessionCreateBulk {
+	return &SessionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Session.
+func (c *SessionClient) Update() *SessionUpdate {
+	mutation := newSessionMutation(c.config, OpUpdate)
+	return &SessionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SessionClient) UpdateOne(s *Session) *SessionUpdateOne {
+	mutation := newSessionMutation(c.config, OpUpdateOne, withSession(s))
+	return &SessionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SessionClient) UpdateOneID(id uuid.UUID) *SessionUpdateOne {
+	mutation := newSessionMutation(c.config, OpUpdateOne, withSessionID(id))
+	return &SessionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Session.
+func (c *SessionClient) Delete() *SessionDelete {
+	mutation := newSessionMutation(c.config, OpDelete)
+	return &SessionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *SessionClient) DeleteOne(s *Session) *SessionDeleteOne {
+	return c.DeleteOneID(s.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *SessionClient) DeleteOneID(id uuid.UUID) *SessionDeleteOne {
+	builder := c.Delete().Where(session.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SessionDeleteOne{builder}
+}
+
+// Query returns a query builder for Session.
+func (c *SessionClient) Query() *SessionQuery {
+	return &SessionQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Session entity by its id.
+func (c *SessionClient) Get(ctx context.Context, id uuid.UUID) (*Session, error) {
+	return c.Query().Where(session.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SessionClient) GetX(ctx context.Context, id uuid.UUID) *Session {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a Session.
+func (c *SessionClient) QueryUser(s *Session) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(session.Table, session.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, session.UserTable, session.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SessionClient) Hooks() []Hook {
+	return c.hooks.Session
+}
+
 // SkillClient is a client for the Skill schema.
 type SkillClient struct {
 	config
@@ -1805,6 +1918,22 @@ func (c *UserClient) QueryTalentCollections(u *User) *TalentCollectionQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(talentcollection.Table, talentcollection.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.TalentCollectionsTable, user.TalentCollectionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySessions queries the sessions edge of a User.
+func (c *UserClient) QuerySessions(u *User) *SessionQuery {
+	query := &SessionQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(session.Table, session.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.SessionsTable, user.SessionsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

@@ -5,6 +5,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/internal/decorator"
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/util/photo"
 )
 
 type TalentService struct {
@@ -28,6 +29,7 @@ func (t *TalentService) RegisterTalent(up *repo.UserParams) (*ent.User, error) {
 	if ent.IsNotFound(err) {
 		up.Role = userrole.Talent
 		up.Approved = true
+		up.PhotoURL = photo.GenerateDefaultPhoto(up.FirstName, up.LastName)
 		talent, err = ur.Create(*up)
 		if err != nil {
 			return nil, err
@@ -44,9 +46,13 @@ func (t *TalentService) CreateProfile(user *ent.User, p repo.TalentParams) (*dec
 	if p.LastName == "" {
 		p.LastName = user.LastName
 	}
+	if p.PhotoURL == "" {
+		p.PhotoURL = photo.GenerateDefaultPhoto(p.FirstName, p.LastName)
+	}
 	p.Email = user.Email
 	p.UserID = user.ID
 	p.Available = true
+	p.PhotoURL = user.PhotoURL
 	a, err := t.TalentRepo.Create(p)
 	if err != nil {
 		return nil, err

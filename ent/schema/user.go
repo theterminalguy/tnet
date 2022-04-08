@@ -55,5 +55,6 @@ func (User) Edges() []ent.Edge {
 		edge.To("jobs", Job.Type),
 		edge.To("email_templates", EmailTemplate.Type),
 		edge.To("talent_collections", TalentCollection.Type),
+		edge.To("sessions", Session.Type),
 	}
 }

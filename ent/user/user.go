@@ -43,6 +43,8 @@ const (
 	EdgeEmailTemplates = "email_templates"
 	// EdgeTalentCollections holds the string denoting the talent_collections edge name in mutations.
 	EdgeTalentCollections = "talent_collections"
+	// EdgeSessions holds the string denoting the sessions edge name in mutations.
+	EdgeSessions = "sessions"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// TalentsTable is the table that holds the talents relation/edge.
@@ -80,6 +82,13 @@ const (
 	TalentCollectionsInverseTable = "talent_collections"
 	// TalentCollectionsColumn is the table column denoting the talent_collections relation/edge.
 	TalentCollectionsColumn = "user_id"
+	// SessionsTable is the table that holds the sessions relation/edge.
+	SessionsTable = "sessions"
+	// SessionsInverseTable is the table name for the Session entity.
+	// It exists in this package in order to avoid circular dependency with the "session" package.
+	SessionsInverseTable = "sessions"
+	// SessionsColumn is the table column denoting the sessions relation/edge.
+	SessionsColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.

@@ -307,6 +307,40 @@ var (
 			},
 		},
 	}
+	// SessionsColumns holds the columns for the "sessions" table.
+	SessionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "session_id", Type: field.TypeString, Unique: true},
+		{Name: "encoded", Type: field.TypeString},
+		{Name: "user_agent", Type: field.TypeString, Nullable: true},
+		{Name: "ip_agent", Type: field.TypeString, Nullable: true},
+		{Name: "team_id", Type: field.TypeString, Nullable: true},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
+	}
+	// SessionsTable holds the schema information for the "sessions" table.
+	SessionsTable = &schema.Table{
+		Name:       "sessions",
+		Columns:    SessionsColumns,
+		PrimaryKey: []*schema.Column{SessionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "sessions_users_sessions",
+				Columns:    []*schema.Column{SessionsColumns[9]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "session_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{SessionsColumns[9]},
+			},
+		},
+	}
 	// SkillsColumns holds the columns for the "skills" table.
 	SkillsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -417,6 +451,7 @@ var (
 		{Name: "timezone", Type: field.TypeString},
 		{Name: "state", Type: field.TypeString},
 		{Name: "professional_summary", Type: field.TypeString, Nullable: true},
+		{Name: "photo_url", Type: field.TypeString, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// TalentsTable holds the schema information for the "talents" table.
@@ -427,7 +462,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "talents_users_talents",
-				Columns:    []*schema.Column{TalentsColumns[19]},
+				Columns:    []*schema.Column{TalentsColumns[20]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -436,7 +471,7 @@ var (
 			{
 				Name:    "talent_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{TalentsColumns[19]},
+				Columns: []*schema.Column{TalentsColumns[20]},
 			},
 			{
 				Name:    "talent_email_phone",
@@ -553,6 +588,7 @@ var (
 		MissionsTable,
 		PartnersTable,
 		PortfolioLinksTable,
+		SessionsTable,
 		SkillsTable,
 		SlackAppInstallsTable,
 		TalentsTable,
@@ -572,6 +608,7 @@ func init() {
 	MissionsTable.ForeignKeys[0].RefTable = PartnersTable
 	MissionsTable.ForeignKeys[1].RefTable = TalentsTable
 	PortfolioLinksTable.ForeignKeys[0].RefTable = TalentsTable
+	SessionsTable.ForeignKeys[0].RefTable = UsersTable
 	SkillsTable.ForeignKeys[0].RefTable = TalentsTable
 	SlackAppInstallsTable.ForeignKeys[0].RefTable = UsersTable
 	TalentsTable.ForeignKeys[0].RefTable = UsersTable

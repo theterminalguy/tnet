@@ -14,6 +14,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/schema"
+	"github.com/10hourlabs/tentn/ent/session"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/talent"
@@ -203,6 +204,27 @@ func init() {
 	portfoliolinkDescID := portfoliolinkMixinFields0[0].Descriptor()
 	// portfoliolink.DefaultID holds the default value on creation for the id field.
 	portfoliolink.DefaultID = portfoliolinkDescID.Default.(func() uuid.UUID)
+	sessionMixin := schema.Session{}.Mixin()
+	sessionMixinFields0 := sessionMixin[0].Fields()
+	_ = sessionMixinFields0
+	sessionMixinFields1 := sessionMixin[1].Fields()
+	_ = sessionMixinFields1
+	sessionFields := schema.Session{}.Fields()
+	_ = sessionFields
+	// sessionDescCreatedAt is the schema descriptor for created_at field.
+	sessionDescCreatedAt := sessionMixinFields1[0].Descriptor()
+	// session.DefaultCreatedAt holds the default value on creation for the created_at field.
+	session.DefaultCreatedAt = sessionDescCreatedAt.Default.(func() time.Time)
+	// sessionDescUpdatedAt is the schema descriptor for updated_at field.
+	sessionDescUpdatedAt := sessionMixinFields1[1].Descriptor()
+	// session.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	session.DefaultUpdatedAt = sessionDescUpdatedAt.Default.(func() time.Time)
+	// session.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	session.UpdateDefaultUpdatedAt = sessionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// sessionDescID is the schema descriptor for id field.
+	sessionDescID := sessionMixinFields0[0].Descriptor()
+	// session.DefaultID holds the default value on creation for the id field.
+	session.DefaultID = sessionDescID.Default.(func() uuid.UUID)
 	skillMixin := schema.Skill{}.Mixin()
 	skillMixinFields0 := skillMixin[0].Fields()
 	_ = skillMixinFields0

@@ -10,6 +10,7 @@ import (
 	"os"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/util/photo"
 	"github.com/google/uuid"
 )
 
@@ -212,6 +213,7 @@ func extractTalentData(record []byte) *TalentData {
 		TimeZone:              "GMT+1",
 		Available:             true,
 		State:                 uup.City,
+		PhotoURL:              photo.GenerateDefaultPhoto(user.FirstName, user.LastName),
 		ProfessionalSummary:   fmt.Sprintf("An experienced %s", uup.PreferredJobTitle),
 	}
 

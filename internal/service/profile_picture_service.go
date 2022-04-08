@@ -12,7 +12,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/repository/scope"
+	"github.com/google/uuid"
 	"google.golang.org/api/option"
 )
 
@@ -40,7 +40,7 @@ type ProfilePictureParams struct {
 	Image *multipart.FileHeader `json:"image" validate:"required"`
 }
 
-func (p *ProfilePictureService) UpdateProfilePicture(talentScope scope.TalentScope, params ProfilePictureParams) error {
+func (p *ProfilePictureService) UpdateProfilePicture(talentID uuid.UUID, photoURL string, params ProfilePictureParams) error {
 	err := repo.ValidateParams(p)
 	if err != nil {
 		return err
@@ -53,14 +53,10 @@ func (p *ProfilePictureService) UpdateProfilePicture(talentScope scope.TalentSco
 	if err != nil {
 		return err
 	}
-	u, err := p.UserRepo.GetByID(talentScope.Talent.UserID)
-	if err != nil {
-		return err
-	}
 	// check if talent has a picture in google cloud storage already
-	if strings.Contains(u.PhotoURL, "storage.googleapis.com") {
+	if strings.Contains(photoURL, "storage.googleapis.com") {
 		// delete the old picture
-		err = p.GoogleClientUploader.DeleteFile(u.PhotoURL)
+		err = p.GoogleClientUploader.DeleteFile(photoURL)
 		if err != nil {
 			return err
 		}
@@ -70,19 +66,19 @@ func (p *ProfilePictureService) UpdateProfilePicture(talentScope scope.TalentSco
 		return err
 	}
 	defer src.Close()
-	url, err := p.GoogleClientUploader.UploadFile(src, talentScope.Talent.ID.String(), params.Image.Filename)
+	url, err := p.GoogleClientUploader.UploadFile(src, talentID.String(), params.Image.Filename)
 	if err != nil {
 		return err
 	}
-	_, vldErr := p.UserRepo.Update(talentScope.Talent.UserID, repo.UserParams{PhotoURL: url})
+	_, vldErr := p.TalentRepo.Update(talentID, repo.TalentParams{PhotoURL: url})
 	if vldErr != nil {
 		return fmt.Errorf("%v", vldErr)
 	}
 	return nil
 }
 
-func (p *ProfilePictureService) DeleteFile(talentScope scope.TalentScope) error {
-	u, err := p.UserRepo.GetByID(talentScope.Talent.UserID)
+func (p *ProfilePictureService) DeleteFile(talentID uuid.UUID) error {
+	u, err := p.UserRepo.GetByID(talentID)
 	if err != nil {
 		return err
 	}
@@ -90,7 +86,7 @@ func (p *ProfilePictureService) DeleteFile(talentScope scope.TalentScope) error 
 	if err != nil {
 		return err
 	}
-	err = p.UserRepo.DeleteProfilePictureUrl(talentScope.Talent.UserID)
+	err = p.TalentRepo.DeleteProfilePictureUrl(talentID)
 	if err != nil {
 		return err
 	}

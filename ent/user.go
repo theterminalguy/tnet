@@ -53,9 +53,11 @@ type UserEdges struct {
 	EmailTemplates []*EmailTemplate `json:"email_templates,omitempty"`
 	// TalentCollections holds the value of the talent_collections edge.
 	TalentCollections []*TalentCollection `json:"talent_collections,omitempty"`
+	// Sessions holds the value of the sessions edge.
+	Sessions []*Session `json:"sessions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // TalentsOrErr returns the Talents value or an error if the edge
@@ -101,6 +103,15 @@ func (e UserEdges) TalentCollectionsOrErr() ([]*TalentCollection, error) {
 		return e.TalentCollections, nil
 	}
 	return nil, &NotLoadedError{edge: "talent_collections"}
+}
+
+// SessionsOrErr returns the Sessions value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) SessionsOrErr() ([]*Session, error) {
+	if e.loadedTypes[5] {
+		return e.Sessions, nil
+	}
+	return nil, &NotLoadedError{edge: "sessions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -220,6 +231,11 @@ func (u *User) QueryEmailTemplates() *EmailTemplateQuery {
 // QueryTalentCollections queries the "talent_collections" edge of the User entity.
 func (u *User) QueryTalentCollections() *TalentCollectionQuery {
 	return (&UserClient{config: u.config}).QueryTalentCollections(u)
+}
+
+// QuerySessions queries the "sessions" edge of the User entity.
+func (u *User) QuerySessions() *SessionQuery {
+	return (&UserClient{config: u.config}).QuerySessions(u)
 }
 
 // Update returns a builder for updating this User.

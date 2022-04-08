@@ -56,8 +56,9 @@ func DecorateTalent(t *ent.Talent) *TalentResponse {
 			City:  t.City,
 			State: t.State,
 		},
-		JobPreference: t.JobPreference,
-		TimeZone:      t.Timezone,
+		JobPreference:  t.JobPreference,
+		TimeZone:       t.Timezone,
+		ProfilePicture: t.PhotoURL,
 		Edges: &ent.TalentEdges{
 			Educations:      t.Edges.Educations,
 			WorkExperiences: t.Edges.WorkExperiences,

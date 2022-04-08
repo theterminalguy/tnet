@@ -220,6 +220,13 @@ func ProfessionalSummary(v string) predicate.Talent {
 	})
 }
 
+// PhotoURL applies equality check predicate on the "photo_url" field. It's identical to PhotoURLEQ.
+func PhotoURL(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPhotoURL), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
@@ -2005,6 +2012,131 @@ func ProfessionalSummaryEqualFold(v string) predicate.Talent {
 func ProfessionalSummaryContainsFold(v string) predicate.Talent {
 	return predicate.Talent(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldProfessionalSummary), v))
+	})
+}
+
+// PhotoURLEQ applies the EQ predicate on the "photo_url" field.
+func PhotoURLEQ(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPhotoURL), v))
+	})
+}
+
+// PhotoURLNEQ applies the NEQ predicate on the "photo_url" field.
+func PhotoURLNEQ(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPhotoURL), v))
+	})
+}
+
+// PhotoURLIn applies the In predicate on the "photo_url" field.
+func PhotoURLIn(vs ...string) predicate.Talent {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Talent(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPhotoURL), v...))
+	})
+}
+
+// PhotoURLNotIn applies the NotIn predicate on the "photo_url" field.
+func PhotoURLNotIn(vs ...string) predicate.Talent {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Talent(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPhotoURL), v...))
+	})
+}
+
+// PhotoURLGT applies the GT predicate on the "photo_url" field.
+func PhotoURLGT(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPhotoURL), v))
+	})
+}
+
+// PhotoURLGTE applies the GTE predicate on the "photo_url" field.
+func PhotoURLGTE(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPhotoURL), v))
+	})
+}
+
+// PhotoURLLT applies the LT predicate on the "photo_url" field.
+func PhotoURLLT(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPhotoURL), v))
+	})
+}
+
+// PhotoURLLTE applies the LTE predicate on the "photo_url" field.
+func PhotoURLLTE(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPhotoURL), v))
+	})
+}
+
+// PhotoURLContains applies the Contains predicate on the "photo_url" field.
+func PhotoURLContains(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldPhotoURL), v))
+	})
+}
+
+// PhotoURLHasPrefix applies the HasPrefix predicate on the "photo_url" field.
+func PhotoURLHasPrefix(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldPhotoURL), v))
+	})
+}
+
+// PhotoURLHasSuffix applies the HasSuffix predicate on the "photo_url" field.
+func PhotoURLHasSuffix(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldPhotoURL), v))
+	})
+}
+
+// PhotoURLIsNil applies the IsNil predicate on the "photo_url" field.
+func PhotoURLIsNil() predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPhotoURL)))
+	})
+}
+
+// PhotoURLNotNil applies the NotNil predicate on the "photo_url" field.
+func PhotoURLNotNil() predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPhotoURL)))
+	})
+}
+
+// PhotoURLEqualFold applies the EqualFold predicate on the "photo_url" field.
+func PhotoURLEqualFold(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldPhotoURL), v))
+	})
+}
+
+// PhotoURLContainsFold applies the ContainsFold predicate on the "photo_url" field.
+func PhotoURLContainsFold(v string) predicate.Talent {
+	return predicate.Talent(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldPhotoURL), v))
 	})
 }
 

@@ -13,6 +13,7 @@ import (
 	"github.com/10hourlabs/tentn/internal/paginator"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/10hourlabs/tentn/util/date"
+	"github.com/10hourlabs/tentn/util/photo"
 	"github.com/google/uuid"
 )
 
@@ -47,6 +48,7 @@ type TalentParams struct {
 	TimeZone              string               `json:"timezone" validate:"required"`
 	State                 string               `json:"state" validate:"required"`
 	ProfessionalSummary   string               `json:"professional_summary"`
+	PhotoURL              string               `json:"photo_url" validate:"required"`
 }
 
 func NewTalentRepository() *TalentRepository {
@@ -161,7 +163,8 @@ func (r *TalentRepository) Create(p TalentParams) (*decorator.TalentResponse, er
 		SetIsAvailable(p.Available).
 		SetTimezone(timeZoneName[1]).
 		SetState(p.State).
-		SetProfessionalSummary(p.ProfessionalSummary)
+		SetProfessionalSummary(p.ProfessionalSummary).
+		SetPhotoURL(p.PhotoURL)
 	a, err := q.Save(dBContext)
 	if err != nil {
 		return nil, err
@@ -322,6 +325,18 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 		bldr.SetProfessionalSummary(p.ProfessionalSummary)
 	}
 
+	// Set and Validate PhotoURL if provided
+	if vldErr := setNillableStringField(p.PhotoURL, func(v string) error {
+		err := ValidateParams(p, "PhotoURL")
+		if err != nil {
+			return err
+		}
+		bldr.SetPhotoURL(p.PhotoURL)
+		return nil
+	}); vldErr != nil {
+		vldErrs = append(vldErrs, vldErr)
+	}
+
 	// Set and Validate JobPreference if provided
 	/*if vldErr := setNillableJSONArrayField(p.JobPreference, func(v []string) error {
 		res := LinearCheckElemArray(p.JobPreference, schema.EmploymentTypes())
@@ -431,4 +446,19 @@ func (*TalentRepository) UpsertMany(params []*TalentParams) error {
 	}
 	return dBConn.Talent.CreateBulk(builders...).
 		Exec(dBContext)
+}
+
+func (r *TalentRepository) DeleteProfilePictureUrl(id uuid.UUID) error {
+	record, err := r.GetByID(id)
+	if err != nil {
+		return err
+	}
+	defaultPhoto := photo.GenerateDefaultPhoto(record.FirstName, record.LastName)
+	_, err = record.Update().
+		SetPhotoURL(defaultPhoto).
+		Save(dBContext)
+	if err != nil {
+		return err
+	}
+	return nil
 }
