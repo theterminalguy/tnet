@@ -6,13 +6,14 @@ import (
 	"strconv"
 )
 
-const MaxResults = 10
+const MaxResults = 3
 
 // OffsetPaginater is a paginator that uses offset and limit to paginate
 // TODO: we should favor cursor pagination over offset pagination
 type OffsetPaginater struct {
 	Total int `json:"total"`
-
+	// length of items per page
+	ItemsThisPage int `json:"items_this_page"`
 	// NextCursor is the next page cursor.
 	// we are returning a base64 encoded string to prevent the client from
 	// knowing the offset value.
@@ -25,9 +26,10 @@ func (p *OffsetPaginater) GetOffset() int {
 	return p.offset
 }
 
-func (p *OffsetPaginater) Paginate(items []interface{}) *OffsetPaginater {
+func (p *OffsetPaginater) Paginate(items []interface{}, total int) *OffsetPaginater {
 	p.Items = items
-	p.Total = len(items)
+	p.Total = total
+	p.ItemsThisPage = len(items)
 	if p.Total == 0 || p.Total < MaxResults {
 		p.NextCursor = ""
 	}

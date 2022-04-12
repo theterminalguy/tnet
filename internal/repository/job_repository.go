@@ -93,7 +93,7 @@ func (*JobRepository) GetAll(page string) (*paginator.OffsetPaginater, error) {
 	for _, j := range jobs {
 		jobList = append(jobList, j)
 	}
-	return pager.Paginate(jobList), nil
+	return pager.Paginate(jobList, len(jobList)), nil
 }
 
 func (*JobRepository) GetByID(id uuid.UUID) (*ent.Job, error) {

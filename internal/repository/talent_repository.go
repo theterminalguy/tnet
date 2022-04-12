@@ -55,12 +55,27 @@ func NewTalentRepository() *TalentRepository {
 	return &TalentRepository{}
 }
 
-func (*TalentRepository) Filter(page string, prd ...predicate.Talent) (*paginator.OffsetPaginater, error) {
+func (t *TalentRepository) Filter(page string, prd ...predicate.Talent) (*paginator.OffsetPaginater, error) {
 	// TODO: It would be nice to not load all this association
 	// except ONLY when asked
 	// this will reduce the number of queries and joins
 	// TODO: remove debug
 	pager, err := paginator.NewOffsetPaginater(page)
+	if err != nil {
+		return nil, err
+	}
+	allTalents, err := dBConn.
+		Debug(). // TODO: remove
+		Talent.
+		Query().
+		WithUser().
+		WithEducations().
+		WithWorkExperiences().
+		WithPortfoliolinks().
+		WithSkills().
+		Where(prd...).
+		Offset(pager.GetOffset()).
+		Count(dBContext)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +101,7 @@ func (*TalentRepository) Filter(page string, prd ...predicate.Talent) (*paginato
 		response := decorator.DecorateTalent(t)
 		talentList = append(talentList, response)
 	}
-	return pager.Paginate(talentList), nil
+	return pager.Paginate(talentList, allTalents), nil
 }
 
 func (*TalentRepository) GetAll() ([]*ent.Talent, error) {
