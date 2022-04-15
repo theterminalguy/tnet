@@ -11,6 +11,14 @@ import (
 type Oauth2ClientRepository struct{}
 
 type Oauth2ClientParams struct {
+	UserProfile    UserParams `json:"user_profile"`
+	AppName        string     `json:"app_name"`
+	AppDescription string     `json:"app_description"`
+	AppLogoURI     string     `json:"app_logo_uri"`
+	AppHomepageURI string     `json:"app_homepage_uri"`
+	AppPrivacyURI  string     `json:"app_privacy_policy_uri"`
+	ClientType     string     `json:"client_type"`
+	Scopes         []string   `json:"scopes"`
 }
 
 func NewOauth2ClientRepository() *Oauth2ClientRepository {

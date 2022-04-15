@@ -85,3 +85,15 @@ func (h *Oauth2ClientHandler) DeleteOne(c echo.Context) error {
 	}
 	return c.NoContent(http.StatusNoContent)
 }
+
+func ClientRegisterationHandler(c echo.Context) error {
+	params := new(repo.Oauth2ClientParams)
+	if err := c.Bind(params); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	record, err := h.Oauth2ClientRepository.Create(*params)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusCreated, record)
+}
