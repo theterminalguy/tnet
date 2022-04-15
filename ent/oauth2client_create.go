@@ -127,8 +127,8 @@ func (oc *Oauth2ClientCreate) SetAppPrivacyPolicyURI(s string) *Oauth2ClientCrea
 }
 
 // SetClientType sets the "client_type" field.
-func (oc *Oauth2ClientCreate) SetClientType(s string) *Oauth2ClientCreate {
-	oc.mutation.SetClientType(s)
+func (oc *Oauth2ClientCreate) SetClientType(ot oauth2client.ClientType) *Oauth2ClientCreate {
+	oc.mutation.SetClientType(ot)
 	return oc
 }
 
@@ -307,6 +307,11 @@ func (oc *Oauth2ClientCreate) check() error {
 	if _, ok := oc.mutation.ClientType(); !ok {
 		return &ValidationError{Name: "client_type", err: errors.New(`ent: missing required field "Oauth2Client.client_type"`)}
 	}
+	if v, ok := oc.mutation.ClientType(); ok {
+		if err := oauth2client.ClientTypeValidator(v); err != nil {
+			return &ValidationError{Name: "client_type", err: fmt.Errorf(`ent: validator failed for field "Oauth2Client.client_type": %w`, err)}
+		}
+	}
 	if _, ok := oc.mutation.IsInternal(); !ok {
 		return &ValidationError{Name: "is_internal", err: errors.New(`ent: missing required field "Oauth2Client.is_internal"`)}
 	}
@@ -439,7 +444,7 @@ func (oc *Oauth2ClientCreate) createSpec() (*Oauth2Client, *sqlgraph.CreateSpec)
 	}
 	if value, ok := oc.mutation.ClientType(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeEnum,
 			Value:  value,
 			Column: oauth2client.FieldClientType,
 		})

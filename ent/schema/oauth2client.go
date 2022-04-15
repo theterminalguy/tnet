@@ -38,7 +38,8 @@ func (Oauth2Client) Fields() []ent.Field {
 		field.String("app_privacy_policy_uri"),
 
 		// https://datatracker.ietf.org/doc/html/rfc6749#section-2.1
-		field.String("client_type"),
+		field.Enum("client_type").
+			Values(ClientTypes()...),
 
 		field.Bool("is_internal").Default(false),
 		field.Bool("approved").Default(false),
@@ -48,4 +49,11 @@ func (Oauth2Client) Fields() []ent.Field {
 // Edges of the Oauth2Client.
 func (Oauth2Client) Edges() []ent.Edge {
 	return nil
+}
+
+func ClientTypes() []string {
+	return []string{
+		"confidential",
+		"public",
+	}
 }

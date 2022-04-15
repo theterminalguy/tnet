@@ -164,13 +164,6 @@ func AppPrivacyPolicyURI(v string) predicate.Oauth2Client {
 	})
 }
 
-// ClientType applies equality check predicate on the "client_type" field. It's identical to ClientTypeEQ.
-func ClientType(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldClientType), v))
-	})
-}
-
 // IsInternal applies equality check predicate on the "is_internal" field. It's identical to IsInternalEQ.
 func IsInternal(v bool) predicate.Oauth2Client {
 	return predicate.Oauth2Client(func(s *sql.Selector) {
@@ -1156,21 +1149,21 @@ func AppPrivacyPolicyURIContainsFold(v string) predicate.Oauth2Client {
 }
 
 // ClientTypeEQ applies the EQ predicate on the "client_type" field.
-func ClientTypeEQ(v string) predicate.Oauth2Client {
+func ClientTypeEQ(v ClientType) predicate.Oauth2Client {
 	return predicate.Oauth2Client(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldClientType), v))
 	})
 }
 
 // ClientTypeNEQ applies the NEQ predicate on the "client_type" field.
-func ClientTypeNEQ(v string) predicate.Oauth2Client {
+func ClientTypeNEQ(v ClientType) predicate.Oauth2Client {
 	return predicate.Oauth2Client(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldClientType), v))
 	})
 }
 
 // ClientTypeIn applies the In predicate on the "client_type" field.
-func ClientTypeIn(vs ...string) predicate.Oauth2Client {
+func ClientTypeIn(vs ...ClientType) predicate.Oauth2Client {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1187,7 +1180,7 @@ func ClientTypeIn(vs ...string) predicate.Oauth2Client {
 }
 
 // ClientTypeNotIn applies the NotIn predicate on the "client_type" field.
-func ClientTypeNotIn(vs ...string) predicate.Oauth2Client {
+func ClientTypeNotIn(vs ...ClientType) predicate.Oauth2Client {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1200,69 +1193,6 @@ func ClientTypeNotIn(vs ...string) predicate.Oauth2Client {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldClientType), v...))
-	})
-}
-
-// ClientTypeGT applies the GT predicate on the "client_type" field.
-func ClientTypeGT(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldClientType), v))
-	})
-}
-
-// ClientTypeGTE applies the GTE predicate on the "client_type" field.
-func ClientTypeGTE(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldClientType), v))
-	})
-}
-
-// ClientTypeLT applies the LT predicate on the "client_type" field.
-func ClientTypeLT(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldClientType), v))
-	})
-}
-
-// ClientTypeLTE applies the LTE predicate on the "client_type" field.
-func ClientTypeLTE(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldClientType), v))
-	})
-}
-
-// ClientTypeContains applies the Contains predicate on the "client_type" field.
-func ClientTypeContains(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldClientType), v))
-	})
-}
-
-// ClientTypeHasPrefix applies the HasPrefix predicate on the "client_type" field.
-func ClientTypeHasPrefix(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldClientType), v))
-	})
-}
-
-// ClientTypeHasSuffix applies the HasSuffix predicate on the "client_type" field.
-func ClientTypeHasSuffix(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldClientType), v))
-	})
-}
-
-// ClientTypeEqualFold applies the EqualFold predicate on the "client_type" field.
-func ClientTypeEqualFold(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldClientType), v))
-	})
-}
-
-// ClientTypeContainsFold applies the ContainsFold predicate on the "client_type" field.
-func ClientTypeContainsFold(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldClientType), v))
 	})
 }
 

@@ -3,6 +3,7 @@
 package oauth2client
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -100,3 +101,26 @@ var (
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
+
+// ClientType defines the type for the "client_type" enum field.
+type ClientType string
+
+// ClientType values.
+const (
+	ClientTypeConfidential ClientType = "confidential"
+	ClientTypePublic       ClientType = "public"
+)
+
+func (ct ClientType) String() string {
+	return string(ct)
+}
+
+// ClientTypeValidator is a validator for the "client_type" field enum values. It is called by the builders before save.
+func ClientTypeValidator(ct ClientType) error {
+	switch ct {
+	case ClientTypeConfidential, ClientTypePublic:
+		return nil
+	default:
+		return fmt.Errorf("oauth2client: invalid enum value for client_type field: %q", ct)
+	}
+}

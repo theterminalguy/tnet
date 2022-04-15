@@ -44,7 +44,7 @@ type Oauth2Client struct {
 	// AppPrivacyPolicyURI holds the value of the "app_privacy_policy_uri" field.
 	AppPrivacyPolicyURI string `json:"app_privacy_policy_uri,omitempty"`
 	// ClientType holds the value of the "client_type" field.
-	ClientType string `json:"client_type,omitempty"`
+	ClientType oauth2client.ClientType `json:"client_type,omitempty"`
 	// IsInternal holds the value of the "is_internal" field.
 	IsInternal bool `json:"is_internal,omitempty"`
 	// Approved holds the value of the "approved" field.
@@ -194,7 +194,7 @@ func (o *Oauth2Client) assignValues(columns []string, values []interface{}) erro
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field client_type", values[i])
 			} else if value.Valid {
-				o.ClientType = value.String
+				o.ClientType = oauth2client.ClientType(value.String)
 			}
 		case oauth2client.FieldIsInternal:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -268,7 +268,7 @@ func (o *Oauth2Client) String() string {
 	builder.WriteString(", app_privacy_policy_uri=")
 	builder.WriteString(o.AppPrivacyPolicyURI)
 	builder.WriteString(", client_type=")
-	builder.WriteString(o.ClientType)
+	builder.WriteString(fmt.Sprintf("%v", o.ClientType))
 	builder.WriteString(", is_internal=")
 	builder.WriteString(fmt.Sprintf("%v", o.IsInternal))
 	builder.WriteString(", approved=")

@@ -271,7 +271,7 @@ var (
 		{Name: "app_logo_uri", Type: field.TypeString},
 		{Name: "app_homepage_uri", Type: field.TypeString},
 		{Name: "app_privacy_policy_uri", Type: field.TypeString},
-		{Name: "client_type", Type: field.TypeString},
+		{Name: "client_type", Type: field.TypeEnum, Enums: []string{"confidential", "public"}},
 		{Name: "is_internal", Type: field.TypeBool, Default: false},
 		{Name: "approved", Type: field.TypeBool, Default: false},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},

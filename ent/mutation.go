@@ -5846,7 +5846,7 @@ type Oauth2ClientMutation struct {
 	app_logo_uri           *string
 	app_homepage_uri       *string
 	app_privacy_policy_uri *string
-	client_type            *string
+	client_type            *oauth2client.ClientType
 	is_internal            *bool
 	approved               *bool
 	clearedFields          map[string]struct{}
@@ -6420,12 +6420,12 @@ func (m *Oauth2ClientMutation) ResetAppPrivacyPolicyURI() {
 }
 
 // SetClientType sets the "client_type" field.
-func (m *Oauth2ClientMutation) SetClientType(s string) {
-	m.client_type = &s
+func (m *Oauth2ClientMutation) SetClientType(ot oauth2client.ClientType) {
+	m.client_type = &ot
 }
 
 // ClientType returns the value of the "client_type" field in the mutation.
-func (m *Oauth2ClientMutation) ClientType() (r string, exists bool) {
+func (m *Oauth2ClientMutation) ClientType() (r oauth2client.ClientType, exists bool) {
 	v := m.client_type
 	if v == nil {
 		return
@@ -6436,7 +6436,7 @@ func (m *Oauth2ClientMutation) ClientType() (r string, exists bool) {
 // OldClientType returns the old "client_type" field's value of the Oauth2Client entity.
 // If the Oauth2Client object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *Oauth2ClientMutation) OldClientType(ctx context.Context) (v string, err error) {
+func (m *Oauth2ClientMutation) OldClientType(ctx context.Context) (v oauth2client.ClientType, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldClientType is only allowed on UpdateOne operations")
 	}
@@ -6789,7 +6789,7 @@ func (m *Oauth2ClientMutation) SetField(name string, value ent.Value) error {
 		m.SetAppPrivacyPolicyURI(v)
 		return nil
 	case oauth2client.FieldClientType:
-		v, ok := value.(string)
+		v, ok := value.(oauth2client.ClientType)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

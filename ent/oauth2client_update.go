@@ -125,8 +125,8 @@ func (ou *Oauth2ClientUpdate) SetAppPrivacyPolicyURI(s string) *Oauth2ClientUpda
 }
 
 // SetClientType sets the "client_type" field.
-func (ou *Oauth2ClientUpdate) SetClientType(s string) *Oauth2ClientUpdate {
-	ou.mutation.SetClientType(s)
+func (ou *Oauth2ClientUpdate) SetClientType(ot oauth2client.ClientType) *Oauth2ClientUpdate {
+	ou.mutation.SetClientType(ot)
 	return ou
 }
 
@@ -182,12 +182,18 @@ func (ou *Oauth2ClientUpdate) Save(ctx context.Context) (int, error) {
 	)
 	ou.defaults()
 	if len(ou.hooks) == 0 {
+		if err = ou.check(); err != nil {
+			return 0, err
+		}
 		affected, err = ou.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*Oauth2ClientMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = ou.check(); err != nil {
+				return 0, err
 			}
 			ou.mutation = mutation
 			affected, err = ou.sqlSave(ctx)
@@ -235,6 +241,16 @@ func (ou *Oauth2ClientUpdate) defaults() {
 		v := oauth2client.UpdateDefaultUpdatedAt()
 		ou.mutation.SetUpdatedAt(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (ou *Oauth2ClientUpdate) check() error {
+	if v, ok := ou.mutation.ClientType(); ok {
+		if err := oauth2client.ClientTypeValidator(v); err != nil {
+			return &ValidationError{Name: "client_type", err: fmt.Errorf(`ent: validator failed for field "Oauth2Client.client_type": %w`, err)}
+		}
+	}
+	return nil
 }
 
 func (ou *Oauth2ClientUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -333,7 +349,7 @@ func (ou *Oauth2ClientUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ou.mutation.ClientType(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeEnum,
 			Value:  value,
 			Column: oauth2client.FieldClientType,
 		})
@@ -501,8 +517,8 @@ func (ouo *Oauth2ClientUpdateOne) SetAppPrivacyPolicyURI(s string) *Oauth2Client
 }
 
 // SetClientType sets the "client_type" field.
-func (ouo *Oauth2ClientUpdateOne) SetClientType(s string) *Oauth2ClientUpdateOne {
-	ouo.mutation.SetClientType(s)
+func (ouo *Oauth2ClientUpdateOne) SetClientType(ot oauth2client.ClientType) *Oauth2ClientUpdateOne {
+	ouo.mutation.SetClientType(ot)
 	return ouo
 }
 
@@ -565,12 +581,18 @@ func (ouo *Oauth2ClientUpdateOne) Save(ctx context.Context) (*Oauth2Client, erro
 	)
 	ouo.defaults()
 	if len(ouo.hooks) == 0 {
+		if err = ouo.check(); err != nil {
+			return nil, err
+		}
 		node, err = ouo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*Oauth2ClientMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = ouo.check(); err != nil {
+				return nil, err
 			}
 			ouo.mutation = mutation
 			node, err = ouo.sqlSave(ctx)
@@ -618,6 +640,16 @@ func (ouo *Oauth2ClientUpdateOne) defaults() {
 		v := oauth2client.UpdateDefaultUpdatedAt()
 		ouo.mutation.SetUpdatedAt(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (ouo *Oauth2ClientUpdateOne) check() error {
+	if v, ok := ouo.mutation.ClientType(); ok {
+		if err := oauth2client.ClientTypeValidator(v); err != nil {
+			return &ValidationError{Name: "client_type", err: fmt.Errorf(`ent: validator failed for field "Oauth2Client.client_type": %w`, err)}
+		}
+	}
+	return nil
 }
 
 func (ouo *Oauth2ClientUpdateOne) sqlSave(ctx context.Context) (_node *Oauth2Client, err error) {
@@ -733,7 +765,7 @@ func (ouo *Oauth2ClientUpdateOne) sqlSave(ctx context.Context) (_node *Oauth2Cli
 	}
 	if value, ok := ouo.mutation.ClientType(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeEnum,
 			Value:  value,
 			Column: oauth2client.FieldClientType,
 		})
