@@ -91,7 +91,8 @@ func ClientRegisterationHandler(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := h.Oauth2ClientRepository.Create(*params)
+	h := repo.NewOauth2ClientRepository()
+	record, err := h.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

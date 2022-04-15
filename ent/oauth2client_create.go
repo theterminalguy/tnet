@@ -78,24 +78,6 @@ func (oc *Oauth2ClientCreate) SetNillableUserID(u *uuid.UUID) *Oauth2ClientCreat
 	return oc
 }
 
-// SetSecret sets the "secret" field.
-func (oc *Oauth2ClientCreate) SetSecret(s string) *Oauth2ClientCreate {
-	oc.mutation.SetSecret(s)
-	return oc
-}
-
-// SetRedirectUris sets the "redirect_uris" field.
-func (oc *Oauth2ClientCreate) SetRedirectUris(s []string) *Oauth2ClientCreate {
-	oc.mutation.SetRedirectUris(s)
-	return oc
-}
-
-// SetScopes sets the "scopes" field.
-func (oc *Oauth2ClientCreate) SetScopes(s []string) *Oauth2ClientCreate {
-	oc.mutation.SetScopes(s)
-	return oc
-}
-
 // SetAppName sets the "app_name" field.
 func (oc *Oauth2ClientCreate) SetAppName(s string) *Oauth2ClientCreate {
 	oc.mutation.SetAppName(s)
@@ -123,6 +105,24 @@ func (oc *Oauth2ClientCreate) SetAppHomepageURI(s string) *Oauth2ClientCreate {
 // SetAppPrivacyPolicyURI sets the "app_privacy_policy_uri" field.
 func (oc *Oauth2ClientCreate) SetAppPrivacyPolicyURI(s string) *Oauth2ClientCreate {
 	oc.mutation.SetAppPrivacyPolicyURI(s)
+	return oc
+}
+
+// SetScopes sets the "scopes" field.
+func (oc *Oauth2ClientCreate) SetScopes(s []string) *Oauth2ClientCreate {
+	oc.mutation.SetScopes(s)
+	return oc
+}
+
+// SetHashedSecret sets the "hashed_secret" field.
+func (oc *Oauth2ClientCreate) SetHashedSecret(s string) *Oauth2ClientCreate {
+	oc.mutation.SetHashedSecret(s)
+	return oc
+}
+
+// SetRedirectUris sets the "redirect_uris" field.
+func (oc *Oauth2ClientCreate) SetRedirectUris(s []string) *Oauth2ClientCreate {
+	oc.mutation.SetRedirectUris(s)
 	return oc
 }
 
@@ -280,15 +280,6 @@ func (oc *Oauth2ClientCreate) check() error {
 	if _, ok := oc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Oauth2Client.updated_at"`)}
 	}
-	if _, ok := oc.mutation.Secret(); !ok {
-		return &ValidationError{Name: "secret", err: errors.New(`ent: missing required field "Oauth2Client.secret"`)}
-	}
-	if _, ok := oc.mutation.RedirectUris(); !ok {
-		return &ValidationError{Name: "redirect_uris", err: errors.New(`ent: missing required field "Oauth2Client.redirect_uris"`)}
-	}
-	if _, ok := oc.mutation.Scopes(); !ok {
-		return &ValidationError{Name: "scopes", err: errors.New(`ent: missing required field "Oauth2Client.scopes"`)}
-	}
 	if _, ok := oc.mutation.AppName(); !ok {
 		return &ValidationError{Name: "app_name", err: errors.New(`ent: missing required field "Oauth2Client.app_name"`)}
 	}
@@ -303,6 +294,15 @@ func (oc *Oauth2ClientCreate) check() error {
 	}
 	if _, ok := oc.mutation.AppPrivacyPolicyURI(); !ok {
 		return &ValidationError{Name: "app_privacy_policy_uri", err: errors.New(`ent: missing required field "Oauth2Client.app_privacy_policy_uri"`)}
+	}
+	if _, ok := oc.mutation.Scopes(); !ok {
+		return &ValidationError{Name: "scopes", err: errors.New(`ent: missing required field "Oauth2Client.scopes"`)}
+	}
+	if _, ok := oc.mutation.HashedSecret(); !ok {
+		return &ValidationError{Name: "hashed_secret", err: errors.New(`ent: missing required field "Oauth2Client.hashed_secret"`)}
+	}
+	if _, ok := oc.mutation.RedirectUris(); !ok {
+		return &ValidationError{Name: "redirect_uris", err: errors.New(`ent: missing required field "Oauth2Client.redirect_uris"`)}
 	}
 	if _, ok := oc.mutation.ClientType(); !ok {
 		return &ValidationError{Name: "client_type", err: errors.New(`ent: missing required field "Oauth2Client.client_type"`)}
@@ -378,30 +378,6 @@ func (oc *Oauth2ClientCreate) createSpec() (*Oauth2Client, *sqlgraph.CreateSpec)
 		})
 		_node.DeletedAt = &value
 	}
-	if value, ok := oc.mutation.Secret(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: oauth2client.FieldSecret,
-		})
-		_node.Secret = value
-	}
-	if value, ok := oc.mutation.RedirectUris(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: oauth2client.FieldRedirectUris,
-		})
-		_node.RedirectUris = value
-	}
-	if value, ok := oc.mutation.Scopes(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: oauth2client.FieldScopes,
-		})
-		_node.Scopes = value
-	}
 	if value, ok := oc.mutation.AppName(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -441,6 +417,30 @@ func (oc *Oauth2ClientCreate) createSpec() (*Oauth2Client, *sqlgraph.CreateSpec)
 			Column: oauth2client.FieldAppPrivacyPolicyURI,
 		})
 		_node.AppPrivacyPolicyURI = value
+	}
+	if value, ok := oc.mutation.Scopes(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: oauth2client.FieldScopes,
+		})
+		_node.Scopes = value
+	}
+	if value, ok := oc.mutation.HashedSecret(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oauth2client.FieldHashedSecret,
+		})
+		_node.HashedSecret = value
+	}
+	if value, ok := oc.mutation.RedirectUris(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: oauth2client.FieldRedirectUris,
+		})
+		_node.RedirectUris = value
 	}
 	if value, ok := oc.mutation.ClientType(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

@@ -122,13 +122,6 @@ func UserID(v uuid.UUID) predicate.Oauth2Client {
 	})
 }
 
-// Secret applies equality check predicate on the "secret" field. It's identical to SecretEQ.
-func Secret(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSecret), v))
-	})
-}
-
 // AppName applies equality check predicate on the "app_name" field. It's identical to AppNameEQ.
 func AppName(v string) predicate.Oauth2Client {
 	return predicate.Oauth2Client(func(s *sql.Selector) {
@@ -161,6 +154,13 @@ func AppHomepageURI(v string) predicate.Oauth2Client {
 func AppPrivacyPolicyURI(v string) predicate.Oauth2Client {
 	return predicate.Oauth2Client(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldAppPrivacyPolicyURI), v))
+	})
+}
+
+// HashedSecret applies equality check predicate on the "hashed_secret" field. It's identical to HashedSecretEQ.
+func HashedSecret(v string) predicate.Oauth2Client {
+	return predicate.Oauth2Client(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldHashedSecret), v))
 	})
 }
 
@@ -479,117 +479,6 @@ func UserIDIsNil() predicate.Oauth2Client {
 func UserIDNotNil() predicate.Oauth2Client {
 	return predicate.Oauth2Client(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldUserID)))
-	})
-}
-
-// SecretEQ applies the EQ predicate on the "secret" field.
-func SecretEQ(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSecret), v))
-	})
-}
-
-// SecretNEQ applies the NEQ predicate on the "secret" field.
-func SecretNEQ(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSecret), v))
-	})
-}
-
-// SecretIn applies the In predicate on the "secret" field.
-func SecretIn(vs ...string) predicate.Oauth2Client {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldSecret), v...))
-	})
-}
-
-// SecretNotIn applies the NotIn predicate on the "secret" field.
-func SecretNotIn(vs ...string) predicate.Oauth2Client {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldSecret), v...))
-	})
-}
-
-// SecretGT applies the GT predicate on the "secret" field.
-func SecretGT(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSecret), v))
-	})
-}
-
-// SecretGTE applies the GTE predicate on the "secret" field.
-func SecretGTE(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSecret), v))
-	})
-}
-
-// SecretLT applies the LT predicate on the "secret" field.
-func SecretLT(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSecret), v))
-	})
-}
-
-// SecretLTE applies the LTE predicate on the "secret" field.
-func SecretLTE(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSecret), v))
-	})
-}
-
-// SecretContains applies the Contains predicate on the "secret" field.
-func SecretContains(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldSecret), v))
-	})
-}
-
-// SecretHasPrefix applies the HasPrefix predicate on the "secret" field.
-func SecretHasPrefix(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldSecret), v))
-	})
-}
-
-// SecretHasSuffix applies the HasSuffix predicate on the "secret" field.
-func SecretHasSuffix(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldSecret), v))
-	})
-}
-
-// SecretEqualFold applies the EqualFold predicate on the "secret" field.
-func SecretEqualFold(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldSecret), v))
-	})
-}
-
-// SecretContainsFold applies the ContainsFold predicate on the "secret" field.
-func SecretContainsFold(v string) predicate.Oauth2Client {
-	return predicate.Oauth2Client(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldSecret), v))
 	})
 }
 
@@ -1145,6 +1034,117 @@ func AppPrivacyPolicyURIEqualFold(v string) predicate.Oauth2Client {
 func AppPrivacyPolicyURIContainsFold(v string) predicate.Oauth2Client {
 	return predicate.Oauth2Client(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldAppPrivacyPolicyURI), v))
+	})
+}
+
+// HashedSecretEQ applies the EQ predicate on the "hashed_secret" field.
+func HashedSecretEQ(v string) predicate.Oauth2Client {
+	return predicate.Oauth2Client(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldHashedSecret), v))
+	})
+}
+
+// HashedSecretNEQ applies the NEQ predicate on the "hashed_secret" field.
+func HashedSecretNEQ(v string) predicate.Oauth2Client {
+	return predicate.Oauth2Client(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldHashedSecret), v))
+	})
+}
+
+// HashedSecretIn applies the In predicate on the "hashed_secret" field.
+func HashedSecretIn(vs ...string) predicate.Oauth2Client {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Oauth2Client(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldHashedSecret), v...))
+	})
+}
+
+// HashedSecretNotIn applies the NotIn predicate on the "hashed_secret" field.
+func HashedSecretNotIn(vs ...string) predicate.Oauth2Client {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Oauth2Client(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldHashedSecret), v...))
+	})
+}
+
+// HashedSecretGT applies the GT predicate on the "hashed_secret" field.
+func HashedSecretGT(v string) predicate.Oauth2Client {
+	return predicate.Oauth2Client(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldHashedSecret), v))
+	})
+}
+
+// HashedSecretGTE applies the GTE predicate on the "hashed_secret" field.
+func HashedSecretGTE(v string) predicate.Oauth2Client {
+	return predicate.Oauth2Client(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldHashedSecret), v))
+	})
+}
+
+// HashedSecretLT applies the LT predicate on the "hashed_secret" field.
+func HashedSecretLT(v string) predicate.Oauth2Client {
+	return predicate.Oauth2Client(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldHashedSecret), v))
+	})
+}
+
+// HashedSecretLTE applies the LTE predicate on the "hashed_secret" field.
+func HashedSecretLTE(v string) predicate.Oauth2Client {
+	return predicate.Oauth2Client(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldHashedSecret), v))
+	})
+}
+
+// HashedSecretContains applies the Contains predicate on the "hashed_secret" field.
+func HashedSecretContains(v string) predicate.Oauth2Client {
+	return predicate.Oauth2Client(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldHashedSecret), v))
+	})
+}
+
+// HashedSecretHasPrefix applies the HasPrefix predicate on the "hashed_secret" field.
+func HashedSecretHasPrefix(v string) predicate.Oauth2Client {
+	return predicate.Oauth2Client(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldHashedSecret), v))
+	})
+}
+
+// HashedSecretHasSuffix applies the HasSuffix predicate on the "hashed_secret" field.
+func HashedSecretHasSuffix(v string) predicate.Oauth2Client {
+	return predicate.Oauth2Client(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldHashedSecret), v))
+	})
+}
+
+// HashedSecretEqualFold applies the EqualFold predicate on the "hashed_secret" field.
+func HashedSecretEqualFold(v string) predicate.Oauth2Client {
+	return predicate.Oauth2Client(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldHashedSecret), v))
+	})
+}
+
+// HashedSecretContainsFold applies the ContainsFold predicate on the "hashed_secret" field.
+func HashedSecretContainsFold(v string) predicate.Oauth2Client {
+	return predicate.Oauth2Client(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldHashedSecret), v))
 	})
 }
 

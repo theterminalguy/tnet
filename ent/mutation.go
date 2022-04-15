@@ -5838,14 +5838,14 @@ type Oauth2ClientMutation struct {
 	created_at             *time.Time
 	updated_at             *time.Time
 	deleted_at             *time.Time
-	secret                 *string
-	redirect_uris          *[]string
-	scopes                 *[]string
 	app_name               *string
 	app_description        *string
 	app_logo_uri           *string
 	app_homepage_uri       *string
 	app_privacy_policy_uri *string
+	scopes                 *[]string
+	hashed_secret          *string
+	redirect_uris          *[]string
 	client_type            *oauth2client.ClientType
 	is_internal            *bool
 	approved               *bool
@@ -6131,114 +6131,6 @@ func (m *Oauth2ClientMutation) ResetUserID() {
 	delete(m.clearedFields, oauth2client.FieldUserID)
 }
 
-// SetSecret sets the "secret" field.
-func (m *Oauth2ClientMutation) SetSecret(s string) {
-	m.secret = &s
-}
-
-// Secret returns the value of the "secret" field in the mutation.
-func (m *Oauth2ClientMutation) Secret() (r string, exists bool) {
-	v := m.secret
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSecret returns the old "secret" field's value of the Oauth2Client entity.
-// If the Oauth2Client object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *Oauth2ClientMutation) OldSecret(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSecret is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSecret requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSecret: %w", err)
-	}
-	return oldValue.Secret, nil
-}
-
-// ResetSecret resets all changes to the "secret" field.
-func (m *Oauth2ClientMutation) ResetSecret() {
-	m.secret = nil
-}
-
-// SetRedirectUris sets the "redirect_uris" field.
-func (m *Oauth2ClientMutation) SetRedirectUris(s []string) {
-	m.redirect_uris = &s
-}
-
-// RedirectUris returns the value of the "redirect_uris" field in the mutation.
-func (m *Oauth2ClientMutation) RedirectUris() (r []string, exists bool) {
-	v := m.redirect_uris
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRedirectUris returns the old "redirect_uris" field's value of the Oauth2Client entity.
-// If the Oauth2Client object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *Oauth2ClientMutation) OldRedirectUris(ctx context.Context) (v []string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRedirectUris is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRedirectUris requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRedirectUris: %w", err)
-	}
-	return oldValue.RedirectUris, nil
-}
-
-// ResetRedirectUris resets all changes to the "redirect_uris" field.
-func (m *Oauth2ClientMutation) ResetRedirectUris() {
-	m.redirect_uris = nil
-}
-
-// SetScopes sets the "scopes" field.
-func (m *Oauth2ClientMutation) SetScopes(s []string) {
-	m.scopes = &s
-}
-
-// Scopes returns the value of the "scopes" field in the mutation.
-func (m *Oauth2ClientMutation) Scopes() (r []string, exists bool) {
-	v := m.scopes
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldScopes returns the old "scopes" field's value of the Oauth2Client entity.
-// If the Oauth2Client object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *Oauth2ClientMutation) OldScopes(ctx context.Context) (v []string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldScopes is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldScopes requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldScopes: %w", err)
-	}
-	return oldValue.Scopes, nil
-}
-
-// ResetScopes resets all changes to the "scopes" field.
-func (m *Oauth2ClientMutation) ResetScopes() {
-	m.scopes = nil
-}
-
 // SetAppName sets the "app_name" field.
 func (m *Oauth2ClientMutation) SetAppName(s string) {
 	m.app_name = &s
@@ -6419,6 +6311,114 @@ func (m *Oauth2ClientMutation) ResetAppPrivacyPolicyURI() {
 	m.app_privacy_policy_uri = nil
 }
 
+// SetScopes sets the "scopes" field.
+func (m *Oauth2ClientMutation) SetScopes(s []string) {
+	m.scopes = &s
+}
+
+// Scopes returns the value of the "scopes" field in the mutation.
+func (m *Oauth2ClientMutation) Scopes() (r []string, exists bool) {
+	v := m.scopes
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScopes returns the old "scopes" field's value of the Oauth2Client entity.
+// If the Oauth2Client object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *Oauth2ClientMutation) OldScopes(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldScopes is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldScopes requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScopes: %w", err)
+	}
+	return oldValue.Scopes, nil
+}
+
+// ResetScopes resets all changes to the "scopes" field.
+func (m *Oauth2ClientMutation) ResetScopes() {
+	m.scopes = nil
+}
+
+// SetHashedSecret sets the "hashed_secret" field.
+func (m *Oauth2ClientMutation) SetHashedSecret(s string) {
+	m.hashed_secret = &s
+}
+
+// HashedSecret returns the value of the "hashed_secret" field in the mutation.
+func (m *Oauth2ClientMutation) HashedSecret() (r string, exists bool) {
+	v := m.hashed_secret
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHashedSecret returns the old "hashed_secret" field's value of the Oauth2Client entity.
+// If the Oauth2Client object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *Oauth2ClientMutation) OldHashedSecret(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHashedSecret is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHashedSecret requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHashedSecret: %w", err)
+	}
+	return oldValue.HashedSecret, nil
+}
+
+// ResetHashedSecret resets all changes to the "hashed_secret" field.
+func (m *Oauth2ClientMutation) ResetHashedSecret() {
+	m.hashed_secret = nil
+}
+
+// SetRedirectUris sets the "redirect_uris" field.
+func (m *Oauth2ClientMutation) SetRedirectUris(s []string) {
+	m.redirect_uris = &s
+}
+
+// RedirectUris returns the value of the "redirect_uris" field in the mutation.
+func (m *Oauth2ClientMutation) RedirectUris() (r []string, exists bool) {
+	v := m.redirect_uris
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRedirectUris returns the old "redirect_uris" field's value of the Oauth2Client entity.
+// If the Oauth2Client object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *Oauth2ClientMutation) OldRedirectUris(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRedirectUris is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRedirectUris requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRedirectUris: %w", err)
+	}
+	return oldValue.RedirectUris, nil
+}
+
+// ResetRedirectUris resets all changes to the "redirect_uris" field.
+func (m *Oauth2ClientMutation) ResetRedirectUris() {
+	m.redirect_uris = nil
+}
+
 // SetClientType sets the "client_type" field.
 func (m *Oauth2ClientMutation) SetClientType(ot oauth2client.ClientType) {
 	m.client_type = &ot
@@ -6585,15 +6585,6 @@ func (m *Oauth2ClientMutation) Fields() []string {
 	if m.user != nil {
 		fields = append(fields, oauth2client.FieldUserID)
 	}
-	if m.secret != nil {
-		fields = append(fields, oauth2client.FieldSecret)
-	}
-	if m.redirect_uris != nil {
-		fields = append(fields, oauth2client.FieldRedirectUris)
-	}
-	if m.scopes != nil {
-		fields = append(fields, oauth2client.FieldScopes)
-	}
 	if m.app_name != nil {
 		fields = append(fields, oauth2client.FieldAppName)
 	}
@@ -6608,6 +6599,15 @@ func (m *Oauth2ClientMutation) Fields() []string {
 	}
 	if m.app_privacy_policy_uri != nil {
 		fields = append(fields, oauth2client.FieldAppPrivacyPolicyURI)
+	}
+	if m.scopes != nil {
+		fields = append(fields, oauth2client.FieldScopes)
+	}
+	if m.hashed_secret != nil {
+		fields = append(fields, oauth2client.FieldHashedSecret)
+	}
+	if m.redirect_uris != nil {
+		fields = append(fields, oauth2client.FieldRedirectUris)
 	}
 	if m.client_type != nil {
 		fields = append(fields, oauth2client.FieldClientType)
@@ -6634,12 +6634,6 @@ func (m *Oauth2ClientMutation) Field(name string) (ent.Value, bool) {
 		return m.DeletedAt()
 	case oauth2client.FieldUserID:
 		return m.UserID()
-	case oauth2client.FieldSecret:
-		return m.Secret()
-	case oauth2client.FieldRedirectUris:
-		return m.RedirectUris()
-	case oauth2client.FieldScopes:
-		return m.Scopes()
 	case oauth2client.FieldAppName:
 		return m.AppName()
 	case oauth2client.FieldAppDescription:
@@ -6650,6 +6644,12 @@ func (m *Oauth2ClientMutation) Field(name string) (ent.Value, bool) {
 		return m.AppHomepageURI()
 	case oauth2client.FieldAppPrivacyPolicyURI:
 		return m.AppPrivacyPolicyURI()
+	case oauth2client.FieldScopes:
+		return m.Scopes()
+	case oauth2client.FieldHashedSecret:
+		return m.HashedSecret()
+	case oauth2client.FieldRedirectUris:
+		return m.RedirectUris()
 	case oauth2client.FieldClientType:
 		return m.ClientType()
 	case oauth2client.FieldIsInternal:
@@ -6673,12 +6673,6 @@ func (m *Oauth2ClientMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldDeletedAt(ctx)
 	case oauth2client.FieldUserID:
 		return m.OldUserID(ctx)
-	case oauth2client.FieldSecret:
-		return m.OldSecret(ctx)
-	case oauth2client.FieldRedirectUris:
-		return m.OldRedirectUris(ctx)
-	case oauth2client.FieldScopes:
-		return m.OldScopes(ctx)
 	case oauth2client.FieldAppName:
 		return m.OldAppName(ctx)
 	case oauth2client.FieldAppDescription:
@@ -6689,6 +6683,12 @@ func (m *Oauth2ClientMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldAppHomepageURI(ctx)
 	case oauth2client.FieldAppPrivacyPolicyURI:
 		return m.OldAppPrivacyPolicyURI(ctx)
+	case oauth2client.FieldScopes:
+		return m.OldScopes(ctx)
+	case oauth2client.FieldHashedSecret:
+		return m.OldHashedSecret(ctx)
+	case oauth2client.FieldRedirectUris:
+		return m.OldRedirectUris(ctx)
 	case oauth2client.FieldClientType:
 		return m.OldClientType(ctx)
 	case oauth2client.FieldIsInternal:
@@ -6732,27 +6732,6 @@ func (m *Oauth2ClientMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUserID(v)
 		return nil
-	case oauth2client.FieldSecret:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSecret(v)
-		return nil
-	case oauth2client.FieldRedirectUris:
-		v, ok := value.([]string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRedirectUris(v)
-		return nil
-	case oauth2client.FieldScopes:
-		v, ok := value.([]string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetScopes(v)
-		return nil
 	case oauth2client.FieldAppName:
 		v, ok := value.(string)
 		if !ok {
@@ -6787,6 +6766,27 @@ func (m *Oauth2ClientMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAppPrivacyPolicyURI(v)
+		return nil
+	case oauth2client.FieldScopes:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScopes(v)
+		return nil
+	case oauth2client.FieldHashedSecret:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHashedSecret(v)
+		return nil
+	case oauth2client.FieldRedirectUris:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRedirectUris(v)
 		return nil
 	case oauth2client.FieldClientType:
 		v, ok := value.(oauth2client.ClientType)
@@ -6885,15 +6885,6 @@ func (m *Oauth2ClientMutation) ResetField(name string) error {
 	case oauth2client.FieldUserID:
 		m.ResetUserID()
 		return nil
-	case oauth2client.FieldSecret:
-		m.ResetSecret()
-		return nil
-	case oauth2client.FieldRedirectUris:
-		m.ResetRedirectUris()
-		return nil
-	case oauth2client.FieldScopes:
-		m.ResetScopes()
-		return nil
 	case oauth2client.FieldAppName:
 		m.ResetAppName()
 		return nil
@@ -6908,6 +6899,15 @@ func (m *Oauth2ClientMutation) ResetField(name string) error {
 		return nil
 	case oauth2client.FieldAppPrivacyPolicyURI:
 		m.ResetAppPrivacyPolicyURI()
+		return nil
+	case oauth2client.FieldScopes:
+		m.ResetScopes()
+		return nil
+	case oauth2client.FieldHashedSecret:
+		m.ResetHashedSecret()
+		return nil
+	case oauth2client.FieldRedirectUris:
+		m.ResetRedirectUris()
 		return nil
 	case oauth2client.FieldClientType:
 		m.ResetClientType()

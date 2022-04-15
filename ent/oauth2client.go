@@ -27,12 +27,6 @@ type Oauth2Client struct {
 	DeletedAt *time.Time `json:"deleted_at"`
 	// UserID holds the value of the "user_id" field.
 	UserID uuid.UUID `json:"-"`
-	// Secret holds the value of the "secret" field.
-	Secret string `json:"secret,omitempty"`
-	// RedirectUris holds the value of the "redirect_uris" field.
-	RedirectUris []string `json:"redirect_uris,omitempty"`
-	// Scopes holds the value of the "scopes" field.
-	Scopes []string `json:"scopes,omitempty"`
 	// AppName holds the value of the "app_name" field.
 	AppName string `json:"app_name,omitempty"`
 	// AppDescription holds the value of the "app_description" field.
@@ -43,6 +37,12 @@ type Oauth2Client struct {
 	AppHomepageURI string `json:"app_homepage_uri,omitempty"`
 	// AppPrivacyPolicyURI holds the value of the "app_privacy_policy_uri" field.
 	AppPrivacyPolicyURI string `json:"app_privacy_policy_uri,omitempty"`
+	// Scopes holds the value of the "scopes" field.
+	Scopes []string `json:"scopes,omitempty"`
+	// HashedSecret holds the value of the "hashed_secret" field.
+	HashedSecret string `json:"hashed_secret,omitempty"`
+	// RedirectUris holds the value of the "redirect_uris" field.
+	RedirectUris []string `json:"redirect_uris,omitempty"`
 	// ClientType holds the value of the "client_type" field.
 	ClientType oauth2client.ClientType `json:"client_type,omitempty"`
 	// IsInternal holds the value of the "is_internal" field.
@@ -82,11 +82,11 @@ func (*Oauth2Client) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case oauth2client.FieldRedirectUris, oauth2client.FieldScopes:
+		case oauth2client.FieldScopes, oauth2client.FieldRedirectUris:
 			values[i] = new([]byte)
 		case oauth2client.FieldIsInternal, oauth2client.FieldApproved:
 			values[i] = new(sql.NullBool)
-		case oauth2client.FieldSecret, oauth2client.FieldAppName, oauth2client.FieldAppDescription, oauth2client.FieldAppLogoURI, oauth2client.FieldAppHomepageURI, oauth2client.FieldAppPrivacyPolicyURI, oauth2client.FieldClientType:
+		case oauth2client.FieldAppName, oauth2client.FieldAppDescription, oauth2client.FieldAppLogoURI, oauth2client.FieldAppHomepageURI, oauth2client.FieldAppPrivacyPolicyURI, oauth2client.FieldHashedSecret, oauth2client.FieldClientType:
 			values[i] = new(sql.NullString)
 		case oauth2client.FieldCreatedAt, oauth2client.FieldUpdatedAt, oauth2client.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -138,28 +138,6 @@ func (o *Oauth2Client) assignValues(columns []string, values []interface{}) erro
 			} else if value != nil {
 				o.UserID = *value
 			}
-		case oauth2client.FieldSecret:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field secret", values[i])
-			} else if value.Valid {
-				o.Secret = value.String
-			}
-		case oauth2client.FieldRedirectUris:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field redirect_uris", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &o.RedirectUris); err != nil {
-					return fmt.Errorf("unmarshal field redirect_uris: %w", err)
-				}
-			}
-		case oauth2client.FieldScopes:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field scopes", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &o.Scopes); err != nil {
-					return fmt.Errorf("unmarshal field scopes: %w", err)
-				}
-			}
 		case oauth2client.FieldAppName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field app_name", values[i])
@@ -189,6 +167,28 @@ func (o *Oauth2Client) assignValues(columns []string, values []interface{}) erro
 				return fmt.Errorf("unexpected type %T for field app_privacy_policy_uri", values[i])
 			} else if value.Valid {
 				o.AppPrivacyPolicyURI = value.String
+			}
+		case oauth2client.FieldScopes:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field scopes", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &o.Scopes); err != nil {
+					return fmt.Errorf("unmarshal field scopes: %w", err)
+				}
+			}
+		case oauth2client.FieldHashedSecret:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field hashed_secret", values[i])
+			} else if value.Valid {
+				o.HashedSecret = value.String
+			}
+		case oauth2client.FieldRedirectUris:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field redirect_uris", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &o.RedirectUris); err != nil {
+					return fmt.Errorf("unmarshal field redirect_uris: %w", err)
+				}
 			}
 		case oauth2client.FieldClientType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -251,12 +251,6 @@ func (o *Oauth2Client) String() string {
 	}
 	builder.WriteString(", user_id=")
 	builder.WriteString(fmt.Sprintf("%v", o.UserID))
-	builder.WriteString(", secret=")
-	builder.WriteString(o.Secret)
-	builder.WriteString(", redirect_uris=")
-	builder.WriteString(fmt.Sprintf("%v", o.RedirectUris))
-	builder.WriteString(", scopes=")
-	builder.WriteString(fmt.Sprintf("%v", o.Scopes))
 	builder.WriteString(", app_name=")
 	builder.WriteString(o.AppName)
 	builder.WriteString(", app_description=")
@@ -267,6 +261,12 @@ func (o *Oauth2Client) String() string {
 	builder.WriteString(o.AppHomepageURI)
 	builder.WriteString(", app_privacy_policy_uri=")
 	builder.WriteString(o.AppPrivacyPolicyURI)
+	builder.WriteString(", scopes=")
+	builder.WriteString(fmt.Sprintf("%v", o.Scopes))
+	builder.WriteString(", hashed_secret=")
+	builder.WriteString(o.HashedSecret)
+	builder.WriteString(", redirect_uris=")
+	builder.WriteString(fmt.Sprintf("%v", o.RedirectUris))
 	builder.WriteString(", client_type=")
 	builder.WriteString(fmt.Sprintf("%v", o.ClientType))
 	builder.WriteString(", is_internal=")

@@ -76,24 +76,6 @@ func (ou *Oauth2ClientUpdate) ClearUserID() *Oauth2ClientUpdate {
 	return ou
 }
 
-// SetSecret sets the "secret" field.
-func (ou *Oauth2ClientUpdate) SetSecret(s string) *Oauth2ClientUpdate {
-	ou.mutation.SetSecret(s)
-	return ou
-}
-
-// SetRedirectUris sets the "redirect_uris" field.
-func (ou *Oauth2ClientUpdate) SetRedirectUris(s []string) *Oauth2ClientUpdate {
-	ou.mutation.SetRedirectUris(s)
-	return ou
-}
-
-// SetScopes sets the "scopes" field.
-func (ou *Oauth2ClientUpdate) SetScopes(s []string) *Oauth2ClientUpdate {
-	ou.mutation.SetScopes(s)
-	return ou
-}
-
 // SetAppName sets the "app_name" field.
 func (ou *Oauth2ClientUpdate) SetAppName(s string) *Oauth2ClientUpdate {
 	ou.mutation.SetAppName(s)
@@ -121,6 +103,24 @@ func (ou *Oauth2ClientUpdate) SetAppHomepageURI(s string) *Oauth2ClientUpdate {
 // SetAppPrivacyPolicyURI sets the "app_privacy_policy_uri" field.
 func (ou *Oauth2ClientUpdate) SetAppPrivacyPolicyURI(s string) *Oauth2ClientUpdate {
 	ou.mutation.SetAppPrivacyPolicyURI(s)
+	return ou
+}
+
+// SetScopes sets the "scopes" field.
+func (ou *Oauth2ClientUpdate) SetScopes(s []string) *Oauth2ClientUpdate {
+	ou.mutation.SetScopes(s)
+	return ou
+}
+
+// SetHashedSecret sets the "hashed_secret" field.
+func (ou *Oauth2ClientUpdate) SetHashedSecret(s string) *Oauth2ClientUpdate {
+	ou.mutation.SetHashedSecret(s)
+	return ou
+}
+
+// SetRedirectUris sets the "redirect_uris" field.
+func (ou *Oauth2ClientUpdate) SetRedirectUris(s []string) *Oauth2ClientUpdate {
+	ou.mutation.SetRedirectUris(s)
 	return ou
 }
 
@@ -291,27 +291,6 @@ func (ou *Oauth2ClientUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: oauth2client.FieldDeletedAt,
 		})
 	}
-	if value, ok := ou.mutation.Secret(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: oauth2client.FieldSecret,
-		})
-	}
-	if value, ok := ou.mutation.RedirectUris(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: oauth2client.FieldRedirectUris,
-		})
-	}
-	if value, ok := ou.mutation.Scopes(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: oauth2client.FieldScopes,
-		})
-	}
 	if value, ok := ou.mutation.AppName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -345,6 +324,27 @@ func (ou *Oauth2ClientUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: oauth2client.FieldAppPrivacyPolicyURI,
+		})
+	}
+	if value, ok := ou.mutation.Scopes(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: oauth2client.FieldScopes,
+		})
+	}
+	if value, ok := ou.mutation.HashedSecret(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oauth2client.FieldHashedSecret,
+		})
+	}
+	if value, ok := ou.mutation.RedirectUris(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: oauth2client.FieldRedirectUris,
 		})
 	}
 	if value, ok := ou.mutation.ClientType(); ok {
@@ -468,24 +468,6 @@ func (ouo *Oauth2ClientUpdateOne) ClearUserID() *Oauth2ClientUpdateOne {
 	return ouo
 }
 
-// SetSecret sets the "secret" field.
-func (ouo *Oauth2ClientUpdateOne) SetSecret(s string) *Oauth2ClientUpdateOne {
-	ouo.mutation.SetSecret(s)
-	return ouo
-}
-
-// SetRedirectUris sets the "redirect_uris" field.
-func (ouo *Oauth2ClientUpdateOne) SetRedirectUris(s []string) *Oauth2ClientUpdateOne {
-	ouo.mutation.SetRedirectUris(s)
-	return ouo
-}
-
-// SetScopes sets the "scopes" field.
-func (ouo *Oauth2ClientUpdateOne) SetScopes(s []string) *Oauth2ClientUpdateOne {
-	ouo.mutation.SetScopes(s)
-	return ouo
-}
-
 // SetAppName sets the "app_name" field.
 func (ouo *Oauth2ClientUpdateOne) SetAppName(s string) *Oauth2ClientUpdateOne {
 	ouo.mutation.SetAppName(s)
@@ -513,6 +495,24 @@ func (ouo *Oauth2ClientUpdateOne) SetAppHomepageURI(s string) *Oauth2ClientUpdat
 // SetAppPrivacyPolicyURI sets the "app_privacy_policy_uri" field.
 func (ouo *Oauth2ClientUpdateOne) SetAppPrivacyPolicyURI(s string) *Oauth2ClientUpdateOne {
 	ouo.mutation.SetAppPrivacyPolicyURI(s)
+	return ouo
+}
+
+// SetScopes sets the "scopes" field.
+func (ouo *Oauth2ClientUpdateOne) SetScopes(s []string) *Oauth2ClientUpdateOne {
+	ouo.mutation.SetScopes(s)
+	return ouo
+}
+
+// SetHashedSecret sets the "hashed_secret" field.
+func (ouo *Oauth2ClientUpdateOne) SetHashedSecret(s string) *Oauth2ClientUpdateOne {
+	ouo.mutation.SetHashedSecret(s)
+	return ouo
+}
+
+// SetRedirectUris sets the "redirect_uris" field.
+func (ouo *Oauth2ClientUpdateOne) SetRedirectUris(s []string) *Oauth2ClientUpdateOne {
+	ouo.mutation.SetRedirectUris(s)
 	return ouo
 }
 
@@ -707,27 +707,6 @@ func (ouo *Oauth2ClientUpdateOne) sqlSave(ctx context.Context) (_node *Oauth2Cli
 			Column: oauth2client.FieldDeletedAt,
 		})
 	}
-	if value, ok := ouo.mutation.Secret(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: oauth2client.FieldSecret,
-		})
-	}
-	if value, ok := ouo.mutation.RedirectUris(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: oauth2client.FieldRedirectUris,
-		})
-	}
-	if value, ok := ouo.mutation.Scopes(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: oauth2client.FieldScopes,
-		})
-	}
 	if value, ok := ouo.mutation.AppName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -761,6 +740,27 @@ func (ouo *Oauth2ClientUpdateOne) sqlSave(ctx context.Context) (_node *Oauth2Cli
 			Type:   field.TypeString,
 			Value:  value,
 			Column: oauth2client.FieldAppPrivacyPolicyURI,
+		})
+	}
+	if value, ok := ouo.mutation.Scopes(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: oauth2client.FieldScopes,
+		})
+	}
+	if value, ok := ouo.mutation.HashedSecret(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oauth2client.FieldHashedSecret,
+		})
+	}
+	if value, ok := ouo.mutation.RedirectUris(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: oauth2client.FieldRedirectUris,
 		})
 	}
 	if value, ok := ouo.mutation.ClientType(); ok {

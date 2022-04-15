@@ -27,15 +27,15 @@ func (Oauth2Client) Mixin() []ent.Mixin {
 // Fields of the Oauth2Client.
 func (Oauth2Client) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("secret"),
-		field.JSON("redirect_uris", []string{}),
-		field.JSON("scopes", []string{}),
-
 		field.String("app_name"),
 		field.String("app_description"),
 		field.String("app_logo_uri"),
 		field.String("app_homepage_uri"),
 		field.String("app_privacy_policy_uri"),
+
+		field.JSON("scopes", []string{}),
+		field.String("hashed_secret"),
+		field.JSON("redirect_uris", []string{}),
 
 		// https://datatracker.ietf.org/doc/html/rfc6749#section-2.1
 		field.Enum("client_type").

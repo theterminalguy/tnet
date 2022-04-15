@@ -11,7 +11,7 @@ import (
 type Oauth2ClientRepository struct{}
 
 type Oauth2ClientParams struct {
-	UserProfile    UserParams `json:"user_profile"`
+	DeveloperInfo  UserParams `json:"developer_info"`
 	AppName        string     `json:"app_name"`
 	AppDescription string     `json:"app_description"`
 	AppLogoURI     string     `json:"app_logo_uri"`
@@ -37,7 +37,7 @@ func (*Oauth2ClientRepository) GetAll() ([]*ent.Oauth2Client, error) {
 
 func (*Oauth2ClientRepository) GetByUUID(id uuid.UUID) (*ent.Oauth2Client, error) {
 	record, err := dBConn.Oauth2Client.Query().
-		Where(oauth2client.UUIDEQ(id)).
+		Where(oauth2client.IDEQ(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err

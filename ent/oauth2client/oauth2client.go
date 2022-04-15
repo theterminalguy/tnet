@@ -22,12 +22,6 @@ const (
 	FieldDeletedAt = "deleted_at"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
-	// FieldSecret holds the string denoting the secret field in the database.
-	FieldSecret = "secret"
-	// FieldRedirectUris holds the string denoting the redirect_uris field in the database.
-	FieldRedirectUris = "redirect_uris"
-	// FieldScopes holds the string denoting the scopes field in the database.
-	FieldScopes = "scopes"
 	// FieldAppName holds the string denoting the app_name field in the database.
 	FieldAppName = "app_name"
 	// FieldAppDescription holds the string denoting the app_description field in the database.
@@ -38,6 +32,12 @@ const (
 	FieldAppHomepageURI = "app_homepage_uri"
 	// FieldAppPrivacyPolicyURI holds the string denoting the app_privacy_policy_uri field in the database.
 	FieldAppPrivacyPolicyURI = "app_privacy_policy_uri"
+	// FieldScopes holds the string denoting the scopes field in the database.
+	FieldScopes = "scopes"
+	// FieldHashedSecret holds the string denoting the hashed_secret field in the database.
+	FieldHashedSecret = "hashed_secret"
+	// FieldRedirectUris holds the string denoting the redirect_uris field in the database.
+	FieldRedirectUris = "redirect_uris"
 	// FieldClientType holds the string denoting the client_type field in the database.
 	FieldClientType = "client_type"
 	// FieldIsInternal holds the string denoting the is_internal field in the database.
@@ -64,14 +64,14 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldDeletedAt,
 	FieldUserID,
-	FieldSecret,
-	FieldRedirectUris,
-	FieldScopes,
 	FieldAppName,
 	FieldAppDescription,
 	FieldAppLogoURI,
 	FieldAppHomepageURI,
 	FieldAppPrivacyPolicyURI,
+	FieldScopes,
+	FieldHashedSecret,
+	FieldRedirectUris,
 	FieldClientType,
 	FieldIsInternal,
 	FieldApproved,
