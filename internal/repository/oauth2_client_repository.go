@@ -11,14 +11,14 @@ import (
 type Oauth2ClientRepository struct{}
 
 type Oauth2ClientParams struct {
-	AppName             string   `json:"app_name"`
-	AppDescription      string   `json:"app_description"`
-	AppLogoURI          string   `json:"app_logo_uri"`
-	AppHomepageURI      string   `json:"app_homepage_uri"`
-	AppPrivacyPolicyURI string   `json:"app_privacy_policy_uri"`
-	ClientType          string   `json:"client_type"`
-	Scopes              []string `json:"scopes"`
-	RedirectURIs        []string `json:"redirect_uris"`
+	AppName             string   `json:"app_name" validate:"required"`
+	AppDescription      string   `json:"app_description" validate:"required"`
+	AppLogoURI          string   `json:"app_logo_uri" validate:"required,url"`
+	AppHomepageURI      string   `json:"app_homepage_uri" validate:"required,url"`
+	AppPrivacyPolicyURI string   `json:"app_privacy_policy_uri" validate:"required,url"`
+	ClientType          string   `json:"client_type" validate:"required"`
+	Scopes              []string `json:"scopes" validate:"required"`
+	RedirectURIs        []string `json:"redirect_uris" validate:"required"`
 
 	UserID       uuid.UUID
 	HashedSecret string
