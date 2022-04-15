@@ -11,14 +11,17 @@ import (
 type Oauth2ClientRepository struct{}
 
 type Oauth2ClientParams struct {
-	DeveloperInfo  UserParams `json:"developer_info"`
-	AppName        string     `json:"app_name"`
-	AppDescription string     `json:"app_description"`
-	AppLogoURI     string     `json:"app_logo_uri"`
-	AppHomepageURI string     `json:"app_homepage_uri"`
-	AppPrivacyURI  string     `json:"app_privacy_policy_uri"`
-	ClientType     string     `json:"client_type"`
-	Scopes         []string   `json:"scopes"`
+	AppName             string   `json:"app_name"`
+	AppDescription      string   `json:"app_description"`
+	AppLogoURI          string   `json:"app_logo_uri"`
+	AppHomepageURI      string   `json:"app_homepage_uri"`
+	AppPrivacyPolicyURI string   `json:"app_privacy_policy_uri"`
+	ClientType          string   `json:"client_type"`
+	Scopes              []string `json:"scopes"`
+	RedirectURIs        []string `json:"redirect_uris"`
+
+	UserID       uuid.UUID
+	HashedSecret string
 }
 
 func NewOauth2ClientRepository() *Oauth2ClientRepository {
@@ -55,7 +58,17 @@ func (*Oauth2ClientRepository) Create(p Oauth2ClientParams) (*ent.Oauth2Client, 
 	}
 	record, err := dBConn.Oauth2Client.
 		Create().
-		// TODO: set other fields here
+		SetID(uuid.New()).
+		SetUserID(p.UserID).
+		SetHashedSecret(p.HashedSecret).
+		SetAppName(p.AppName).
+		SetAppDescription(p.AppDescription).
+		SetAppLogoURI(p.AppLogoURI).
+		SetAppHomepageURI(p.AppHomepageURI).
+		SetAppPrivacyPolicyURI(p.AppPrivacyPolicyURI).
+		SetClientType(oauth2client.ClientType(p.ClientType)).
+		SetScopes(p.Scopes).
+		SetRedirectUris(p.RedirectURIs).
 		Save(dBContext)
 	if err != nil {
 		return nil, err

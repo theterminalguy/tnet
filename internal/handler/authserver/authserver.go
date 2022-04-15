@@ -1,0 +1,22 @@
+package authserver
+
+import (
+	"net/http"
+
+	"github.com/10hourlabs/tentn/internal/service"
+	"github.com/labstack/echo/v4"
+)
+
+// Oauth2ClienRepository allows for registration of Oauth2 client using
+// standard Oauth2 and OpenID Connect flows.
+func Oauth2ClientRegisterationHandler(c echo.Context) error {
+	params := new(service.Oauth2ClientRegistraionParams)
+	if err := c.Bind(params); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	oauth2Service := service.NewOauth2ClientService()
+	if err := oauth2Service.RegisterClient(*params); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	return c.String(http.StatusOK, "")
+}
