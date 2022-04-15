@@ -257,6 +257,46 @@ var (
 			},
 		},
 	}
+	// Oauth2clientsColumns holds the columns for the "oauth2clients" table.
+	Oauth2clientsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "secret", Type: field.TypeString},
+		{Name: "redirect_uris", Type: field.TypeJSON},
+		{Name: "scopes", Type: field.TypeJSON},
+		{Name: "app_name", Type: field.TypeString},
+		{Name: "app_description", Type: field.TypeString},
+		{Name: "app_logo_uri", Type: field.TypeString},
+		{Name: "app_homepage_uri", Type: field.TypeString},
+		{Name: "app_privacy_policy_uri", Type: field.TypeString},
+		{Name: "client_type", Type: field.TypeString},
+		{Name: "is_internal", Type: field.TypeBool, Default: false},
+		{Name: "approved", Type: field.TypeBool, Default: false},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
+	}
+	// Oauth2clientsTable holds the schema information for the "oauth2clients" table.
+	Oauth2clientsTable = &schema.Table{
+		Name:       "oauth2clients",
+		Columns:    Oauth2clientsColumns,
+		PrimaryKey: []*schema.Column{Oauth2clientsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "oauth2clients_users_oauth2_clients",
+				Columns:    []*schema.Column{Oauth2clientsColumns[15]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "oauth2client_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{Oauth2clientsColumns[15]},
+			},
+		},
+	}
 	// PartnersColumns holds the columns for the "partners" table.
 	PartnersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -586,6 +626,7 @@ var (
 		JobsTable,
 		JobApplicationsTable,
 		MissionsTable,
+		Oauth2clientsTable,
 		PartnersTable,
 		PortfolioLinksTable,
 		SessionsTable,
@@ -607,6 +648,7 @@ func init() {
 	JobApplicationsTable.ForeignKeys[1].RefTable = TalentsTable
 	MissionsTable.ForeignKeys[0].RefTable = PartnersTable
 	MissionsTable.ForeignKeys[1].RefTable = TalentsTable
+	Oauth2clientsTable.ForeignKeys[0].RefTable = UsersTable
 	PortfolioLinksTable.ForeignKeys[0].RefTable = TalentsTable
 	SessionsTable.ForeignKeys[0].RefTable = UsersTable
 	SkillsTable.ForeignKeys[0].RefTable = TalentsTable

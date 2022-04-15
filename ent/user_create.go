@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/ent/session"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
@@ -126,6 +127,21 @@ func (uc *UserCreate) SetNillableID(u *uuid.UUID) *UserCreate {
 		uc.SetID(*u)
 	}
 	return uc
+}
+
+// AddOauth2ClientIDs adds the "oauth2_clients" edge to the Oauth2Client entity by IDs.
+func (uc *UserCreate) AddOauth2ClientIDs(ids ...uuid.UUID) *UserCreate {
+	uc.mutation.AddOauth2ClientIDs(ids...)
+	return uc
+}
+
+// AddOauth2Clients adds the "oauth2_clients" edges to the Oauth2Client entity.
+func (uc *UserCreate) AddOauth2Clients(o ...*Oauth2Client) *UserCreate {
+	ids := make([]uuid.UUID, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return uc.AddOauth2ClientIDs(ids...)
 }
 
 // AddTalentIDs adds the "talents" edge to the Talent entity by IDs.
@@ -445,6 +461,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldPhotoURL,
 		})
 		_node.PhotoURL = value
+	}
+	if nodes := uc.mutation.Oauth2ClientsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.Oauth2ClientsTable,
+			Columns: []string{user.Oauth2ClientsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: oauth2client.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := uc.mutation.TalentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

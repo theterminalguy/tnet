@@ -33,6 +33,8 @@ const (
 	FieldApproved = "approved"
 	// FieldPhotoURL holds the string denoting the photo_url field in the database.
 	FieldPhotoURL = "photo_url"
+	// EdgeOauth2Clients holds the string denoting the oauth2_clients edge name in mutations.
+	EdgeOauth2Clients = "oauth2_clients"
 	// EdgeTalents holds the string denoting the talents edge name in mutations.
 	EdgeTalents = "talents"
 	// EdgeSlackAppInstalls holds the string denoting the slack_app_installs edge name in mutations.
@@ -47,6 +49,13 @@ const (
 	EdgeSessions = "sessions"
 	// Table holds the table name of the user in the database.
 	Table = "users"
+	// Oauth2ClientsTable is the table that holds the oauth2_clients relation/edge.
+	Oauth2ClientsTable = "oauth2clients"
+	// Oauth2ClientsInverseTable is the table name for the Oauth2Client entity.
+	// It exists in this package in order to avoid circular dependency with the "oauth2client" package.
+	Oauth2ClientsInverseTable = "oauth2clients"
+	// Oauth2ClientsColumn is the table column denoting the oauth2_clients relation/edge.
+	Oauth2ClientsColumn = "user_id"
 	// TalentsTable is the table that holds the talents relation/edge.
 	TalentsTable = "talents"
 	// TalentsInverseTable is the table name for the Talent entity.

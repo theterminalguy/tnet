@@ -30,6 +30,7 @@ type hooks struct {
 	Job              []ent.Hook
 	JobApplication   []ent.Hook
 	Mission          []ent.Hook
+	Oauth2Client     []ent.Hook
 	Partner          []ent.Hook
 	PortfolioLink    []ent.Hook
 	Session          []ent.Hook

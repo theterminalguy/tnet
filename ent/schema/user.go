@@ -50,6 +50,7 @@ func (User) Indexes() []ent.Index {
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.To("oauth2_clients", Oauth2Client.Type),
 		edge.To("talents", Talent.Type),
 		edge.To("slack_app_installs", SlackAppInstall.Type),
 		edge.To("jobs", Job.Type),

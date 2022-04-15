@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/session"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
@@ -33,6 +34,7 @@ type UserQuery struct {
 	fields     []string
 	predicates []predicate.User
 	// eager-loading edges.
+	withOauth2Clients     *Oauth2ClientQuery
 	withTalents           *TalentQuery
 	withSlackAppInstalls  *SlackAppInstallQuery
 	withJobs              *JobQuery
@@ -73,6 +75,28 @@ func (uq *UserQuery) Unique(unique bool) *UserQuery {
 func (uq *UserQuery) Order(o ...OrderFunc) *UserQuery {
 	uq.order = append(uq.order, o...)
 	return uq
+}
+
+// QueryOauth2Clients chains the current query on the "oauth2_clients" edge.
+func (uq *UserQuery) QueryOauth2Clients() *Oauth2ClientQuery {
+	query := &Oauth2ClientQuery{config: uq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(oauth2client.Table, oauth2client.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.Oauth2ClientsTable, user.Oauth2ClientsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryTalents chains the current query on the "talents" edge.
@@ -388,6 +412,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		offset:                uq.offset,
 		order:                 append([]OrderFunc{}, uq.order...),
 		predicates:            append([]predicate.User{}, uq.predicates...),
+		withOauth2Clients:     uq.withOauth2Clients.Clone(),
 		withTalents:           uq.withTalents.Clone(),
 		withSlackAppInstalls:  uq.withSlackAppInstalls.Clone(),
 		withJobs:              uq.withJobs.Clone(),
@@ -399,6 +424,17 @@ func (uq *UserQuery) Clone() *UserQuery {
 		path:   uq.path,
 		unique: uq.unique,
 	}
+}
+
+// WithOauth2Clients tells the query-builder to eager-load the nodes that are connected to
+// the "oauth2_clients" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithOauth2Clients(opts ...func(*Oauth2ClientQuery)) *UserQuery {
+	query := &Oauth2ClientQuery{config: uq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withOauth2Clients = query
+	return uq
 }
 
 // WithTalents tells the query-builder to eager-load the nodes that are connected to
@@ -532,7 +568,8 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [7]bool{
+			uq.withOauth2Clients != nil,
 			uq.withTalents != nil,
 			uq.withSlackAppInstalls != nil,
 			uq.withJobs != nil,
@@ -559,6 +596,31 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+
+	if query := uq.withOauth2Clients; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uuid.UUID]*User)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Oauth2Clients = []*Oauth2Client{}
+		}
+		query.Where(predicate.Oauth2Client(func(s *sql.Selector) {
+			s.Where(sql.InValues(user.Oauth2ClientsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.UserID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Oauth2Clients = append(node.Edges.Oauth2Clients, n)
+		}
 	}
 
 	if query := uq.withTalents; query != nil {

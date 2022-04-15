@@ -11,6 +11,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/mission"
+	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/schema"
@@ -162,6 +163,35 @@ func init() {
 	missionDescID := missionMixinFields0[0].Descriptor()
 	// mission.DefaultID holds the default value on creation for the id field.
 	mission.DefaultID = missionDescID.Default.(func() uuid.UUID)
+	oauth2clientMixin := schema.Oauth2Client{}.Mixin()
+	oauth2clientMixinFields0 := oauth2clientMixin[0].Fields()
+	_ = oauth2clientMixinFields0
+	oauth2clientMixinFields1 := oauth2clientMixin[1].Fields()
+	_ = oauth2clientMixinFields1
+	oauth2clientFields := schema.Oauth2Client{}.Fields()
+	_ = oauth2clientFields
+	// oauth2clientDescCreatedAt is the schema descriptor for created_at field.
+	oauth2clientDescCreatedAt := oauth2clientMixinFields1[0].Descriptor()
+	// oauth2client.DefaultCreatedAt holds the default value on creation for the created_at field.
+	oauth2client.DefaultCreatedAt = oauth2clientDescCreatedAt.Default.(func() time.Time)
+	// oauth2clientDescUpdatedAt is the schema descriptor for updated_at field.
+	oauth2clientDescUpdatedAt := oauth2clientMixinFields1[1].Descriptor()
+	// oauth2client.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	oauth2client.DefaultUpdatedAt = oauth2clientDescUpdatedAt.Default.(func() time.Time)
+	// oauth2client.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	oauth2client.UpdateDefaultUpdatedAt = oauth2clientDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// oauth2clientDescIsInternal is the schema descriptor for is_internal field.
+	oauth2clientDescIsInternal := oauth2clientFields[9].Descriptor()
+	// oauth2client.DefaultIsInternal holds the default value on creation for the is_internal field.
+	oauth2client.DefaultIsInternal = oauth2clientDescIsInternal.Default.(bool)
+	// oauth2clientDescApproved is the schema descriptor for approved field.
+	oauth2clientDescApproved := oauth2clientFields[10].Descriptor()
+	// oauth2client.DefaultApproved holds the default value on creation for the approved field.
+	oauth2client.DefaultApproved = oauth2clientDescApproved.Default.(bool)
+	// oauth2clientDescID is the schema descriptor for id field.
+	oauth2clientDescID := oauth2clientMixinFields0[0].Descriptor()
+	// oauth2client.DefaultID holds the default value on creation for the id field.
+	oauth2client.DefaultID = oauth2clientDescID.Default.(func() uuid.UUID)
 	partnerMixin := schema.Partner{}.Mixin()
 	partnerMixinFields0 := partnerMixin[0].Fields()
 	_ = partnerMixinFields0
