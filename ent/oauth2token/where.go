@@ -164,38 +164,10 @@ func CodeChallengeMethod(v string) predicate.Oauth2Token {
 	})
 }
 
-// CodeCreatedAt applies equality check predicate on the "code_created_at" field. It's identical to CodeCreatedAtEQ.
-func CodeCreatedAt(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCodeCreatedAt), v))
-	})
-}
-
-// CodeExpiresAt applies equality check predicate on the "code_expires_at" field. It's identical to CodeExpiresAtEQ.
-func CodeExpiresAt(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCodeExpiresAt), v))
-	})
-}
-
 // AccessToken applies equality check predicate on the "access_token" field. It's identical to AccessTokenEQ.
 func AccessToken(v string) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldAccessToken), v))
-	})
-}
-
-// AccessTokenCreatedAt applies equality check predicate on the "access_token_created_at" field. It's identical to AccessTokenCreatedAtEQ.
-func AccessTokenCreatedAt(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAccessTokenCreatedAt), v))
-	})
-}
-
-// AccessTokenExpiresAt applies equality check predicate on the "access_token_expires_at" field. It's identical to AccessTokenExpiresAtEQ.
-func AccessTokenExpiresAt(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAccessTokenExpiresAt), v))
 	})
 }
 
@@ -206,17 +178,45 @@ func RefreshToken(v string) predicate.Oauth2Token {
 	})
 }
 
+// CodeCreatedAt applies equality check predicate on the "code_created_at" field. It's identical to CodeCreatedAtEQ.
+func CodeCreatedAt(v time.Time) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCodeCreatedAt), v))
+	})
+}
+
+// AccessTokenCreatedAt applies equality check predicate on the "access_token_created_at" field. It's identical to AccessTokenCreatedAtEQ.
+func AccessTokenCreatedAt(v time.Time) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAccessTokenCreatedAt), v))
+	})
+}
+
 // RefreshTokenCreatedAt applies equality check predicate on the "refresh_token_created_at" field. It's identical to RefreshTokenCreatedAtEQ.
-func RefreshTokenCreatedAt(v string) predicate.Oauth2Token {
+func RefreshTokenCreatedAt(v time.Time) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldRefreshTokenCreatedAt), v))
 	})
 }
 
-// RefreshTokenExpiresAt applies equality check predicate on the "refresh_token_expires_at" field. It's identical to RefreshTokenExpiresAtEQ.
-func RefreshTokenExpiresAt(v string) predicate.Oauth2Token {
+// CodeExpiresIn applies equality check predicate on the "code_expires_in" field. It's identical to CodeExpiresInEQ.
+func CodeExpiresIn(v int64) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRefreshTokenExpiresAt), v))
+		s.Where(sql.EQ(s.C(FieldCodeExpiresIn), v))
+	})
+}
+
+// AccessTokenExpiresIn applies equality check predicate on the "access_token_expires_in" field. It's identical to AccessTokenExpiresInEQ.
+func AccessTokenExpiresIn(v int64) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAccessTokenExpiresIn), v))
+	})
+}
+
+// RefreshTokenExpiresIn applies equality check predicate on the "refresh_token_expires_in" field. It's identical to RefreshTokenExpiresInEQ.
+func RefreshTokenExpiresIn(v int64) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRefreshTokenExpiresIn), v))
 	})
 }
 
@@ -1155,228 +1155,6 @@ func CodeChallengeMethodContainsFold(v string) predicate.Oauth2Token {
 	})
 }
 
-// CodeCreatedAtEQ applies the EQ predicate on the "code_created_at" field.
-func CodeCreatedAtEQ(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCodeCreatedAt), v))
-	})
-}
-
-// CodeCreatedAtNEQ applies the NEQ predicate on the "code_created_at" field.
-func CodeCreatedAtNEQ(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCodeCreatedAt), v))
-	})
-}
-
-// CodeCreatedAtIn applies the In predicate on the "code_created_at" field.
-func CodeCreatedAtIn(vs ...string) predicate.Oauth2Token {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldCodeCreatedAt), v...))
-	})
-}
-
-// CodeCreatedAtNotIn applies the NotIn predicate on the "code_created_at" field.
-func CodeCreatedAtNotIn(vs ...string) predicate.Oauth2Token {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldCodeCreatedAt), v...))
-	})
-}
-
-// CodeCreatedAtGT applies the GT predicate on the "code_created_at" field.
-func CodeCreatedAtGT(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCodeCreatedAt), v))
-	})
-}
-
-// CodeCreatedAtGTE applies the GTE predicate on the "code_created_at" field.
-func CodeCreatedAtGTE(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCodeCreatedAt), v))
-	})
-}
-
-// CodeCreatedAtLT applies the LT predicate on the "code_created_at" field.
-func CodeCreatedAtLT(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCodeCreatedAt), v))
-	})
-}
-
-// CodeCreatedAtLTE applies the LTE predicate on the "code_created_at" field.
-func CodeCreatedAtLTE(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCodeCreatedAt), v))
-	})
-}
-
-// CodeCreatedAtContains applies the Contains predicate on the "code_created_at" field.
-func CodeCreatedAtContains(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldCodeCreatedAt), v))
-	})
-}
-
-// CodeCreatedAtHasPrefix applies the HasPrefix predicate on the "code_created_at" field.
-func CodeCreatedAtHasPrefix(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldCodeCreatedAt), v))
-	})
-}
-
-// CodeCreatedAtHasSuffix applies the HasSuffix predicate on the "code_created_at" field.
-func CodeCreatedAtHasSuffix(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldCodeCreatedAt), v))
-	})
-}
-
-// CodeCreatedAtEqualFold applies the EqualFold predicate on the "code_created_at" field.
-func CodeCreatedAtEqualFold(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldCodeCreatedAt), v))
-	})
-}
-
-// CodeCreatedAtContainsFold applies the ContainsFold predicate on the "code_created_at" field.
-func CodeCreatedAtContainsFold(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldCodeCreatedAt), v))
-	})
-}
-
-// CodeExpiresAtEQ applies the EQ predicate on the "code_expires_at" field.
-func CodeExpiresAtEQ(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCodeExpiresAt), v))
-	})
-}
-
-// CodeExpiresAtNEQ applies the NEQ predicate on the "code_expires_at" field.
-func CodeExpiresAtNEQ(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCodeExpiresAt), v))
-	})
-}
-
-// CodeExpiresAtIn applies the In predicate on the "code_expires_at" field.
-func CodeExpiresAtIn(vs ...string) predicate.Oauth2Token {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldCodeExpiresAt), v...))
-	})
-}
-
-// CodeExpiresAtNotIn applies the NotIn predicate on the "code_expires_at" field.
-func CodeExpiresAtNotIn(vs ...string) predicate.Oauth2Token {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldCodeExpiresAt), v...))
-	})
-}
-
-// CodeExpiresAtGT applies the GT predicate on the "code_expires_at" field.
-func CodeExpiresAtGT(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCodeExpiresAt), v))
-	})
-}
-
-// CodeExpiresAtGTE applies the GTE predicate on the "code_expires_at" field.
-func CodeExpiresAtGTE(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCodeExpiresAt), v))
-	})
-}
-
-// CodeExpiresAtLT applies the LT predicate on the "code_expires_at" field.
-func CodeExpiresAtLT(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCodeExpiresAt), v))
-	})
-}
-
-// CodeExpiresAtLTE applies the LTE predicate on the "code_expires_at" field.
-func CodeExpiresAtLTE(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCodeExpiresAt), v))
-	})
-}
-
-// CodeExpiresAtContains applies the Contains predicate on the "code_expires_at" field.
-func CodeExpiresAtContains(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldCodeExpiresAt), v))
-	})
-}
-
-// CodeExpiresAtHasPrefix applies the HasPrefix predicate on the "code_expires_at" field.
-func CodeExpiresAtHasPrefix(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldCodeExpiresAt), v))
-	})
-}
-
-// CodeExpiresAtHasSuffix applies the HasSuffix predicate on the "code_expires_at" field.
-func CodeExpiresAtHasSuffix(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldCodeExpiresAt), v))
-	})
-}
-
-// CodeExpiresAtEqualFold applies the EqualFold predicate on the "code_expires_at" field.
-func CodeExpiresAtEqualFold(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldCodeExpiresAt), v))
-	})
-}
-
-// CodeExpiresAtContainsFold applies the ContainsFold predicate on the "code_expires_at" field.
-func CodeExpiresAtContainsFold(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldCodeExpiresAt), v))
-	})
-}
-
 // AccessTokenEQ applies the EQ predicate on the "access_token" field.
 func AccessTokenEQ(v string) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
@@ -1485,228 +1263,6 @@ func AccessTokenEqualFold(v string) predicate.Oauth2Token {
 func AccessTokenContainsFold(v string) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldAccessToken), v))
-	})
-}
-
-// AccessTokenCreatedAtEQ applies the EQ predicate on the "access_token_created_at" field.
-func AccessTokenCreatedAtEQ(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAccessTokenCreatedAt), v))
-	})
-}
-
-// AccessTokenCreatedAtNEQ applies the NEQ predicate on the "access_token_created_at" field.
-func AccessTokenCreatedAtNEQ(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAccessTokenCreatedAt), v))
-	})
-}
-
-// AccessTokenCreatedAtIn applies the In predicate on the "access_token_created_at" field.
-func AccessTokenCreatedAtIn(vs ...string) predicate.Oauth2Token {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldAccessTokenCreatedAt), v...))
-	})
-}
-
-// AccessTokenCreatedAtNotIn applies the NotIn predicate on the "access_token_created_at" field.
-func AccessTokenCreatedAtNotIn(vs ...string) predicate.Oauth2Token {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldAccessTokenCreatedAt), v...))
-	})
-}
-
-// AccessTokenCreatedAtGT applies the GT predicate on the "access_token_created_at" field.
-func AccessTokenCreatedAtGT(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAccessTokenCreatedAt), v))
-	})
-}
-
-// AccessTokenCreatedAtGTE applies the GTE predicate on the "access_token_created_at" field.
-func AccessTokenCreatedAtGTE(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAccessTokenCreatedAt), v))
-	})
-}
-
-// AccessTokenCreatedAtLT applies the LT predicate on the "access_token_created_at" field.
-func AccessTokenCreatedAtLT(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAccessTokenCreatedAt), v))
-	})
-}
-
-// AccessTokenCreatedAtLTE applies the LTE predicate on the "access_token_created_at" field.
-func AccessTokenCreatedAtLTE(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAccessTokenCreatedAt), v))
-	})
-}
-
-// AccessTokenCreatedAtContains applies the Contains predicate on the "access_token_created_at" field.
-func AccessTokenCreatedAtContains(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAccessTokenCreatedAt), v))
-	})
-}
-
-// AccessTokenCreatedAtHasPrefix applies the HasPrefix predicate on the "access_token_created_at" field.
-func AccessTokenCreatedAtHasPrefix(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAccessTokenCreatedAt), v))
-	})
-}
-
-// AccessTokenCreatedAtHasSuffix applies the HasSuffix predicate on the "access_token_created_at" field.
-func AccessTokenCreatedAtHasSuffix(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAccessTokenCreatedAt), v))
-	})
-}
-
-// AccessTokenCreatedAtEqualFold applies the EqualFold predicate on the "access_token_created_at" field.
-func AccessTokenCreatedAtEqualFold(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAccessTokenCreatedAt), v))
-	})
-}
-
-// AccessTokenCreatedAtContainsFold applies the ContainsFold predicate on the "access_token_created_at" field.
-func AccessTokenCreatedAtContainsFold(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAccessTokenCreatedAt), v))
-	})
-}
-
-// AccessTokenExpiresAtEQ applies the EQ predicate on the "access_token_expires_at" field.
-func AccessTokenExpiresAtEQ(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAccessTokenExpiresAt), v))
-	})
-}
-
-// AccessTokenExpiresAtNEQ applies the NEQ predicate on the "access_token_expires_at" field.
-func AccessTokenExpiresAtNEQ(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAccessTokenExpiresAt), v))
-	})
-}
-
-// AccessTokenExpiresAtIn applies the In predicate on the "access_token_expires_at" field.
-func AccessTokenExpiresAtIn(vs ...string) predicate.Oauth2Token {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldAccessTokenExpiresAt), v...))
-	})
-}
-
-// AccessTokenExpiresAtNotIn applies the NotIn predicate on the "access_token_expires_at" field.
-func AccessTokenExpiresAtNotIn(vs ...string) predicate.Oauth2Token {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldAccessTokenExpiresAt), v...))
-	})
-}
-
-// AccessTokenExpiresAtGT applies the GT predicate on the "access_token_expires_at" field.
-func AccessTokenExpiresAtGT(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAccessTokenExpiresAt), v))
-	})
-}
-
-// AccessTokenExpiresAtGTE applies the GTE predicate on the "access_token_expires_at" field.
-func AccessTokenExpiresAtGTE(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAccessTokenExpiresAt), v))
-	})
-}
-
-// AccessTokenExpiresAtLT applies the LT predicate on the "access_token_expires_at" field.
-func AccessTokenExpiresAtLT(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAccessTokenExpiresAt), v))
-	})
-}
-
-// AccessTokenExpiresAtLTE applies the LTE predicate on the "access_token_expires_at" field.
-func AccessTokenExpiresAtLTE(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAccessTokenExpiresAt), v))
-	})
-}
-
-// AccessTokenExpiresAtContains applies the Contains predicate on the "access_token_expires_at" field.
-func AccessTokenExpiresAtContains(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAccessTokenExpiresAt), v))
-	})
-}
-
-// AccessTokenExpiresAtHasPrefix applies the HasPrefix predicate on the "access_token_expires_at" field.
-func AccessTokenExpiresAtHasPrefix(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAccessTokenExpiresAt), v))
-	})
-}
-
-// AccessTokenExpiresAtHasSuffix applies the HasSuffix predicate on the "access_token_expires_at" field.
-func AccessTokenExpiresAtHasSuffix(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAccessTokenExpiresAt), v))
-	})
-}
-
-// AccessTokenExpiresAtEqualFold applies the EqualFold predicate on the "access_token_expires_at" field.
-func AccessTokenExpiresAtEqualFold(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAccessTokenExpiresAt), v))
-	})
-}
-
-// AccessTokenExpiresAtContainsFold applies the ContainsFold predicate on the "access_token_expires_at" field.
-func AccessTokenExpiresAtContainsFold(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAccessTokenExpiresAt), v))
 	})
 }
 
@@ -1821,22 +1377,174 @@ func RefreshTokenContainsFold(v string) predicate.Oauth2Token {
 	})
 }
 
+// CodeCreatedAtEQ applies the EQ predicate on the "code_created_at" field.
+func CodeCreatedAtEQ(v time.Time) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCodeCreatedAt), v))
+	})
+}
+
+// CodeCreatedAtNEQ applies the NEQ predicate on the "code_created_at" field.
+func CodeCreatedAtNEQ(v time.Time) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCodeCreatedAt), v))
+	})
+}
+
+// CodeCreatedAtIn applies the In predicate on the "code_created_at" field.
+func CodeCreatedAtIn(vs ...time.Time) predicate.Oauth2Token {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldCodeCreatedAt), v...))
+	})
+}
+
+// CodeCreatedAtNotIn applies the NotIn predicate on the "code_created_at" field.
+func CodeCreatedAtNotIn(vs ...time.Time) predicate.Oauth2Token {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldCodeCreatedAt), v...))
+	})
+}
+
+// CodeCreatedAtGT applies the GT predicate on the "code_created_at" field.
+func CodeCreatedAtGT(v time.Time) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldCodeCreatedAt), v))
+	})
+}
+
+// CodeCreatedAtGTE applies the GTE predicate on the "code_created_at" field.
+func CodeCreatedAtGTE(v time.Time) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldCodeCreatedAt), v))
+	})
+}
+
+// CodeCreatedAtLT applies the LT predicate on the "code_created_at" field.
+func CodeCreatedAtLT(v time.Time) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldCodeCreatedAt), v))
+	})
+}
+
+// CodeCreatedAtLTE applies the LTE predicate on the "code_created_at" field.
+func CodeCreatedAtLTE(v time.Time) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldCodeCreatedAt), v))
+	})
+}
+
+// AccessTokenCreatedAtEQ applies the EQ predicate on the "access_token_created_at" field.
+func AccessTokenCreatedAtEQ(v time.Time) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAccessTokenCreatedAt), v))
+	})
+}
+
+// AccessTokenCreatedAtNEQ applies the NEQ predicate on the "access_token_created_at" field.
+func AccessTokenCreatedAtNEQ(v time.Time) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAccessTokenCreatedAt), v))
+	})
+}
+
+// AccessTokenCreatedAtIn applies the In predicate on the "access_token_created_at" field.
+func AccessTokenCreatedAtIn(vs ...time.Time) predicate.Oauth2Token {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAccessTokenCreatedAt), v...))
+	})
+}
+
+// AccessTokenCreatedAtNotIn applies the NotIn predicate on the "access_token_created_at" field.
+func AccessTokenCreatedAtNotIn(vs ...time.Time) predicate.Oauth2Token {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAccessTokenCreatedAt), v...))
+	})
+}
+
+// AccessTokenCreatedAtGT applies the GT predicate on the "access_token_created_at" field.
+func AccessTokenCreatedAtGT(v time.Time) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAccessTokenCreatedAt), v))
+	})
+}
+
+// AccessTokenCreatedAtGTE applies the GTE predicate on the "access_token_created_at" field.
+func AccessTokenCreatedAtGTE(v time.Time) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAccessTokenCreatedAt), v))
+	})
+}
+
+// AccessTokenCreatedAtLT applies the LT predicate on the "access_token_created_at" field.
+func AccessTokenCreatedAtLT(v time.Time) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAccessTokenCreatedAt), v))
+	})
+}
+
+// AccessTokenCreatedAtLTE applies the LTE predicate on the "access_token_created_at" field.
+func AccessTokenCreatedAtLTE(v time.Time) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAccessTokenCreatedAt), v))
+	})
+}
+
 // RefreshTokenCreatedAtEQ applies the EQ predicate on the "refresh_token_created_at" field.
-func RefreshTokenCreatedAtEQ(v string) predicate.Oauth2Token {
+func RefreshTokenCreatedAtEQ(v time.Time) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldRefreshTokenCreatedAt), v))
 	})
 }
 
 // RefreshTokenCreatedAtNEQ applies the NEQ predicate on the "refresh_token_created_at" field.
-func RefreshTokenCreatedAtNEQ(v string) predicate.Oauth2Token {
+func RefreshTokenCreatedAtNEQ(v time.Time) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldRefreshTokenCreatedAt), v))
 	})
 }
 
 // RefreshTokenCreatedAtIn applies the In predicate on the "refresh_token_created_at" field.
-func RefreshTokenCreatedAtIn(vs ...string) predicate.Oauth2Token {
+func RefreshTokenCreatedAtIn(vs ...time.Time) predicate.Oauth2Token {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1853,7 +1561,7 @@ func RefreshTokenCreatedAtIn(vs ...string) predicate.Oauth2Token {
 }
 
 // RefreshTokenCreatedAtNotIn applies the NotIn predicate on the "refresh_token_created_at" field.
-func RefreshTokenCreatedAtNotIn(vs ...string) predicate.Oauth2Token {
+func RefreshTokenCreatedAtNotIn(vs ...time.Time) predicate.Oauth2Token {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1870,84 +1578,49 @@ func RefreshTokenCreatedAtNotIn(vs ...string) predicate.Oauth2Token {
 }
 
 // RefreshTokenCreatedAtGT applies the GT predicate on the "refresh_token_created_at" field.
-func RefreshTokenCreatedAtGT(v string) predicate.Oauth2Token {
+func RefreshTokenCreatedAtGT(v time.Time) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldRefreshTokenCreatedAt), v))
 	})
 }
 
 // RefreshTokenCreatedAtGTE applies the GTE predicate on the "refresh_token_created_at" field.
-func RefreshTokenCreatedAtGTE(v string) predicate.Oauth2Token {
+func RefreshTokenCreatedAtGTE(v time.Time) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldRefreshTokenCreatedAt), v))
 	})
 }
 
 // RefreshTokenCreatedAtLT applies the LT predicate on the "refresh_token_created_at" field.
-func RefreshTokenCreatedAtLT(v string) predicate.Oauth2Token {
+func RefreshTokenCreatedAtLT(v time.Time) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldRefreshTokenCreatedAt), v))
 	})
 }
 
 // RefreshTokenCreatedAtLTE applies the LTE predicate on the "refresh_token_created_at" field.
-func RefreshTokenCreatedAtLTE(v string) predicate.Oauth2Token {
+func RefreshTokenCreatedAtLTE(v time.Time) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldRefreshTokenCreatedAt), v))
 	})
 }
 
-// RefreshTokenCreatedAtContains applies the Contains predicate on the "refresh_token_created_at" field.
-func RefreshTokenCreatedAtContains(v string) predicate.Oauth2Token {
+// CodeExpiresInEQ applies the EQ predicate on the "code_expires_in" field.
+func CodeExpiresInEQ(v int64) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRefreshTokenCreatedAt), v))
+		s.Where(sql.EQ(s.C(FieldCodeExpiresIn), v))
 	})
 }
 
-// RefreshTokenCreatedAtHasPrefix applies the HasPrefix predicate on the "refresh_token_created_at" field.
-func RefreshTokenCreatedAtHasPrefix(v string) predicate.Oauth2Token {
+// CodeExpiresInNEQ applies the NEQ predicate on the "code_expires_in" field.
+func CodeExpiresInNEQ(v int64) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRefreshTokenCreatedAt), v))
+		s.Where(sql.NEQ(s.C(FieldCodeExpiresIn), v))
 	})
 }
 
-// RefreshTokenCreatedAtHasSuffix applies the HasSuffix predicate on the "refresh_token_created_at" field.
-func RefreshTokenCreatedAtHasSuffix(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRefreshTokenCreatedAt), v))
-	})
-}
-
-// RefreshTokenCreatedAtEqualFold applies the EqualFold predicate on the "refresh_token_created_at" field.
-func RefreshTokenCreatedAtEqualFold(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRefreshTokenCreatedAt), v))
-	})
-}
-
-// RefreshTokenCreatedAtContainsFold applies the ContainsFold predicate on the "refresh_token_created_at" field.
-func RefreshTokenCreatedAtContainsFold(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRefreshTokenCreatedAt), v))
-	})
-}
-
-// RefreshTokenExpiresAtEQ applies the EQ predicate on the "refresh_token_expires_at" field.
-func RefreshTokenExpiresAtEQ(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRefreshTokenExpiresAt), v))
-	})
-}
-
-// RefreshTokenExpiresAtNEQ applies the NEQ predicate on the "refresh_token_expires_at" field.
-func RefreshTokenExpiresAtNEQ(v string) predicate.Oauth2Token {
-	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRefreshTokenExpiresAt), v))
-	})
-}
-
-// RefreshTokenExpiresAtIn applies the In predicate on the "refresh_token_expires_at" field.
-func RefreshTokenExpiresAtIn(vs ...string) predicate.Oauth2Token {
+// CodeExpiresInIn applies the In predicate on the "code_expires_in" field.
+func CodeExpiresInIn(vs ...int64) predicate.Oauth2Token {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1959,12 +1632,12 @@ func RefreshTokenExpiresAtIn(vs ...string) predicate.Oauth2Token {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldRefreshTokenExpiresAt), v...))
+		s.Where(sql.In(s.C(FieldCodeExpiresIn), v...))
 	})
 }
 
-// RefreshTokenExpiresAtNotIn applies the NotIn predicate on the "refresh_token_expires_at" field.
-func RefreshTokenExpiresAtNotIn(vs ...string) predicate.Oauth2Token {
+// CodeExpiresInNotIn applies the NotIn predicate on the "code_expires_in" field.
+func CodeExpiresInNotIn(vs ...int64) predicate.Oauth2Token {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1976,70 +1649,187 @@ func RefreshTokenExpiresAtNotIn(vs ...string) predicate.Oauth2Token {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldRefreshTokenExpiresAt), v...))
+		s.Where(sql.NotIn(s.C(FieldCodeExpiresIn), v...))
 	})
 }
 
-// RefreshTokenExpiresAtGT applies the GT predicate on the "refresh_token_expires_at" field.
-func RefreshTokenExpiresAtGT(v string) predicate.Oauth2Token {
+// CodeExpiresInGT applies the GT predicate on the "code_expires_in" field.
+func CodeExpiresInGT(v int64) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRefreshTokenExpiresAt), v))
+		s.Where(sql.GT(s.C(FieldCodeExpiresIn), v))
 	})
 }
 
-// RefreshTokenExpiresAtGTE applies the GTE predicate on the "refresh_token_expires_at" field.
-func RefreshTokenExpiresAtGTE(v string) predicate.Oauth2Token {
+// CodeExpiresInGTE applies the GTE predicate on the "code_expires_in" field.
+func CodeExpiresInGTE(v int64) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRefreshTokenExpiresAt), v))
+		s.Where(sql.GTE(s.C(FieldCodeExpiresIn), v))
 	})
 }
 
-// RefreshTokenExpiresAtLT applies the LT predicate on the "refresh_token_expires_at" field.
-func RefreshTokenExpiresAtLT(v string) predicate.Oauth2Token {
+// CodeExpiresInLT applies the LT predicate on the "code_expires_in" field.
+func CodeExpiresInLT(v int64) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRefreshTokenExpiresAt), v))
+		s.Where(sql.LT(s.C(FieldCodeExpiresIn), v))
 	})
 }
 
-// RefreshTokenExpiresAtLTE applies the LTE predicate on the "refresh_token_expires_at" field.
-func RefreshTokenExpiresAtLTE(v string) predicate.Oauth2Token {
+// CodeExpiresInLTE applies the LTE predicate on the "code_expires_in" field.
+func CodeExpiresInLTE(v int64) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRefreshTokenExpiresAt), v))
+		s.Where(sql.LTE(s.C(FieldCodeExpiresIn), v))
 	})
 }
 
-// RefreshTokenExpiresAtContains applies the Contains predicate on the "refresh_token_expires_at" field.
-func RefreshTokenExpiresAtContains(v string) predicate.Oauth2Token {
+// AccessTokenExpiresInEQ applies the EQ predicate on the "access_token_expires_in" field.
+func AccessTokenExpiresInEQ(v int64) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldRefreshTokenExpiresAt), v))
+		s.Where(sql.EQ(s.C(FieldAccessTokenExpiresIn), v))
 	})
 }
 
-// RefreshTokenExpiresAtHasPrefix applies the HasPrefix predicate on the "refresh_token_expires_at" field.
-func RefreshTokenExpiresAtHasPrefix(v string) predicate.Oauth2Token {
+// AccessTokenExpiresInNEQ applies the NEQ predicate on the "access_token_expires_in" field.
+func AccessTokenExpiresInNEQ(v int64) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldRefreshTokenExpiresAt), v))
+		s.Where(sql.NEQ(s.C(FieldAccessTokenExpiresIn), v))
 	})
 }
 
-// RefreshTokenExpiresAtHasSuffix applies the HasSuffix predicate on the "refresh_token_expires_at" field.
-func RefreshTokenExpiresAtHasSuffix(v string) predicate.Oauth2Token {
+// AccessTokenExpiresInIn applies the In predicate on the "access_token_expires_in" field.
+func AccessTokenExpiresInIn(vs ...int64) predicate.Oauth2Token {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
 	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldRefreshTokenExpiresAt), v))
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAccessTokenExpiresIn), v...))
 	})
 }
 
-// RefreshTokenExpiresAtEqualFold applies the EqualFold predicate on the "refresh_token_expires_at" field.
-func RefreshTokenExpiresAtEqualFold(v string) predicate.Oauth2Token {
+// AccessTokenExpiresInNotIn applies the NotIn predicate on the "access_token_expires_in" field.
+func AccessTokenExpiresInNotIn(vs ...int64) predicate.Oauth2Token {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
 	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldRefreshTokenExpiresAt), v))
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAccessTokenExpiresIn), v...))
 	})
 }
 
-// RefreshTokenExpiresAtContainsFold applies the ContainsFold predicate on the "refresh_token_expires_at" field.
-func RefreshTokenExpiresAtContainsFold(v string) predicate.Oauth2Token {
+// AccessTokenExpiresInGT applies the GT predicate on the "access_token_expires_in" field.
+func AccessTokenExpiresInGT(v int64) predicate.Oauth2Token {
 	return predicate.Oauth2Token(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldRefreshTokenExpiresAt), v))
+		s.Where(sql.GT(s.C(FieldAccessTokenExpiresIn), v))
+	})
+}
+
+// AccessTokenExpiresInGTE applies the GTE predicate on the "access_token_expires_in" field.
+func AccessTokenExpiresInGTE(v int64) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAccessTokenExpiresIn), v))
+	})
+}
+
+// AccessTokenExpiresInLT applies the LT predicate on the "access_token_expires_in" field.
+func AccessTokenExpiresInLT(v int64) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAccessTokenExpiresIn), v))
+	})
+}
+
+// AccessTokenExpiresInLTE applies the LTE predicate on the "access_token_expires_in" field.
+func AccessTokenExpiresInLTE(v int64) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAccessTokenExpiresIn), v))
+	})
+}
+
+// RefreshTokenExpiresInEQ applies the EQ predicate on the "refresh_token_expires_in" field.
+func RefreshTokenExpiresInEQ(v int64) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRefreshTokenExpiresIn), v))
+	})
+}
+
+// RefreshTokenExpiresInNEQ applies the NEQ predicate on the "refresh_token_expires_in" field.
+func RefreshTokenExpiresInNEQ(v int64) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRefreshTokenExpiresIn), v))
+	})
+}
+
+// RefreshTokenExpiresInIn applies the In predicate on the "refresh_token_expires_in" field.
+func RefreshTokenExpiresInIn(vs ...int64) predicate.Oauth2Token {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRefreshTokenExpiresIn), v...))
+	})
+}
+
+// RefreshTokenExpiresInNotIn applies the NotIn predicate on the "refresh_token_expires_in" field.
+func RefreshTokenExpiresInNotIn(vs ...int64) predicate.Oauth2Token {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRefreshTokenExpiresIn), v...))
+	})
+}
+
+// RefreshTokenExpiresInGT applies the GT predicate on the "refresh_token_expires_in" field.
+func RefreshTokenExpiresInGT(v int64) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRefreshTokenExpiresIn), v))
+	})
+}
+
+// RefreshTokenExpiresInGTE applies the GTE predicate on the "refresh_token_expires_in" field.
+func RefreshTokenExpiresInGTE(v int64) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRefreshTokenExpiresIn), v))
+	})
+}
+
+// RefreshTokenExpiresInLT applies the LT predicate on the "refresh_token_expires_in" field.
+func RefreshTokenExpiresInLT(v int64) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRefreshTokenExpiresIn), v))
+	})
+}
+
+// RefreshTokenExpiresInLTE applies the LTE predicate on the "refresh_token_expires_in" field.
+func RefreshTokenExpiresInLTE(v int64) predicate.Oauth2Token {
+	return predicate.Oauth2Token(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRefreshTokenExpiresIn), v))
 	})
 }
 

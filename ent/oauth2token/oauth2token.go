@@ -33,22 +33,22 @@ const (
 	FieldCodeChallenge = "code_challenge"
 	// FieldCodeChallengeMethod holds the string denoting the code_challenge_method field in the database.
 	FieldCodeChallengeMethod = "code_challenge_method"
-	// FieldCodeCreatedAt holds the string denoting the code_created_at field in the database.
-	FieldCodeCreatedAt = "code_created_at"
-	// FieldCodeExpiresAt holds the string denoting the code_expires_at field in the database.
-	FieldCodeExpiresAt = "code_expires_at"
 	// FieldAccessToken holds the string denoting the access_token field in the database.
 	FieldAccessToken = "access_token"
-	// FieldAccessTokenCreatedAt holds the string denoting the access_token_created_at field in the database.
-	FieldAccessTokenCreatedAt = "access_token_created_at"
-	// FieldAccessTokenExpiresAt holds the string denoting the access_token_expires_at field in the database.
-	FieldAccessTokenExpiresAt = "access_token_expires_at"
 	// FieldRefreshToken holds the string denoting the refresh_token field in the database.
 	FieldRefreshToken = "refresh_token"
+	// FieldCodeCreatedAt holds the string denoting the code_created_at field in the database.
+	FieldCodeCreatedAt = "code_created_at"
+	// FieldAccessTokenCreatedAt holds the string denoting the access_token_created_at field in the database.
+	FieldAccessTokenCreatedAt = "access_token_created_at"
 	// FieldRefreshTokenCreatedAt holds the string denoting the refresh_token_created_at field in the database.
 	FieldRefreshTokenCreatedAt = "refresh_token_created_at"
-	// FieldRefreshTokenExpiresAt holds the string denoting the refresh_token_expires_at field in the database.
-	FieldRefreshTokenExpiresAt = "refresh_token_expires_at"
+	// FieldCodeExpiresIn holds the string denoting the code_expires_in field in the database.
+	FieldCodeExpiresIn = "code_expires_in"
+	// FieldAccessTokenExpiresIn holds the string denoting the access_token_expires_in field in the database.
+	FieldAccessTokenExpiresIn = "access_token_expires_in"
+	// FieldRefreshTokenExpiresIn holds the string denoting the refresh_token_expires_in field in the database.
+	FieldRefreshTokenExpiresIn = "refresh_token_expires_in"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeOauth2client holds the string denoting the oauth2client edge name in mutations.
@@ -84,14 +84,14 @@ var Columns = []string{
 	FieldCode,
 	FieldCodeChallenge,
 	FieldCodeChallengeMethod,
-	FieldCodeCreatedAt,
-	FieldCodeExpiresAt,
 	FieldAccessToken,
-	FieldAccessTokenCreatedAt,
-	FieldAccessTokenExpiresAt,
 	FieldRefreshToken,
+	FieldCodeCreatedAt,
+	FieldAccessTokenCreatedAt,
 	FieldRefreshTokenCreatedAt,
-	FieldRefreshTokenExpiresAt,
+	FieldCodeExpiresIn,
+	FieldAccessTokenExpiresIn,
+	FieldRefreshTokenExpiresIn,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

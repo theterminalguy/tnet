@@ -34,20 +34,27 @@ func (Oauth2Token) Mixin() []ent.Mixin {
 // Fields of the Oauth2Token.
 func (Oauth2Token) Fields() []ent.Field {
 	return []ent.Field{
+		// redirect_uri is optional based on the grant type.
 		field.String("redirect_uri").
 			Optional(),
+
 		field.String("scopes"),
 		field.String("code"),
 		field.String("code_challenge"),
 		field.String("code_challenge_method"),
-		field.String("code_created_at"),
-		field.String("code_expires_at"),
 		field.String("access_token"),
-		field.String("access_token_created_at"),
-		field.String("access_token_expires_at"),
 		field.String("refresh_token"),
-		field.String("refresh_token_created_at"),
-		field.String("refresh_token_expires_at"),
+
+		field.Time("code_created_at").
+			Immutable(),
+		field.Time("access_token_created_at").
+			Immutable(),
+		field.Time("refresh_token_created_at").
+			Immutable(),
+
+		field.Int64("code_expires_in"),
+		field.Int64("access_token_expires_in"),
+		field.Int64("refresh_token_expires_in"),
 	}
 }
 

@@ -26,5 +26,5 @@ func Oauth2ClientRegisterationHandler(c echo.Context) error {
 
 func Oauth2ClientTokenHandler(c echo.Context) error {
 	manager := manage.NewDefaultManager()
-	manager.MustTokenStorage(repo.NewOauth2TokenRepository())
+	manager.MustTokenStorage(repo.NewOauth2TokenRepository(), nil)
 }

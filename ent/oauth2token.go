@@ -39,22 +39,22 @@ type Oauth2Token struct {
 	CodeChallenge string `json:"code_challenge,omitempty"`
 	// CodeChallengeMethod holds the value of the "code_challenge_method" field.
 	CodeChallengeMethod string `json:"code_challenge_method,omitempty"`
-	// CodeCreatedAt holds the value of the "code_created_at" field.
-	CodeCreatedAt string `json:"code_created_at,omitempty"`
-	// CodeExpiresAt holds the value of the "code_expires_at" field.
-	CodeExpiresAt string `json:"code_expires_at,omitempty"`
 	// AccessToken holds the value of the "access_token" field.
 	AccessToken string `json:"access_token,omitempty"`
-	// AccessTokenCreatedAt holds the value of the "access_token_created_at" field.
-	AccessTokenCreatedAt string `json:"access_token_created_at,omitempty"`
-	// AccessTokenExpiresAt holds the value of the "access_token_expires_at" field.
-	AccessTokenExpiresAt string `json:"access_token_expires_at,omitempty"`
 	// RefreshToken holds the value of the "refresh_token" field.
 	RefreshToken string `json:"refresh_token,omitempty"`
+	// CodeCreatedAt holds the value of the "code_created_at" field.
+	CodeCreatedAt time.Time `json:"code_created_at,omitempty"`
+	// AccessTokenCreatedAt holds the value of the "access_token_created_at" field.
+	AccessTokenCreatedAt time.Time `json:"access_token_created_at,omitempty"`
 	// RefreshTokenCreatedAt holds the value of the "refresh_token_created_at" field.
-	RefreshTokenCreatedAt string `json:"refresh_token_created_at,omitempty"`
-	// RefreshTokenExpiresAt holds the value of the "refresh_token_expires_at" field.
-	RefreshTokenExpiresAt string `json:"refresh_token_expires_at,omitempty"`
+	RefreshTokenCreatedAt time.Time `json:"refresh_token_created_at,omitempty"`
+	// CodeExpiresIn holds the value of the "code_expires_in" field.
+	CodeExpiresIn int64 `json:"code_expires_in,omitempty"`
+	// AccessTokenExpiresIn holds the value of the "access_token_expires_in" field.
+	AccessTokenExpiresIn int64 `json:"access_token_expires_in,omitempty"`
+	// RefreshTokenExpiresIn holds the value of the "refresh_token_expires_in" field.
+	RefreshTokenExpiresIn int64 `json:"refresh_token_expires_in,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the Oauth2TokenQuery when eager-loading is set.
 	Edges Oauth2TokenEdges `json:"edges"`
@@ -104,9 +104,11 @@ func (*Oauth2Token) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case oauth2token.FieldRedirectURI, oauth2token.FieldScopes, oauth2token.FieldCode, oauth2token.FieldCodeChallenge, oauth2token.FieldCodeChallengeMethod, oauth2token.FieldCodeCreatedAt, oauth2token.FieldCodeExpiresAt, oauth2token.FieldAccessToken, oauth2token.FieldAccessTokenCreatedAt, oauth2token.FieldAccessTokenExpiresAt, oauth2token.FieldRefreshToken, oauth2token.FieldRefreshTokenCreatedAt, oauth2token.FieldRefreshTokenExpiresAt:
+		case oauth2token.FieldCodeExpiresIn, oauth2token.FieldAccessTokenExpiresIn, oauth2token.FieldRefreshTokenExpiresIn:
+			values[i] = new(sql.NullInt64)
+		case oauth2token.FieldRedirectURI, oauth2token.FieldScopes, oauth2token.FieldCode, oauth2token.FieldCodeChallenge, oauth2token.FieldCodeChallengeMethod, oauth2token.FieldAccessToken, oauth2token.FieldRefreshToken:
 			values[i] = new(sql.NullString)
-		case oauth2token.FieldCreatedAt, oauth2token.FieldUpdatedAt, oauth2token.FieldDeletedAt:
+		case oauth2token.FieldCreatedAt, oauth2token.FieldUpdatedAt, oauth2token.FieldDeletedAt, oauth2token.FieldCodeCreatedAt, oauth2token.FieldAccessTokenCreatedAt, oauth2token.FieldRefreshTokenCreatedAt:
 			values[i] = new(sql.NullTime)
 		case oauth2token.FieldID, oauth2token.FieldUserID, oauth2token.FieldOauth2ClientID:
 			values[i] = new(uuid.UUID)
@@ -192,35 +194,11 @@ func (o *Oauth2Token) assignValues(columns []string, values []interface{}) error
 			} else if value.Valid {
 				o.CodeChallengeMethod = value.String
 			}
-		case oauth2token.FieldCodeCreatedAt:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field code_created_at", values[i])
-			} else if value.Valid {
-				o.CodeCreatedAt = value.String
-			}
-		case oauth2token.FieldCodeExpiresAt:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field code_expires_at", values[i])
-			} else if value.Valid {
-				o.CodeExpiresAt = value.String
-			}
 		case oauth2token.FieldAccessToken:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field access_token", values[i])
 			} else if value.Valid {
 				o.AccessToken = value.String
-			}
-		case oauth2token.FieldAccessTokenCreatedAt:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field access_token_created_at", values[i])
-			} else if value.Valid {
-				o.AccessTokenCreatedAt = value.String
-			}
-		case oauth2token.FieldAccessTokenExpiresAt:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field access_token_expires_at", values[i])
-			} else if value.Valid {
-				o.AccessTokenExpiresAt = value.String
 			}
 		case oauth2token.FieldRefreshToken:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -228,17 +206,41 @@ func (o *Oauth2Token) assignValues(columns []string, values []interface{}) error
 			} else if value.Valid {
 				o.RefreshToken = value.String
 			}
+		case oauth2token.FieldCodeCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field code_created_at", values[i])
+			} else if value.Valid {
+				o.CodeCreatedAt = value.Time
+			}
+		case oauth2token.FieldAccessTokenCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field access_token_created_at", values[i])
+			} else if value.Valid {
+				o.AccessTokenCreatedAt = value.Time
+			}
 		case oauth2token.FieldRefreshTokenCreatedAt:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field refresh_token_created_at", values[i])
 			} else if value.Valid {
-				o.RefreshTokenCreatedAt = value.String
+				o.RefreshTokenCreatedAt = value.Time
 			}
-		case oauth2token.FieldRefreshTokenExpiresAt:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field refresh_token_expires_at", values[i])
+		case oauth2token.FieldCodeExpiresIn:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field code_expires_in", values[i])
 			} else if value.Valid {
-				o.RefreshTokenExpiresAt = value.String
+				o.CodeExpiresIn = value.Int64
+			}
+		case oauth2token.FieldAccessTokenExpiresIn:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field access_token_expires_in", values[i])
+			} else if value.Valid {
+				o.AccessTokenExpiresIn = value.Int64
+			}
+		case oauth2token.FieldRefreshTokenExpiresIn:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field refresh_token_expires_in", values[i])
+			} else if value.Valid {
+				o.RefreshTokenExpiresIn = value.Int64
 			}
 		}
 	}
@@ -300,22 +302,22 @@ func (o *Oauth2Token) String() string {
 	builder.WriteString(o.CodeChallenge)
 	builder.WriteString(", code_challenge_method=")
 	builder.WriteString(o.CodeChallengeMethod)
-	builder.WriteString(", code_created_at=")
-	builder.WriteString(o.CodeCreatedAt)
-	builder.WriteString(", code_expires_at=")
-	builder.WriteString(o.CodeExpiresAt)
 	builder.WriteString(", access_token=")
 	builder.WriteString(o.AccessToken)
-	builder.WriteString(", access_token_created_at=")
-	builder.WriteString(o.AccessTokenCreatedAt)
-	builder.WriteString(", access_token_expires_at=")
-	builder.WriteString(o.AccessTokenExpiresAt)
 	builder.WriteString(", refresh_token=")
 	builder.WriteString(o.RefreshToken)
+	builder.WriteString(", code_created_at=")
+	builder.WriteString(o.CodeCreatedAt.Format(time.ANSIC))
+	builder.WriteString(", access_token_created_at=")
+	builder.WriteString(o.AccessTokenCreatedAt.Format(time.ANSIC))
 	builder.WriteString(", refresh_token_created_at=")
-	builder.WriteString(o.RefreshTokenCreatedAt)
-	builder.WriteString(", refresh_token_expires_at=")
-	builder.WriteString(o.RefreshTokenExpiresAt)
+	builder.WriteString(o.RefreshTokenCreatedAt.Format(time.ANSIC))
+	builder.WriteString(", code_expires_in=")
+	builder.WriteString(fmt.Sprintf("%v", o.CodeExpiresIn))
+	builder.WriteString(", access_token_expires_in=")
+	builder.WriteString(fmt.Sprintf("%v", o.AccessTokenExpiresIn))
+	builder.WriteString(", refresh_token_expires_in=")
+	builder.WriteString(fmt.Sprintf("%v", o.RefreshTokenExpiresIn))
 	builder.WriteByte(')')
 	return builder.String()
 }

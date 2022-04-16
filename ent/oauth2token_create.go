@@ -131,33 +131,9 @@ func (oc *Oauth2TokenCreate) SetCodeChallengeMethod(s string) *Oauth2TokenCreate
 	return oc
 }
 
-// SetCodeCreatedAt sets the "code_created_at" field.
-func (oc *Oauth2TokenCreate) SetCodeCreatedAt(s string) *Oauth2TokenCreate {
-	oc.mutation.SetCodeCreatedAt(s)
-	return oc
-}
-
-// SetCodeExpiresAt sets the "code_expires_at" field.
-func (oc *Oauth2TokenCreate) SetCodeExpiresAt(s string) *Oauth2TokenCreate {
-	oc.mutation.SetCodeExpiresAt(s)
-	return oc
-}
-
 // SetAccessToken sets the "access_token" field.
 func (oc *Oauth2TokenCreate) SetAccessToken(s string) *Oauth2TokenCreate {
 	oc.mutation.SetAccessToken(s)
-	return oc
-}
-
-// SetAccessTokenCreatedAt sets the "access_token_created_at" field.
-func (oc *Oauth2TokenCreate) SetAccessTokenCreatedAt(s string) *Oauth2TokenCreate {
-	oc.mutation.SetAccessTokenCreatedAt(s)
-	return oc
-}
-
-// SetAccessTokenExpiresAt sets the "access_token_expires_at" field.
-func (oc *Oauth2TokenCreate) SetAccessTokenExpiresAt(s string) *Oauth2TokenCreate {
-	oc.mutation.SetAccessTokenExpiresAt(s)
 	return oc
 }
 
@@ -167,15 +143,39 @@ func (oc *Oauth2TokenCreate) SetRefreshToken(s string) *Oauth2TokenCreate {
 	return oc
 }
 
-// SetRefreshTokenCreatedAt sets the "refresh_token_created_at" field.
-func (oc *Oauth2TokenCreate) SetRefreshTokenCreatedAt(s string) *Oauth2TokenCreate {
-	oc.mutation.SetRefreshTokenCreatedAt(s)
+// SetCodeCreatedAt sets the "code_created_at" field.
+func (oc *Oauth2TokenCreate) SetCodeCreatedAt(t time.Time) *Oauth2TokenCreate {
+	oc.mutation.SetCodeCreatedAt(t)
 	return oc
 }
 
-// SetRefreshTokenExpiresAt sets the "refresh_token_expires_at" field.
-func (oc *Oauth2TokenCreate) SetRefreshTokenExpiresAt(s string) *Oauth2TokenCreate {
-	oc.mutation.SetRefreshTokenExpiresAt(s)
+// SetAccessTokenCreatedAt sets the "access_token_created_at" field.
+func (oc *Oauth2TokenCreate) SetAccessTokenCreatedAt(t time.Time) *Oauth2TokenCreate {
+	oc.mutation.SetAccessTokenCreatedAt(t)
+	return oc
+}
+
+// SetRefreshTokenCreatedAt sets the "refresh_token_created_at" field.
+func (oc *Oauth2TokenCreate) SetRefreshTokenCreatedAt(t time.Time) *Oauth2TokenCreate {
+	oc.mutation.SetRefreshTokenCreatedAt(t)
+	return oc
+}
+
+// SetCodeExpiresIn sets the "code_expires_in" field.
+func (oc *Oauth2TokenCreate) SetCodeExpiresIn(i int64) *Oauth2TokenCreate {
+	oc.mutation.SetCodeExpiresIn(i)
+	return oc
+}
+
+// SetAccessTokenExpiresIn sets the "access_token_expires_in" field.
+func (oc *Oauth2TokenCreate) SetAccessTokenExpiresIn(i int64) *Oauth2TokenCreate {
+	oc.mutation.SetAccessTokenExpiresIn(i)
+	return oc
+}
+
+// SetRefreshTokenExpiresIn sets the "refresh_token_expires_in" field.
+func (oc *Oauth2TokenCreate) SetRefreshTokenExpiresIn(i int64) *Oauth2TokenCreate {
+	oc.mutation.SetRefreshTokenExpiresIn(i)
 	return oc
 }
 
@@ -322,29 +322,29 @@ func (oc *Oauth2TokenCreate) check() error {
 	if _, ok := oc.mutation.CodeChallengeMethod(); !ok {
 		return &ValidationError{Name: "code_challenge_method", err: errors.New(`ent: missing required field "Oauth2Token.code_challenge_method"`)}
 	}
-	if _, ok := oc.mutation.CodeCreatedAt(); !ok {
-		return &ValidationError{Name: "code_created_at", err: errors.New(`ent: missing required field "Oauth2Token.code_created_at"`)}
-	}
-	if _, ok := oc.mutation.CodeExpiresAt(); !ok {
-		return &ValidationError{Name: "code_expires_at", err: errors.New(`ent: missing required field "Oauth2Token.code_expires_at"`)}
-	}
 	if _, ok := oc.mutation.AccessToken(); !ok {
 		return &ValidationError{Name: "access_token", err: errors.New(`ent: missing required field "Oauth2Token.access_token"`)}
-	}
-	if _, ok := oc.mutation.AccessTokenCreatedAt(); !ok {
-		return &ValidationError{Name: "access_token_created_at", err: errors.New(`ent: missing required field "Oauth2Token.access_token_created_at"`)}
-	}
-	if _, ok := oc.mutation.AccessTokenExpiresAt(); !ok {
-		return &ValidationError{Name: "access_token_expires_at", err: errors.New(`ent: missing required field "Oauth2Token.access_token_expires_at"`)}
 	}
 	if _, ok := oc.mutation.RefreshToken(); !ok {
 		return &ValidationError{Name: "refresh_token", err: errors.New(`ent: missing required field "Oauth2Token.refresh_token"`)}
 	}
+	if _, ok := oc.mutation.CodeCreatedAt(); !ok {
+		return &ValidationError{Name: "code_created_at", err: errors.New(`ent: missing required field "Oauth2Token.code_created_at"`)}
+	}
+	if _, ok := oc.mutation.AccessTokenCreatedAt(); !ok {
+		return &ValidationError{Name: "access_token_created_at", err: errors.New(`ent: missing required field "Oauth2Token.access_token_created_at"`)}
+	}
 	if _, ok := oc.mutation.RefreshTokenCreatedAt(); !ok {
 		return &ValidationError{Name: "refresh_token_created_at", err: errors.New(`ent: missing required field "Oauth2Token.refresh_token_created_at"`)}
 	}
-	if _, ok := oc.mutation.RefreshTokenExpiresAt(); !ok {
-		return &ValidationError{Name: "refresh_token_expires_at", err: errors.New(`ent: missing required field "Oauth2Token.refresh_token_expires_at"`)}
+	if _, ok := oc.mutation.CodeExpiresIn(); !ok {
+		return &ValidationError{Name: "code_expires_in", err: errors.New(`ent: missing required field "Oauth2Token.code_expires_in"`)}
+	}
+	if _, ok := oc.mutation.AccessTokenExpiresIn(); !ok {
+		return &ValidationError{Name: "access_token_expires_in", err: errors.New(`ent: missing required field "Oauth2Token.access_token_expires_in"`)}
+	}
+	if _, ok := oc.mutation.RefreshTokenExpiresIn(); !ok {
+		return &ValidationError{Name: "refresh_token_expires_in", err: errors.New(`ent: missing required field "Oauth2Token.refresh_token_expires_in"`)}
 	}
 	return nil
 }
@@ -446,22 +446,6 @@ func (oc *Oauth2TokenCreate) createSpec() (*Oauth2Token, *sqlgraph.CreateSpec) {
 		})
 		_node.CodeChallengeMethod = value
 	}
-	if value, ok := oc.mutation.CodeCreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: oauth2token.FieldCodeCreatedAt,
-		})
-		_node.CodeCreatedAt = value
-	}
-	if value, ok := oc.mutation.CodeExpiresAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: oauth2token.FieldCodeExpiresAt,
-		})
-		_node.CodeExpiresAt = value
-	}
 	if value, ok := oc.mutation.AccessToken(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -469,22 +453,6 @@ func (oc *Oauth2TokenCreate) createSpec() (*Oauth2Token, *sqlgraph.CreateSpec) {
 			Column: oauth2token.FieldAccessToken,
 		})
 		_node.AccessToken = value
-	}
-	if value, ok := oc.mutation.AccessTokenCreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: oauth2token.FieldAccessTokenCreatedAt,
-		})
-		_node.AccessTokenCreatedAt = value
-	}
-	if value, ok := oc.mutation.AccessTokenExpiresAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: oauth2token.FieldAccessTokenExpiresAt,
-		})
-		_node.AccessTokenExpiresAt = value
 	}
 	if value, ok := oc.mutation.RefreshToken(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -494,21 +462,53 @@ func (oc *Oauth2TokenCreate) createSpec() (*Oauth2Token, *sqlgraph.CreateSpec) {
 		})
 		_node.RefreshToken = value
 	}
+	if value, ok := oc.mutation.CodeCreatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: oauth2token.FieldCodeCreatedAt,
+		})
+		_node.CodeCreatedAt = value
+	}
+	if value, ok := oc.mutation.AccessTokenCreatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: oauth2token.FieldAccessTokenCreatedAt,
+		})
+		_node.AccessTokenCreatedAt = value
+	}
 	if value, ok := oc.mutation.RefreshTokenCreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: oauth2token.FieldRefreshTokenCreatedAt,
 		})
 		_node.RefreshTokenCreatedAt = value
 	}
-	if value, ok := oc.mutation.RefreshTokenExpiresAt(); ok {
+	if value, ok := oc.mutation.CodeExpiresIn(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeInt64,
 			Value:  value,
-			Column: oauth2token.FieldRefreshTokenExpiresAt,
+			Column: oauth2token.FieldCodeExpiresIn,
 		})
-		_node.RefreshTokenExpiresAt = value
+		_node.CodeExpiresIn = value
+	}
+	if value, ok := oc.mutation.AccessTokenExpiresIn(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: oauth2token.FieldAccessTokenExpiresIn,
+		})
+		_node.AccessTokenExpiresIn = value
+	}
+	if value, ok := oc.mutation.RefreshTokenExpiresIn(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: oauth2token.FieldRefreshTokenExpiresIn,
+		})
+		_node.RefreshTokenExpiresIn = value
 	}
 	if nodes := oc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

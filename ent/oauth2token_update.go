@@ -141,33 +141,9 @@ func (ou *Oauth2TokenUpdate) SetCodeChallengeMethod(s string) *Oauth2TokenUpdate
 	return ou
 }
 
-// SetCodeCreatedAt sets the "code_created_at" field.
-func (ou *Oauth2TokenUpdate) SetCodeCreatedAt(s string) *Oauth2TokenUpdate {
-	ou.mutation.SetCodeCreatedAt(s)
-	return ou
-}
-
-// SetCodeExpiresAt sets the "code_expires_at" field.
-func (ou *Oauth2TokenUpdate) SetCodeExpiresAt(s string) *Oauth2TokenUpdate {
-	ou.mutation.SetCodeExpiresAt(s)
-	return ou
-}
-
 // SetAccessToken sets the "access_token" field.
 func (ou *Oauth2TokenUpdate) SetAccessToken(s string) *Oauth2TokenUpdate {
 	ou.mutation.SetAccessToken(s)
-	return ou
-}
-
-// SetAccessTokenCreatedAt sets the "access_token_created_at" field.
-func (ou *Oauth2TokenUpdate) SetAccessTokenCreatedAt(s string) *Oauth2TokenUpdate {
-	ou.mutation.SetAccessTokenCreatedAt(s)
-	return ou
-}
-
-// SetAccessTokenExpiresAt sets the "access_token_expires_at" field.
-func (ou *Oauth2TokenUpdate) SetAccessTokenExpiresAt(s string) *Oauth2TokenUpdate {
-	ou.mutation.SetAccessTokenExpiresAt(s)
 	return ou
 }
 
@@ -177,15 +153,42 @@ func (ou *Oauth2TokenUpdate) SetRefreshToken(s string) *Oauth2TokenUpdate {
 	return ou
 }
 
-// SetRefreshTokenCreatedAt sets the "refresh_token_created_at" field.
-func (ou *Oauth2TokenUpdate) SetRefreshTokenCreatedAt(s string) *Oauth2TokenUpdate {
-	ou.mutation.SetRefreshTokenCreatedAt(s)
+// SetCodeExpiresIn sets the "code_expires_in" field.
+func (ou *Oauth2TokenUpdate) SetCodeExpiresIn(i int64) *Oauth2TokenUpdate {
+	ou.mutation.ResetCodeExpiresIn()
+	ou.mutation.SetCodeExpiresIn(i)
 	return ou
 }
 
-// SetRefreshTokenExpiresAt sets the "refresh_token_expires_at" field.
-func (ou *Oauth2TokenUpdate) SetRefreshTokenExpiresAt(s string) *Oauth2TokenUpdate {
-	ou.mutation.SetRefreshTokenExpiresAt(s)
+// AddCodeExpiresIn adds i to the "code_expires_in" field.
+func (ou *Oauth2TokenUpdate) AddCodeExpiresIn(i int64) *Oauth2TokenUpdate {
+	ou.mutation.AddCodeExpiresIn(i)
+	return ou
+}
+
+// SetAccessTokenExpiresIn sets the "access_token_expires_in" field.
+func (ou *Oauth2TokenUpdate) SetAccessTokenExpiresIn(i int64) *Oauth2TokenUpdate {
+	ou.mutation.ResetAccessTokenExpiresIn()
+	ou.mutation.SetAccessTokenExpiresIn(i)
+	return ou
+}
+
+// AddAccessTokenExpiresIn adds i to the "access_token_expires_in" field.
+func (ou *Oauth2TokenUpdate) AddAccessTokenExpiresIn(i int64) *Oauth2TokenUpdate {
+	ou.mutation.AddAccessTokenExpiresIn(i)
+	return ou
+}
+
+// SetRefreshTokenExpiresIn sets the "refresh_token_expires_in" field.
+func (ou *Oauth2TokenUpdate) SetRefreshTokenExpiresIn(i int64) *Oauth2TokenUpdate {
+	ou.mutation.ResetRefreshTokenExpiresIn()
+	ou.mutation.SetRefreshTokenExpiresIn(i)
+	return ou
+}
+
+// AddRefreshTokenExpiresIn adds i to the "refresh_token_expires_in" field.
+func (ou *Oauth2TokenUpdate) AddRefreshTokenExpiresIn(i int64) *Oauth2TokenUpdate {
+	ou.mutation.AddRefreshTokenExpiresIn(i)
 	return ou
 }
 
@@ -372,39 +375,11 @@ func (ou *Oauth2TokenUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: oauth2token.FieldCodeChallengeMethod,
 		})
 	}
-	if value, ok := ou.mutation.CodeCreatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: oauth2token.FieldCodeCreatedAt,
-		})
-	}
-	if value, ok := ou.mutation.CodeExpiresAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: oauth2token.FieldCodeExpiresAt,
-		})
-	}
 	if value, ok := ou.mutation.AccessToken(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
 			Column: oauth2token.FieldAccessToken,
-		})
-	}
-	if value, ok := ou.mutation.AccessTokenCreatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: oauth2token.FieldAccessTokenCreatedAt,
-		})
-	}
-	if value, ok := ou.mutation.AccessTokenExpiresAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: oauth2token.FieldAccessTokenExpiresAt,
 		})
 	}
 	if value, ok := ou.mutation.RefreshToken(); ok {
@@ -414,18 +389,46 @@ func (ou *Oauth2TokenUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: oauth2token.FieldRefreshToken,
 		})
 	}
-	if value, ok := ou.mutation.RefreshTokenCreatedAt(); ok {
+	if value, ok := ou.mutation.CodeExpiresIn(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeInt64,
 			Value:  value,
-			Column: oauth2token.FieldRefreshTokenCreatedAt,
+			Column: oauth2token.FieldCodeExpiresIn,
 		})
 	}
-	if value, ok := ou.mutation.RefreshTokenExpiresAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+	if value, ok := ou.mutation.AddedCodeExpiresIn(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
 			Value:  value,
-			Column: oauth2token.FieldRefreshTokenExpiresAt,
+			Column: oauth2token.FieldCodeExpiresIn,
+		})
+	}
+	if value, ok := ou.mutation.AccessTokenExpiresIn(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: oauth2token.FieldAccessTokenExpiresIn,
+		})
+	}
+	if value, ok := ou.mutation.AddedAccessTokenExpiresIn(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: oauth2token.FieldAccessTokenExpiresIn,
+		})
+	}
+	if value, ok := ou.mutation.RefreshTokenExpiresIn(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: oauth2token.FieldRefreshTokenExpiresIn,
+		})
+	}
+	if value, ok := ou.mutation.AddedRefreshTokenExpiresIn(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: oauth2token.FieldRefreshTokenExpiresIn,
 		})
 	}
 	if ou.mutation.UserCleared() {
@@ -627,33 +630,9 @@ func (ouo *Oauth2TokenUpdateOne) SetCodeChallengeMethod(s string) *Oauth2TokenUp
 	return ouo
 }
 
-// SetCodeCreatedAt sets the "code_created_at" field.
-func (ouo *Oauth2TokenUpdateOne) SetCodeCreatedAt(s string) *Oauth2TokenUpdateOne {
-	ouo.mutation.SetCodeCreatedAt(s)
-	return ouo
-}
-
-// SetCodeExpiresAt sets the "code_expires_at" field.
-func (ouo *Oauth2TokenUpdateOne) SetCodeExpiresAt(s string) *Oauth2TokenUpdateOne {
-	ouo.mutation.SetCodeExpiresAt(s)
-	return ouo
-}
-
 // SetAccessToken sets the "access_token" field.
 func (ouo *Oauth2TokenUpdateOne) SetAccessToken(s string) *Oauth2TokenUpdateOne {
 	ouo.mutation.SetAccessToken(s)
-	return ouo
-}
-
-// SetAccessTokenCreatedAt sets the "access_token_created_at" field.
-func (ouo *Oauth2TokenUpdateOne) SetAccessTokenCreatedAt(s string) *Oauth2TokenUpdateOne {
-	ouo.mutation.SetAccessTokenCreatedAt(s)
-	return ouo
-}
-
-// SetAccessTokenExpiresAt sets the "access_token_expires_at" field.
-func (ouo *Oauth2TokenUpdateOne) SetAccessTokenExpiresAt(s string) *Oauth2TokenUpdateOne {
-	ouo.mutation.SetAccessTokenExpiresAt(s)
 	return ouo
 }
 
@@ -663,15 +642,42 @@ func (ouo *Oauth2TokenUpdateOne) SetRefreshToken(s string) *Oauth2TokenUpdateOne
 	return ouo
 }
 
-// SetRefreshTokenCreatedAt sets the "refresh_token_created_at" field.
-func (ouo *Oauth2TokenUpdateOne) SetRefreshTokenCreatedAt(s string) *Oauth2TokenUpdateOne {
-	ouo.mutation.SetRefreshTokenCreatedAt(s)
+// SetCodeExpiresIn sets the "code_expires_in" field.
+func (ouo *Oauth2TokenUpdateOne) SetCodeExpiresIn(i int64) *Oauth2TokenUpdateOne {
+	ouo.mutation.ResetCodeExpiresIn()
+	ouo.mutation.SetCodeExpiresIn(i)
 	return ouo
 }
 
-// SetRefreshTokenExpiresAt sets the "refresh_token_expires_at" field.
-func (ouo *Oauth2TokenUpdateOne) SetRefreshTokenExpiresAt(s string) *Oauth2TokenUpdateOne {
-	ouo.mutation.SetRefreshTokenExpiresAt(s)
+// AddCodeExpiresIn adds i to the "code_expires_in" field.
+func (ouo *Oauth2TokenUpdateOne) AddCodeExpiresIn(i int64) *Oauth2TokenUpdateOne {
+	ouo.mutation.AddCodeExpiresIn(i)
+	return ouo
+}
+
+// SetAccessTokenExpiresIn sets the "access_token_expires_in" field.
+func (ouo *Oauth2TokenUpdateOne) SetAccessTokenExpiresIn(i int64) *Oauth2TokenUpdateOne {
+	ouo.mutation.ResetAccessTokenExpiresIn()
+	ouo.mutation.SetAccessTokenExpiresIn(i)
+	return ouo
+}
+
+// AddAccessTokenExpiresIn adds i to the "access_token_expires_in" field.
+func (ouo *Oauth2TokenUpdateOne) AddAccessTokenExpiresIn(i int64) *Oauth2TokenUpdateOne {
+	ouo.mutation.AddAccessTokenExpiresIn(i)
+	return ouo
+}
+
+// SetRefreshTokenExpiresIn sets the "refresh_token_expires_in" field.
+func (ouo *Oauth2TokenUpdateOne) SetRefreshTokenExpiresIn(i int64) *Oauth2TokenUpdateOne {
+	ouo.mutation.ResetRefreshTokenExpiresIn()
+	ouo.mutation.SetRefreshTokenExpiresIn(i)
+	return ouo
+}
+
+// AddRefreshTokenExpiresIn adds i to the "refresh_token_expires_in" field.
+func (ouo *Oauth2TokenUpdateOne) AddRefreshTokenExpiresIn(i int64) *Oauth2TokenUpdateOne {
+	ouo.mutation.AddRefreshTokenExpiresIn(i)
 	return ouo
 }
 
@@ -882,39 +888,11 @@ func (ouo *Oauth2TokenUpdateOne) sqlSave(ctx context.Context) (_node *Oauth2Toke
 			Column: oauth2token.FieldCodeChallengeMethod,
 		})
 	}
-	if value, ok := ouo.mutation.CodeCreatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: oauth2token.FieldCodeCreatedAt,
-		})
-	}
-	if value, ok := ouo.mutation.CodeExpiresAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: oauth2token.FieldCodeExpiresAt,
-		})
-	}
 	if value, ok := ouo.mutation.AccessToken(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
 			Column: oauth2token.FieldAccessToken,
-		})
-	}
-	if value, ok := ouo.mutation.AccessTokenCreatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: oauth2token.FieldAccessTokenCreatedAt,
-		})
-	}
-	if value, ok := ouo.mutation.AccessTokenExpiresAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: oauth2token.FieldAccessTokenExpiresAt,
 		})
 	}
 	if value, ok := ouo.mutation.RefreshToken(); ok {
@@ -924,18 +902,46 @@ func (ouo *Oauth2TokenUpdateOne) sqlSave(ctx context.Context) (_node *Oauth2Toke
 			Column: oauth2token.FieldRefreshToken,
 		})
 	}
-	if value, ok := ouo.mutation.RefreshTokenCreatedAt(); ok {
+	if value, ok := ouo.mutation.CodeExpiresIn(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeInt64,
 			Value:  value,
-			Column: oauth2token.FieldRefreshTokenCreatedAt,
+			Column: oauth2token.FieldCodeExpiresIn,
 		})
 	}
-	if value, ok := ouo.mutation.RefreshTokenExpiresAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+	if value, ok := ouo.mutation.AddedCodeExpiresIn(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
 			Value:  value,
-			Column: oauth2token.FieldRefreshTokenExpiresAt,
+			Column: oauth2token.FieldCodeExpiresIn,
+		})
+	}
+	if value, ok := ouo.mutation.AccessTokenExpiresIn(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: oauth2token.FieldAccessTokenExpiresIn,
+		})
+	}
+	if value, ok := ouo.mutation.AddedAccessTokenExpiresIn(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: oauth2token.FieldAccessTokenExpiresIn,
+		})
+	}
+	if value, ok := ouo.mutation.RefreshTokenExpiresIn(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: oauth2token.FieldRefreshTokenExpiresIn,
+		})
+	}
+	if value, ok := ouo.mutation.AddedRefreshTokenExpiresIn(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: oauth2token.FieldRefreshTokenExpiresIn,
 		})
 	}
 	if ouo.mutation.UserCleared() {

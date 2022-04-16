@@ -7086,33 +7086,36 @@ func (m *Oauth2ClientMutation) ResetEdge(name string) error {
 // Oauth2TokenMutation represents an operation that mutates the Oauth2Token nodes in the graph.
 type Oauth2TokenMutation struct {
 	config
-	op                       Op
-	typ                      string
-	id                       *uuid.UUID
-	created_at               *time.Time
-	updated_at               *time.Time
-	deleted_at               *time.Time
-	redirect_uri             *string
-	scopes                   *string
-	code                     *string
-	code_challenge           *string
-	code_challenge_method    *string
-	code_created_at          *string
-	code_expires_at          *string
-	access_token             *string
-	access_token_created_at  *string
-	access_token_expires_at  *string
-	refresh_token            *string
-	refresh_token_created_at *string
-	refresh_token_expires_at *string
-	clearedFields            map[string]struct{}
-	user                     *uuid.UUID
-	cleareduser              bool
-	oauth2client             *uuid.UUID
-	clearedoauth2client      bool
-	done                     bool
-	oldValue                 func(context.Context) (*Oauth2Token, error)
-	predicates               []predicate.Oauth2Token
+	op                          Op
+	typ                         string
+	id                          *uuid.UUID
+	created_at                  *time.Time
+	updated_at                  *time.Time
+	deleted_at                  *time.Time
+	redirect_uri                *string
+	scopes                      *string
+	code                        *string
+	code_challenge              *string
+	code_challenge_method       *string
+	access_token                *string
+	refresh_token               *string
+	code_created_at             *time.Time
+	access_token_created_at     *time.Time
+	refresh_token_created_at    *time.Time
+	code_expires_in             *int64
+	addcode_expires_in          *int64
+	access_token_expires_in     *int64
+	addaccess_token_expires_in  *int64
+	refresh_token_expires_in    *int64
+	addrefresh_token_expires_in *int64
+	clearedFields               map[string]struct{}
+	user                        *uuid.UUID
+	cleareduser                 bool
+	oauth2client                *uuid.UUID
+	clearedoauth2client         bool
+	done                        bool
+	oldValue                    func(context.Context) (*Oauth2Token, error)
+	predicates                  []predicate.Oauth2Token
 }
 
 var _ ent.Mutation = (*Oauth2TokenMutation)(nil)
@@ -7631,78 +7634,6 @@ func (m *Oauth2TokenMutation) ResetCodeChallengeMethod() {
 	m.code_challenge_method = nil
 }
 
-// SetCodeCreatedAt sets the "code_created_at" field.
-func (m *Oauth2TokenMutation) SetCodeCreatedAt(s string) {
-	m.code_created_at = &s
-}
-
-// CodeCreatedAt returns the value of the "code_created_at" field in the mutation.
-func (m *Oauth2TokenMutation) CodeCreatedAt() (r string, exists bool) {
-	v := m.code_created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCodeCreatedAt returns the old "code_created_at" field's value of the Oauth2Token entity.
-// If the Oauth2Token object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *Oauth2TokenMutation) OldCodeCreatedAt(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCodeCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCodeCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCodeCreatedAt: %w", err)
-	}
-	return oldValue.CodeCreatedAt, nil
-}
-
-// ResetCodeCreatedAt resets all changes to the "code_created_at" field.
-func (m *Oauth2TokenMutation) ResetCodeCreatedAt() {
-	m.code_created_at = nil
-}
-
-// SetCodeExpiresAt sets the "code_expires_at" field.
-func (m *Oauth2TokenMutation) SetCodeExpiresAt(s string) {
-	m.code_expires_at = &s
-}
-
-// CodeExpiresAt returns the value of the "code_expires_at" field in the mutation.
-func (m *Oauth2TokenMutation) CodeExpiresAt() (r string, exists bool) {
-	v := m.code_expires_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCodeExpiresAt returns the old "code_expires_at" field's value of the Oauth2Token entity.
-// If the Oauth2Token object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *Oauth2TokenMutation) OldCodeExpiresAt(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCodeExpiresAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCodeExpiresAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCodeExpiresAt: %w", err)
-	}
-	return oldValue.CodeExpiresAt, nil
-}
-
-// ResetCodeExpiresAt resets all changes to the "code_expires_at" field.
-func (m *Oauth2TokenMutation) ResetCodeExpiresAt() {
-	m.code_expires_at = nil
-}
-
 // SetAccessToken sets the "access_token" field.
 func (m *Oauth2TokenMutation) SetAccessToken(s string) {
 	m.access_token = &s
@@ -7737,78 +7668,6 @@ func (m *Oauth2TokenMutation) OldAccessToken(ctx context.Context) (v string, err
 // ResetAccessToken resets all changes to the "access_token" field.
 func (m *Oauth2TokenMutation) ResetAccessToken() {
 	m.access_token = nil
-}
-
-// SetAccessTokenCreatedAt sets the "access_token_created_at" field.
-func (m *Oauth2TokenMutation) SetAccessTokenCreatedAt(s string) {
-	m.access_token_created_at = &s
-}
-
-// AccessTokenCreatedAt returns the value of the "access_token_created_at" field in the mutation.
-func (m *Oauth2TokenMutation) AccessTokenCreatedAt() (r string, exists bool) {
-	v := m.access_token_created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldAccessTokenCreatedAt returns the old "access_token_created_at" field's value of the Oauth2Token entity.
-// If the Oauth2Token object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *Oauth2TokenMutation) OldAccessTokenCreatedAt(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAccessTokenCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAccessTokenCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAccessTokenCreatedAt: %w", err)
-	}
-	return oldValue.AccessTokenCreatedAt, nil
-}
-
-// ResetAccessTokenCreatedAt resets all changes to the "access_token_created_at" field.
-func (m *Oauth2TokenMutation) ResetAccessTokenCreatedAt() {
-	m.access_token_created_at = nil
-}
-
-// SetAccessTokenExpiresAt sets the "access_token_expires_at" field.
-func (m *Oauth2TokenMutation) SetAccessTokenExpiresAt(s string) {
-	m.access_token_expires_at = &s
-}
-
-// AccessTokenExpiresAt returns the value of the "access_token_expires_at" field in the mutation.
-func (m *Oauth2TokenMutation) AccessTokenExpiresAt() (r string, exists bool) {
-	v := m.access_token_expires_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldAccessTokenExpiresAt returns the old "access_token_expires_at" field's value of the Oauth2Token entity.
-// If the Oauth2Token object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *Oauth2TokenMutation) OldAccessTokenExpiresAt(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAccessTokenExpiresAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAccessTokenExpiresAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAccessTokenExpiresAt: %w", err)
-	}
-	return oldValue.AccessTokenExpiresAt, nil
-}
-
-// ResetAccessTokenExpiresAt resets all changes to the "access_token_expires_at" field.
-func (m *Oauth2TokenMutation) ResetAccessTokenExpiresAt() {
-	m.access_token_expires_at = nil
 }
 
 // SetRefreshToken sets the "refresh_token" field.
@@ -7847,13 +7706,85 @@ func (m *Oauth2TokenMutation) ResetRefreshToken() {
 	m.refresh_token = nil
 }
 
+// SetCodeCreatedAt sets the "code_created_at" field.
+func (m *Oauth2TokenMutation) SetCodeCreatedAt(t time.Time) {
+	m.code_created_at = &t
+}
+
+// CodeCreatedAt returns the value of the "code_created_at" field in the mutation.
+func (m *Oauth2TokenMutation) CodeCreatedAt() (r time.Time, exists bool) {
+	v := m.code_created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCodeCreatedAt returns the old "code_created_at" field's value of the Oauth2Token entity.
+// If the Oauth2Token object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *Oauth2TokenMutation) OldCodeCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCodeCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCodeCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCodeCreatedAt: %w", err)
+	}
+	return oldValue.CodeCreatedAt, nil
+}
+
+// ResetCodeCreatedAt resets all changes to the "code_created_at" field.
+func (m *Oauth2TokenMutation) ResetCodeCreatedAt() {
+	m.code_created_at = nil
+}
+
+// SetAccessTokenCreatedAt sets the "access_token_created_at" field.
+func (m *Oauth2TokenMutation) SetAccessTokenCreatedAt(t time.Time) {
+	m.access_token_created_at = &t
+}
+
+// AccessTokenCreatedAt returns the value of the "access_token_created_at" field in the mutation.
+func (m *Oauth2TokenMutation) AccessTokenCreatedAt() (r time.Time, exists bool) {
+	v := m.access_token_created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAccessTokenCreatedAt returns the old "access_token_created_at" field's value of the Oauth2Token entity.
+// If the Oauth2Token object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *Oauth2TokenMutation) OldAccessTokenCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAccessTokenCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAccessTokenCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAccessTokenCreatedAt: %w", err)
+	}
+	return oldValue.AccessTokenCreatedAt, nil
+}
+
+// ResetAccessTokenCreatedAt resets all changes to the "access_token_created_at" field.
+func (m *Oauth2TokenMutation) ResetAccessTokenCreatedAt() {
+	m.access_token_created_at = nil
+}
+
 // SetRefreshTokenCreatedAt sets the "refresh_token_created_at" field.
-func (m *Oauth2TokenMutation) SetRefreshTokenCreatedAt(s string) {
-	m.refresh_token_created_at = &s
+func (m *Oauth2TokenMutation) SetRefreshTokenCreatedAt(t time.Time) {
+	m.refresh_token_created_at = &t
 }
 
 // RefreshTokenCreatedAt returns the value of the "refresh_token_created_at" field in the mutation.
-func (m *Oauth2TokenMutation) RefreshTokenCreatedAt() (r string, exists bool) {
+func (m *Oauth2TokenMutation) RefreshTokenCreatedAt() (r time.Time, exists bool) {
 	v := m.refresh_token_created_at
 	if v == nil {
 		return
@@ -7864,7 +7795,7 @@ func (m *Oauth2TokenMutation) RefreshTokenCreatedAt() (r string, exists bool) {
 // OldRefreshTokenCreatedAt returns the old "refresh_token_created_at" field's value of the Oauth2Token entity.
 // If the Oauth2Token object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *Oauth2TokenMutation) OldRefreshTokenCreatedAt(ctx context.Context) (v string, err error) {
+func (m *Oauth2TokenMutation) OldRefreshTokenCreatedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRefreshTokenCreatedAt is only allowed on UpdateOne operations")
 	}
@@ -7883,40 +7814,172 @@ func (m *Oauth2TokenMutation) ResetRefreshTokenCreatedAt() {
 	m.refresh_token_created_at = nil
 }
 
-// SetRefreshTokenExpiresAt sets the "refresh_token_expires_at" field.
-func (m *Oauth2TokenMutation) SetRefreshTokenExpiresAt(s string) {
-	m.refresh_token_expires_at = &s
+// SetCodeExpiresIn sets the "code_expires_in" field.
+func (m *Oauth2TokenMutation) SetCodeExpiresIn(i int64) {
+	m.code_expires_in = &i
+	m.addcode_expires_in = nil
 }
 
-// RefreshTokenExpiresAt returns the value of the "refresh_token_expires_at" field in the mutation.
-func (m *Oauth2TokenMutation) RefreshTokenExpiresAt() (r string, exists bool) {
-	v := m.refresh_token_expires_at
+// CodeExpiresIn returns the value of the "code_expires_in" field in the mutation.
+func (m *Oauth2TokenMutation) CodeExpiresIn() (r int64, exists bool) {
+	v := m.code_expires_in
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldRefreshTokenExpiresAt returns the old "refresh_token_expires_at" field's value of the Oauth2Token entity.
+// OldCodeExpiresIn returns the old "code_expires_in" field's value of the Oauth2Token entity.
 // If the Oauth2Token object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *Oauth2TokenMutation) OldRefreshTokenExpiresAt(ctx context.Context) (v string, err error) {
+func (m *Oauth2TokenMutation) OldCodeExpiresIn(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRefreshTokenExpiresAt is only allowed on UpdateOne operations")
+		return v, errors.New("OldCodeExpiresIn is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRefreshTokenExpiresAt requires an ID field in the mutation")
+		return v, errors.New("OldCodeExpiresIn requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRefreshTokenExpiresAt: %w", err)
+		return v, fmt.Errorf("querying old value for OldCodeExpiresIn: %w", err)
 	}
-	return oldValue.RefreshTokenExpiresAt, nil
+	return oldValue.CodeExpiresIn, nil
 }
 
-// ResetRefreshTokenExpiresAt resets all changes to the "refresh_token_expires_at" field.
-func (m *Oauth2TokenMutation) ResetRefreshTokenExpiresAt() {
-	m.refresh_token_expires_at = nil
+// AddCodeExpiresIn adds i to the "code_expires_in" field.
+func (m *Oauth2TokenMutation) AddCodeExpiresIn(i int64) {
+	if m.addcode_expires_in != nil {
+		*m.addcode_expires_in += i
+	} else {
+		m.addcode_expires_in = &i
+	}
+}
+
+// AddedCodeExpiresIn returns the value that was added to the "code_expires_in" field in this mutation.
+func (m *Oauth2TokenMutation) AddedCodeExpiresIn() (r int64, exists bool) {
+	v := m.addcode_expires_in
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCodeExpiresIn resets all changes to the "code_expires_in" field.
+func (m *Oauth2TokenMutation) ResetCodeExpiresIn() {
+	m.code_expires_in = nil
+	m.addcode_expires_in = nil
+}
+
+// SetAccessTokenExpiresIn sets the "access_token_expires_in" field.
+func (m *Oauth2TokenMutation) SetAccessTokenExpiresIn(i int64) {
+	m.access_token_expires_in = &i
+	m.addaccess_token_expires_in = nil
+}
+
+// AccessTokenExpiresIn returns the value of the "access_token_expires_in" field in the mutation.
+func (m *Oauth2TokenMutation) AccessTokenExpiresIn() (r int64, exists bool) {
+	v := m.access_token_expires_in
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAccessTokenExpiresIn returns the old "access_token_expires_in" field's value of the Oauth2Token entity.
+// If the Oauth2Token object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *Oauth2TokenMutation) OldAccessTokenExpiresIn(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAccessTokenExpiresIn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAccessTokenExpiresIn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAccessTokenExpiresIn: %w", err)
+	}
+	return oldValue.AccessTokenExpiresIn, nil
+}
+
+// AddAccessTokenExpiresIn adds i to the "access_token_expires_in" field.
+func (m *Oauth2TokenMutation) AddAccessTokenExpiresIn(i int64) {
+	if m.addaccess_token_expires_in != nil {
+		*m.addaccess_token_expires_in += i
+	} else {
+		m.addaccess_token_expires_in = &i
+	}
+}
+
+// AddedAccessTokenExpiresIn returns the value that was added to the "access_token_expires_in" field in this mutation.
+func (m *Oauth2TokenMutation) AddedAccessTokenExpiresIn() (r int64, exists bool) {
+	v := m.addaccess_token_expires_in
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetAccessTokenExpiresIn resets all changes to the "access_token_expires_in" field.
+func (m *Oauth2TokenMutation) ResetAccessTokenExpiresIn() {
+	m.access_token_expires_in = nil
+	m.addaccess_token_expires_in = nil
+}
+
+// SetRefreshTokenExpiresIn sets the "refresh_token_expires_in" field.
+func (m *Oauth2TokenMutation) SetRefreshTokenExpiresIn(i int64) {
+	m.refresh_token_expires_in = &i
+	m.addrefresh_token_expires_in = nil
+}
+
+// RefreshTokenExpiresIn returns the value of the "refresh_token_expires_in" field in the mutation.
+func (m *Oauth2TokenMutation) RefreshTokenExpiresIn() (r int64, exists bool) {
+	v := m.refresh_token_expires_in
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRefreshTokenExpiresIn returns the old "refresh_token_expires_in" field's value of the Oauth2Token entity.
+// If the Oauth2Token object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *Oauth2TokenMutation) OldRefreshTokenExpiresIn(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRefreshTokenExpiresIn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRefreshTokenExpiresIn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRefreshTokenExpiresIn: %w", err)
+	}
+	return oldValue.RefreshTokenExpiresIn, nil
+}
+
+// AddRefreshTokenExpiresIn adds i to the "refresh_token_expires_in" field.
+func (m *Oauth2TokenMutation) AddRefreshTokenExpiresIn(i int64) {
+	if m.addrefresh_token_expires_in != nil {
+		*m.addrefresh_token_expires_in += i
+	} else {
+		m.addrefresh_token_expires_in = &i
+	}
+}
+
+// AddedRefreshTokenExpiresIn returns the value that was added to the "refresh_token_expires_in" field in this mutation.
+func (m *Oauth2TokenMutation) AddedRefreshTokenExpiresIn() (r int64, exists bool) {
+	v := m.addrefresh_token_expires_in
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRefreshTokenExpiresIn resets all changes to the "refresh_token_expires_in" field.
+func (m *Oauth2TokenMutation) ResetRefreshTokenExpiresIn() {
+	m.refresh_token_expires_in = nil
+	m.addrefresh_token_expires_in = nil
 }
 
 // ClearUser clears the "user" edge to the User entity.
@@ -8034,29 +8097,29 @@ func (m *Oauth2TokenMutation) Fields() []string {
 	if m.code_challenge_method != nil {
 		fields = append(fields, oauth2token.FieldCodeChallengeMethod)
 	}
-	if m.code_created_at != nil {
-		fields = append(fields, oauth2token.FieldCodeCreatedAt)
-	}
-	if m.code_expires_at != nil {
-		fields = append(fields, oauth2token.FieldCodeExpiresAt)
-	}
 	if m.access_token != nil {
 		fields = append(fields, oauth2token.FieldAccessToken)
-	}
-	if m.access_token_created_at != nil {
-		fields = append(fields, oauth2token.FieldAccessTokenCreatedAt)
-	}
-	if m.access_token_expires_at != nil {
-		fields = append(fields, oauth2token.FieldAccessTokenExpiresAt)
 	}
 	if m.refresh_token != nil {
 		fields = append(fields, oauth2token.FieldRefreshToken)
 	}
+	if m.code_created_at != nil {
+		fields = append(fields, oauth2token.FieldCodeCreatedAt)
+	}
+	if m.access_token_created_at != nil {
+		fields = append(fields, oauth2token.FieldAccessTokenCreatedAt)
+	}
 	if m.refresh_token_created_at != nil {
 		fields = append(fields, oauth2token.FieldRefreshTokenCreatedAt)
 	}
-	if m.refresh_token_expires_at != nil {
-		fields = append(fields, oauth2token.FieldRefreshTokenExpiresAt)
+	if m.code_expires_in != nil {
+		fields = append(fields, oauth2token.FieldCodeExpiresIn)
+	}
+	if m.access_token_expires_in != nil {
+		fields = append(fields, oauth2token.FieldAccessTokenExpiresIn)
+	}
+	if m.refresh_token_expires_in != nil {
+		fields = append(fields, oauth2token.FieldRefreshTokenExpiresIn)
 	}
 	return fields
 }
@@ -8086,22 +8149,22 @@ func (m *Oauth2TokenMutation) Field(name string) (ent.Value, bool) {
 		return m.CodeChallenge()
 	case oauth2token.FieldCodeChallengeMethod:
 		return m.CodeChallengeMethod()
-	case oauth2token.FieldCodeCreatedAt:
-		return m.CodeCreatedAt()
-	case oauth2token.FieldCodeExpiresAt:
-		return m.CodeExpiresAt()
 	case oauth2token.FieldAccessToken:
 		return m.AccessToken()
-	case oauth2token.FieldAccessTokenCreatedAt:
-		return m.AccessTokenCreatedAt()
-	case oauth2token.FieldAccessTokenExpiresAt:
-		return m.AccessTokenExpiresAt()
 	case oauth2token.FieldRefreshToken:
 		return m.RefreshToken()
+	case oauth2token.FieldCodeCreatedAt:
+		return m.CodeCreatedAt()
+	case oauth2token.FieldAccessTokenCreatedAt:
+		return m.AccessTokenCreatedAt()
 	case oauth2token.FieldRefreshTokenCreatedAt:
 		return m.RefreshTokenCreatedAt()
-	case oauth2token.FieldRefreshTokenExpiresAt:
-		return m.RefreshTokenExpiresAt()
+	case oauth2token.FieldCodeExpiresIn:
+		return m.CodeExpiresIn()
+	case oauth2token.FieldAccessTokenExpiresIn:
+		return m.AccessTokenExpiresIn()
+	case oauth2token.FieldRefreshTokenExpiresIn:
+		return m.RefreshTokenExpiresIn()
 	}
 	return nil, false
 }
@@ -8131,22 +8194,22 @@ func (m *Oauth2TokenMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldCodeChallenge(ctx)
 	case oauth2token.FieldCodeChallengeMethod:
 		return m.OldCodeChallengeMethod(ctx)
-	case oauth2token.FieldCodeCreatedAt:
-		return m.OldCodeCreatedAt(ctx)
-	case oauth2token.FieldCodeExpiresAt:
-		return m.OldCodeExpiresAt(ctx)
 	case oauth2token.FieldAccessToken:
 		return m.OldAccessToken(ctx)
-	case oauth2token.FieldAccessTokenCreatedAt:
-		return m.OldAccessTokenCreatedAt(ctx)
-	case oauth2token.FieldAccessTokenExpiresAt:
-		return m.OldAccessTokenExpiresAt(ctx)
 	case oauth2token.FieldRefreshToken:
 		return m.OldRefreshToken(ctx)
+	case oauth2token.FieldCodeCreatedAt:
+		return m.OldCodeCreatedAt(ctx)
+	case oauth2token.FieldAccessTokenCreatedAt:
+		return m.OldAccessTokenCreatedAt(ctx)
 	case oauth2token.FieldRefreshTokenCreatedAt:
 		return m.OldRefreshTokenCreatedAt(ctx)
-	case oauth2token.FieldRefreshTokenExpiresAt:
-		return m.OldRefreshTokenExpiresAt(ctx)
+	case oauth2token.FieldCodeExpiresIn:
+		return m.OldCodeExpiresIn(ctx)
+	case oauth2token.FieldAccessTokenExpiresIn:
+		return m.OldAccessTokenExpiresIn(ctx)
+	case oauth2token.FieldRefreshTokenExpiresIn:
+		return m.OldRefreshTokenExpiresIn(ctx)
 	}
 	return nil, fmt.Errorf("unknown Oauth2Token field %s", name)
 }
@@ -8226,40 +8289,12 @@ func (m *Oauth2TokenMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCodeChallengeMethod(v)
 		return nil
-	case oauth2token.FieldCodeCreatedAt:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCodeCreatedAt(v)
-		return nil
-	case oauth2token.FieldCodeExpiresAt:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCodeExpiresAt(v)
-		return nil
 	case oauth2token.FieldAccessToken:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAccessToken(v)
-		return nil
-	case oauth2token.FieldAccessTokenCreatedAt:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetAccessTokenCreatedAt(v)
-		return nil
-	case oauth2token.FieldAccessTokenExpiresAt:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetAccessTokenExpiresAt(v)
 		return nil
 	case oauth2token.FieldRefreshToken:
 		v, ok := value.(string)
@@ -8268,19 +8303,47 @@ func (m *Oauth2TokenMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRefreshToken(v)
 		return nil
+	case oauth2token.FieldCodeCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCodeCreatedAt(v)
+		return nil
+	case oauth2token.FieldAccessTokenCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAccessTokenCreatedAt(v)
+		return nil
 	case oauth2token.FieldRefreshTokenCreatedAt:
-		v, ok := value.(string)
+		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRefreshTokenCreatedAt(v)
 		return nil
-	case oauth2token.FieldRefreshTokenExpiresAt:
-		v, ok := value.(string)
+	case oauth2token.FieldCodeExpiresIn:
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetRefreshTokenExpiresAt(v)
+		m.SetCodeExpiresIn(v)
+		return nil
+	case oauth2token.FieldAccessTokenExpiresIn:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAccessTokenExpiresIn(v)
+		return nil
+	case oauth2token.FieldRefreshTokenExpiresIn:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRefreshTokenExpiresIn(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Oauth2Token field %s", name)
@@ -8289,13 +8352,31 @@ func (m *Oauth2TokenMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *Oauth2TokenMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addcode_expires_in != nil {
+		fields = append(fields, oauth2token.FieldCodeExpiresIn)
+	}
+	if m.addaccess_token_expires_in != nil {
+		fields = append(fields, oauth2token.FieldAccessTokenExpiresIn)
+	}
+	if m.addrefresh_token_expires_in != nil {
+		fields = append(fields, oauth2token.FieldRefreshTokenExpiresIn)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *Oauth2TokenMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case oauth2token.FieldCodeExpiresIn:
+		return m.AddedCodeExpiresIn()
+	case oauth2token.FieldAccessTokenExpiresIn:
+		return m.AddedAccessTokenExpiresIn()
+	case oauth2token.FieldRefreshTokenExpiresIn:
+		return m.AddedRefreshTokenExpiresIn()
+	}
 	return nil, false
 }
 
@@ -8304,6 +8385,27 @@ func (m *Oauth2TokenMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *Oauth2TokenMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case oauth2token.FieldCodeExpiresIn:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCodeExpiresIn(v)
+		return nil
+	case oauth2token.FieldAccessTokenExpiresIn:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAccessTokenExpiresIn(v)
+		return nil
+	case oauth2token.FieldRefreshTokenExpiresIn:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRefreshTokenExpiresIn(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Oauth2Token numeric field %s", name)
 }
@@ -8388,29 +8490,29 @@ func (m *Oauth2TokenMutation) ResetField(name string) error {
 	case oauth2token.FieldCodeChallengeMethod:
 		m.ResetCodeChallengeMethod()
 		return nil
-	case oauth2token.FieldCodeCreatedAt:
-		m.ResetCodeCreatedAt()
-		return nil
-	case oauth2token.FieldCodeExpiresAt:
-		m.ResetCodeExpiresAt()
-		return nil
 	case oauth2token.FieldAccessToken:
 		m.ResetAccessToken()
-		return nil
-	case oauth2token.FieldAccessTokenCreatedAt:
-		m.ResetAccessTokenCreatedAt()
-		return nil
-	case oauth2token.FieldAccessTokenExpiresAt:
-		m.ResetAccessTokenExpiresAt()
 		return nil
 	case oauth2token.FieldRefreshToken:
 		m.ResetRefreshToken()
 		return nil
+	case oauth2token.FieldCodeCreatedAt:
+		m.ResetCodeCreatedAt()
+		return nil
+	case oauth2token.FieldAccessTokenCreatedAt:
+		m.ResetAccessTokenCreatedAt()
+		return nil
 	case oauth2token.FieldRefreshTokenCreatedAt:
 		m.ResetRefreshTokenCreatedAt()
 		return nil
-	case oauth2token.FieldRefreshTokenExpiresAt:
-		m.ResetRefreshTokenExpiresAt()
+	case oauth2token.FieldCodeExpiresIn:
+		m.ResetCodeExpiresIn()
+		return nil
+	case oauth2token.FieldAccessTokenExpiresIn:
+		m.ResetAccessTokenExpiresIn()
+		return nil
+	case oauth2token.FieldRefreshTokenExpiresIn:
+		m.ResetRefreshTokenExpiresIn()
 		return nil
 	}
 	return fmt.Errorf("unknown Oauth2Token field %s", name)
