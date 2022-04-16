@@ -15,8 +15,9 @@ func Oauth2ClientRegisterationHandler(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	oauth2Service := service.NewOauth2ClientService()
-	if err := oauth2Service.RegisterClient(*params); err != nil {
+	resp, err := oauth2Service.RegisterClient(*params)
+	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	return c.String(http.StatusOK, "")
+	return c.JSON(http.StatusOK, resp)
 }

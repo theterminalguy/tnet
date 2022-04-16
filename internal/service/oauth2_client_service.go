@@ -39,6 +39,9 @@ func NewOauth2ClientService() *Oauth2ClientService {
 }
 
 func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oauth2ClientRegistrationResponse, error) {
+	if err := repo.ValidateParams(p); err != nil {
+		return nil, err
+	}
 	userRepo := repo.NewUserRepository()
 	// Check if the email is already in use
 	user, err := userRepo.GetByEmail(p.Contact.Email)

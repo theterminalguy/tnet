@@ -11,7 +11,7 @@ const (
 )
 
 func (Role) Values() (kinds []string) {
-	for _, k := range []Role{Talent, Recruiter} {
+	for _, k := range []Role{Talent, Recruiter, Developer} {
 		kinds = append(kinds, string(k))
 	}
 	return

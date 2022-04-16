@@ -18,7 +18,7 @@ type UserParams struct {
 	ID        uuid.UUID
 	FirstName string `json:"first_name" validate:"required"`
 	LastName  string `json:"last_name" validate:"required"`
-	PhotoURL  string `json:"photo_url" validate:"required"`
+	PhotoURL  string `json:"photo_url"`
 	Email     string `json:"email" validate:"required,email"`
 	Role      userrole.Role
 	Approved  bool
