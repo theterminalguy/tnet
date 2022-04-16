@@ -3,7 +3,9 @@ package authserver
 import (
 	"net/http"
 
+	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/service"
+	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/labstack/echo/v4"
 )
 
@@ -23,5 +25,6 @@ func Oauth2ClientRegisterationHandler(c echo.Context) error {
 }
 
 func Oauth2ClientTokenHandler(c echo.Context) error {
-	//manager := manage.NewDefaultManager()
+	manager := manage.NewDefaultManager()
+	manager.MustTokenStorage(repo.NewOauth2TokenRepository())
 }

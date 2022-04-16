@@ -27,9 +27,9 @@ func (*Oauth2TokenRepository) GetAll() ([]*ent.Oauth2Token, error) {
 	return records, nil
 }
 
-func (*Oauth2TokenRepository) GetByUUID(id uuid.UUID) (*ent.Oauth2Token, error) {
+func (*Oauth2TokenRepository) GetByID(id uuid.UUID) (*ent.Oauth2Token, error) {
 	record, err := dBConn.Oauth2Token.Query().
-		Where(oauth2token.UUIDEQ(id)).
+		Where(oauth2token.IDEQ(id)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func (r *Oauth2TokenRepository) Update(id uuid.UUID, p Oauth2TokenParams) (*ent.
 	if err != nil {
 		return nil, err
 	}
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func (r *Oauth2TokenRepository) Update(id uuid.UUID, p Oauth2TokenParams) (*ent.
 }
 
 func (r *Oauth2TokenRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByUUID(id)
+	record, err := r.GetByID(id)
 	if err != nil {
 		return err
 	}
