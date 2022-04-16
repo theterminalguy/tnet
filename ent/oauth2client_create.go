@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
+	"github.com/10hourlabs/tentn/ent/oauth2token"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -177,6 +178,21 @@ func (oc *Oauth2ClientCreate) SetNillableID(u *uuid.UUID) *Oauth2ClientCreate {
 // SetUser sets the "user" edge to the User entity.
 func (oc *Oauth2ClientCreate) SetUser(u *User) *Oauth2ClientCreate {
 	return oc.SetUserID(u.ID)
+}
+
+// AddOauth2TokenIDs adds the "oauth2_tokens" edge to the Oauth2Token entity by IDs.
+func (oc *Oauth2ClientCreate) AddOauth2TokenIDs(ids ...uuid.UUID) *Oauth2ClientCreate {
+	oc.mutation.AddOauth2TokenIDs(ids...)
+	return oc
+}
+
+// AddOauth2Tokens adds the "oauth2_tokens" edges to the Oauth2Token entity.
+func (oc *Oauth2ClientCreate) AddOauth2Tokens(o ...*Oauth2Token) *Oauth2ClientCreate {
+	ids := make([]uuid.UUID, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return oc.AddOauth2TokenIDs(ids...)
 }
 
 // Mutation returns the Oauth2ClientMutation object of the builder.
@@ -484,6 +500,25 @@ func (oc *Oauth2ClientCreate) createSpec() (*Oauth2Client, *sqlgraph.CreateSpec)
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.UserID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.Oauth2TokensIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   oauth2client.Oauth2TokensTable,
+			Columns: []string{oauth2client.Oauth2TokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: oauth2token.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -297,6 +297,65 @@ var (
 			},
 		},
 	}
+	// Oauth2tokensColumns holds the columns for the "oauth2tokens" table.
+	Oauth2tokensColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "redirect_uri", Type: field.TypeString, Nullable: true},
+		{Name: "scopes", Type: field.TypeString},
+		{Name: "code", Type: field.TypeString},
+		{Name: "code_challenge", Type: field.TypeString},
+		{Name: "code_challenge_method", Type: field.TypeString},
+		{Name: "code_created_at", Type: field.TypeString},
+		{Name: "code_expires_at", Type: field.TypeString},
+		{Name: "access_token", Type: field.TypeString},
+		{Name: "access_token_created_at", Type: field.TypeString},
+		{Name: "access_token_expires_at", Type: field.TypeString},
+		{Name: "refresh_token", Type: field.TypeString},
+		{Name: "refresh_token_created_at", Type: field.TypeString},
+		{Name: "refresh_token_expires_at", Type: field.TypeString},
+		{Name: "oauth2_client_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
+	}
+	// Oauth2tokensTable holds the schema information for the "oauth2tokens" table.
+	Oauth2tokensTable = &schema.Table{
+		Name:       "oauth2tokens",
+		Columns:    Oauth2tokensColumns,
+		PrimaryKey: []*schema.Column{Oauth2tokensColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "oauth2tokens_oauth2clients_oauth2_tokens",
+				Columns:    []*schema.Column{Oauth2tokensColumns[17]},
+				RefColumns: []*schema.Column{Oauth2clientsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "oauth2tokens_users_oauth2_tokens",
+				Columns:    []*schema.Column{Oauth2tokensColumns[18]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "oauth2token_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{Oauth2tokensColumns[18]},
+			},
+			{
+				Name:    "oauth2token_oauth2_client_id",
+				Unique:  false,
+				Columns: []*schema.Column{Oauth2tokensColumns[17]},
+			},
+			{
+				Name:    "oauth2token_code_access_token_refresh_token",
+				Unique:  false,
+				Columns: []*schema.Column{Oauth2tokensColumns[6], Oauth2tokensColumns[11], Oauth2tokensColumns[14]},
+			},
+		},
+	}
 	// PartnersColumns holds the columns for the "partners" table.
 	PartnersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -627,6 +686,7 @@ var (
 		JobApplicationsTable,
 		MissionsTable,
 		Oauth2clientsTable,
+		Oauth2tokensTable,
 		PartnersTable,
 		PortfolioLinksTable,
 		SessionsTable,
@@ -649,6 +709,8 @@ func init() {
 	MissionsTable.ForeignKeys[0].RefTable = PartnersTable
 	MissionsTable.ForeignKeys[1].RefTable = TalentsTable
 	Oauth2clientsTable.ForeignKeys[0].RefTable = UsersTable
+	Oauth2tokensTable.ForeignKeys[0].RefTable = Oauth2clientsTable
+	Oauth2tokensTable.ForeignKeys[1].RefTable = UsersTable
 	PortfolioLinksTable.ForeignKeys[0].RefTable = TalentsTable
 	SessionsTable.ForeignKeys[0].RefTable = UsersTable
 	SkillsTable.ForeignKeys[0].RefTable = TalentsTable

@@ -45,6 +45,8 @@ type User struct {
 type UserEdges struct {
 	// Oauth2Clients holds the value of the oauth2_clients edge.
 	Oauth2Clients []*Oauth2Client `json:"oauth2_clients,omitempty"`
+	// Oauth2Tokens holds the value of the oauth2_tokens edge.
+	Oauth2Tokens []*Oauth2Token `json:"oauth2_tokens,omitempty"`
 	// Talents holds the value of the talents edge.
 	Talents []*Talent `json:"talents,omitempty"`
 	// SlackAppInstalls holds the value of the slack_app_installs edge.
@@ -59,7 +61,7 @@ type UserEdges struct {
 	Sessions []*Session `json:"sessions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [8]bool
 }
 
 // Oauth2ClientsOrErr returns the Oauth2Clients value or an error if the edge
@@ -71,10 +73,19 @@ func (e UserEdges) Oauth2ClientsOrErr() ([]*Oauth2Client, error) {
 	return nil, &NotLoadedError{edge: "oauth2_clients"}
 }
 
+// Oauth2TokensOrErr returns the Oauth2Tokens value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) Oauth2TokensOrErr() ([]*Oauth2Token, error) {
+	if e.loadedTypes[1] {
+		return e.Oauth2Tokens, nil
+	}
+	return nil, &NotLoadedError{edge: "oauth2_tokens"}
+}
+
 // TalentsOrErr returns the Talents value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) TalentsOrErr() ([]*Talent, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Talents, nil
 	}
 	return nil, &NotLoadedError{edge: "talents"}
@@ -83,7 +94,7 @@ func (e UserEdges) TalentsOrErr() ([]*Talent, error) {
 // SlackAppInstallsOrErr returns the SlackAppInstalls value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) SlackAppInstallsOrErr() ([]*SlackAppInstall, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.SlackAppInstalls, nil
 	}
 	return nil, &NotLoadedError{edge: "slack_app_installs"}
@@ -92,7 +103,7 @@ func (e UserEdges) SlackAppInstallsOrErr() ([]*SlackAppInstall, error) {
 // JobsOrErr returns the Jobs value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) JobsOrErr() ([]*Job, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.Jobs, nil
 	}
 	return nil, &NotLoadedError{edge: "jobs"}
@@ -101,7 +112,7 @@ func (e UserEdges) JobsOrErr() ([]*Job, error) {
 // EmailTemplatesOrErr returns the EmailTemplates value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) EmailTemplatesOrErr() ([]*EmailTemplate, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		return e.EmailTemplates, nil
 	}
 	return nil, &NotLoadedError{edge: "email_templates"}
@@ -110,7 +121,7 @@ func (e UserEdges) EmailTemplatesOrErr() ([]*EmailTemplate, error) {
 // TalentCollectionsOrErr returns the TalentCollections value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) TalentCollectionsOrErr() ([]*TalentCollection, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[6] {
 		return e.TalentCollections, nil
 	}
 	return nil, &NotLoadedError{edge: "talent_collections"}
@@ -119,7 +130,7 @@ func (e UserEdges) TalentCollectionsOrErr() ([]*TalentCollection, error) {
 // SessionsOrErr returns the Sessions value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) SessionsOrErr() ([]*Session, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[7] {
 		return e.Sessions, nil
 	}
 	return nil, &NotLoadedError{edge: "sessions"}
@@ -222,6 +233,11 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 // QueryOauth2Clients queries the "oauth2_clients" edge of the User entity.
 func (u *User) QueryOauth2Clients() *Oauth2ClientQuery {
 	return (&UserClient{config: u.config}).QueryOauth2Clients(u)
+}
+
+// QueryOauth2Tokens queries the "oauth2_tokens" edge of the User entity.
+func (u *User) QueryOauth2Tokens() *Oauth2TokenQuery {
+	return (&UserClient{config: u.config}).QueryOauth2Tokens(u)
 }
 
 // QueryTalents queries the "talents" edge of the User entity.

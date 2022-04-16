@@ -15,6 +15,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
+	"github.com/10hourlabs/tentn/ent/oauth2token"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/session"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
@@ -35,6 +36,7 @@ type UserQuery struct {
 	predicates []predicate.User
 	// eager-loading edges.
 	withOauth2Clients     *Oauth2ClientQuery
+	withOauth2Tokens      *Oauth2TokenQuery
 	withTalents           *TalentQuery
 	withSlackAppInstalls  *SlackAppInstallQuery
 	withJobs              *JobQuery
@@ -92,6 +94,28 @@ func (uq *UserQuery) QueryOauth2Clients() *Oauth2ClientQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(oauth2client.Table, oauth2client.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.Oauth2ClientsTable, user.Oauth2ClientsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryOauth2Tokens chains the current query on the "oauth2_tokens" edge.
+func (uq *UserQuery) QueryOauth2Tokens() *Oauth2TokenQuery {
+	query := &Oauth2TokenQuery{config: uq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(oauth2token.Table, oauth2token.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.Oauth2TokensTable, user.Oauth2TokensColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -413,6 +437,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		order:                 append([]OrderFunc{}, uq.order...),
 		predicates:            append([]predicate.User{}, uq.predicates...),
 		withOauth2Clients:     uq.withOauth2Clients.Clone(),
+		withOauth2Tokens:      uq.withOauth2Tokens.Clone(),
 		withTalents:           uq.withTalents.Clone(),
 		withSlackAppInstalls:  uq.withSlackAppInstalls.Clone(),
 		withJobs:              uq.withJobs.Clone(),
@@ -434,6 +459,17 @@ func (uq *UserQuery) WithOauth2Clients(opts ...func(*Oauth2ClientQuery)) *UserQu
 		opt(query)
 	}
 	uq.withOauth2Clients = query
+	return uq
+}
+
+// WithOauth2Tokens tells the query-builder to eager-load the nodes that are connected to
+// the "oauth2_tokens" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithOauth2Tokens(opts ...func(*Oauth2TokenQuery)) *UserQuery {
+	query := &Oauth2TokenQuery{config: uq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withOauth2Tokens = query
 	return uq
 }
 
@@ -568,8 +604,9 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [7]bool{
+		loadedTypes = [8]bool{
 			uq.withOauth2Clients != nil,
+			uq.withOauth2Tokens != nil,
 			uq.withTalents != nil,
 			uq.withSlackAppInstalls != nil,
 			uq.withJobs != nil,
@@ -620,6 +657,31 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Oauth2Clients = append(node.Edges.Oauth2Clients, n)
+		}
+	}
+
+	if query := uq.withOauth2Tokens; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uuid.UUID]*User)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Oauth2Tokens = []*Oauth2Token{}
+		}
+		query.Where(predicate.Oauth2Token(func(s *sql.Selector) {
+			s.Where(sql.InValues(user.Oauth2TokensColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.UserID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Oauth2Tokens = append(node.Edges.Oauth2Tokens, n)
 		}
 	}
 

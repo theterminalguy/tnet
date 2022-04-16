@@ -26,6 +26,8 @@ type Tx struct {
 	Mission *MissionClient
 	// Oauth2Client is the client for interacting with the Oauth2Client builders.
 	Oauth2Client *Oauth2ClientClient
+	// Oauth2Token is the client for interacting with the Oauth2Token builders.
+	Oauth2Token *Oauth2TokenClient
 	// Partner is the client for interacting with the Partner builders.
 	Partner *PartnerClient
 	// PortfolioLink is the client for interacting with the PortfolioLink builders.
@@ -186,6 +188,7 @@ func (tx *Tx) init() {
 	tx.JobApplication = NewJobApplicationClient(tx.config)
 	tx.Mission = NewMissionClient(tx.config)
 	tx.Oauth2Client = NewOauth2ClientClient(tx.config)
+	tx.Oauth2Token = NewOauth2TokenClient(tx.config)
 	tx.Partner = NewPartnerClient(tx.config)
 	tx.PortfolioLink = NewPortfolioLinkClient(tx.config)
 	tx.Session = NewSessionClient(tx.config)

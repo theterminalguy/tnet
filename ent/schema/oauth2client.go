@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
 
@@ -48,7 +49,9 @@ func (Oauth2Client) Fields() []ent.Field {
 
 // Edges of the Oauth2Client.
 func (Oauth2Client) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.To("oauth2_tokens", Oauth2Token.Type),
+	}
 }
 
 func ClientTypes() []string {

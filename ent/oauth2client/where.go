@@ -1252,6 +1252,34 @@ func HasUserWith(preds ...predicate.User) predicate.Oauth2Client {
 	})
 }
 
+// HasOauth2Tokens applies the HasEdge predicate on the "oauth2_tokens" edge.
+func HasOauth2Tokens() predicate.Oauth2Client {
+	return predicate.Oauth2Client(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(Oauth2TokensTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, Oauth2TokensTable, Oauth2TokensColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasOauth2TokensWith applies the HasEdge predicate on the "oauth2_tokens" edge with a given conditions (other predicates).
+func HasOauth2TokensWith(preds ...predicate.Oauth2Token) predicate.Oauth2Client {
+	return predicate.Oauth2Client(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(Oauth2TokensInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, Oauth2TokensTable, Oauth2TokensColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Oauth2Client) predicate.Oauth2Client {
 	return predicate.Oauth2Client(func(s *sql.Selector) {

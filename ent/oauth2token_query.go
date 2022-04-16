@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -19,56 +18,56 @@ import (
 	"github.com/google/uuid"
 )
 
-// Oauth2ClientQuery is the builder for querying Oauth2Client entities.
-type Oauth2ClientQuery struct {
+// Oauth2TokenQuery is the builder for querying Oauth2Token entities.
+type Oauth2TokenQuery struct {
 	config
 	limit      *int
 	offset     *int
 	unique     *bool
 	order      []OrderFunc
 	fields     []string
-	predicates []predicate.Oauth2Client
+	predicates []predicate.Oauth2Token
 	// eager-loading edges.
 	withUser         *UserQuery
-	withOauth2Tokens *Oauth2TokenQuery
+	withOauth2client *Oauth2ClientQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the Oauth2ClientQuery builder.
-func (oq *Oauth2ClientQuery) Where(ps ...predicate.Oauth2Client) *Oauth2ClientQuery {
+// Where adds a new predicate for the Oauth2TokenQuery builder.
+func (oq *Oauth2TokenQuery) Where(ps ...predicate.Oauth2Token) *Oauth2TokenQuery {
 	oq.predicates = append(oq.predicates, ps...)
 	return oq
 }
 
 // Limit adds a limit step to the query.
-func (oq *Oauth2ClientQuery) Limit(limit int) *Oauth2ClientQuery {
+func (oq *Oauth2TokenQuery) Limit(limit int) *Oauth2TokenQuery {
 	oq.limit = &limit
 	return oq
 }
 
 // Offset adds an offset step to the query.
-func (oq *Oauth2ClientQuery) Offset(offset int) *Oauth2ClientQuery {
+func (oq *Oauth2TokenQuery) Offset(offset int) *Oauth2TokenQuery {
 	oq.offset = &offset
 	return oq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (oq *Oauth2ClientQuery) Unique(unique bool) *Oauth2ClientQuery {
+func (oq *Oauth2TokenQuery) Unique(unique bool) *Oauth2TokenQuery {
 	oq.unique = &unique
 	return oq
 }
 
 // Order adds an order step to the query.
-func (oq *Oauth2ClientQuery) Order(o ...OrderFunc) *Oauth2ClientQuery {
+func (oq *Oauth2TokenQuery) Order(o ...OrderFunc) *Oauth2TokenQuery {
 	oq.order = append(oq.order, o...)
 	return oq
 }
 
 // QueryUser chains the current query on the "user" edge.
-func (oq *Oauth2ClientQuery) QueryUser() *UserQuery {
+func (oq *Oauth2TokenQuery) QueryUser() *UserQuery {
 	query := &UserQuery{config: oq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := oq.prepareQuery(ctx); err != nil {
@@ -79,9 +78,9 @@ func (oq *Oauth2ClientQuery) QueryUser() *UserQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(oauth2client.Table, oauth2client.FieldID, selector),
+			sqlgraph.From(oauth2token.Table, oauth2token.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, oauth2client.UserTable, oauth2client.UserColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, oauth2token.UserTable, oauth2token.UserColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
 		return fromU, nil
@@ -89,9 +88,9 @@ func (oq *Oauth2ClientQuery) QueryUser() *UserQuery {
 	return query
 }
 
-// QueryOauth2Tokens chains the current query on the "oauth2_tokens" edge.
-func (oq *Oauth2ClientQuery) QueryOauth2Tokens() *Oauth2TokenQuery {
-	query := &Oauth2TokenQuery{config: oq.config}
+// QueryOauth2client chains the current query on the "oauth2client" edge.
+func (oq *Oauth2TokenQuery) QueryOauth2client() *Oauth2ClientQuery {
+	query := &Oauth2ClientQuery{config: oq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := oq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -101,9 +100,9 @@ func (oq *Oauth2ClientQuery) QueryOauth2Tokens() *Oauth2TokenQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(oauth2client.Table, oauth2client.FieldID, selector),
-			sqlgraph.To(oauth2token.Table, oauth2token.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, oauth2client.Oauth2TokensTable, oauth2client.Oauth2TokensColumn),
+			sqlgraph.From(oauth2token.Table, oauth2token.FieldID, selector),
+			sqlgraph.To(oauth2client.Table, oauth2client.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, oauth2token.Oauth2clientTable, oauth2token.Oauth2clientColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
 		return fromU, nil
@@ -111,21 +110,21 @@ func (oq *Oauth2ClientQuery) QueryOauth2Tokens() *Oauth2TokenQuery {
 	return query
 }
 
-// First returns the first Oauth2Client entity from the query.
-// Returns a *NotFoundError when no Oauth2Client was found.
-func (oq *Oauth2ClientQuery) First(ctx context.Context) (*Oauth2Client, error) {
+// First returns the first Oauth2Token entity from the query.
+// Returns a *NotFoundError when no Oauth2Token was found.
+func (oq *Oauth2TokenQuery) First(ctx context.Context) (*Oauth2Token, error) {
 	nodes, err := oq.Limit(1).All(ctx)
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{oauth2client.Label}
+		return nil, &NotFoundError{oauth2token.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (oq *Oauth2ClientQuery) FirstX(ctx context.Context) *Oauth2Client {
+func (oq *Oauth2TokenQuery) FirstX(ctx context.Context) *Oauth2Token {
 	node, err := oq.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -133,22 +132,22 @@ func (oq *Oauth2ClientQuery) FirstX(ctx context.Context) *Oauth2Client {
 	return node
 }
 
-// FirstID returns the first Oauth2Client ID from the query.
-// Returns a *NotFoundError when no Oauth2Client ID was found.
-func (oq *Oauth2ClientQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+// FirstID returns the first Oauth2Token ID from the query.
+// Returns a *NotFoundError when no Oauth2Token ID was found.
+func (oq *Oauth2TokenQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
 	if ids, err = oq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{oauth2client.Label}
+		err = &NotFoundError{oauth2token.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (oq *Oauth2ClientQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (oq *Oauth2TokenQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := oq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -156,10 +155,10 @@ func (oq *Oauth2ClientQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	return id
 }
 
-// Only returns a single Oauth2Client entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one Oauth2Client entity is found.
-// Returns a *NotFoundError when no Oauth2Client entities are found.
-func (oq *Oauth2ClientQuery) Only(ctx context.Context) (*Oauth2Client, error) {
+// Only returns a single Oauth2Token entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when more than one Oauth2Token entity is found.
+// Returns a *NotFoundError when no Oauth2Token entities are found.
+func (oq *Oauth2TokenQuery) Only(ctx context.Context) (*Oauth2Token, error) {
 	nodes, err := oq.Limit(2).All(ctx)
 	if err != nil {
 		return nil, err
@@ -168,14 +167,14 @@ func (oq *Oauth2ClientQuery) Only(ctx context.Context) (*Oauth2Client, error) {
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{oauth2client.Label}
+		return nil, &NotFoundError{oauth2token.Label}
 	default:
-		return nil, &NotSingularError{oauth2client.Label}
+		return nil, &NotSingularError{oauth2token.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (oq *Oauth2ClientQuery) OnlyX(ctx context.Context) *Oauth2Client {
+func (oq *Oauth2TokenQuery) OnlyX(ctx context.Context) *Oauth2Token {
 	node, err := oq.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -183,10 +182,10 @@ func (oq *Oauth2ClientQuery) OnlyX(ctx context.Context) *Oauth2Client {
 	return node
 }
 
-// OnlyID is like Only, but returns the only Oauth2Client ID in the query.
-// Returns a *NotSingularError when more than one Oauth2Client ID is found.
+// OnlyID is like Only, but returns the only Oauth2Token ID in the query.
+// Returns a *NotSingularError when more than one Oauth2Token ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (oq *Oauth2ClientQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+func (oq *Oauth2TokenQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
 	if ids, err = oq.Limit(2).IDs(ctx); err != nil {
 		return
@@ -195,15 +194,15 @@ func (oq *Oauth2ClientQuery) OnlyID(ctx context.Context) (id uuid.UUID, err erro
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{oauth2client.Label}
+		err = &NotFoundError{oauth2token.Label}
 	default:
-		err = &NotSingularError{oauth2client.Label}
+		err = &NotSingularError{oauth2token.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (oq *Oauth2ClientQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (oq *Oauth2TokenQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := oq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -211,8 +210,8 @@ func (oq *Oauth2ClientQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	return id
 }
 
-// All executes the query and returns a list of Oauth2Clients.
-func (oq *Oauth2ClientQuery) All(ctx context.Context) ([]*Oauth2Client, error) {
+// All executes the query and returns a list of Oauth2Tokens.
+func (oq *Oauth2TokenQuery) All(ctx context.Context) ([]*Oauth2Token, error) {
 	if err := oq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -220,7 +219,7 @@ func (oq *Oauth2ClientQuery) All(ctx context.Context) ([]*Oauth2Client, error) {
 }
 
 // AllX is like All, but panics if an error occurs.
-func (oq *Oauth2ClientQuery) AllX(ctx context.Context) []*Oauth2Client {
+func (oq *Oauth2TokenQuery) AllX(ctx context.Context) []*Oauth2Token {
 	nodes, err := oq.All(ctx)
 	if err != nil {
 		panic(err)
@@ -228,17 +227,17 @@ func (oq *Oauth2ClientQuery) AllX(ctx context.Context) []*Oauth2Client {
 	return nodes
 }
 
-// IDs executes the query and returns a list of Oauth2Client IDs.
-func (oq *Oauth2ClientQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+// IDs executes the query and returns a list of Oauth2Token IDs.
+func (oq *Oauth2TokenQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	var ids []uuid.UUID
-	if err := oq.Select(oauth2client.FieldID).Scan(ctx, &ids); err != nil {
+	if err := oq.Select(oauth2token.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (oq *Oauth2ClientQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (oq *Oauth2TokenQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := oq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -247,7 +246,7 @@ func (oq *Oauth2ClientQuery) IDsX(ctx context.Context) []uuid.UUID {
 }
 
 // Count returns the count of the given query.
-func (oq *Oauth2ClientQuery) Count(ctx context.Context) (int, error) {
+func (oq *Oauth2TokenQuery) Count(ctx context.Context) (int, error) {
 	if err := oq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -255,7 +254,7 @@ func (oq *Oauth2ClientQuery) Count(ctx context.Context) (int, error) {
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (oq *Oauth2ClientQuery) CountX(ctx context.Context) int {
+func (oq *Oauth2TokenQuery) CountX(ctx context.Context) int {
 	count, err := oq.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -264,7 +263,7 @@ func (oq *Oauth2ClientQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (oq *Oauth2ClientQuery) Exist(ctx context.Context) (bool, error) {
+func (oq *Oauth2TokenQuery) Exist(ctx context.Context) (bool, error) {
 	if err := oq.prepareQuery(ctx); err != nil {
 		return false, err
 	}
@@ -272,7 +271,7 @@ func (oq *Oauth2ClientQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (oq *Oauth2ClientQuery) ExistX(ctx context.Context) bool {
+func (oq *Oauth2TokenQuery) ExistX(ctx context.Context) bool {
 	exist, err := oq.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -280,20 +279,20 @@ func (oq *Oauth2ClientQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the Oauth2ClientQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the Oauth2TokenQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (oq *Oauth2ClientQuery) Clone() *Oauth2ClientQuery {
+func (oq *Oauth2TokenQuery) Clone() *Oauth2TokenQuery {
 	if oq == nil {
 		return nil
 	}
-	return &Oauth2ClientQuery{
+	return &Oauth2TokenQuery{
 		config:           oq.config,
 		limit:            oq.limit,
 		offset:           oq.offset,
 		order:            append([]OrderFunc{}, oq.order...),
-		predicates:       append([]predicate.Oauth2Client{}, oq.predicates...),
+		predicates:       append([]predicate.Oauth2Token{}, oq.predicates...),
 		withUser:         oq.withUser.Clone(),
-		withOauth2Tokens: oq.withOauth2Tokens.Clone(),
+		withOauth2client: oq.withOauth2client.Clone(),
 		// clone intermediate query.
 		sql:    oq.sql.Clone(),
 		path:   oq.path,
@@ -303,7 +302,7 @@ func (oq *Oauth2ClientQuery) Clone() *Oauth2ClientQuery {
 
 // WithUser tells the query-builder to eager-load the nodes that are connected to
 // the "user" edge. The optional arguments are used to configure the query builder of the edge.
-func (oq *Oauth2ClientQuery) WithUser(opts ...func(*UserQuery)) *Oauth2ClientQuery {
+func (oq *Oauth2TokenQuery) WithUser(opts ...func(*UserQuery)) *Oauth2TokenQuery {
 	query := &UserQuery{config: oq.config}
 	for _, opt := range opts {
 		opt(query)
@@ -312,14 +311,14 @@ func (oq *Oauth2ClientQuery) WithUser(opts ...func(*UserQuery)) *Oauth2ClientQue
 	return oq
 }
 
-// WithOauth2Tokens tells the query-builder to eager-load the nodes that are connected to
-// the "oauth2_tokens" edge. The optional arguments are used to configure the query builder of the edge.
-func (oq *Oauth2ClientQuery) WithOauth2Tokens(opts ...func(*Oauth2TokenQuery)) *Oauth2ClientQuery {
-	query := &Oauth2TokenQuery{config: oq.config}
+// WithOauth2client tells the query-builder to eager-load the nodes that are connected to
+// the "oauth2client" edge. The optional arguments are used to configure the query builder of the edge.
+func (oq *Oauth2TokenQuery) WithOauth2client(opts ...func(*Oauth2ClientQuery)) *Oauth2TokenQuery {
+	query := &Oauth2ClientQuery{config: oq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	oq.withOauth2Tokens = query
+	oq.withOauth2client = query
 	return oq
 }
 
@@ -333,13 +332,13 @@ func (oq *Oauth2ClientQuery) WithOauth2Tokens(opts ...func(*Oauth2TokenQuery)) *
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.Oauth2Client.Query().
-//		GroupBy(oauth2client.FieldCreatedAt).
+//	client.Oauth2Token.Query().
+//		GroupBy(oauth2token.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
-func (oq *Oauth2ClientQuery) GroupBy(field string, fields ...string) *Oauth2ClientGroupBy {
-	group := &Oauth2ClientGroupBy{config: oq.config}
+func (oq *Oauth2TokenQuery) GroupBy(field string, fields ...string) *Oauth2TokenGroupBy {
+	group := &Oauth2TokenGroupBy{config: oq.config}
 	group.fields = append([]string{field}, fields...)
 	group.path = func(ctx context.Context) (prev *sql.Selector, err error) {
 		if err := oq.prepareQuery(ctx); err != nil {
@@ -359,18 +358,18 @@ func (oq *Oauth2ClientQuery) GroupBy(field string, fields ...string) *Oauth2Clie
 //		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
-//	client.Oauth2Client.Query().
-//		Select(oauth2client.FieldCreatedAt).
+//	client.Oauth2Token.Query().
+//		Select(oauth2token.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
-func (oq *Oauth2ClientQuery) Select(fields ...string) *Oauth2ClientSelect {
+func (oq *Oauth2TokenQuery) Select(fields ...string) *Oauth2TokenSelect {
 	oq.fields = append(oq.fields, fields...)
-	return &Oauth2ClientSelect{Oauth2ClientQuery: oq}
+	return &Oauth2TokenSelect{Oauth2TokenQuery: oq}
 }
 
-func (oq *Oauth2ClientQuery) prepareQuery(ctx context.Context) error {
+func (oq *Oauth2TokenQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range oq.fields {
-		if !oauth2client.ValidColumn(f) {
+		if !oauth2token.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -384,17 +383,17 @@ func (oq *Oauth2ClientQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (oq *Oauth2ClientQuery) sqlAll(ctx context.Context) ([]*Oauth2Client, error) {
+func (oq *Oauth2TokenQuery) sqlAll(ctx context.Context) ([]*Oauth2Token, error) {
 	var (
-		nodes       = []*Oauth2Client{}
+		nodes       = []*Oauth2Token{}
 		_spec       = oq.querySpec()
 		loadedTypes = [2]bool{
 			oq.withUser != nil,
-			oq.withOauth2Tokens != nil,
+			oq.withOauth2client != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
-		node := &Oauth2Client{config: oq.config}
+		node := &Oauth2Token{config: oq.config}
 		nodes = append(nodes, node)
 		return node.scanValues(columns)
 	}
@@ -415,7 +414,7 @@ func (oq *Oauth2ClientQuery) sqlAll(ctx context.Context) ([]*Oauth2Client, error
 
 	if query := oq.withUser; query != nil {
 		ids := make([]uuid.UUID, 0, len(nodes))
-		nodeids := make(map[uuid.UUID][]*Oauth2Client)
+		nodeids := make(map[uuid.UUID][]*Oauth2Token)
 		for i := range nodes {
 			fk := nodes[i].UserID
 			if _, ok := nodeids[fk]; !ok {
@@ -439,35 +438,36 @@ func (oq *Oauth2ClientQuery) sqlAll(ctx context.Context) ([]*Oauth2Client, error
 		}
 	}
 
-	if query := oq.withOauth2Tokens; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[uuid.UUID]*Oauth2Client)
+	if query := oq.withOauth2client; query != nil {
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*Oauth2Token)
 		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Oauth2Tokens = []*Oauth2Token{}
+			fk := nodes[i].Oauth2ClientID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		query.Where(predicate.Oauth2Token(func(s *sql.Selector) {
-			s.Where(sql.InValues(oauth2client.Oauth2TokensColumn, fks...))
-		}))
+		query.Where(oauth2client.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
 		}
 		for _, n := range neighbors {
-			fk := n.Oauth2ClientID
-			node, ok := nodeids[fk]
+			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "oauth2_client_id" returned %v for node %v`, fk, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "oauth2_client_id" returned %v`, n.ID)
 			}
-			node.Edges.Oauth2Tokens = append(node.Edges.Oauth2Tokens, n)
+			for i := range nodes {
+				nodes[i].Edges.Oauth2client = n
+			}
 		}
 	}
 
 	return nodes, nil
 }
 
-func (oq *Oauth2ClientQuery) sqlCount(ctx context.Context) (int, error) {
+func (oq *Oauth2TokenQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := oq.querySpec()
 	_spec.Node.Columns = oq.fields
 	if len(oq.fields) > 0 {
@@ -476,7 +476,7 @@ func (oq *Oauth2ClientQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, oq.driver, _spec)
 }
 
-func (oq *Oauth2ClientQuery) sqlExist(ctx context.Context) (bool, error) {
+func (oq *Oauth2TokenQuery) sqlExist(ctx context.Context) (bool, error) {
 	n, err := oq.sqlCount(ctx)
 	if err != nil {
 		return false, fmt.Errorf("ent: check existence: %w", err)
@@ -484,14 +484,14 @@ func (oq *Oauth2ClientQuery) sqlExist(ctx context.Context) (bool, error) {
 	return n > 0, nil
 }
 
-func (oq *Oauth2ClientQuery) querySpec() *sqlgraph.QuerySpec {
+func (oq *Oauth2TokenQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
-			Table:   oauth2client.Table,
-			Columns: oauth2client.Columns,
+			Table:   oauth2token.Table,
+			Columns: oauth2token.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeUUID,
-				Column: oauth2client.FieldID,
+				Column: oauth2token.FieldID,
 			},
 		},
 		From:   oq.sql,
@@ -502,9 +502,9 @@ func (oq *Oauth2ClientQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := oq.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, oauth2client.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, oauth2token.FieldID)
 		for i := range fields {
-			if fields[i] != oauth2client.FieldID {
+			if fields[i] != oauth2token.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
@@ -532,12 +532,12 @@ func (oq *Oauth2ClientQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (oq *Oauth2ClientQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (oq *Oauth2TokenQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(oq.driver.Dialect())
-	t1 := builder.Table(oauth2client.Table)
+	t1 := builder.Table(oauth2token.Table)
 	columns := oq.fields
 	if len(columns) == 0 {
-		columns = oauth2client.Columns
+		columns = oauth2token.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if oq.sql != nil {
@@ -564,8 +564,8 @@ func (oq *Oauth2ClientQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-// Oauth2ClientGroupBy is the group-by builder for Oauth2Client entities.
-type Oauth2ClientGroupBy struct {
+// Oauth2TokenGroupBy is the group-by builder for Oauth2Token entities.
+type Oauth2TokenGroupBy struct {
 	config
 	fields []string
 	fns    []AggregateFunc
@@ -575,13 +575,13 @@ type Oauth2ClientGroupBy struct {
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (ogb *Oauth2ClientGroupBy) Aggregate(fns ...AggregateFunc) *Oauth2ClientGroupBy {
+func (ogb *Oauth2TokenGroupBy) Aggregate(fns ...AggregateFunc) *Oauth2TokenGroupBy {
 	ogb.fns = append(ogb.fns, fns...)
 	return ogb
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (ogb *Oauth2ClientGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (ogb *Oauth2TokenGroupBy) Scan(ctx context.Context, v interface{}) error {
 	query, err := ogb.path(ctx)
 	if err != nil {
 		return err
@@ -591,7 +591,7 @@ func (ogb *Oauth2ClientGroupBy) Scan(ctx context.Context, v interface{}) error {
 }
 
 // ScanX is like Scan, but panics if an error occurs.
-func (ogb *Oauth2ClientGroupBy) ScanX(ctx context.Context, v interface{}) {
+func (ogb *Oauth2TokenGroupBy) ScanX(ctx context.Context, v interface{}) {
 	if err := ogb.Scan(ctx, v); err != nil {
 		panic(err)
 	}
@@ -599,9 +599,9 @@ func (ogb *Oauth2ClientGroupBy) ScanX(ctx context.Context, v interface{}) {
 
 // Strings returns list of strings from group-by.
 // It is only allowed when executing a group-by query with one field.
-func (ogb *Oauth2ClientGroupBy) Strings(ctx context.Context) ([]string, error) {
+func (ogb *Oauth2TokenGroupBy) Strings(ctx context.Context) ([]string, error) {
 	if len(ogb.fields) > 1 {
-		return nil, errors.New("ent: Oauth2ClientGroupBy.Strings is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: Oauth2TokenGroupBy.Strings is not achievable when grouping more than 1 field")
 	}
 	var v []string
 	if err := ogb.Scan(ctx, &v); err != nil {
@@ -611,7 +611,7 @@ func (ogb *Oauth2ClientGroupBy) Strings(ctx context.Context) ([]string, error) {
 }
 
 // StringsX is like Strings, but panics if an error occurs.
-func (ogb *Oauth2ClientGroupBy) StringsX(ctx context.Context) []string {
+func (ogb *Oauth2TokenGroupBy) StringsX(ctx context.Context) []string {
 	v, err := ogb.Strings(ctx)
 	if err != nil {
 		panic(err)
@@ -621,7 +621,7 @@ func (ogb *Oauth2ClientGroupBy) StringsX(ctx context.Context) []string {
 
 // String returns a single string from a group-by query.
 // It is only allowed when executing a group-by query with one field.
-func (ogb *Oauth2ClientGroupBy) String(ctx context.Context) (_ string, err error) {
+func (ogb *Oauth2TokenGroupBy) String(ctx context.Context) (_ string, err error) {
 	var v []string
 	if v, err = ogb.Strings(ctx); err != nil {
 		return
@@ -630,15 +630,15 @@ func (ogb *Oauth2ClientGroupBy) String(ctx context.Context) (_ string, err error
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{oauth2client.Label}
+		err = &NotFoundError{oauth2token.Label}
 	default:
-		err = fmt.Errorf("ent: Oauth2ClientGroupBy.Strings returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: Oauth2TokenGroupBy.Strings returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // StringX is like String, but panics if an error occurs.
-func (ogb *Oauth2ClientGroupBy) StringX(ctx context.Context) string {
+func (ogb *Oauth2TokenGroupBy) StringX(ctx context.Context) string {
 	v, err := ogb.String(ctx)
 	if err != nil {
 		panic(err)
@@ -648,9 +648,9 @@ func (ogb *Oauth2ClientGroupBy) StringX(ctx context.Context) string {
 
 // Ints returns list of ints from group-by.
 // It is only allowed when executing a group-by query with one field.
-func (ogb *Oauth2ClientGroupBy) Ints(ctx context.Context) ([]int, error) {
+func (ogb *Oauth2TokenGroupBy) Ints(ctx context.Context) ([]int, error) {
 	if len(ogb.fields) > 1 {
-		return nil, errors.New("ent: Oauth2ClientGroupBy.Ints is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: Oauth2TokenGroupBy.Ints is not achievable when grouping more than 1 field")
 	}
 	var v []int
 	if err := ogb.Scan(ctx, &v); err != nil {
@@ -660,7 +660,7 @@ func (ogb *Oauth2ClientGroupBy) Ints(ctx context.Context) ([]int, error) {
 }
 
 // IntsX is like Ints, but panics if an error occurs.
-func (ogb *Oauth2ClientGroupBy) IntsX(ctx context.Context) []int {
+func (ogb *Oauth2TokenGroupBy) IntsX(ctx context.Context) []int {
 	v, err := ogb.Ints(ctx)
 	if err != nil {
 		panic(err)
@@ -670,7 +670,7 @@ func (ogb *Oauth2ClientGroupBy) IntsX(ctx context.Context) []int {
 
 // Int returns a single int from a group-by query.
 // It is only allowed when executing a group-by query with one field.
-func (ogb *Oauth2ClientGroupBy) Int(ctx context.Context) (_ int, err error) {
+func (ogb *Oauth2TokenGroupBy) Int(ctx context.Context) (_ int, err error) {
 	var v []int
 	if v, err = ogb.Ints(ctx); err != nil {
 		return
@@ -679,15 +679,15 @@ func (ogb *Oauth2ClientGroupBy) Int(ctx context.Context) (_ int, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{oauth2client.Label}
+		err = &NotFoundError{oauth2token.Label}
 	default:
-		err = fmt.Errorf("ent: Oauth2ClientGroupBy.Ints returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: Oauth2TokenGroupBy.Ints returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // IntX is like Int, but panics if an error occurs.
-func (ogb *Oauth2ClientGroupBy) IntX(ctx context.Context) int {
+func (ogb *Oauth2TokenGroupBy) IntX(ctx context.Context) int {
 	v, err := ogb.Int(ctx)
 	if err != nil {
 		panic(err)
@@ -697,9 +697,9 @@ func (ogb *Oauth2ClientGroupBy) IntX(ctx context.Context) int {
 
 // Float64s returns list of float64s from group-by.
 // It is only allowed when executing a group-by query with one field.
-func (ogb *Oauth2ClientGroupBy) Float64s(ctx context.Context) ([]float64, error) {
+func (ogb *Oauth2TokenGroupBy) Float64s(ctx context.Context) ([]float64, error) {
 	if len(ogb.fields) > 1 {
-		return nil, errors.New("ent: Oauth2ClientGroupBy.Float64s is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: Oauth2TokenGroupBy.Float64s is not achievable when grouping more than 1 field")
 	}
 	var v []float64
 	if err := ogb.Scan(ctx, &v); err != nil {
@@ -709,7 +709,7 @@ func (ogb *Oauth2ClientGroupBy) Float64s(ctx context.Context) ([]float64, error)
 }
 
 // Float64sX is like Float64s, but panics if an error occurs.
-func (ogb *Oauth2ClientGroupBy) Float64sX(ctx context.Context) []float64 {
+func (ogb *Oauth2TokenGroupBy) Float64sX(ctx context.Context) []float64 {
 	v, err := ogb.Float64s(ctx)
 	if err != nil {
 		panic(err)
@@ -719,7 +719,7 @@ func (ogb *Oauth2ClientGroupBy) Float64sX(ctx context.Context) []float64 {
 
 // Float64 returns a single float64 from a group-by query.
 // It is only allowed when executing a group-by query with one field.
-func (ogb *Oauth2ClientGroupBy) Float64(ctx context.Context) (_ float64, err error) {
+func (ogb *Oauth2TokenGroupBy) Float64(ctx context.Context) (_ float64, err error) {
 	var v []float64
 	if v, err = ogb.Float64s(ctx); err != nil {
 		return
@@ -728,15 +728,15 @@ func (ogb *Oauth2ClientGroupBy) Float64(ctx context.Context) (_ float64, err err
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{oauth2client.Label}
+		err = &NotFoundError{oauth2token.Label}
 	default:
-		err = fmt.Errorf("ent: Oauth2ClientGroupBy.Float64s returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: Oauth2TokenGroupBy.Float64s returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // Float64X is like Float64, but panics if an error occurs.
-func (ogb *Oauth2ClientGroupBy) Float64X(ctx context.Context) float64 {
+func (ogb *Oauth2TokenGroupBy) Float64X(ctx context.Context) float64 {
 	v, err := ogb.Float64(ctx)
 	if err != nil {
 		panic(err)
@@ -746,9 +746,9 @@ func (ogb *Oauth2ClientGroupBy) Float64X(ctx context.Context) float64 {
 
 // Bools returns list of bools from group-by.
 // It is only allowed when executing a group-by query with one field.
-func (ogb *Oauth2ClientGroupBy) Bools(ctx context.Context) ([]bool, error) {
+func (ogb *Oauth2TokenGroupBy) Bools(ctx context.Context) ([]bool, error) {
 	if len(ogb.fields) > 1 {
-		return nil, errors.New("ent: Oauth2ClientGroupBy.Bools is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: Oauth2TokenGroupBy.Bools is not achievable when grouping more than 1 field")
 	}
 	var v []bool
 	if err := ogb.Scan(ctx, &v); err != nil {
@@ -758,7 +758,7 @@ func (ogb *Oauth2ClientGroupBy) Bools(ctx context.Context) ([]bool, error) {
 }
 
 // BoolsX is like Bools, but panics if an error occurs.
-func (ogb *Oauth2ClientGroupBy) BoolsX(ctx context.Context) []bool {
+func (ogb *Oauth2TokenGroupBy) BoolsX(ctx context.Context) []bool {
 	v, err := ogb.Bools(ctx)
 	if err != nil {
 		panic(err)
@@ -768,7 +768,7 @@ func (ogb *Oauth2ClientGroupBy) BoolsX(ctx context.Context) []bool {
 
 // Bool returns a single bool from a group-by query.
 // It is only allowed when executing a group-by query with one field.
-func (ogb *Oauth2ClientGroupBy) Bool(ctx context.Context) (_ bool, err error) {
+func (ogb *Oauth2TokenGroupBy) Bool(ctx context.Context) (_ bool, err error) {
 	var v []bool
 	if v, err = ogb.Bools(ctx); err != nil {
 		return
@@ -777,15 +777,15 @@ func (ogb *Oauth2ClientGroupBy) Bool(ctx context.Context) (_ bool, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{oauth2client.Label}
+		err = &NotFoundError{oauth2token.Label}
 	default:
-		err = fmt.Errorf("ent: Oauth2ClientGroupBy.Bools returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: Oauth2TokenGroupBy.Bools returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // BoolX is like Bool, but panics if an error occurs.
-func (ogb *Oauth2ClientGroupBy) BoolX(ctx context.Context) bool {
+func (ogb *Oauth2TokenGroupBy) BoolX(ctx context.Context) bool {
 	v, err := ogb.Bool(ctx)
 	if err != nil {
 		panic(err)
@@ -793,9 +793,9 @@ func (ogb *Oauth2ClientGroupBy) BoolX(ctx context.Context) bool {
 	return v
 }
 
-func (ogb *Oauth2ClientGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (ogb *Oauth2TokenGroupBy) sqlScan(ctx context.Context, v interface{}) error {
 	for _, f := range ogb.fields {
-		if !oauth2client.ValidColumn(f) {
+		if !oauth2token.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
 		}
 	}
@@ -812,7 +812,7 @@ func (ogb *Oauth2ClientGroupBy) sqlScan(ctx context.Context, v interface{}) erro
 	return sql.ScanSlice(rows, v)
 }
 
-func (ogb *Oauth2ClientGroupBy) sqlQuery() *sql.Selector {
+func (ogb *Oauth2TokenGroupBy) sqlQuery() *sql.Selector {
 	selector := ogb.sql.Select()
 	aggregation := make([]string, 0, len(ogb.fns))
 	for _, fn := range ogb.fns {
@@ -831,33 +831,33 @@ func (ogb *Oauth2ClientGroupBy) sqlQuery() *sql.Selector {
 	return selector.GroupBy(selector.Columns(ogb.fields...)...)
 }
 
-// Oauth2ClientSelect is the builder for selecting fields of Oauth2Client entities.
-type Oauth2ClientSelect struct {
-	*Oauth2ClientQuery
+// Oauth2TokenSelect is the builder for selecting fields of Oauth2Token entities.
+type Oauth2TokenSelect struct {
+	*Oauth2TokenQuery
 	// intermediate query (i.e. traversal path).
 	sql *sql.Selector
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (os *Oauth2ClientSelect) Scan(ctx context.Context, v interface{}) error {
+func (os *Oauth2TokenSelect) Scan(ctx context.Context, v interface{}) error {
 	if err := os.prepareQuery(ctx); err != nil {
 		return err
 	}
-	os.sql = os.Oauth2ClientQuery.sqlQuery(ctx)
+	os.sql = os.Oauth2TokenQuery.sqlQuery(ctx)
 	return os.sqlScan(ctx, v)
 }
 
 // ScanX is like Scan, but panics if an error occurs.
-func (os *Oauth2ClientSelect) ScanX(ctx context.Context, v interface{}) {
+func (os *Oauth2TokenSelect) ScanX(ctx context.Context, v interface{}) {
 	if err := os.Scan(ctx, v); err != nil {
 		panic(err)
 	}
 }
 
 // Strings returns list of strings from a selector. It is only allowed when selecting one field.
-func (os *Oauth2ClientSelect) Strings(ctx context.Context) ([]string, error) {
+func (os *Oauth2TokenSelect) Strings(ctx context.Context) ([]string, error) {
 	if len(os.fields) > 1 {
-		return nil, errors.New("ent: Oauth2ClientSelect.Strings is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: Oauth2TokenSelect.Strings is not achievable when selecting more than 1 field")
 	}
 	var v []string
 	if err := os.Scan(ctx, &v); err != nil {
@@ -867,7 +867,7 @@ func (os *Oauth2ClientSelect) Strings(ctx context.Context) ([]string, error) {
 }
 
 // StringsX is like Strings, but panics if an error occurs.
-func (os *Oauth2ClientSelect) StringsX(ctx context.Context) []string {
+func (os *Oauth2TokenSelect) StringsX(ctx context.Context) []string {
 	v, err := os.Strings(ctx)
 	if err != nil {
 		panic(err)
@@ -876,7 +876,7 @@ func (os *Oauth2ClientSelect) StringsX(ctx context.Context) []string {
 }
 
 // String returns a single string from a selector. It is only allowed when selecting one field.
-func (os *Oauth2ClientSelect) String(ctx context.Context) (_ string, err error) {
+func (os *Oauth2TokenSelect) String(ctx context.Context) (_ string, err error) {
 	var v []string
 	if v, err = os.Strings(ctx); err != nil {
 		return
@@ -885,15 +885,15 @@ func (os *Oauth2ClientSelect) String(ctx context.Context) (_ string, err error) 
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{oauth2client.Label}
+		err = &NotFoundError{oauth2token.Label}
 	default:
-		err = fmt.Errorf("ent: Oauth2ClientSelect.Strings returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: Oauth2TokenSelect.Strings returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // StringX is like String, but panics if an error occurs.
-func (os *Oauth2ClientSelect) StringX(ctx context.Context) string {
+func (os *Oauth2TokenSelect) StringX(ctx context.Context) string {
 	v, err := os.String(ctx)
 	if err != nil {
 		panic(err)
@@ -902,9 +902,9 @@ func (os *Oauth2ClientSelect) StringX(ctx context.Context) string {
 }
 
 // Ints returns list of ints from a selector. It is only allowed when selecting one field.
-func (os *Oauth2ClientSelect) Ints(ctx context.Context) ([]int, error) {
+func (os *Oauth2TokenSelect) Ints(ctx context.Context) ([]int, error) {
 	if len(os.fields) > 1 {
-		return nil, errors.New("ent: Oauth2ClientSelect.Ints is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: Oauth2TokenSelect.Ints is not achievable when selecting more than 1 field")
 	}
 	var v []int
 	if err := os.Scan(ctx, &v); err != nil {
@@ -914,7 +914,7 @@ func (os *Oauth2ClientSelect) Ints(ctx context.Context) ([]int, error) {
 }
 
 // IntsX is like Ints, but panics if an error occurs.
-func (os *Oauth2ClientSelect) IntsX(ctx context.Context) []int {
+func (os *Oauth2TokenSelect) IntsX(ctx context.Context) []int {
 	v, err := os.Ints(ctx)
 	if err != nil {
 		panic(err)
@@ -923,7 +923,7 @@ func (os *Oauth2ClientSelect) IntsX(ctx context.Context) []int {
 }
 
 // Int returns a single int from a selector. It is only allowed when selecting one field.
-func (os *Oauth2ClientSelect) Int(ctx context.Context) (_ int, err error) {
+func (os *Oauth2TokenSelect) Int(ctx context.Context) (_ int, err error) {
 	var v []int
 	if v, err = os.Ints(ctx); err != nil {
 		return
@@ -932,15 +932,15 @@ func (os *Oauth2ClientSelect) Int(ctx context.Context) (_ int, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{oauth2client.Label}
+		err = &NotFoundError{oauth2token.Label}
 	default:
-		err = fmt.Errorf("ent: Oauth2ClientSelect.Ints returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: Oauth2TokenSelect.Ints returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // IntX is like Int, but panics if an error occurs.
-func (os *Oauth2ClientSelect) IntX(ctx context.Context) int {
+func (os *Oauth2TokenSelect) IntX(ctx context.Context) int {
 	v, err := os.Int(ctx)
 	if err != nil {
 		panic(err)
@@ -949,9 +949,9 @@ func (os *Oauth2ClientSelect) IntX(ctx context.Context) int {
 }
 
 // Float64s returns list of float64s from a selector. It is only allowed when selecting one field.
-func (os *Oauth2ClientSelect) Float64s(ctx context.Context) ([]float64, error) {
+func (os *Oauth2TokenSelect) Float64s(ctx context.Context) ([]float64, error) {
 	if len(os.fields) > 1 {
-		return nil, errors.New("ent: Oauth2ClientSelect.Float64s is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: Oauth2TokenSelect.Float64s is not achievable when selecting more than 1 field")
 	}
 	var v []float64
 	if err := os.Scan(ctx, &v); err != nil {
@@ -961,7 +961,7 @@ func (os *Oauth2ClientSelect) Float64s(ctx context.Context) ([]float64, error) {
 }
 
 // Float64sX is like Float64s, but panics if an error occurs.
-func (os *Oauth2ClientSelect) Float64sX(ctx context.Context) []float64 {
+func (os *Oauth2TokenSelect) Float64sX(ctx context.Context) []float64 {
 	v, err := os.Float64s(ctx)
 	if err != nil {
 		panic(err)
@@ -970,7 +970,7 @@ func (os *Oauth2ClientSelect) Float64sX(ctx context.Context) []float64 {
 }
 
 // Float64 returns a single float64 from a selector. It is only allowed when selecting one field.
-func (os *Oauth2ClientSelect) Float64(ctx context.Context) (_ float64, err error) {
+func (os *Oauth2TokenSelect) Float64(ctx context.Context) (_ float64, err error) {
 	var v []float64
 	if v, err = os.Float64s(ctx); err != nil {
 		return
@@ -979,15 +979,15 @@ func (os *Oauth2ClientSelect) Float64(ctx context.Context) (_ float64, err error
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{oauth2client.Label}
+		err = &NotFoundError{oauth2token.Label}
 	default:
-		err = fmt.Errorf("ent: Oauth2ClientSelect.Float64s returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: Oauth2TokenSelect.Float64s returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // Float64X is like Float64, but panics if an error occurs.
-func (os *Oauth2ClientSelect) Float64X(ctx context.Context) float64 {
+func (os *Oauth2TokenSelect) Float64X(ctx context.Context) float64 {
 	v, err := os.Float64(ctx)
 	if err != nil {
 		panic(err)
@@ -996,9 +996,9 @@ func (os *Oauth2ClientSelect) Float64X(ctx context.Context) float64 {
 }
 
 // Bools returns list of bools from a selector. It is only allowed when selecting one field.
-func (os *Oauth2ClientSelect) Bools(ctx context.Context) ([]bool, error) {
+func (os *Oauth2TokenSelect) Bools(ctx context.Context) ([]bool, error) {
 	if len(os.fields) > 1 {
-		return nil, errors.New("ent: Oauth2ClientSelect.Bools is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: Oauth2TokenSelect.Bools is not achievable when selecting more than 1 field")
 	}
 	var v []bool
 	if err := os.Scan(ctx, &v); err != nil {
@@ -1008,7 +1008,7 @@ func (os *Oauth2ClientSelect) Bools(ctx context.Context) ([]bool, error) {
 }
 
 // BoolsX is like Bools, but panics if an error occurs.
-func (os *Oauth2ClientSelect) BoolsX(ctx context.Context) []bool {
+func (os *Oauth2TokenSelect) BoolsX(ctx context.Context) []bool {
 	v, err := os.Bools(ctx)
 	if err != nil {
 		panic(err)
@@ -1017,7 +1017,7 @@ func (os *Oauth2ClientSelect) BoolsX(ctx context.Context) []bool {
 }
 
 // Bool returns a single bool from a selector. It is only allowed when selecting one field.
-func (os *Oauth2ClientSelect) Bool(ctx context.Context) (_ bool, err error) {
+func (os *Oauth2TokenSelect) Bool(ctx context.Context) (_ bool, err error) {
 	var v []bool
 	if v, err = os.Bools(ctx); err != nil {
 		return
@@ -1026,15 +1026,15 @@ func (os *Oauth2ClientSelect) Bool(ctx context.Context) (_ bool, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{oauth2client.Label}
+		err = &NotFoundError{oauth2token.Label}
 	default:
-		err = fmt.Errorf("ent: Oauth2ClientSelect.Bools returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: Oauth2TokenSelect.Bools returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // BoolX is like Bool, but panics if an error occurs.
-func (os *Oauth2ClientSelect) BoolX(ctx context.Context) bool {
+func (os *Oauth2TokenSelect) BoolX(ctx context.Context) bool {
 	v, err := os.Bool(ctx)
 	if err != nil {
 		panic(err)
@@ -1042,7 +1042,7 @@ func (os *Oauth2ClientSelect) BoolX(ctx context.Context) bool {
 	return v
 }
 
-func (os *Oauth2ClientSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (os *Oauth2TokenSelect) sqlScan(ctx context.Context, v interface{}) error {
 	rows := &sql.Rows{}
 	query, args := os.sql.Query()
 	if err := os.driver.Query(ctx, query, args, rows); err != nil {

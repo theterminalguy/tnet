@@ -100,6 +100,19 @@ func (f Oauth2ClientFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 	return f(ctx, mv)
 }
 
+// The Oauth2TokenFunc type is an adapter to allow the use of ordinary
+// function as Oauth2Token mutator.
+type Oauth2TokenFunc func(context.Context, *ent.Oauth2TokenMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f Oauth2TokenFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.Oauth2TokenMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.Oauth2TokenMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The PartnerFunc type is an adapter to allow the use of ordinary
 // function as Partner mutator.
 type PartnerFunc func(context.Context, *ent.PartnerMutation) (ent.Value, error)

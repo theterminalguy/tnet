@@ -4,9 +4,7 @@ import (
 	"net/http"
 
 	"github.com/10hourlabs/tentn/internal/service"
-	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/labstack/echo/v4"
-	"github.com/ory/fosite"
 )
 
 // Oauth2ClienRepository allows for registration of Oauth2 client using
@@ -24,10 +22,6 @@ func Oauth2ClientRegisterationHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, resp)
 }
 
-type tokenHandler struct {
-	oauth fosite.OAuth2Provider
-}
-
 func Oauth2ClientTokenHandler(c echo.Context) error {
-	manager := manage.NewDefaultManager()
+	//manager := manage.NewDefaultManager()
 }

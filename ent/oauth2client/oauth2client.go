@@ -46,6 +46,8 @@ const (
 	FieldApproved = "approved"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
+	// EdgeOauth2Tokens holds the string denoting the oauth2_tokens edge name in mutations.
+	EdgeOauth2Tokens = "oauth2_tokens"
 	// Table holds the table name of the oauth2client in the database.
 	Table = "oauth2clients"
 	// UserTable is the table that holds the user relation/edge.
@@ -55,6 +57,13 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
+	// Oauth2TokensTable is the table that holds the oauth2_tokens relation/edge.
+	Oauth2TokensTable = "oauth2tokens"
+	// Oauth2TokensInverseTable is the table name for the Oauth2Token entity.
+	// It exists in this package in order to avoid circular dependency with the "oauth2token" package.
+	Oauth2TokensInverseTable = "oauth2tokens"
+	// Oauth2TokensColumn is the table column denoting the oauth2_tokens relation/edge.
+	Oauth2TokensColumn = "oauth2_client_id"
 )
 
 // Columns holds all SQL columns for oauth2client fields.

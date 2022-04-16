@@ -27,6 +27,9 @@ type Mission func(*sql.Selector)
 // Oauth2Client is the predicate function for oauth2client builders.
 type Oauth2Client func(*sql.Selector)
 
+// Oauth2Token is the predicate function for oauth2token builders.
+type Oauth2Token func(*sql.Selector)
+
 // Partner is the predicate function for partner builders.
 type Partner func(*sql.Selector)
 

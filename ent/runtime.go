@@ -12,6 +12,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
+	"github.com/10hourlabs/tentn/ent/oauth2token"
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/schema"
@@ -192,6 +193,27 @@ func init() {
 	oauth2clientDescID := oauth2clientMixinFields0[0].Descriptor()
 	// oauth2client.DefaultID holds the default value on creation for the id field.
 	oauth2client.DefaultID = oauth2clientDescID.Default.(func() uuid.UUID)
+	oauth2tokenMixin := schema.Oauth2Token{}.Mixin()
+	oauth2tokenMixinFields0 := oauth2tokenMixin[0].Fields()
+	_ = oauth2tokenMixinFields0
+	oauth2tokenMixinFields1 := oauth2tokenMixin[1].Fields()
+	_ = oauth2tokenMixinFields1
+	oauth2tokenFields := schema.Oauth2Token{}.Fields()
+	_ = oauth2tokenFields
+	// oauth2tokenDescCreatedAt is the schema descriptor for created_at field.
+	oauth2tokenDescCreatedAt := oauth2tokenMixinFields1[0].Descriptor()
+	// oauth2token.DefaultCreatedAt holds the default value on creation for the created_at field.
+	oauth2token.DefaultCreatedAt = oauth2tokenDescCreatedAt.Default.(func() time.Time)
+	// oauth2tokenDescUpdatedAt is the schema descriptor for updated_at field.
+	oauth2tokenDescUpdatedAt := oauth2tokenMixinFields1[1].Descriptor()
+	// oauth2token.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	oauth2token.DefaultUpdatedAt = oauth2tokenDescUpdatedAt.Default.(func() time.Time)
+	// oauth2token.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	oauth2token.UpdateDefaultUpdatedAt = oauth2tokenDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// oauth2tokenDescID is the schema descriptor for id field.
+	oauth2tokenDescID := oauth2tokenMixinFields0[0].Descriptor()
+	// oauth2token.DefaultID holds the default value on creation for the id field.
+	oauth2token.DefaultID = oauth2tokenDescID.Default.(func() uuid.UUID)
 	partnerMixin := schema.Partner{}.Mixin()
 	partnerMixinFields0 := partnerMixin[0].Fields()
 	_ = partnerMixinFields0
