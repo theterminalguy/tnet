@@ -7,8 +7,8 @@ import (
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
+	"github.com/go-oauth2/oauth2/v4"
 	"github.com/google/uuid"
-	"github.com/ory/fosite"
 )
 
 type Oauth2ClientRepository struct{}
@@ -41,7 +41,25 @@ func (*Oauth2ClientRepository) GetAll() ([]*ent.Oauth2Client, error) {
 	return records, nil
 }
 
-func (*Oauth2ClientRepository) GetByID(id uuid.UUID) (*ent.Oauth2Client, error) {
+func (*Oauth2ClientRepository) GetByID(ctx context.Context, id string) (oauth2.ClientInfo, error) {
+	if ctx == nil {
+		ctx = dBContext
+	}
+	record, err := dBConn.Oauth2Client.Query().
+		Where(oauth2client.IDEQ(uuid.MustParse(id))).
+		Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	if record.DeletedAt != nil {
+		return nil, ErrRecordDeleted
+	}
+	return &Oauth2ClientInfo{
+		Oauth2Client: record,
+	}, nil
+}
+
+func (*Oauth2ClientRepository) GetByUUID(id uuid.UUID) (*ent.Oauth2Client, error) {
 	record, err := dBConn.Oauth2Client.Query().
 		Where(oauth2client.IDEQ(id)).
 		Only(dBContext)
@@ -119,7 +137,7 @@ func (r *Oauth2ClientRepository) Update(id uuid.UUID, p Oauth2ClientParams) (*en
 	if err != nil {
 		return nil, err
 	}
-	record, err := r.GetByID(id)
+	record, err := r.GetByUUID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +151,7 @@ func (r *Oauth2ClientRepository) Update(id uuid.UUID, p Oauth2ClientParams) (*en
 }
 
 func (r *Oauth2ClientRepository) DeleteByUUID(id uuid.UUID) error {
-	record, err := r.GetByID(id)
+	record, err := r.GetByUUID(id)
 	if err != nil {
 		return err
 	}
@@ -165,34 +183,4 @@ func (*Oauth2ClientRepository) GetResponseTypes(record *ent.Oauth2Client) []stri
 		"code",
 		"token",
 	}
-}
-
-// implement the Oauth fosite Client Manager interface
-
-func (cr *Oauth2ClientRepository) GetClient(ctx context.Context, id string) (fosite.Client, error) {
-	c, err := cr.GetByID(uuid.MustParse(id))
-	if err != nil {
-		return nil, err
-	}
-	return Oauth2FositeClient{
-		GrantTypes:    cr.GrantTypes(c),
-		ResponseTypes: cr.GetResponseTypes(c),
-		Oauth2Client:  c,
-	}, nil
-}
-
-func (cr *Oauth2ClientRepository) ClientAssertionJWTValid(ctx context.Context, jti string) error {
-	return nil
-}
-
-func (cr *Oauth2ClientRepository) SetClientAssertionJWT(ctx context.Context, jti string, exp time.Time) error {
-	return nil
-}
-
-func (cr *Oauth2ClientRepository) CreateAccessTokenSession(_ context.Context, signature string, req fosite.Requester) error {
-	return nil
-}
-
-func (cr *Oauth2ClientRepository) DeleteAccessTokenSession(_ context.Context, signature string) error {
-	return nil
 }

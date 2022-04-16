@@ -185,7 +185,7 @@ func (r *Oauth2TokenRepository) GetByAccess(ctx context.Context, access string) 
 	}, nil
 }
 
-func (r *Oauth2ClientRepository) GetByRefresh(ctx context.Context, refresh string) (oauth2.TokenInfo, error) {
+func (r *Oauth2TokenRepository) GetByRefresh(ctx context.Context, refresh string) (oauth2.TokenInfo, error) {
 	if ctx == nil {
 		ctx = dBContext
 	}

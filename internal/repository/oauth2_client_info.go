@@ -1,0 +1,27 @@
+package repository
+
+import (
+	"strings"
+
+	"github.com/10hourlabs/tentn/ent"
+)
+
+type Oauth2ClientInfo struct {
+	*ent.Oauth2Client
+}
+
+func (c *Oauth2ClientInfo) GetID() string {
+	return c.ID.String()
+}
+
+func (c *Oauth2ClientInfo) GetSecret() string {
+	return c.HashedSecret
+}
+
+func (c *Oauth2ClientInfo) GetDomain() string {
+	return strings.Join(c.RedirectUris, ",")
+}
+
+func (c *Oauth2ClientInfo) GetUserID() string {
+	return c.UserID.String()
+}
