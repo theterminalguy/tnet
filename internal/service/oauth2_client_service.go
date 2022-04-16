@@ -81,6 +81,8 @@ func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oa
 	// Genereate client secret
 	bcrypt := &fosite.BCrypt{}
 	secret, err := hmac.RandomBytes(32) // 256 bits
+	// convert to hex string
+	secretHex := fmt.Sprintf("%x", secret)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +101,7 @@ func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oa
 	}
 	return &Oauth2ClientRegistrationResponse{
 		ClientID:     app.ID.String(),
-		ClientSecret: string(secret),
+		ClientSecret: secretHex,
 		Scopes:       app.Scopes,
 		GrantTypes:   oauth2Repo.GrantTypes(app),
 	}, nil

@@ -560,7 +560,7 @@ var (
 		{Name: "first_name", Type: field.TypeString},
 		{Name: "last_name", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString},
-		{Name: "role", Type: field.TypeEnum, Enums: []string{"talent", "recruiter"}},
+		{Name: "role", Type: field.TypeEnum, Enums: []string{"talent", "recruiter", "developer"}},
 		{Name: "approved", Type: field.TypeBool, Default: false},
 		{Name: "photo_url", Type: field.TypeString},
 	}
