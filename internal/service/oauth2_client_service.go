@@ -23,6 +23,8 @@ type Oauth2ClientRegistraionParams struct {
 	AppInfo repo.Oauth2ClientParams `json:"app_info" validate:"required"`
 }
 
+// Oauth2ClientRegistrationResponse is the response to the Oauth2ClientRegistrationRequest
+// https://www.oauth.com/oauth2-servers/client-registration/client-id-secret/
 type Oauth2ClientRegistrationResponse struct {
 	ClientID     string   `json:"client_id"`
 	ClientSecret string   `json:"client_secret"`
@@ -38,14 +40,12 @@ func NewOauth2ClientService() *Oauth2ClientService {
 
 func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oauth2ClientRegistrationResponse, error) {
 	userRepo := repo.NewUserRepository()
-
 	// Check if the email is already in use
 	user, err := userRepo.GetByEmail(p.Contact.Email)
 	if user != nil {
 		return nil, ErrEmailAlreadyInUse
 	}
 	tenlog.Error("userRepo.GetByEmail", err)
-
 	// validate redirect_uris
 	var errors []error
 	uris := p.AppInfo.RedirectURIs
@@ -63,7 +63,6 @@ func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oa
 		tenlog.Error("invalid redirect_uris", errors)
 		return nil, fmt.Errorf("%v", errors)
 	}
-
 	// validate provided scopes
 	for _, scope := range p.AppInfo.Scopes {
 		if _, ok := repo.OauthScopes[scope]; !ok {
@@ -74,22 +73,15 @@ func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oa
 		tenlog.Error("invalid scopes", errors)
 		return nil, fmt.Errorf("%v", errors)
 	}
-
 	p.Contact.Role = userrole.Developer
 	p.Contact.PhotoURL = photo.GenerateDefaultPhoto(p.Contact.FirstName, p.Contact.LastName)
-	// TODO: start a transaction
-	dev, err := userRepo.Create(p.Contact)
-	if err != nil {
-		return nil, err
-	}
-	p.AppInfo.UserID = dev.ID
+	// Genereate client secret
 	bcrypt := &fosite.BCrypt{}
-	// TODO: generate better secure random client secret
-
 	secret, err := hmac.RandomBytes(32) // 256 bits
 	if err != nil {
 		return nil, err
 	}
+	// Hash the secret
 	ctx, cancel := context.WithTimeout(context.Background(), 2000*time.Millisecond)
 	defer cancel()
 	hashByte, err := bcrypt.Hash(ctx, secret)
@@ -98,7 +90,7 @@ func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oa
 	}
 	p.AppInfo.HashedSecret = string(hashByte)
 	oauth2Repo := repo.NewOauth2ClientRepository()
-	app, err := oauth2Repo.Create(p.AppInfo)
+	app, err := oauth2Repo.Register(p.AppInfo, p.Contact)
 	if err != nil {
 		return nil, err
 	}

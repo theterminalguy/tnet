@@ -121,3 +121,10 @@ func LinearCheckElemArray(a, b []string) bool {
 	}
 	return m >= n
 }
+
+func rollback(tx *ent.Tx, err error) error {
+	if rerr := tx.Rollback(); rerr != nil {
+		err = fmt.Errorf("%w: %v", err, rerr)
+	}
+	return err
+}

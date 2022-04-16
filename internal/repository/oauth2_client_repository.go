@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
@@ -74,6 +75,41 @@ func (*Oauth2ClientRepository) Create(p Oauth2ClientParams) (*ent.Oauth2Client, 
 		return nil, err
 	}
 	return record, err
+}
+
+func (*Oauth2ClientRepository) Register(c Oauth2ClientParams, u UserParams) (*ent.Oauth2Client, error) {
+	tx, err := dBConn.Tx(dBContext)
+	if err != nil {
+		return nil, fmt.Errorf("starting a transaction: %w", err)
+	}
+	dev, err := tx.User.Create().
+		SetFirstName(u.FirstName).
+		SetLastName(u.LastName).
+		SetPhotoURL(u.PhotoURL).
+		SetEmail(u.Email).
+		SetRole(u.Role).
+		Save(dBContext)
+	if err != nil {
+		return nil, rollback(tx, fmt.Errorf("failed creating the user: %w", err))
+	}
+	o2, err := tx.Oauth2Client.
+		Create().
+		SetID(uuid.New()).
+		SetUserID(dev.ID).
+		SetHashedSecret(c.HashedSecret).
+		SetAppName(c.AppName).
+		SetAppDescription(c.AppDescription).
+		SetAppLogoURI(c.AppLogoURI).
+		SetAppHomepageURI(c.AppHomepageURI).
+		SetAppPrivacyPolicyURI(c.AppPrivacyPolicyURI).
+		SetClientType(oauth2client.ClientType(c.ClientType)).
+		SetScopes(c.Scopes).
+		SetRedirectUris(c.RedirectURIs).
+		Save(dBContext)
+	if err != nil {
+		return nil, rollback(tx, fmt.Errorf("failed creating the oauth2 client: %w", err))
+	}
+	return o2, tx.Commit()
 }
 
 func (r *Oauth2ClientRepository) Update(id uuid.UUID, p Oauth2ClientParams) (*ent.Oauth2Client, error) {
