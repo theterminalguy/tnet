@@ -9,7 +9,10 @@ import (
 
 func DefineRoutes() *echo.Echo {
 	e := echo.New()
-	e.Use(middleware.Logger()) // TODO: use a custom logger
+	// TODO: use a custom logger
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "method=${method}, uri=${uri}, status=${status} ${latency_human}\n",
+	}))
 	e.Use(middleware.Recover())
 	e.GET("/", handler.IndexHandler)
 	e.GET("/health", handler.HealthHandler)
