@@ -1,19 +1,20 @@
 package service
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"net/url"
-	"time"
 
 	"github.com/10hourlabs/tenlog"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/util"
 	"github.com/10hourlabs/tentn/util/photo"
-	"github.com/ory/fosite"
-	"github.com/ory/fosite/token/hmac"
+	"golang.org/x/crypto/bcrypt"
 )
+
+// defaultBcryptWorkFactor is the default bcrypt work factor.
+const defaultBCryptWorkFactor = 12
 
 var ErrEmailAlreadyInUse = errors.New("the provided email is already in use")
 var ErrInvalidRedirectURI = errors.New("invalid redirect_uri")
@@ -58,7 +59,7 @@ func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oa
 			errors = append(errors, err)
 			continue
 		}
-		if !fosite.IsRedirectURISecureStrict(rURI) {
+		if !(util.IsValidRedirectURI(rURI) && util.IsRedirectURISecureStrict(rURI)) {
 			errors = append(errors, ErrInvalidRedirectURI)
 		}
 	}
@@ -79,26 +80,23 @@ func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oa
 	p.Contact.Role = userrole.Developer
 	p.Contact.PhotoURL = photo.GenerateDefaultPhoto(p.Contact.FirstName, p.Contact.LastName)
 	// Genereate client secret
-	bcrypt := &fosite.BCrypt{}
-	secret, err := hmac.RandomBytes(32) // 256 bits
-	// convert to hex string
-	secretHex := fmt.Sprintf("%x", secret)
+	secret, err := util.RandomBytes(32) // 256 bits
 	if err != nil {
 		return nil, err
 	}
 	// Hash the secret
-	ctx, cancel := context.WithTimeout(context.Background(), 2000*time.Millisecond)
-	defer cancel()
-	hashByte, err := bcrypt.Hash(ctx, secret)
+	hashedSecret, err := bcrypt.GenerateFromPassword(secret, defaultBCryptWorkFactor)
 	if err != nil {
 		return nil, err
 	}
-	p.AppInfo.HashedSecret = string(hashByte)
+	p.AppInfo.HashedSecret = string(hashedSecret)
 	oauth2Repo := repo.NewOauth2ClientRepository()
 	app, err := oauth2Repo.Register(p.AppInfo, p.Contact)
 	if err != nil {
 		return nil, err
 	}
+	// convert hex to string
+	secretHex := fmt.Sprintf("%x", secret)
 	return &Oauth2ClientRegistrationResponse{
 		ClientID:     app.ID.String(),
 		ClientSecret: secretHex,

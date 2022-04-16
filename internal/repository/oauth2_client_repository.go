@@ -188,3 +188,11 @@ func (cr *Oauth2ClientRepository) ClientAssertionJWTValid(ctx context.Context, j
 func (cr *Oauth2ClientRepository) SetClientAssertionJWT(ctx context.Context, jti string, exp time.Time) error {
 	return nil
 }
+
+func (cr *Oauth2ClientRepository) CreateAccessTokenSession(_ context.Context, signature string, req fosite.Requester) error {
+	return nil
+}
+
+func (cr *Oauth2ClientRepository) DeleteAccessTokenSession(_ context.Context, signature string) error {
+	return nil
+}

@@ -9,6 +9,7 @@ require (
 	github.com/10hourlabs/rql v0.0.1
 	github.com/10hourlabs/tenlog v0.0.0-20220120192329-cae27c6b7caa
 	github.com/brianvoe/gofakeit/v6 v6.15.0
+	github.com/go-oauth2/oauth2/v4 v4.4.3
 	github.com/go-playground/validator/v10 v10.10.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
@@ -21,6 +22,7 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/ory/fosite v0.42.1
 	github.com/stretchr/testify v1.7.1
+	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
 	golang.org/x/oauth2 v0.0.0-20220309155454-6242fa91716a
 	google.golang.org/api v0.62.0
 )
@@ -78,7 +80,6 @@ require (
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3 // indirect
 	golang.org/x/mod v0.5.1 // indirect
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
 	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
