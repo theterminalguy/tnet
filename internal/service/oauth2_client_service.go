@@ -1,23 +1,19 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/url"
+	"time"
 
 	"github.com/10hourlabs/tenlog"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/util/photo"
 	"github.com/ory/fosite"
+	"github.com/ory/fosite/token/hmac"
 )
-
-// TODO: validate scopes
-// TODO: validate client_type
-// TODO: generate hashed_secret
-// TODO: set grant_types
-// If the client is a confidential client, set the grant_types to "authorization_code", "refresh_token", and "client_credentials".
-// If the client is a public client, set the grant_types to "implicit"
 
 var ErrEmailAlreadyInUse = errors.New("the provided email is already in use")
 var ErrInvalidRedirectURI = errors.New("invalid redirect_uri")
@@ -27,19 +23,26 @@ type Oauth2ClientRegistraionParams struct {
 	AppInfo repo.Oauth2ClientParams `json:"app_info" validate:"required"`
 }
 
+type Oauth2ClientRegistrationResponse struct {
+	ClientID     string   `json:"client_id"`
+	ClientSecret string   `json:"client_secret"`
+	Scopes       []string `json:"scopes"`
+	GrantTypes   []string `json:"grant_types"`
+}
+
 type Oauth2ClientService struct{}
 
 func NewOauth2ClientService() *Oauth2ClientService {
 	return &Oauth2ClientService{}
 }
 
-func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) error {
+func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oauth2ClientRegistrationResponse, error) {
 	userRepo := repo.NewUserRepository()
 
 	// Check if the email is already in use
 	user, err := userRepo.GetByEmail(p.Contact.Email)
 	if user != nil {
-		return ErrEmailAlreadyInUse
+		return nil, ErrEmailAlreadyInUse
 	}
 	tenlog.Error("userRepo.GetByEmail", err)
 
@@ -58,22 +61,51 @@ func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) erro
 	}
 	if len(errors) > 0 {
 		tenlog.Error("invalid redirect_uris", errors)
-		return fmt.Errorf("%v", errors)
+		return nil, fmt.Errorf("%v", errors)
 	}
 
-	// validate scopes
+	// validate provided scopes
+	for _, scope := range p.AppInfo.Scopes {
+		if _, ok := repo.OauthScopes[scope]; !ok {
+			errors = append(errors, fmt.Errorf("invalid scope: %s", scope))
+		}
+	}
+	if len(errors) > 0 {
+		tenlog.Error("invalid scopes", errors)
+		return nil, fmt.Errorf("%v", errors)
+	}
+
 	p.Contact.Role = userrole.Developer
 	p.Contact.PhotoURL = photo.GenerateDefaultPhoto(p.Contact.FirstName, p.Contact.LastName)
+	// TODO: start a transaction
+	dev, err := userRepo.Create(p.Contact)
+	if err != nil {
+		return nil, err
+	}
+	p.AppInfo.UserID = dev.ID
+	bcrypt := &fosite.BCrypt{}
+	// TODO: generate better secure random client secret
 
-	/*err := ValidateParams(p)
+	secret, err := hmac.RandomBytes(32) // 256 bits
 	if err != nil {
 		return nil, err
 	}
-	h := repo.NewOauth2ClientRepository()
-	record, err := h.Create(p.AppInfo)
+	ctx, cancel := context.WithTimeout(context.Background(), 2000*time.Millisecond)
+	defer cancel()
+	hashByte, err := bcrypt.Hash(ctx, secret)
 	if err != nil {
 		return nil, err
 	}
-	return record, nil*/
-	return nil
+	p.AppInfo.HashedSecret = string(hashByte)
+	oauth2Repo := repo.NewOauth2ClientRepository()
+	app, err := oauth2Repo.Create(p.AppInfo)
+	if err != nil {
+		return nil, err
+	}
+	return &Oauth2ClientRegistrationResponse{
+		ClientID:     app.ID.String(),
+		ClientSecret: string(secret),
+		Scopes:       app.Scopes,
+		GrantTypes:   oauth2Repo.GrantTypes(app),
+	}, nil
 }

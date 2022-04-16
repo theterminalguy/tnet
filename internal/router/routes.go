@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/10hourlabs/tentn/internal/handler"
+	"github.com/10hourlabs/tentn/internal/handler/authserver"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -20,7 +21,7 @@ func DefineRoutes() *echo.Echo {
 	e.GET("/recruiter/auth", handler.RecruiterLoginHanlder)
 	e.GET("/oauth2/slack/callback", handler.SlackOauth2CallbackHandler)
 
-	e.POST("/oauth2/client/register", handler.ClientRegisterationHandler)
+	e.POST("/oauth2/client/register", authserver.Oauth2ClientRegisterationHandler)
 
 	// recruiter logout
 	e.GET("/recruiter/auth/logout", handler.LogoutHandler)

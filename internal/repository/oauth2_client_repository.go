@@ -107,3 +107,14 @@ func (r *Oauth2ClientRepository) DeleteByUUID(id uuid.UUID) error {
 	}
 	return nil
 }
+
+func (*Oauth2ClientRepository) GrantTypes(record *ent.Oauth2Client) []string {
+	if record.ClientType == oauth2client.ClientTypePublic {
+		return []string{"implicit"}
+	}
+	return []string{
+		"authorization_code",
+		"refresh_token",
+		"client_credentials",
+	}
+}
