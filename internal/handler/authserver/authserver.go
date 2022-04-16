@@ -21,3 +21,7 @@ func Oauth2ClientRegisterationHandler(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, resp)
 }
+
+func Oauth2ClientTokenHandler(c echo.Context) error {
+	return nil
+}

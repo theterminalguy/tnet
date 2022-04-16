@@ -22,6 +22,7 @@ func DefineRoutes() *echo.Echo {
 	e.GET("/oauth2/slack/callback", handler.SlackOauth2CallbackHandler)
 
 	e.POST("/oauth2/client/register", authserver.Oauth2ClientRegisterationHandler)
+	e.POST("/oauth2/client/token", authserver.Oauth2ClientTokenHandler)
 
 	// recruiter logout
 	e.GET("/recruiter/auth/logout", handler.LogoutHandler)
