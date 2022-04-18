@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/internal/handler"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/service"
@@ -33,10 +34,7 @@ func (h *V1TalentProfileHandler) ReadAll(c echo.Context) error {
 }
 
 func (h *V1TalentProfileHandler) ReadByID(c echo.Context) error {
-	user, err := handler.GetCurrentUser(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
+	user := c.Get(oneword.CurrentUser).(*ent.User)
 	talent, err := h.TalentRepository.GetTalentByUserID(user.ID)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())

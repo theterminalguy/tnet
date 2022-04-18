@@ -20,8 +20,13 @@ const (
 // See https://stackoverflow.com/questions/43867440/whats-the-meaning-of-the-kid-claim-in-a-jwt-token
 const DefaultSigningKeyID = ""
 
-var DefaultSigningKey = os.Getenv("JWT_SIGNED_SECRET")
-var DefaultSigningMethod = jwt.SigningMethodHS256
+func GetDefualtSigningKey() []byte {
+	return []byte(os.Getenv("JWT_SIGNING_KEY"))
+}
+
+func GetDefaultSigningMethod() jwt.SigningMethod {
+	return jwt.SigningMethodHS256
+}
 
 type JWTClaims struct {
 	Role      string `json:"role"`
@@ -52,8 +57,8 @@ func NewJWTClaims(u *ent.User, m *JWTMeta) *JWTClaims {
 }
 
 func (c *JWTClaims) GenerateToken() (string, error) {
-	jwttok := jwt.NewWithClaims(DefaultSigningMethod, c)
-	token, err := jwttok.SignedString([]byte(DefaultSigningKey))
+	jwttok := jwt.NewWithClaims(GetDefaultSigningMethod(), c)
+	token, err := jwttok.SignedString(GetDefualtSigningKey())
 	if err != nil {
 		return "", fmt.Errorf("failed to sign token: %v", err)
 	}

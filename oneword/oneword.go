@@ -62,4 +62,6 @@ const (
 	Jobs string = "jobs"
 
 	Favorite = "favorite"
+
+	CurrentUser = "currentUser"
 )

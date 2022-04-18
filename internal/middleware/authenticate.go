@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/10hourlabs/tenlog"
@@ -22,8 +21,8 @@ func AuthenticateUser() echo.MiddlewareFunc {
 				return echo.ErrUnauthorized
 			}
 			claims := token.Claims.(jwt.MapClaims)
-			userID := fmt.Sprintf("%v", claims["sub"])
-			userRole := claims["role"]
+			userID := claims["sub"].(string)
+			userRole := claims["role"].(string)
 			isApproved := claims["approved"].(bool)
 			currentPath := c.Request().URL.Path
 			switch userRole {
@@ -36,7 +35,7 @@ func AuthenticateUser() echo.MiddlewareFunc {
 			default:
 				return echo.ErrUnauthorized
 			}
-			err := setCurrentUserContext(userID, c)
+			err := setCurrentUserContext(c, userID, userRole)
 			if err != nil {
 				tenlog.Error("Failed to set current user context", err)
 				return echo.ErrUnauthorized
@@ -46,7 +45,15 @@ func AuthenticateUser() echo.MiddlewareFunc {
 	}
 }
 
-func setCurrentUserContext(userID string, ctx echo.Context) error {
+func setCurrentUserContext(ctx echo.Context, userID, userRole string) error {
+	// TODO:
+	// First try to get the user from cache
+	// If the user is not in cache,
+	// then get the user from database
+	// and store the user in cache
+	//
+	// Suggested interim cache library:
+	// https://github.com/allegro/bigcache
 	user, err := userRepo.GetByID(uuid.MustParse(userID))
 	if err != nil {
 		return err

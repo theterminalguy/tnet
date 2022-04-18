@@ -47,7 +47,7 @@ func ExtractJWTTokenFromWebSession() echo.MiddlewareFunc {
 // 3. The token contains the correct claims
 func ValidateJWT() echo.MiddlewareFunc {
 	return middleware.JWTWithConfig(middleware.JWTConfig{
-		SigningKey: tokgen.DefaultSigningKey,
-		Claims:     &tokgen.JWTClaims{},
+		SigningKey:    tokgen.GetDefualtSigningKey(),
+		SigningMethod: tokgen.GetDefaultSigningMethod().Alg(),
 	})
 }

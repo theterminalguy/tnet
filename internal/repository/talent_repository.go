@@ -2,7 +2,6 @@ package repository
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"time"
 
@@ -412,8 +411,6 @@ func (r *TalentRepository) GetTalentByUserID(userID uuid.UUID) (*decorator.Talen
 	// TODO: It would be nice to not load all this association
 	// except ONLY when asked
 	// this will reduce the number of queries and joins
-	fmt.Println("I made it here")
-	fmt.Println("userID: ", userID)
 	record, err := dBConn.Talent.Query().
 		WithUser().
 		WithPortfoliolinks().

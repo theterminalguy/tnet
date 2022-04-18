@@ -42,8 +42,8 @@ func Oauth2ClientTokenHandler(c echo.Context) error {
 	manager.MapClientStorage(repo.NewOauth2ClientRepository())
 	manager.MapAccessGenerate(generates.NewJWTAccessGenerate(
 		tokgen.DefaultSigningKeyID,
-		[]byte(tokgen.DefaultSigningKey),
-		tokgen.DefaultSigningMethod,
+		tokgen.GetDefualtSigningKey(),
+		tokgen.GetDefaultSigningMethod(),
 	))
 	srv := server.NewDefaultServer(manager)
 
