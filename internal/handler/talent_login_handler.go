@@ -98,18 +98,18 @@ func GoogleOauth2CallbackHandler(c echo.Context) error {
 		return err
 	}
 	store := entsm.GetSessionStore()
-	session, _ := store.Get(c.Request(), "tentn-session")
+	session, _ := store.Get(c.Request(), entsm.DefaultSessionName)
 	session.Values["authenticated"] = true
 	session.Values["token"] = token
 	session.Options.Domain = os.Getenv("APP_HOST")
 	session.Save(c.Request(), c.Response())
-	return c.Redirect(http.StatusTemporaryRedirect, "https://labs5.docs.apiary.io/")
+	return c.Redirect(http.StatusTemporaryRedirect, os.Getenv("APP_HOST"))
 }
 
 func TalentLoginHanlder(c echo.Context) error {
 	store := entsm.GetSessionStore()
-	session, _ := store.Get(c.Request(), "tentn-session")
-	if auth, ok := session.Values["authenticated"].(bool); ok || auth {
+	session, _ := store.Get(c.Request(), entsm.DefaultSessionName)
+	if _, ok := session.Values["authenticated"].(bool); ok {
 		return c.Redirect(http.StatusTemporaryRedirect, os.Getenv("APP_HOST"))
 	}
 	googleOauth2StateToken = randutil.GenerateOauthStateToken()

@@ -9,7 +9,7 @@ import (
 
 func IndexHandler(c echo.Context) error {
 	store := entsm.GetSessionStore()
-	session, _ := store.Get(c.Request(), "tentn-session")
+	session, _ := store.Get(c.Request(), entsm.DefaultSessionName)
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
 		return c.Render(http.StatusOK, "index.html", nil)
 	}

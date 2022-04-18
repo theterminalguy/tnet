@@ -6,8 +6,10 @@ import (
 	"github.com/10hourlabs/tenlog"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/service"
+	"github.com/10hourlabs/tentn/internal/tokgen"
 	"github.com/go-oauth2/oauth2/v4"
 	oauth2_error "github.com/go-oauth2/oauth2/v4/errors"
+	"github.com/go-oauth2/oauth2/v4/generates"
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/google/uuid"
@@ -38,6 +40,11 @@ func Oauth2ClientTokenHandler(c echo.Context) error {
 	manager.MustTokenStorage(repo.NewOauth2TokenRepository(), nil)
 	// configure client storage
 	manager.MapClientStorage(repo.NewOauth2ClientRepository())
+	manager.MapAccessGenerate(generates.NewJWTAccessGenerate(
+		tokgen.DefaultSigningKeyID,
+		[]byte(tokgen.DefaultSigningKey),
+		tokgen.DefaultSigningMethod,
+	))
 	srv := server.NewDefaultServer(manager)
 
 	srv.SetInternalErrorHandler(func(err error) (re *oauth2_error.Response) {

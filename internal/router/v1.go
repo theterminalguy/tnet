@@ -101,6 +101,7 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 		middlewares: []echo.MiddlewareFunc{
 			middleware.JWTAuthenticate(),
 			middleware.EnforceApprovedRecruiter(),
+			// middleware.Oauth2Authenticate(),
 		},
 		handlers: []RouteHandler{
 			{

@@ -20,6 +20,8 @@ var (
 	store = NewEntSystemStore(key)
 )
 
+const DefaultSessionName = "__tentn_user_session"
+
 func GetSessionStore() *EntSystemStore {
 	return store
 }
