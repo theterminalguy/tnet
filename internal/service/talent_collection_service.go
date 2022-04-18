@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/10hourlabs/tentn/ent"
@@ -11,11 +10,10 @@ import (
 
 const MaxNumOfFavoriteTalents = 20
 
-var ErrFavoriteCollectionExceedsMaxNumOfTalents = errors.New(
-	fmt.Sprintf(
-		"favorite collection can have at most %d talents",
-		MaxNumOfFavoriteTalents,
-	))
+var ErrFavoriteCollectionExceedsMaxNumOfTalents = fmt.Errorf(
+	"favorite collection can have at most %d talents",
+	MaxNumOfFavoriteTalents,
+)
 
 type TalentCollectionService struct {
 	TalentCollectionRepo *repo.TalentCollectionRepository

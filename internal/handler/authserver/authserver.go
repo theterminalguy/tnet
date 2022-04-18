@@ -10,6 +10,7 @@ import (
 	oauth2_error "github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -56,13 +57,15 @@ func Oauth2ClientTokenHandler(c echo.Context) error {
 
 	// Set the allowed response types
 	// Only allow the token response type
-	srv.SetAllowedResponseType([]oauth2.ResponseType{oauth2.Token}...)
+	srv.SetAllowedResponseType(oauth2.Token)
 
 	// Set the allowed grant types
 	// https://oauth.net/2/grant-types
 	//
 	// We only the client credentials grant type
-	srv.SetAllowedGrantType([]oauth2.GrantType{oauth2.ClientCredentials}...)
+	srv.SetAllowedGrantType(oauth2.ClientCredentials)
+
+	srv.SetClientScopeHandler(authorizeClientScope)
 
 	srv.SetClientAuthorizedHandler(authorizeClientRequest)
 	return srv.HandleTokenRequest(c.Response(), c.Request())
@@ -76,4 +79,14 @@ func authorizeClientRequest(clientID string, grant oauth2.GrantType) (allowed bo
 		err = nil
 	}
 	return
+}
+
+func authorizeClientScope(tgr *oauth2.TokenGenerateRequest) (bool, error) {
+	client, err := repo.NewOauth2ClientRepository().GetByUUID(uuid.MustParse(tgr.ClientID))
+	if err != nil {
+		return false, err
+	}
+	tgr.UserID = client.UserID.String()
+	// TODO: validate the scope
+	return true, nil
 }

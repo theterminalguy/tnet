@@ -1,8 +1,6 @@
 package util
 
 import (
-	cryptorand "crypto/rand"
-	"io"
 	"math/rand"
 	"strings"
 )
@@ -63,13 +61,4 @@ func StringParamsToMap(params string) map[string]string {
 
 func Titlelize(s string) string {
 	return strings.Title(strings.ToLower(s))
-}
-
-// randomBytes returns securely generated random bytes.
-func RandomBytes(n int) ([]byte, error) {
-	bytes := make([]byte, n)
-	if _, err := io.ReadFull(cryptorand.Reader, bytes); err != nil {
-		return []byte{}, err
-	}
-	return bytes, nil
 }

@@ -13,9 +13,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// defaultBcryptWorkFactor is the default bcrypt work factor.
-const defaultBCryptWorkFactor = 12
-
 var ErrEmailAlreadyInUse = errors.New("the provided email is already in use")
 var ErrInvalidRedirectURI = errors.New("invalid redirect_uri")
 
@@ -82,12 +79,12 @@ func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oa
 	p.Contact.Role = userrole.Developer
 	p.Contact.PhotoURL = photo.GenerateDefaultPhoto(p.Contact.FirstName, p.Contact.LastName)
 	// Genereate client secret
-	secret, err := util.RandomBytes(32) // 256 bits
+	secret, err := util.SecureRandomHex(32) // 256 bits
 	if err != nil {
 		return nil, err
 	}
 	// Hash the secret
-	hashedSecret, err := bcrypt.GenerateFromPassword(secret, defaultBCryptWorkFactor)
+	hashedSecret, err := bcrypt.GenerateFromPassword([]byte(secret), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
@@ -97,11 +94,9 @@ func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oa
 	if err != nil {
 		return nil, err
 	}
-	// convert hex to string
-	secretHex := fmt.Sprintf("%x", secret)
 	return &Oauth2ClientRegistrationResponse{
 		ClientID:     app.ID.String(),
-		ClientSecret: secretHex,
+		ClientSecret: secret,
 		Scopes:       app.Scopes,
 		GrantTypes:   oauth2Repo.GrantTypes(app),
 	}, nil

@@ -3,6 +3,7 @@ package repository
 import (
 	"time"
 
+	"github.com/10hourlabs/tenlog"
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/go-oauth2/oauth2/v4"
 	"github.com/google/uuid"
@@ -25,6 +26,7 @@ func (o Oauth2TokenInfo) SetClientID(clientID string) {
 }
 
 func (o Oauth2TokenInfo) GetUserID() string {
+	tenlog.Debug("Getting user id", o.Oauth2Token.UserID)
 	return o.Oauth2Token.UserID.String()
 }
 
