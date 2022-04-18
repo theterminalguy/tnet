@@ -17,13 +17,13 @@ func AuthenticateUser() echo.MiddlewareFunc {
 			}
 			claims := token.Claims.(jwt.MapClaims)
 			currentUserRole := claims["role"]
-			isAccountApproved := claims["approved"].(bool)
+			accountStatus := claims["approved"].(bool)
 			currentPath := c.Request().URL.Path
 			switch currentUserRole {
 			case string(userrole.Recruiter):
-				authenticateRecruiter(isAccountApproved, currentPath)
+				authenticateRecruiter(currentPath, accountStatus)
 			case string(userrole.Talent):
-				authenticateTalent(isAccountApproved, currentPath)
+				authenticateTalent(currentPath, accountStatus)
 			case string(userrole.Developer):
 				return next(c)
 			default:
@@ -34,7 +34,7 @@ func AuthenticateUser() echo.MiddlewareFunc {
 	}
 }
 
-func authenticateRecruiter(isApproved bool, currentPath string) error {
+func authenticateRecruiter(currentPath string, isApproved bool) error {
 	// check if the path is in the list of paths that are allowed for recruiters
 	if !isPathAllowedForRecruiter(currentPath) {
 		return echo.ErrUnauthorized
@@ -43,10 +43,15 @@ func authenticateRecruiter(isApproved bool, currentPath string) error {
 	if !isApproved {
 		return echo.ErrUnauthorized
 	}
+	// TODO: prevent deleted accounts
+	// This isn't done now as we are yet to figure out the best way to approach this
+	// The obvious straightforward way is to check if the user is deleted, but that
+	// would require a database query. We may have to cache the user data to allow for
+	// faster access.
 	return nil
 }
 
-func authenticateTalent(isApproved bool, currentPath string) error {
+func authenticateTalent(currentPath string, isApproved bool) error {
 	// check if the path is in the list of paths that are allowed for talents
 	if !isPathAllowedForTalent(currentPath) {
 		return echo.ErrUnauthorized
@@ -55,6 +60,11 @@ func authenticateTalent(isApproved bool, currentPath string) error {
 	if !isApproved {
 		return echo.ErrUnauthorized
 	}
+	// TODO: prevent deleted accounts
+	// This isn't done now as we are yet to figure out the best way to approach this
+	// The obvious straightforward way is to check if the user is deleted, but that
+	// would require a database query. We may have to cache the user data to allow for
+	// faster access.
 	return nil
 }
 
