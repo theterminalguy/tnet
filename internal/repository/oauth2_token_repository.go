@@ -155,7 +155,7 @@ func (r *Oauth2TokenRepository) GetByCode(ctx context.Context, code string) (oau
 	}
 	record, err := dBConn.Oauth2Token.Query().
 		Where(oauth2token.CodeEQ(code)).
-		Only(dBContext)
+		Only(ctx)
 	if err != nil {
 		return Oauth2TokenInfo{}, err
 	}
@@ -173,7 +173,7 @@ func (r *Oauth2TokenRepository) GetByAccess(ctx context.Context, access string) 
 	}
 	record, err := dBConn.Oauth2Token.Query().
 		Where(oauth2token.AccessTokenEQ(access)).
-		Only(dBContext)
+		Only(ctx)
 	if err != nil {
 		return Oauth2TokenInfo{}, err
 	}
@@ -191,7 +191,7 @@ func (r *Oauth2TokenRepository) GetByRefresh(ctx context.Context, refresh string
 	}
 	record, err := dBConn.Oauth2Token.Query().
 		Where(oauth2token.RefreshTokenEQ(refresh)).
-		Only(dBContext)
+		Only(ctx)
 	if err != nil {
 		return Oauth2TokenInfo{}, err
 	}

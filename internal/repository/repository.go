@@ -29,7 +29,7 @@ func init() {
 	// TODO: should we have this here or in main?
 	osutil.CheckEnv()
 
-	tenlog.SetAppName("jobs_api")
+	tenlog.SetAppName("tentn")
 	tenlog.SetEnvName(os.Getenv("ENV"))
 
 	var client *ent.Client

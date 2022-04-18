@@ -49,7 +49,9 @@ func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oa
 	if user != nil {
 		return nil, ErrEmailAlreadyInUse
 	}
-	tenlog.Error("userRepo.GetByEmail", err)
+	if err != nil {
+		util.LogAndReturnErr("userRepo.GetByEmail", err)
+	}
 	// validate redirect_uris
 	var errors []error
 	uris := p.AppInfo.RedirectURIs
