@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/internal/repository/scope"
 	"github.com/10hourlabs/tentn/internal/search"
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/oneword"
@@ -35,11 +36,8 @@ func (h *V1JobApplicationHandler) Search(c echo.Context) error {
 }
 
 func (h *V1JobApplicationHandler) ReadAll(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
-	records, err := talent.GetJobApplications()
+	currentTalent := c.Get(oneword.CurrentTalent).(*scope.TalentScope)
+	records, err := currentTalent.GetJobApplications()
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -47,15 +45,12 @@ func (h *V1JobApplicationHandler) ReadAll(c echo.Context) error {
 }
 
 func (h *V1JobApplicationHandler) ReadByID(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
+	currentTalent := c.Get(oneword.CurrentTalent).(*scope.TalentScope)
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := talent.GetJobApplicationByID(id)
+	record, err := currentTalent.GetJobApplicationByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -63,15 +58,12 @@ func (h *V1JobApplicationHandler) ReadByID(c echo.Context) error {
 }
 
 func (h *V1JobApplicationHandler) CreateOne(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
+	currentTalent := c.Get(oneword.CurrentTalent).(*scope.TalentScope)
 	params := new(repo.JobApplicationParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	params.TalentID = talent.Talent.ID
+	params.TalentID = currentTalent.GetID()
 	record, err := h.JobApplicationRepository.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())

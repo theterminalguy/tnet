@@ -21,6 +21,14 @@ func NewTalentScope(talent *ent.Talent) *TalentScope {
 	}
 }
 
+func (t *TalentScope) GetID() uuid.UUID {
+	return t.Talent.ID
+}
+
+func (t *TalentScope) GetPhotoURL() string {
+	return t.Talent.PhotoURL
+}
+
 func (t *TalentScope) GetWorkExperiences() ([]*ent.WorkExperience, error) {
 	return t.Talent.QueryWorkExperiences().All(repo.GetDBContext())
 }

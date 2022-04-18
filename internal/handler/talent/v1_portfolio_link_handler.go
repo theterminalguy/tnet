@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/internal/repository/scope"
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
@@ -28,11 +29,8 @@ func (h *V1PortfolioLinkHandler) Search(c echo.Context) error {
 }
 
 func (h *V1PortfolioLinkHandler) ReadAll(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
-	records, err := talent.GetPortfolioLinks()
+	currentTalent := c.Get(oneword.CurrentTalent).(*scope.TalentScope)
+	records, err := currentTalent.GetPortfolioLinks()
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -40,15 +38,12 @@ func (h *V1PortfolioLinkHandler) ReadAll(c echo.Context) error {
 }
 
 func (h *V1PortfolioLinkHandler) ReadByID(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
+	currentTalent := c.Get(oneword.CurrentTalent).(*scope.TalentScope)
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := talent.GetPortfolioLinkByID(id)
+	record, err := currentTalent.GetPortfolioLinkByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -56,15 +51,12 @@ func (h *V1PortfolioLinkHandler) ReadByID(c echo.Context) error {
 }
 
 func (h *V1PortfolioLinkHandler) CreateOne(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
+	currentTalent := c.Get(oneword.CurrentTalent).(*scope.TalentScope)
 	params := new(repo.PortfolioLinkParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	params.TalentID = talent.Talent.ID
+	params.TalentID = currentTalent.GetID()
 	record, err := h.PortfolioLinkService.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -73,10 +65,7 @@ func (h *V1PortfolioLinkHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *V1PortfolioLinkHandler) UpdateByID(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
+	currentTalent := c.Get(oneword.CurrentTalent).(*scope.TalentScope)
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -85,7 +74,7 @@ func (h *V1PortfolioLinkHandler) UpdateByID(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	record, vldErrs := talent.UpdatePortfolioLink(id, *params)
+	record, vldErrs := currentTalent.UpdatePortfolioLink(id, *params)
 	if vldErrs != nil {
 		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
 	}
@@ -93,15 +82,12 @@ func (h *V1PortfolioLinkHandler) UpdateByID(c echo.Context) error {
 }
 
 func (h *V1PortfolioLinkHandler) DeleteOne(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
+	currentTalent := c.Get(oneword.CurrentTalent).(*scope.TalentScope)
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = talent.DeletePortfolioLink(id)
+	err = currentTalent.DeletePortfolioLink(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

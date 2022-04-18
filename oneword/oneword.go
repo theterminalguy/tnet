@@ -63,5 +63,8 @@ const (
 
 	Favorite = "favorite"
 
-	CurrentUser = "currentUser"
+	CurrentUser      = "currentUser"
+	CurrentTalent    = "currentTalent"
+	CurrentRecuriter = "currentRecuriter"
+	CurrentDeveloper = "currentDeveloper"
 )
