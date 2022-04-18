@@ -31,6 +31,9 @@ func ExtractJWTTokenFromWebSession() echo.MiddlewareFunc {
 				}
 				// TODO: how does this handle expired sessions?
 				tok := session.Values["token"].(string)
+				if tok == "" {
+					return echo.ErrUnauthorized
+				}
 				c.Request().Header.Set("Authorization", "Bearer "+tok)
 			}
 			if err != nil {
@@ -41,11 +44,11 @@ func ExtractJWTTokenFromWebSession() echo.MiddlewareFunc {
 	}
 }
 
-// ValidateJWT verifies that the JWT token is valid, meaning:
+// JWTAuthenticate verifies that the JWT token is valid, meaning:
 // 1. The token is signed by the correct key
 // 2. The token is not expired
 // 3. The token contains the correct claims
-func ValidateJWT() echo.MiddlewareFunc {
+func JWTAuthenticate() echo.MiddlewareFunc {
 	return middleware.JWTWithConfig(middleware.JWTConfig{
 		SigningKey:    tokgen.GetDefualtSigningKey(),
 		SigningMethod: tokgen.GetDefaultSigningMethod().Alg(),

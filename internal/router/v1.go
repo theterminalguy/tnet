@@ -47,8 +47,8 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 		group: e.Group("/v1/talent"),
 		middlewares: []echo.MiddlewareFunc{
 			middleware.ExtractJWTTokenFromWebSession(),
-			middleware.ValidateJWT(),
-			middleware.AuthenticateUser(),
+			middleware.JWTAuthenticate(),
+			middleware.AuthorizieUser(),
 		},
 		handlers: []RouteHandler{
 			{
@@ -101,8 +101,8 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 		group: e.Group("/v1/recruiter"),
 		middlewares: []echo.MiddlewareFunc{
 			middleware.ExtractJWTTokenFromWebSession(),
-			middleware.ValidateJWT(),
-			middleware.AuthenticateUser(),
+			middleware.JWTAuthenticate(),
+			middleware.AuthorizieUser(),
 		},
 		handlers: []RouteHandler{
 			{
