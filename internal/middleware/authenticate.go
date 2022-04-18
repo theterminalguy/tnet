@@ -1,12 +1,18 @@
 package middleware
 
 import (
+	"fmt"
 	"strings"
 
+	"github.com/10hourlabs/tenlog"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
+	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/golang-jwt/jwt"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
+
+var userRepo = repo.NewUserRepository()
 
 func AuthenticateUser() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -16,17 +22,23 @@ func AuthenticateUser() echo.MiddlewareFunc {
 				return echo.ErrUnauthorized
 			}
 			claims := token.Claims.(jwt.MapClaims)
-			currentUserRole := claims["role"]
-			accountStatus := claims["approved"].(bool)
+			userID := fmt.Sprintf("%v", claims["sub"])
+			userRole := claims["role"]
+			isApproved := claims["approved"].(bool)
 			currentPath := c.Request().URL.Path
-			switch currentUserRole {
+			switch userRole {
 			case string(userrole.Recruiter):
-				authenticateRecruiter(currentPath, accountStatus)
+				authenticateRecruiter(currentPath, isApproved)
 			case string(userrole.Talent):
-				authenticateTalent(currentPath, accountStatus)
+				authenticateTalent(currentPath, isApproved)
 			case string(userrole.Developer):
-				return next(c)
+				authenticateDeveloper(currentPath, isApproved)
 			default:
+				return echo.ErrUnauthorized
+			}
+			err := setCurrentUserContext(userID, c)
+			if err != nil {
+				tenlog.Error("Failed to set current user context", err)
 				return echo.ErrUnauthorized
 			}
 			return next(c)
@@ -34,37 +46,42 @@ func AuthenticateUser() echo.MiddlewareFunc {
 	}
 }
 
-func authenticateRecruiter(currentPath string, isApproved bool) error {
-	// check if the path is in the list of paths that are allowed for recruiters
-	if !isPathAllowedForRecruiter(currentPath) {
-		return echo.ErrUnauthorized
+func setCurrentUserContext(userID string, ctx echo.Context) error {
+	user, err := userRepo.GetByID(uuid.MustParse(userID))
+	if err != nil {
+		return err
 	}
-	// check if the recruiter has been approved
-	if !isApproved {
-		return echo.ErrUnauthorized
-	}
-	// TODO: prevent deleted accounts
-	// This isn't done now as we are yet to figure out the best way to approach this
-	// The obvious straightforward way is to check if the user is deleted, but that
-	// would require a database query. We may have to cache the user data to allow for
-	// faster access.
+	ctx.Set("currentUser", user)
 	return nil
 }
 
-func authenticateTalent(currentPath string, isApproved bool) error {
-	// check if the path is in the list of paths that are allowed for talents
-	if !isPathAllowedForTalent(currentPath) {
+func authenticateRecruiter(path string, isApproved bool) error {
+	if !isPathAllowedForRecruiter(path) {
 		return echo.ErrUnauthorized
 	}
-	// check if the talent has been approved
 	if !isApproved {
 		return echo.ErrUnauthorized
 	}
-	// TODO: prevent deleted accounts
-	// This isn't done now as we are yet to figure out the best way to approach this
-	// The obvious straightforward way is to check if the user is deleted, but that
-	// would require a database query. We may have to cache the user data to allow for
-	// faster access.
+	return nil
+}
+
+func authenticateTalent(path string, isApproved bool) error {
+	if !isPathAllowedForTalent(path) {
+		return echo.ErrUnauthorized
+	}
+	if !isApproved {
+		return echo.ErrUnauthorized
+	}
+	return nil
+}
+
+func authenticateDeveloper(path string, isApproved bool) error {
+	if !isPathAllowedForDeveloper(path) {
+		return echo.ErrUnauthorized
+	}
+	if !isApproved {
+		return echo.ErrUnauthorized
+	}
 	return nil
 }
 
@@ -74,4 +91,10 @@ func isPathAllowedForRecruiter(path string) bool {
 
 func isPathAllowedForTalent(path string) bool {
 	return strings.Index(path, "v1/talent") == 0
+}
+
+func isPathAllowedForDeveloper(path string) bool {
+	// TODO: In the future,
+	// there may be paths that are not allowed for developers
+	return true
 }
