@@ -9,11 +9,8 @@ import (
 func EnforceTalent() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			tok, err := ExtractToken(c)
-			if err != nil {
-				return err
-			}
-			claims := tok.Claims.(jwt.MapClaims)
+			user := c.Get("user").(*jwt.Token)
+			claims := user.Claims.(jwt.MapClaims)
 			if claims["role"] != string(userrole.Talent) {
 				return echo.ErrUnauthorized
 			}
