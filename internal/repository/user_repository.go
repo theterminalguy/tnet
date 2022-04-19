@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -117,6 +118,24 @@ func (r *UserRepository) Update(id uuid.UUID, p UserParams) (*ent.User, []error)
 		return nil, []error{err}
 	}
 	return record, nil
+}
+
+func (*UserRepository) UpdateFields(u *ent.User, fields map[string]interface{}) error {
+	bldr := u.Update()
+	for k, v := range fields {
+		switch k {
+		case user.FieldApproved:
+			bldr.SetApproved(v.(bool))
+		// TODO: case add more fields here
+		default:
+			return fmt.Errorf("unknown field: %s", k)
+		}
+	}
+	_, err := bldr.Save(dBContext)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *UserRepository) DeleteByID(id uuid.UUID) error {

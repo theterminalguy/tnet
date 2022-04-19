@@ -45,6 +45,13 @@ func (recruiterAuth) setCurrentRecruiterContext(ctx echo.Context, user *ent.User
 	// Suggested interim cache library:
 	// https://github.com/allegro/bigcache
 	currentRecruiter := scope.NewRecruiterScope(user)
+
+	// We currently don't support multiple recruiter
+	// I'm not sure if we need to support multiple recruiter
+	// or not. This is open to discussion.
+	// A possible solution would be to have one "recruiter" but
+	// multiple "platform_users". For example,
+	// one recruiter then multiple slack_app_users.
 	ctx.Set(oneword.CurrentRecruiter, currentRecruiter)
 	return nil
 }

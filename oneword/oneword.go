@@ -63,8 +63,10 @@ const (
 
 	Favorite = "favorite"
 
+	Claims           = "claims"
 	CurrentUser      = "currentUser"
 	CurrentTalent    = "currentTalent"
 	CurrentRecruiter = "currentRecruiter"
 	CurrentDeveloper = "currentDeveloper"
+	ClientID         = "clientID"
 )

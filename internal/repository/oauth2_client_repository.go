@@ -72,6 +72,32 @@ func (*Oauth2ClientRepository) GetByUUID(id uuid.UUID) (*ent.Oauth2Client, error
 	return record, nil
 }
 
+func (*Oauth2ClientRepository) GetUser(client *ent.Oauth2Client) (*ent.User, error) {
+	user, err := client.QueryUser().Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (*Oauth2ClientRepository) UpdateFields(client *ent.Oauth2Client, fields map[string]interface{}) error {
+	bldr := client.Update()
+	for k, v := range fields {
+		switch k {
+		case oauth2client.FieldApproved:
+			bldr.SetApproved(v.(bool))
+		// TODO: case add more fields here
+		default:
+			return fmt.Errorf("unknown field: %s", k)
+		}
+	}
+	_, err := bldr.Save(dBContext)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (*Oauth2ClientRepository) Create(p Oauth2ClientParams) (*ent.Oauth2Client, error) {
 	err := ValidateParams(p)
 	if err != nil {

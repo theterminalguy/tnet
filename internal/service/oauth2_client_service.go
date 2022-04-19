@@ -6,7 +6,10 @@ import (
 	"net/url"
 
 	"github.com/10hourlabs/tenlog"
+	"github.com/10hourlabs/tentn/ent"
+	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
+	"github.com/10hourlabs/tentn/ent/user"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/util"
 	"github.com/10hourlabs/tentn/util/photo"
@@ -30,19 +33,24 @@ type Oauth2ClientRegistrationResponse struct {
 	GrantTypes   []string `json:"grant_types"`
 }
 
-type Oauth2ClientService struct{}
-
-func NewOauth2ClientService() *Oauth2ClientService {
-	return &Oauth2ClientService{}
+type Oauth2ClientService struct {
+	Oauth2Repo *repo.Oauth2ClientRepository
+	UserRepo   *repo.UserRepository
 }
 
-func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oauth2ClientRegistrationResponse, error) {
+func NewOauth2ClientService() *Oauth2ClientService {
+	return &Oauth2ClientService{
+		Oauth2Repo: repo.NewOauth2ClientRepository(),
+		UserRepo:   repo.NewUserRepository(),
+	}
+}
+
+func (o2 *Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oauth2ClientRegistrationResponse, error) {
 	if err := repo.ValidateParams(p); err != nil {
 		return nil, err
 	}
-	userRepo := repo.NewUserRepository()
 	// Check if the email is already in use
-	user, err := userRepo.GetByEmail(p.Contact.Email)
+	user, err := o2.UserRepo.GetByEmail(p.Contact.Email)
 	if user != nil {
 		return nil, ErrEmailAlreadyInUse
 	}
@@ -89,8 +97,7 @@ func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oa
 		return nil, err
 	}
 	p.AppInfo.HashedSecret = string(hashedSecret)
-	oauth2Repo := repo.NewOauth2ClientRepository()
-	app, err := oauth2Repo.Register(p.AppInfo, p.Contact)
+	app, err := o2.Oauth2Repo.Register(p.AppInfo, p.Contact)
 	if err != nil {
 		return nil, err
 	}
@@ -98,6 +105,24 @@ func (*Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (*Oa
 		ClientID:     app.ID.String(),
 		ClientSecret: secret,
 		Scopes:       app.Scopes,
-		GrantTypes:   oauth2Repo.GrantTypes(app),
+		GrantTypes:   o2.Oauth2Repo.GrantTypes(app),
 	}, nil
+}
+
+func (o2 *Oauth2ClientService) ApproveClient(c ent.Oauth2Client) error {
+	if !c.Approved && c.DeletedAt == nil {
+		o2.Oauth2Repo.UpdateFields(&c, map[string]interface{}{
+			oauth2client.FieldApproved: true,
+		})
+	}
+	u, err := o2.Oauth2Repo.GetUser(&c)
+	if err != nil {
+		return err
+	}
+	if !u.Approved && u.DeletedAt == nil {
+		o2.UserRepo.UpdateFields(u, map[string]interface{}{
+			user.FieldApproved: true,
+		})
+	}
+	return nil
 }

@@ -7,4 +7,5 @@ var Lookup = map[string]Tasker{
 	"create-fake-skills":  NewCreateFakeSkill(),
 	"import-talents":      NewImportTalents(),
 	"update-talent-pp":    NewUpdateProfilePicture(),
+	"approve-client":      NewTaskApproveClient(),
 }

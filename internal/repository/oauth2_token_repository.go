@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/10hourlabs/tenlog"
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/oauth2token"
 	"github.com/go-oauth2/oauth2/v4"
@@ -47,8 +46,6 @@ func (*Oauth2TokenRepository) Create(ctx context.Context, info oauth2.TokenInfo)
 	if ctx == nil {
 		ctx = dBContext
 	}
-	tenlog.Debug("Create Oauth2Token", info.GetUserID())
-	tenlog.Debug("Create Oauth2Token", info.GetClientID())
 	_, err := dBConn.Oauth2Token.
 		Create().
 		SetUserID(uuid.MustParse(info.GetUserID())).

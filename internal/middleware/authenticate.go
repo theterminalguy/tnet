@@ -30,9 +30,8 @@ func AuthorizieUser() echo.MiddlewareFunc {
 			if !token.Valid {
 				return echo.ErrUnauthorized
 			}
-			claims := token.Claims.(jwt.MapClaims)
-			userID := claims["sub"].(string)
-			if err := setCurrentUserContext(c, userID); err != nil {
+			c.Set("token", token)
+			if err := setCurrentUserContext(c); err != nil {
 				return echo.ErrUnauthorized
 			}
 			user := c.Get(oneword.CurrentUser).(*ent.User)
@@ -44,7 +43,7 @@ func AuthorizieUser() echo.MiddlewareFunc {
 	}
 }
 
-func setCurrentUserContext(ctx echo.Context, userID string) error {
+func setCurrentUserContext(ctx echo.Context) error {
 	// TODO:
 	// First try to get the user from cache
 	// If the user is not in cache,
@@ -53,10 +52,17 @@ func setCurrentUserContext(ctx echo.Context, userID string) error {
 	//
 	// Suggested interim cache library:
 	// https://github.com/allegro/bigcache
+	token := ctx.Get("token").(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+	userID := claims["sub"].(string)
 	user, err := userRepo.GetByID(uuid.MustParse(userID))
 	if err != nil {
 		return err
 	}
 	ctx.Set(oneword.CurrentUser, user)
+	if user.Role == userrole.Developer {
+		clientID := claims["aud"].(string)
+		ctx.Set(oneword.ClientID, clientID)
+	}
 	return nil
 }
