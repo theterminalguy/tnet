@@ -19,6 +19,10 @@ func NewRecruiterScope(recruiter *ent.User) *RecruiterScope {
 	}
 }
 
+func (r *RecruiterScope) GetID() uuid.UUID {
+	return r.Recruiter.ID
+}
+
 func (r *RecruiterScope) GetJobs() ([]*ent.Job, error) {
 	return r.Recruiter.QueryJobs().
 		WithApplications(func(jaq *ent.JobApplicationQuery) {

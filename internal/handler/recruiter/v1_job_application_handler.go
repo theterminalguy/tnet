@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/internal/repository/scope"
 	"github.com/10hourlabs/tentn/internal/search"
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/oneword"
@@ -39,15 +40,12 @@ func (h *V1RecruiterJobApplicationHandler) ReadAll(c echo.Context) error {
 }
 
 func (h *V1RecruiterJobApplicationHandler) ReadByID(c echo.Context) error {
-	user, err := GetCurrentRecruiter(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
+	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := user.GetJobApplicationByID(id)
+	record, err := currentRecruiter.GetJobApplicationByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -59,10 +57,7 @@ func (h *V1RecruiterJobApplicationHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *V1RecruiterJobApplicationHandler) UpdateByID(c echo.Context) error {
-	user, err := GetCurrentRecruiter(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
+	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -71,7 +66,7 @@ func (h *V1RecruiterJobApplicationHandler) UpdateByID(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	record, vldErrs := h.JobApplicationService.UpdateStatus(user, id, *params)
+	record, vldErrs := h.JobApplicationService.UpdateStatus(currentRecruiter, id, *params)
 	if vldErrs != nil {
 		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
 	}

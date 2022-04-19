@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/internal/repository/scope"
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
@@ -47,15 +48,12 @@ func (h *V1RecruiterEmailTemplateHandler) ReadByID(c echo.Context) error {
 }
 
 func (h *V1RecruiterEmailTemplateHandler) CreateOne(c echo.Context) error {
-	user, err := GetCurrentRecruiter(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
+	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
 	params := new(repo.EmailTemplateParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	params.UserID = user.Recruiter.ID
+	params.UserID = currentRecruiter.GetID()
 	record, err := h.EmailTemplateRepository.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())

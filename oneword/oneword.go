@@ -65,6 +65,6 @@ const (
 
 	CurrentUser      = "currentUser"
 	CurrentTalent    = "currentTalent"
-	CurrentRecuriter = "currentRecuriter"
+	CurrentRecruiter = "currentRecruiter"
 	CurrentDeveloper = "currentDeveloper"
 )
