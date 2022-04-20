@@ -8,6 +8,8 @@ import (
 	"io"
 	"log"
 	"os"
+	"sort"
+	"time"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/util/photo"
@@ -238,6 +240,7 @@ func extractTalentData(record []byte) *TalentData {
 
 		fmt.Println("\tSkills: ")
 	*/
+	var skillYears []float64
 	for _, skill := range uup.Skills {
 		// update skill IDs
 		skill.ID = uuid.New()
@@ -246,6 +249,7 @@ func extractTalentData(record []byte) *TalentData {
 		if skill.YearsOfExperience < 1.0 {
 			skill.YearsOfExperience = 1.0
 		}
+		skillYears = append(skillYears, float64(skill.YearsOfExperience))
 		/*
 			fmt.Println("\t\tID: ", skill.ID)
 			fmt.Println("\t\tTalentID: ", skill.TalentID)
@@ -256,12 +260,15 @@ func extractTalentData(record []byte) *TalentData {
 			fmt.Print("\t\t==========================\n\n")
 		*/
 	}
+	var wrkExpStartDates []string
 
 	//fmt.Println("\tWork Experiences: ")
 	for _, we := range uup.WorkExperiences {
 		// update work experience IDs
 		we.ID = uuid.New()
 		we.TalentID = talent.ID
+
+		wrkExpStartDates = append(wrkExpStartDates, we.StartDate)
 		/*
 			fmt.Println("\t\tID: ", we.ID)
 			fmt.Println("\t\tTalentID: ", we.TalentID)
@@ -273,6 +280,31 @@ func extractTalentData(record []byte) *TalentData {
 			fmt.Println("\t\tEndDate: ", we.EndDate)
 			fmt.Print("\t\t==========================\n\n")
 		*/
+	}
+
+	// sort an array of date strings
+	sort.Strings(wrkExpStartDates)
+	if len(wrkExpStartDates) > 0 {
+		talent.ProfessionalStartDate = wrkExpStartDates[0]
+	} else {
+		sort.Float64s(skillYears)
+		if len(skillYears) > 0 {
+			talent.ProfessionalStartDate = time.Now().AddDate(0, 0, int(-skillYears[len(skillYears)-1])).Format("2006-01-02")
+		}
+	}
+
+	date, err := time.Parse("2006-01-02", talent.ProfessionalStartDate)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if date.Year() < 2000 {
+		emailFile, err := os.OpenFile("data/reachout-emails.cache", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer emailFile.Close()
+		emailFile.WriteString(user.Email + "\n")
 	}
 
 	// fmt.Println("\tEducations: ")
