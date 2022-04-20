@@ -3,8 +3,10 @@
 package slackappinstall
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/10hourlabs/tentn/ent/schema/billing"
 	"github.com/google/uuid"
 )
 
@@ -45,6 +47,8 @@ const (
 	FieldScope = "scope"
 	// FieldIsEnterpriseInstall holds the string denoting the is_enterprise_install field in the database.
 	FieldIsEnterpriseInstall = "is_enterprise_install"
+	// FieldPaymentPlan holds the string denoting the payment_plan field in the database.
+	FieldPaymentPlan = "payment_plan"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// Table holds the table name of the slackappinstall in the database.
@@ -77,6 +81,7 @@ var Columns = []string{
 	FieldTokenType,
 	FieldScope,
 	FieldIsEnterpriseInstall,
+	FieldPaymentPlan,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -99,3 +104,15 @@ var (
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
+
+const DefaultPaymentPlan billing.PaymentPlan = "free"
+
+// PaymentPlanValidator is a validator for the "payment_plan" field enum values. It is called by the builders before save.
+func PaymentPlanValidator(pp billing.PaymentPlan) error {
+	switch pp {
+	case "free":
+		return nil
+	default:
+		return fmt.Errorf("slackappinstall: invalid enum value for payment_plan field: %q", pp)
+	}
+}

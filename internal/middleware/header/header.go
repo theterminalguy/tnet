@@ -1,4 +1,4 @@
-package middleware
+package header
 
 import (
 	"errors"
@@ -13,7 +13,8 @@ const (
 	X_TN_WEB_USER_ID   = "X-TN-Web-User-ID"
 )
 
-func validateRequiredHeaders(ctx echo.Context) error {
+// ValidateHeaders checks if the request has the required headers
+func ValidateRequiredHeaders(ctx echo.Context) error {
 	if ctx.Request().Header.Get(X_TN_PLATFORM) == "" {
 		return errors.New("platform missing")
 	}

@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/schema/billing"
 	"github.com/google/uuid"
 )
 
@@ -1770,6 +1771,56 @@ func IsEnterpriseInstallEQ(v bool) predicate.SlackAppInstall {
 func IsEnterpriseInstallNEQ(v bool) predicate.SlackAppInstall {
 	return predicate.SlackAppInstall(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldIsEnterpriseInstall), v))
+	})
+}
+
+// PaymentPlanEQ applies the EQ predicate on the "payment_plan" field.
+func PaymentPlanEQ(v billing.PaymentPlan) predicate.SlackAppInstall {
+	vc := v
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPaymentPlan), vc))
+	})
+}
+
+// PaymentPlanNEQ applies the NEQ predicate on the "payment_plan" field.
+func PaymentPlanNEQ(v billing.PaymentPlan) predicate.SlackAppInstall {
+	vc := v
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPaymentPlan), vc))
+	})
+}
+
+// PaymentPlanIn applies the In predicate on the "payment_plan" field.
+func PaymentPlanIn(vs ...billing.PaymentPlan) predicate.SlackAppInstall {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPaymentPlan), v...))
+	})
+}
+
+// PaymentPlanNotIn applies the NotIn predicate on the "payment_plan" field.
+func PaymentPlanNotIn(vs ...billing.PaymentPlan) predicate.SlackAppInstall {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPaymentPlan), v...))
 	})
 }
 

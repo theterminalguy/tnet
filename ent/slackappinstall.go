@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/10hourlabs/tentn/ent/schema/billing"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
@@ -50,6 +51,8 @@ type SlackAppInstall struct {
 	Scope string `json:"scope,omitempty"`
 	// IsEnterpriseInstall holds the value of the "is_enterprise_install" field.
 	IsEnterpriseInstall bool `json:"is_enterprise_install,omitempty"`
+	// PaymentPlan holds the value of the "payment_plan" field.
+	PaymentPlan billing.PaymentPlan `json:"payment_plan,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SlackAppInstallQuery when eager-loading is set.
 	Edges SlackAppInstallEdges `json:"edges"`
@@ -85,7 +88,7 @@ func (*SlackAppInstall) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case slackappinstall.FieldIsEnterpriseInstall:
 			values[i] = new(sql.NullBool)
-		case slackappinstall.FieldTeamID, slackappinstall.FieldTeamName, slackappinstall.FieldAuthedUserID, slackappinstall.FieldAuthedUserEmail, slackappinstall.FieldAuthedUserTitle, slackappinstall.FieldAuthedUserPhone, slackappinstall.FieldAppID, slackappinstall.FieldBotUserID, slackappinstall.FieldAccessToken, slackappinstall.FieldTokenType, slackappinstall.FieldScope:
+		case slackappinstall.FieldTeamID, slackappinstall.FieldTeamName, slackappinstall.FieldAuthedUserID, slackappinstall.FieldAuthedUserEmail, slackappinstall.FieldAuthedUserTitle, slackappinstall.FieldAuthedUserPhone, slackappinstall.FieldAppID, slackappinstall.FieldBotUserID, slackappinstall.FieldAccessToken, slackappinstall.FieldTokenType, slackappinstall.FieldScope, slackappinstall.FieldPaymentPlan:
 			values[i] = new(sql.NullString)
 		case slackappinstall.FieldCreatedAt, slackappinstall.FieldUpdatedAt, slackappinstall.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -209,6 +212,12 @@ func (sai *SlackAppInstall) assignValues(columns []string, values []interface{})
 			} else if value.Valid {
 				sai.IsEnterpriseInstall = value.Bool
 			}
+		case slackappinstall.FieldPaymentPlan:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field payment_plan", values[i])
+			} else if value.Valid {
+				sai.PaymentPlan = billing.PaymentPlan(value.String)
+			}
 		}
 	}
 	return nil
@@ -276,6 +285,8 @@ func (sai *SlackAppInstall) String() string {
 	builder.WriteString(sai.Scope)
 	builder.WriteString(", is_enterprise_install=")
 	builder.WriteString(fmt.Sprintf("%v", sai.IsEnterpriseInstall))
+	builder.WriteString(", payment_plan=")
+	builder.WriteString(fmt.Sprintf("%v", sai.PaymentPlan))
 	builder.WriteByte(')')
 	return builder.String()
 }

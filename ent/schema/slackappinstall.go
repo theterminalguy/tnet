@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+	"github.com/10hourlabs/tentn/ent/schema/billing"
 )
 
 // SlackAppInstall holds the schema definition for the SlackAppInstall entity.
@@ -44,6 +45,10 @@ func (SlackAppInstall) Fields() []ent.Field {
 		field.String("scope"),
 
 		field.Bool("is_enterprise_install"),
+
+		field.Enum("payment_plan").
+			GoType(billing.PaymentPlan("")).
+			Default("free"),
 	}
 }
 

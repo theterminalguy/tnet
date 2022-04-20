@@ -20,6 +20,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/schema/billing"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/ent/session"
 	"github.com/10hourlabs/tentn/ent/skill"
@@ -11928,6 +11929,7 @@ type SlackAppInstallMutation struct {
 	token_type            *string
 	scope                 *string
 	is_enterprise_install *bool
+	payment_plan          *billing.PaymentPlan
 	clearedFields         map[string]struct{}
 	user                  *uuid.UUID
 	cleareduser           bool
@@ -12668,6 +12670,42 @@ func (m *SlackAppInstallMutation) ResetIsEnterpriseInstall() {
 	m.is_enterprise_install = nil
 }
 
+// SetPaymentPlan sets the "payment_plan" field.
+func (m *SlackAppInstallMutation) SetPaymentPlan(bp billing.PaymentPlan) {
+	m.payment_plan = &bp
+}
+
+// PaymentPlan returns the value of the "payment_plan" field in the mutation.
+func (m *SlackAppInstallMutation) PaymentPlan() (r billing.PaymentPlan, exists bool) {
+	v := m.payment_plan
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPaymentPlan returns the old "payment_plan" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldPaymentPlan(ctx context.Context) (v billing.PaymentPlan, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPaymentPlan is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPaymentPlan requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPaymentPlan: %w", err)
+	}
+	return oldValue.PaymentPlan, nil
+}
+
+// ResetPaymentPlan resets all changes to the "payment_plan" field.
+func (m *SlackAppInstallMutation) ResetPaymentPlan() {
+	m.payment_plan = nil
+}
+
 // ClearUser clears the "user" edge to the User entity.
 func (m *SlackAppInstallMutation) ClearUser() {
 	m.cleareduser = true
@@ -12713,7 +12751,7 @@ func (m *SlackAppInstallMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SlackAppInstallMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 17)
 	if m.created_at != nil {
 		fields = append(fields, slackappinstall.FieldCreatedAt)
 	}
@@ -12762,6 +12800,9 @@ func (m *SlackAppInstallMutation) Fields() []string {
 	if m.is_enterprise_install != nil {
 		fields = append(fields, slackappinstall.FieldIsEnterpriseInstall)
 	}
+	if m.payment_plan != nil {
+		fields = append(fields, slackappinstall.FieldPaymentPlan)
+	}
 	return fields
 }
 
@@ -12802,6 +12843,8 @@ func (m *SlackAppInstallMutation) Field(name string) (ent.Value, bool) {
 		return m.Scope()
 	case slackappinstall.FieldIsEnterpriseInstall:
 		return m.IsEnterpriseInstall()
+	case slackappinstall.FieldPaymentPlan:
+		return m.PaymentPlan()
 	}
 	return nil, false
 }
@@ -12843,6 +12886,8 @@ func (m *SlackAppInstallMutation) OldField(ctx context.Context, name string) (en
 		return m.OldScope(ctx)
 	case slackappinstall.FieldIsEnterpriseInstall:
 		return m.OldIsEnterpriseInstall(ctx)
+	case slackappinstall.FieldPaymentPlan:
+		return m.OldPaymentPlan(ctx)
 	}
 	return nil, fmt.Errorf("unknown SlackAppInstall field %s", name)
 }
@@ -12963,6 +13008,13 @@ func (m *SlackAppInstallMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsEnterpriseInstall(v)
+		return nil
+	case slackappinstall.FieldPaymentPlan:
+		v, ok := value.(billing.PaymentPlan)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPaymentPlan(v)
 		return nil
 	}
 	return fmt.Errorf("unknown SlackAppInstall field %s", name)
@@ -13087,6 +13139,9 @@ func (m *SlackAppInstallMutation) ResetField(name string) error {
 		return nil
 	case slackappinstall.FieldIsEnterpriseInstall:
 		m.ResetIsEnterpriseInstall()
+		return nil
+	case slackappinstall.FieldPaymentPlan:
+		m.ResetPaymentPlan()
 		return nil
 	}
 	return fmt.Errorf("unknown SlackAppInstall field %s", name)

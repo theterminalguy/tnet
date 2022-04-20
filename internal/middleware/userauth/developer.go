@@ -1,38 +1,40 @@
-package middleware
+package userauth
 
 import (
 	"fmt"
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
+	"github.com/10hourlabs/tentn/internal/middleware/header"
+	"github.com/10hourlabs/tentn/internal/middleware/platform"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
-type developerAuth struct {
-	roleAuther
+type DeveloperAuth struct {
+	RoleAuther
 	client *repo.Oauth2ClientRepository
 }
 
-func newDeveloperAuth() roleAuther {
-	return &developerAuth{
+func NewDeveloperAuth() RoleAuther {
+	return &DeveloperAuth{
 		client: repo.NewOauth2ClientRepository(),
 	}
 }
 
-func (auth developerAuth) authorize(user *ent.User, ctx echo.Context) error {
-	if user.Role != userrole.Developer {
+func (auth DeveloperAuth) Authorize(u *ent.User, ctx echo.Context) error {
+	if u.Role != userrole.Developer {
 		return echo.ErrUnauthorized
 	}
-	if !user.Approved {
+	if !u.Approved {
 		return echo.ErrUnauthorized
 	}
 	// TODO:
-	// First try to get the user from cache
-	// If the user is not in cache,
-	// then get the user from database
-	// and store the user in cache
+	// First try to get the u from cache
+	// If the u is not in cache,
+	// then get the u from database
+	// and store the u in cache
 	//
 	// Suggested interim cache library:
 	// https://github.com/allegro/bigcache
@@ -47,14 +49,14 @@ func (auth developerAuth) authorize(user *ent.User, ctx echo.Context) error {
 	if !auth.isPathAllowed(ctx.Request().URL.Path) {
 		return echo.ErrUnauthorized
 	}
-	if err := validateRequiredHeaders(ctx); err != nil {
+	if err := header.ValidateRequiredHeaders(ctx); err != nil {
 		return err
 	}
-	platform := ctx.Request().Header.Get(X_TN_PLATFORM)
-	if _, ok := platformsAuth[Platform(platform)]; !ok {
-		return fmt.Errorf("platform %s is not supported", platform)
+	p := ctx.Request().Header.Get(header.X_TN_PLATFORM)
+	if _, ok := platform.Auth[platform.Platform(p)]; !ok {
+		return fmt.Errorf("platform %s is not supported", p)
 	}
-	if err := platformsAuth[Platform(platform)].authorize(ctx); err != nil {
+	if err := platform.Auth[platform.Platform(p)].Authorize(ctx); err != nil {
 		return err
 	}
 	// TODO: cater for internal/external clients
@@ -62,7 +64,7 @@ func (auth developerAuth) authorize(user *ent.User, ctx echo.Context) error {
 	return nil
 }
 
-func (developerAuth) isPathAllowed(_ string) bool {
+func (DeveloperAuth) isPathAllowed(_ string) bool {
 	// TODO: In the future,
 	// there may be paths that are not allowed for developers
 

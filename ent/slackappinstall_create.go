@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/schema/billing"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
@@ -166,6 +167,20 @@ func (saic *SlackAppInstallCreate) SetIsEnterpriseInstall(b bool) *SlackAppInsta
 	return saic
 }
 
+// SetPaymentPlan sets the "payment_plan" field.
+func (saic *SlackAppInstallCreate) SetPaymentPlan(bp billing.PaymentPlan) *SlackAppInstallCreate {
+	saic.mutation.SetPaymentPlan(bp)
+	return saic
+}
+
+// SetNillablePaymentPlan sets the "payment_plan" field if the given value is not nil.
+func (saic *SlackAppInstallCreate) SetNillablePaymentPlan(bp *billing.PaymentPlan) *SlackAppInstallCreate {
+	if bp != nil {
+		saic.SetPaymentPlan(*bp)
+	}
+	return saic
+}
+
 // SetID sets the "id" field.
 func (saic *SlackAppInstallCreate) SetID(u uuid.UUID) *SlackAppInstallCreate {
 	saic.mutation.SetID(u)
@@ -264,6 +279,10 @@ func (saic *SlackAppInstallCreate) defaults() {
 		v := slackappinstall.DefaultUpdatedAt()
 		saic.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := saic.mutation.PaymentPlan(); !ok {
+		v := slackappinstall.DefaultPaymentPlan
+		saic.mutation.SetPaymentPlan(v)
+	}
 	if _, ok := saic.mutation.ID(); !ok {
 		v := slackappinstall.DefaultID()
 		saic.mutation.SetID(v)
@@ -307,6 +326,14 @@ func (saic *SlackAppInstallCreate) check() error {
 	}
 	if _, ok := saic.mutation.IsEnterpriseInstall(); !ok {
 		return &ValidationError{Name: "is_enterprise_install", err: errors.New(`ent: missing required field "SlackAppInstall.is_enterprise_install"`)}
+	}
+	if _, ok := saic.mutation.PaymentPlan(); !ok {
+		return &ValidationError{Name: "payment_plan", err: errors.New(`ent: missing required field "SlackAppInstall.payment_plan"`)}
+	}
+	if v, ok := saic.mutation.PaymentPlan(); ok {
+		if err := slackappinstall.PaymentPlanValidator(v); err != nil {
+			return &ValidationError{Name: "payment_plan", err: fmt.Errorf(`ent: validator failed for field "SlackAppInstall.payment_plan": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -463,6 +490,14 @@ func (saic *SlackAppInstallCreate) createSpec() (*SlackAppInstall, *sqlgraph.Cre
 			Column: slackappinstall.FieldIsEnterpriseInstall,
 		})
 		_node.IsEnterpriseInstall = value
+	}
+	if value, ok := saic.mutation.PaymentPlan(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: slackappinstall.FieldPaymentPlan,
+		})
+		_node.PaymentPlan = value
 	}
 	if nodes := saic.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
