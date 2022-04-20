@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"fmt"
+
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	repo "github.com/10hourlabs/tentn/internal/repository"
@@ -10,10 +12,13 @@ import (
 
 type developerAuth struct {
 	roleAuther
+	client *repo.Oauth2ClientRepository
 }
 
 func newDeveloperAuth() roleAuther {
-	return &developerAuth{}
+	return &developerAuth{
+		client: repo.NewOauth2ClientRepository(),
+	}
 }
 
 func (auth developerAuth) authorize(user *ent.User, ctx echo.Context) error {
@@ -31,9 +36,8 @@ func (auth developerAuth) authorize(user *ent.User, ctx echo.Context) error {
 	//
 	// Suggested interim cache library:
 	// https://github.com/allegro/bigcache
-	o2 := repo.NewOauth2ClientRepository()
 	clientID := ctx.Get("clientID").(string)
-	client, err := o2.GetByUUID(uuid.MustParse(clientID))
+	client, err := auth.client.GetByUUID(uuid.MustParse(clientID))
 	if err != nil {
 		return echo.ErrUnauthorized
 	}
@@ -42,6 +46,16 @@ func (auth developerAuth) authorize(user *ent.User, ctx echo.Context) error {
 	}
 	if !auth.isPathAllowed(ctx.Request().URL.Path) {
 		return echo.ErrUnauthorized
+	}
+	if err := validateRequiredHeaders(ctx); err != nil {
+		return err
+	}
+	platform := ctx.Request().Header.Get(X_TN_PLATFORM)
+	if _, ok := platformsAuth[Platform(platform)]; !ok {
+		return fmt.Errorf("platform %s is not supported", platform)
+	}
+	if err := platformsAuth[Platform(platform)].authorize(ctx); err != nil {
+		return err
 	}
 	// TODO: cater for internal/external clients
 	// There are certain things internal clients can do that external clients can't

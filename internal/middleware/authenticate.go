@@ -1,6 +1,9 @@
 package middleware
 
 import (
+	"fmt"
+	"net/http"
+
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	repo "github.com/10hourlabs/tentn/internal/repository"
@@ -35,8 +38,13 @@ func AuthorizieUser() echo.MiddlewareFunc {
 				return echo.ErrUnauthorized
 			}
 			user := c.Get(oneword.CurrentUser).(*ent.User)
-			if err := roleAuth[user.Role].authorize(user, c); err != nil {
-				return err
+			// first check that the user role exists
+			auth := roleAuth[user.Role]
+			if auth == nil {
+				return fmt.Errorf("role %s is not supported", user.Role)
+			}
+			if err := auth.authorize(user, c); err != nil {
+				return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
 			}
 			return next(c)
 		}
