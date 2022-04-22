@@ -52,6 +52,20 @@ func (*UserRepository) GetByID(id uuid.UUID) (*ent.User, error) {
 	return record, nil
 }
 
+func (*UserRepository) GetRecruiterByID(id uuid.UUID) (*ent.User, error) {
+	record, err := dBConn.User.Query().
+		Where(user.ID(id)).
+		Where(user.RoleEQ(userrole.Recruiter)).
+		Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	if record.DeletedAt != nil {
+		return nil, ErrRecordDeleted
+	}
+	return record, nil
+}
+
 func (*UserRepository) GetByEmail(email string) (*ent.User, error) {
 	record, err := dBConn.User.Query().
 		Where(user.EmailEQ(email)).

@@ -54,8 +54,7 @@ func (s SlackPlatformAuth) Authorize(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	globalctx.SetCurrentRecruiterContext(ctx, primaryUser)
-	return nil
+	return globalctx.SetCurrentRecruiterContext(ctx, primaryUser)
 }
 
 // validateHeaders checks if the request has the required headers for Slack
