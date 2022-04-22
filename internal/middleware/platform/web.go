@@ -3,7 +3,9 @@ package platform
 import (
 	"errors"
 
+	"github.com/10hourlabs/tentn/internal/middleware/globalctx"
 	"github.com/10hourlabs/tentn/internal/middleware/header"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -20,6 +22,8 @@ func (w WebPlatformAuth) Authorize(ctx echo.Context) error {
 	if err := w.validateHeaders(ctx); err != nil {
 		return err
 	}
+	webUserID := ctx.Request().Header.Get(header.X_TN_WEB_USER_ID)
+	globalctx.SetCurrentTalentContext(ctx, uuid.MustParse(webUserID))
 	return nil
 }
 

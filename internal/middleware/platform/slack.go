@@ -46,7 +46,7 @@ func (s SlackPlatformAuth) Authorize(ctx echo.Context) error {
 		// TODO: discuss this with the team
 		// the app is not currently used by the user who installed it
 		// so attach the current request to the user who installed it
-		tenlog.Warn("App in use by the another workspace user who installed it")
+		tenlog.Warn("App not in use by a primary user")
 	}
 	// For free plans, every request is tied to the primary user
 	// The primary user is the user who installed the app
