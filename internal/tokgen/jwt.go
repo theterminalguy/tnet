@@ -19,6 +19,8 @@ const (
 // SignedKeyID is the key id for the signing key
 // See https://stackoverflow.com/questions/43867440/whats-the-meaning-of-the-kid-claim-in-a-jwt-token
 const DefaultSigningKeyID = ""
+const DefaultAccessTokenExp = time.Hour * 24 * 7   // 1 day
+const DefaultRefreshTokenExp = time.Hour * 24 * 30 // 30 days
 
 func GetDefualtSigningKey() []byte {
 	return []byte(os.Getenv("JWT_SIGNING_KEY"))
@@ -29,9 +31,7 @@ func GetDefaultSigningMethod() jwt.SigningMethod {
 }
 
 type JWTClaims struct {
-	Role      string `json:"role"`
-	TokenType Token  `json:"token_type"`
-	Approved  bool   `json:"approved"`
+	TokenType Token `json:"token_type"`
 	jwt.StandardClaims
 }
 
@@ -42,13 +42,11 @@ type JWTMeta struct {
 
 func NewJWTClaims(u *ent.User, m *JWTMeta) *JWTClaims {
 	return &JWTClaims{
-		Role:      string(u.Role),
 		TokenType: IDToken,
-		Approved:  u.Approved,
 		StandardClaims: jwt.StandardClaims{
 			Audience: m.Audience,
 			// TODO: token expiration should be configurable, currently set to 1 day
-			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+			ExpiresAt: time.Now().Add(DefaultAccessTokenExp).Unix(),
 			IssuedAt:  time.Now().Unix(),
 			Issuer:    m.Issuer,
 			Subject:   u.ID.String(),

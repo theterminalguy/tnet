@@ -190,8 +190,9 @@ func (r *Oauth2TokenRepository) GetByRefresh(ctx context.Context, refresh string
 		ctx = dBContext
 	}
 	record, err := dBConn.Oauth2Token.Query().
-		Where(oauth2token.RefreshTokenEQ(refresh)).
-		Only(ctx)
+		Where(oauth2token.RefreshTokenEQ(refresh)).Order(
+		ent.Desc(oauth2token.FieldCreatedAt),
+	).First(ctx)
 	if err != nil {
 		return Oauth2TokenInfo{}, err
 	}

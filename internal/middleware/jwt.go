@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -52,5 +53,9 @@ func JWTAuthenticate() echo.MiddlewareFunc {
 	return middleware.JWTWithConfig(middleware.JWTConfig{
 		SigningKey:    tokgen.GetDefualtSigningKey(),
 		SigningMethod: tokgen.GetDefaultSigningMethod().Alg(),
+		ErrorHandler: func(err error) (e error) {
+			tenlog.Error("JWT Error: ", err)
+			return echo.NewHTTPError(401, fmt.Sprintf("something is wrong %v", err))
+		},
 	})
 }

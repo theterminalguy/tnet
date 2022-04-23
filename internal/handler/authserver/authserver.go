@@ -1,6 +1,7 @@
 package authserver
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/10hourlabs/tenlog"
@@ -16,42 +17,39 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Oauth2ClienRepository allows for registration of Oauth2 client using
-// standard Oauth2 and OpenID Connect flows.
-func Oauth2ClientRegisterationHandler(c echo.Context) error {
-	params := new(service.Oauth2ClientRegistraionParams)
-	if err := c.Bind(params); err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
-	oauth2Service := service.NewOauth2ClientService()
-	resp, err := oauth2Service.RegisterClient(*params)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
-	return c.JSON(http.StatusOK, resp)
-}
+var (
+	manager *manage.Manager
+	srv     *server.Server
+)
 
-func Oauth2ClientTokenHandler(c echo.Context) error {
-	// Parse the form request
-	c.Request().ParseForm()
+func init() {
+	manager = manage.NewDefaultManager()
+	manager.SetClientTokenCfg(&manage.Config{
+		IsGenerateRefresh: true,
+		AccessTokenExp:    tokgen.DefaultAccessTokenExp,
+		RefreshTokenExp:   tokgen.DefaultRefreshTokenExp,
+	})
+	manager.SetRefreshTokenCfg(&manage.RefreshingConfig{
+		IsRemoveAccess:     true,
+		IsRemoveRefreshing: true,
+		IsResetRefreshTime: true,
+	})
 
-	manager := manage.NewDefaultManager()
 	// configure token storage
 	manager.MustTokenStorage(repo.NewOauth2TokenRepository(), nil)
 	// configure client storage
 	manager.MapClientStorage(repo.NewOauth2ClientRepository())
+	fmt.Println("DefaultSinging Method:", tokgen.GetDefaultSigningMethod())
 	manager.MapAccessGenerate(generates.NewJWTAccessGenerate(
-		tokgen.DefaultSigningKeyID,
+		"",
 		tokgen.GetDefualtSigningKey(),
 		tokgen.GetDefaultSigningMethod(),
 	))
-	srv := server.NewDefaultServer(manager)
-
+	srv = server.NewDefaultServer(manager)
 	srv.SetInternalErrorHandler(func(err error) (re *oauth2_error.Response) {
 		tenlog.Debug("Internal Error:", err.Error())
 		return
 	})
-
 	srv.SetResponseErrorHandler(func(re *oauth2_error.Response) {
 		tenlog.Debug("Response Error:", re)
 	})
@@ -69,19 +67,48 @@ func Oauth2ClientTokenHandler(c echo.Context) error {
 	// Set the allowed grant types
 	// https://oauth.net/2/grant-types
 	//
-	// We only the client credentials grant type
-	srv.SetAllowedGrantType(oauth2.ClientCredentials)
-
+	// We only the client credentials grant type and a refresh token grant type
+	srv.SetAllowedGrantType(oauth2.ClientCredentials, oauth2.Refreshing)
 	srv.SetClientScopeHandler(authorizeClientScope)
-
 	srv.SetClientAuthorizedHandler(authorizeClientRequest)
+}
+
+// Oauth2ClienRepository allows for registration of Oauth2 client using
+// standard Oauth2 and OpenID Connect flows.
+func Oauth2RegistrationHandler(c echo.Context) error {
+	params := new(service.Oauth2ClientRegistraionParams)
+	if err := c.Bind(params); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	oauth2Service := service.NewOauth2ClientService()
+	resp, err := oauth2Service.RegisterClient(*params)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusOK, resp)
+}
+
+func Oauth2AccessTokenHandler(c echo.Context) error {
+	// Parse the form request
+	c.Request().ParseForm()
+	return srv.HandleTokenRequest(c.Response(), c.Request())
+}
+
+func Oauth2RefreshTokenHandler(c echo.Context) error {
+	// Parse the form request
+	c.Request().ParseForm()
+	// check for the refresh_token grant type
+	reqGrantType := c.Request().Form.Get("grant_type")
+	if reqGrantType != oauth2.Refreshing.String() {
+		return c.String(http.StatusBadRequest, "Invalid grant_type")
+	}
 	return srv.HandleTokenRequest(c.Response(), c.Request())
 }
 
 func authorizeClientRequest(clientID string, grant oauth2.GrantType) (allowed bool, err error) {
 	allowed = false
 	err = oauth2_error.ErrUnsupportedGrantType
-	if grant == oauth2.ClientCredentials {
+	if grant == oauth2.ClientCredentials || grant == oauth2.Refreshing {
 		allowed = true
 		err = nil
 	}
