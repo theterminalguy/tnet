@@ -123,11 +123,15 @@ func authorizeClientScope(tgr *oauth2.TokenGenerateRequest) (bool, error) {
 		return false, err
 	}
 	tgr.UserID = client.UserID.String()
+	// tgr.Scope is the requested scope
 	if tgr.Scope != "" {
 		reqScopes := strings.Split(tgr.Scope, ",")
+
+		// Check if the requested scope is allowed
 		for _, reqScope := range reqScopes {
 			if !collection.Contains(client.Scopes, reqScope) {
-				return false, oauth2_error.ErrInvalidScope
+				tenlog.Debug("Requested scope not allowed:", reqScope)
+				return false, fmt.Errorf("requested scope %s not in client scope", reqScope)
 			}
 		}
 	} else {
