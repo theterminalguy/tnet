@@ -43,7 +43,6 @@ func PathToScope(reqPath, verb string) string {
 	}
 	lastIdx := len(chunks) - 1
 	id := chunks[lastIdx]
-	chunks[lastIdx] = "search"
 	if _, err := uuid.Parse(id); err == nil {
 		chunks[lastIdx] = verbActionSingular[verb]
 	}
