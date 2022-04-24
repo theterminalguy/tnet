@@ -3,11 +3,13 @@ package authserver
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/10hourlabs/tenlog"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/internal/tokgen"
+	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/go-oauth2/oauth2/v4"
 	oauth2_error "github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/generates"
@@ -41,7 +43,7 @@ func init() {
 	manager.MapClientStorage(repo.NewOauth2ClientRepository())
 	fmt.Println("DefaultSinging Method:", tokgen.GetDefaultSigningMethod())
 	manager.MapAccessGenerate(generates.NewJWTAccessGenerate(
-		"",
+		tokgen.DefaultSigningKeyID,
 		tokgen.GetDefualtSigningKey(),
 		tokgen.GetDefaultSigningMethod(),
 	))
@@ -121,6 +123,15 @@ func authorizeClientScope(tgr *oauth2.TokenGenerateRequest) (bool, error) {
 		return false, err
 	}
 	tgr.UserID = client.UserID.String()
-	// TODO: validate the scope
+	if tgr.Scope != "" {
+		reqScopes := strings.Split(tgr.Scope, ",")
+		for _, reqScope := range reqScopes {
+			if !collection.Contains(client.Scopes, reqScope) {
+				return false, oauth2_error.ErrInvalidScope
+			}
+		}
+	} else {
+		tgr.Scope = strings.Join(client.Scopes, ",")
+	}
 	return true, nil
 }
