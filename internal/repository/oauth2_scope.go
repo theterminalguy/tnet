@@ -28,6 +28,10 @@ var scopes = map[string]Oauth2Scope{
 		Name:    "recruiter.talents.search",
 		Summary: "Search for talents",
 	},
+	"recruiter.talents.read": {
+		Name:    "recruiter.talents.reads",
+		Summary: "Fetch a single talent",
+	},
 }
 
 // Oauth2ScopeRepository is a repository for Oauth2 scopes

@@ -86,6 +86,8 @@ func (*Oauth2ClientRepository) UpdateFields(client *ent.Oauth2Client, fields map
 		switch k {
 		case oauth2client.FieldApproved:
 			bldr.SetApproved(v.(bool))
+		case oauth2client.FieldScopes:
+			bldr.SetScopes(v.([]string))
 		// TODO: case add more fields here
 		default:
 			return fmt.Errorf("unknown field: %s", k)
@@ -195,7 +197,6 @@ func (*Oauth2ClientRepository) GrantTypes(record *ent.Oauth2Client) []string {
 		return []string{"implicit"}
 	}
 	return []string{
-		"authorization_code",
 		"refresh_token",
 		"client_credentials",
 	}
@@ -206,7 +207,6 @@ func (*Oauth2ClientRepository) GetResponseTypes(record *ent.Oauth2Client) []stri
 		return []string{"code"}
 	}
 	return []string{
-		"code",
 		"token",
 	}
 }

@@ -54,7 +54,7 @@ func (o2 *Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (
 	if user != nil {
 		return nil, ErrEmailAlreadyInUse
 	}
-	if err != nil {
+	if err != nil && !ent.IsNotFound(err) {
 		return nil, util.LogAndReturnErr("userRepo.GetByEmail", err)
 	}
 	// validate redirect_uris

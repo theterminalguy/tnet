@@ -8,4 +8,5 @@ var Lookup = map[string]Tasker{
 	"import-talents":      NewImportTalents(),
 	"update-talent-pp":    NewUpdateProfilePicture(),
 	"approve-client":      NewTaskApproveClient(),
+	"update-client-scope": NewTaskUpdateClientScope(),
 }

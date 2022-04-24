@@ -51,8 +51,8 @@ func (auth DeveloperAuth) Authorize(u *ent.User, ctx echo.Context) error {
 		tenlog.Error("client not approved", "client", client.ID)
 		return errors.New("client is not approved")
 	}
-	if !auth.isPathAllowed(client, ctx) {
-		return echo.ErrUnauthorized
+	if err := auth.enforceOauth2Scope(client, ctx); err != nil {
+		return err
 	}
 	if err := header.ValidateRequiredHeaders(ctx); err != nil {
 		return err
@@ -67,17 +67,17 @@ func (auth DeveloperAuth) Authorize(u *ent.User, ctx echo.Context) error {
 	return nil
 }
 
-func (DeveloperAuth) isPathAllowed(c *ent.Oauth2Client, ctx echo.Context) bool {
+func (DeveloperAuth) enforceOauth2Scope(c *ent.Oauth2Client, ctx echo.Context) error {
 	if c.IsInternal {
-		return true
+		return nil
 	}
 	path := ctx.Request().URL.Path
 	verb := ctx.Request().Method
-	if reqScope := util.PathToOauth2Scope(path, verb); reqScope != "" {
-		// Check if the requested scope is included in the client scope
-		if !collection.Contains(c.Scopes, reqScope) {
-			return false
+	reqScope := util.PathToOauth2Scope(path, verb)
+	if reqScope != "" {
+		if collection.Contains(c.Scopes, reqScope) {
+			return nil
 		}
 	}
-	return false
+	return fmt.Errorf("client does not have the required scope %s", reqScope)
 }
