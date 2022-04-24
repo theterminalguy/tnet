@@ -3,7 +3,6 @@ package repository
 import (
 	"strings"
 
-	"github.com/10hourlabs/tenlog"
 	"github.com/10hourlabs/tentn/ent"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -29,12 +28,8 @@ func (c *Oauth2ClientInfo) GetUserID() string {
 }
 
 func (c *Oauth2ClientInfo) VerifyPassword(password string) bool {
-	tenlog.Debug("Hashed Password", c.HashedSecret)
-	tenlog.Debug("Original Password", password)
 	if err := bcrypt.CompareHashAndPassword([]byte(c.HashedSecret), []byte(password)); err == nil {
-		tenlog.Info("password match...")
 		return true
 	}
-	tenlog.Info("invalid password...")
 	return false
 }

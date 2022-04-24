@@ -60,7 +60,7 @@ func (h *V1TalentCollectionHandler) ReadByID(c echo.Context) error {
 func (h *V1TalentCollectionHandler) CreateOne(c echo.Context) error {
 	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
 	params := new(repo.TalentCollectionParams)
-	params.UserID = currentRecruiter.Recruiter.ID
+	params.UserID = currentRecruiter.GetID()
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

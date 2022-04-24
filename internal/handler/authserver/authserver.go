@@ -73,6 +73,8 @@ func init() {
 	srv.SetAllowedGrantType(oauth2.ClientCredentials, oauth2.Refreshing)
 	srv.SetClientScopeHandler(authorizeClientScope)
 	srv.SetClientAuthorizedHandler(authorizeClientRequest)
+
+	// TODO: Add handlers for custom error responses
 }
 
 // Oauth2ClienRepository allows for registration of Oauth2 client using

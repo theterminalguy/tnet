@@ -1,8 +1,10 @@
 package userauth
 
 import (
+	"errors"
 	"strings"
 
+	"github.com/10hourlabs/tenlog"
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/internal/middleware/globalctx"
@@ -22,7 +24,8 @@ func (auth TalentAuth) Authorize(u *ent.User, ctx echo.Context) error {
 		return echo.ErrUnauthorized
 	}
 	if !u.Approved {
-		return echo.ErrUnauthorized
+		tenlog.Error("user not approved", "user", u.ID)
+		return errors.New("account not approved")
 	}
 	if !auth.isPathAllowed(ctx.Request().URL.Path) {
 		return echo.ErrUnauthorized

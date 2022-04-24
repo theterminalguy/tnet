@@ -1,8 +1,10 @@
 package userauth
 
 import (
+	"errors"
 	"fmt"
 
+	"github.com/10hourlabs/tenlog"
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/internal/middleware/header"
@@ -46,7 +48,8 @@ func (auth DeveloperAuth) Authorize(u *ent.User, ctx echo.Context) error {
 		return echo.ErrUnauthorized
 	}
 	if !client.Approved {
-		return echo.ErrUnauthorized
+		tenlog.Error("client not approved", "client", client.ID)
+		return errors.New("client is not approved")
 	}
 	if !auth.isPathAllowed(client, ctx) {
 		return echo.ErrUnauthorized
