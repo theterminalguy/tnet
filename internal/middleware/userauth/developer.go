@@ -8,6 +8,8 @@ import (
 	"github.com/10hourlabs/tentn/internal/middleware/header"
 	"github.com/10hourlabs/tentn/internal/middleware/platform"
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/util"
+	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -46,7 +48,7 @@ func (auth DeveloperAuth) Authorize(u *ent.User, ctx echo.Context) error {
 	if !client.Approved {
 		return echo.ErrUnauthorized
 	}
-	if !auth.isPathAllowed(ctx.Request().URL.Path) {
+	if !auth.isPathAllowed(client, ctx) {
 		return echo.ErrUnauthorized
 	}
 	if err := header.ValidateRequiredHeaders(ctx); err != nil {
@@ -59,16 +61,20 @@ func (auth DeveloperAuth) Authorize(u *ent.User, ctx echo.Context) error {
 	if err := platform.Auth[platform.Platform(p)].Authorize(ctx); err != nil {
 		return err
 	}
-	// TODO: cater for internal/external clients
-	// There are certain things internal clients can do that external clients can't
 	return nil
 }
 
-func (DeveloperAuth) isPathAllowed(_ string) bool {
-	// TODO: In the future,
-	// there may be paths that are not allowed for developers
-
-	// TODO: cater for internal/external clients
-	// There are certain things internal clients can do that external clients can't
-	return true
+func (DeveloperAuth) isPathAllowed(c *ent.Oauth2Client, ctx echo.Context) bool {
+	if c.IsInternal {
+		return true
+	}
+	path := ctx.Request().URL.Path
+	verb := ctx.Request().Method
+	if reqScope := util.PathToOauth2Scope(path, verb); reqScope != "" {
+		// Check if the requested scope is included in the client scope
+		if !collection.Contains(c.Scopes, reqScope) {
+			return false
+		}
+	}
+	return false
 }

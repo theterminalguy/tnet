@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPathToScope(t *testing.T) {
+func TestPathToOauth2Scope(t *testing.T) {
 	tests := []struct {
 		path string
 		verb string
@@ -86,7 +86,7 @@ func TestPathToScope(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.path, func(t *testing.T) {
-			got := PathToScope(tt.path, tt.verb)
+			got := PathToOauth2Scope(tt.path, tt.verb)
 			assert.Equal(t, tt.want, got)
 		})
 	}

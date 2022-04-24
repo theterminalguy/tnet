@@ -21,7 +21,7 @@ var verbActionPlural = map[string]string{
 	"DELETE": "deletes",
 }
 
-func PathToScope(reqPath, verb string) string {
+func PathToOauth2Scope(reqPath, verb string) string {
 	if _, ok := verbActionSingular[verb]; !ok {
 		return ""
 	}
