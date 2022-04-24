@@ -75,8 +75,9 @@ func (o2 *Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (
 		return nil, fmt.Errorf("%v", errors)
 	}
 	// validate provided scopes
+	sr := repo.NewOauth2ScopeRepository()
 	for _, scope := range p.AppInfo.Scopes {
-		if _, ok := repo.OauthScopes[scope]; !ok {
+		if !sr.IsValid(scope) {
 			errors = append(errors, fmt.Errorf("invalid scope: %s", scope))
 		}
 	}

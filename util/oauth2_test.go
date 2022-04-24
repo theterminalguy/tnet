@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"testing"
@@ -76,6 +76,11 @@ func TestPathToScope(t *testing.T) {
 			path: "/v1/recruiter/talent-collections",
 			verb: "DELETE",
 			want: "recruiter.talent-collections.deletes",
+		},
+		{
+			path: "",
+			verb: "GET",
+			want: "",
 		},
 	}
 

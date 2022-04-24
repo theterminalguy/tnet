@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"fmt"
@@ -29,6 +29,9 @@ func PathToScope(reqPath, verb string) string {
 		return ""
 	}
 	paths := strings.Split(reqPath, "v1/")
+	if len(paths) < 2 {
+		return ""
+	}
 	paths = strings.Split(paths[1], "/")
 	if len(paths) < 3 {
 		// No ID in the path so it must be a plural action
@@ -47,16 +50,4 @@ func PathToScope(reqPath, verb string) string {
 		chunks[lastIdx] = verbActionSingular[verb]
 	}
 	return strings.Join(chunks[0:], ".")
-}
-
-func main() {
-	fmt.Println(PathToScope("/v1/recruiter/talents/4565b3fd-ff30-4ce4-b278-e019ef298060", "GET"))
-	fmt.Println(PathToScope("/v1/recruiter/talents/4565b3fd-ff30-4ce4-b278-e019ef298060", "POST"))
-	fmt.Println(PathToScope("/v1/recruiter/talents/4565b3fd-ff30-4ce4-b278-e019ef298060", "PUT"))
-	fmt.Println(PathToScope("/v1/recruiter/talents/4565b3fd-ff30-4ce4-b278-e019ef298060", "DELETE"))
-	fmt.Println(PathToScope("/v1/recruiter/talents", "GET"))
-	fmt.Println(PathToScope("/v1/recruiter/talents", "POST"))
-	fmt.Println(PathToScope("/v1/recruiter/talents", "PUT"))
-	fmt.Println(PathToScope("/v1/recruiter/talents", "DELETE"))
-	fmt.Println(PathToScope("/v1/recruiter/talents/search", "GET"))
 }
