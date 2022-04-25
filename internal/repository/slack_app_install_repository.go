@@ -53,6 +53,19 @@ func (*SlackAppInstallRepository) GetByID(id uuid.UUID) (*ent.SlackAppInstall, e
 	return record, nil
 }
 
+func (*SlackAppInstallRepository) GetByTeamID(teamID string) (*ent.SlackAppInstall, error) {
+	record, err := dBConn.SlackAppInstall.Query().
+		Where(slackappinstall.TeamID(teamID)).
+		Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	if record.DeletedAt != nil {
+		return nil, ErrRecordDeleted
+	}
+	return record, nil
+}
+
 func (*SlackAppInstallRepository) GetByEmail(email string) (*ent.SlackAppInstall, error) {
 	record, err := dBConn.SlackAppInstall.Query().
 		Where(slackappinstall.AuthedUserEmailEQ(email)).
@@ -79,6 +92,21 @@ func (*SlackAppInstallRepository) GetRecruiterByEmail(email string) (*ent.User, 
 	}
 	return record.Edges.User, nil
 }
+
+func (*SlackAppInstallRepository) GetRecruiterByTeamID(teamID string) (*ent.User, error) {
+	record, err := dBConn.SlackAppInstall.Query().
+		Where(slackappinstall.TeamID(teamID)).
+		WithUser().
+		Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	if record.DeletedAt != nil {
+		return nil, ErrRecordDeleted
+	}
+	return record.Edges.User, nil
+}
+
 func (*SlackAppInstallRepository) Create(p SlackAppInstallParams) (*ent.SlackAppInstall, error) {
 	err := ValidateParams(p)
 	if err != nil {

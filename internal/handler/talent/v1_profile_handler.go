@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/10hourlabs/tentn/internal/handler"
+	"github.com/10hourlabs/tentn/ent"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/oneword"
@@ -33,10 +33,7 @@ func (h *V1TalentProfileHandler) ReadAll(c echo.Context) error {
 }
 
 func (h *V1TalentProfileHandler) ReadByID(c echo.Context) error {
-	user, err := handler.GetCurrentUser(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
+	user := c.Get(oneword.CurrentUser).(*ent.User)
 	talent, err := h.TalentRepository.GetTalentByUserID(user.ID)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -49,11 +46,7 @@ func (h *V1TalentProfileHandler) CreateOne(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	user, err := handler.GetCurrentUser(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
-
+	user := c.Get(oneword.CurrentUser).(*ent.User)
 	a, err := h.TalentService.CreateProfile(user, *params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -66,11 +59,7 @@ func (h *V1TalentProfileHandler) UpdateByID(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	user, err := handler.GetCurrentUser(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
-
+	user := c.Get(oneword.CurrentUser).(*ent.User)
 	a, vldErrs := h.TalentService.UpdateProfile(user, params)
 	if vldErrs != nil {
 		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())

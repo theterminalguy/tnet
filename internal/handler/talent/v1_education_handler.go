@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/internal/repository/scope"
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
@@ -28,11 +29,8 @@ func (h *V1EducationHandler) Search(c echo.Context) error {
 }
 
 func (h *V1EducationHandler) ReadAll(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
-	records, err := talent.GetEducations()
+	currentTalent := c.Get(oneword.CurrentTalent).(*scope.TalentScope)
+	records, err := currentTalent.GetEducations()
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -40,15 +38,12 @@ func (h *V1EducationHandler) ReadAll(c echo.Context) error {
 }
 
 func (h *V1EducationHandler) ReadByID(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
+	currentTalent := c.Get(oneword.CurrentTalent).(*scope.TalentScope)
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	record, err := talent.GetEducationByID(id)
+	record, err := currentTalent.GetEducationByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}
@@ -56,15 +51,12 @@ func (h *V1EducationHandler) ReadByID(c echo.Context) error {
 }
 
 func (h *V1EducationHandler) CreateOne(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
+	currentTalent := c.Get(oneword.CurrentTalent).(*scope.TalentScope)
 	params := new(repo.EducationParams)
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	params.TalentID = talent.Talent.ID
+	params.TalentID = currentTalent.GetID()
 	record, err := h.EducationRepository.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -73,10 +65,7 @@ func (h *V1EducationHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *V1EducationHandler) UpdateByID(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
+	currentTalent := c.Get(oneword.CurrentTalent).(*scope.TalentScope)
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -85,7 +74,7 @@ func (h *V1EducationHandler) UpdateByID(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	record, vldErrs := talent.UpdateEducation(id, *params)
+	record, vldErrs := currentTalent.UpdateEducation(id, *params)
 	if vldErrs != nil {
 		return c.JSON(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
 	}
@@ -93,15 +82,12 @@ func (h *V1EducationHandler) UpdateByID(c echo.Context) error {
 }
 
 func (h *V1EducationHandler) DeleteOne(c echo.Context) error {
-	talent, err := GetCurrentTalent(c)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
+	currentTalent := c.Get(oneword.CurrentTalent).(*scope.TalentScope)
 	id, err := uuid.Parse(c.Param(oneword.UUID))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err = talent.DeleteEducation(id)
+	err = currentTalent.DeleteEducation(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
 	}

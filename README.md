@@ -139,3 +139,16 @@ To generate a token for a talent use:
 ```shell
 $ make task name=tokgen params="type=talent,email=youremail@example.com" 
 ```
+
+## Approving a New Oauth2 Client
+
+```
+$  make task name=approve-client params="<client_id>"
+```
+
+## Updating the Oauth2 Scope
+
+```
+$ make task name=update-client-scope params="client-id=<client-id>,scope=<scope1,scope2,scope3>"
+```
+

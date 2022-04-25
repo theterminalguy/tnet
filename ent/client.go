@@ -16,6 +16,8 @@ import (
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/mission"
+	"github.com/10hourlabs/tentn/ent/oauth2client"
+	"github.com/10hourlabs/tentn/ent/oauth2token"
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/session"
@@ -48,6 +50,10 @@ type Client struct {
 	JobApplication *JobApplicationClient
 	// Mission is the client for interacting with the Mission builders.
 	Mission *MissionClient
+	// Oauth2Client is the client for interacting with the Oauth2Client builders.
+	Oauth2Client *Oauth2ClientClient
+	// Oauth2Token is the client for interacting with the Oauth2Token builders.
+	Oauth2Token *Oauth2TokenClient
 	// Partner is the client for interacting with the Partner builders.
 	Partner *PartnerClient
 	// PortfolioLink is the client for interacting with the PortfolioLink builders.
@@ -85,6 +91,8 @@ func (c *Client) init() {
 	c.Job = NewJobClient(c.config)
 	c.JobApplication = NewJobApplicationClient(c.config)
 	c.Mission = NewMissionClient(c.config)
+	c.Oauth2Client = NewOauth2ClientClient(c.config)
+	c.Oauth2Token = NewOauth2TokenClient(c.config)
 	c.Partner = NewPartnerClient(c.config)
 	c.PortfolioLink = NewPortfolioLinkClient(c.config)
 	c.Session = NewSessionClient(c.config)
@@ -133,6 +141,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Job:              NewJobClient(cfg),
 		JobApplication:   NewJobApplicationClient(cfg),
 		Mission:          NewMissionClient(cfg),
+		Oauth2Client:     NewOauth2ClientClient(cfg),
+		Oauth2Token:      NewOauth2TokenClient(cfg),
 		Partner:          NewPartnerClient(cfg),
 		PortfolioLink:    NewPortfolioLinkClient(cfg),
 		Session:          NewSessionClient(cfg),
@@ -167,6 +177,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Job:              NewJobClient(cfg),
 		JobApplication:   NewJobApplicationClient(cfg),
 		Mission:          NewMissionClient(cfg),
+		Oauth2Client:     NewOauth2ClientClient(cfg),
+		Oauth2Token:      NewOauth2TokenClient(cfg),
 		Partner:          NewPartnerClient(cfg),
 		PortfolioLink:    NewPortfolioLinkClient(cfg),
 		Session:          NewSessionClient(cfg),
@@ -211,6 +223,8 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Job.Use(hooks...)
 	c.JobApplication.Use(hooks...)
 	c.Mission.Use(hooks...)
+	c.Oauth2Client.Use(hooks...)
+	c.Oauth2Token.Use(hooks...)
 	c.Partner.Use(hooks...)
 	c.PortfolioLink.Use(hooks...)
 	c.Session.Use(hooks...)
@@ -904,6 +918,250 @@ func (c *MissionClient) QueryPartner(m *Mission) *PartnerQuery {
 // Hooks returns the client hooks.
 func (c *MissionClient) Hooks() []Hook {
 	return c.hooks.Mission
+}
+
+// Oauth2ClientClient is a client for the Oauth2Client schema.
+type Oauth2ClientClient struct {
+	config
+}
+
+// NewOauth2ClientClient returns a client for the Oauth2Client from the given config.
+func NewOauth2ClientClient(c config) *Oauth2ClientClient {
+	return &Oauth2ClientClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `oauth2client.Hooks(f(g(h())))`.
+func (c *Oauth2ClientClient) Use(hooks ...Hook) {
+	c.hooks.Oauth2Client = append(c.hooks.Oauth2Client, hooks...)
+}
+
+// Create returns a create builder for Oauth2Client.
+func (c *Oauth2ClientClient) Create() *Oauth2ClientCreate {
+	mutation := newOauth2ClientMutation(c.config, OpCreate)
+	return &Oauth2ClientCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Oauth2Client entities.
+func (c *Oauth2ClientClient) CreateBulk(builders ...*Oauth2ClientCreate) *Oauth2ClientCreateBulk {
+	return &Oauth2ClientCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Oauth2Client.
+func (c *Oauth2ClientClient) Update() *Oauth2ClientUpdate {
+	mutation := newOauth2ClientMutation(c.config, OpUpdate)
+	return &Oauth2ClientUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *Oauth2ClientClient) UpdateOne(o *Oauth2Client) *Oauth2ClientUpdateOne {
+	mutation := newOauth2ClientMutation(c.config, OpUpdateOne, withOauth2Client(o))
+	return &Oauth2ClientUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *Oauth2ClientClient) UpdateOneID(id uuid.UUID) *Oauth2ClientUpdateOne {
+	mutation := newOauth2ClientMutation(c.config, OpUpdateOne, withOauth2ClientID(id))
+	return &Oauth2ClientUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Oauth2Client.
+func (c *Oauth2ClientClient) Delete() *Oauth2ClientDelete {
+	mutation := newOauth2ClientMutation(c.config, OpDelete)
+	return &Oauth2ClientDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *Oauth2ClientClient) DeleteOne(o *Oauth2Client) *Oauth2ClientDeleteOne {
+	return c.DeleteOneID(o.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *Oauth2ClientClient) DeleteOneID(id uuid.UUID) *Oauth2ClientDeleteOne {
+	builder := c.Delete().Where(oauth2client.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &Oauth2ClientDeleteOne{builder}
+}
+
+// Query returns a query builder for Oauth2Client.
+func (c *Oauth2ClientClient) Query() *Oauth2ClientQuery {
+	return &Oauth2ClientQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Oauth2Client entity by its id.
+func (c *Oauth2ClientClient) Get(ctx context.Context, id uuid.UUID) (*Oauth2Client, error) {
+	return c.Query().Where(oauth2client.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *Oauth2ClientClient) GetX(ctx context.Context, id uuid.UUID) *Oauth2Client {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a Oauth2Client.
+func (c *Oauth2ClientClient) QueryUser(o *Oauth2Client) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(oauth2client.Table, oauth2client.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, oauth2client.UserTable, oauth2client.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOauth2Tokens queries the oauth2_tokens edge of a Oauth2Client.
+func (c *Oauth2ClientClient) QueryOauth2Tokens(o *Oauth2Client) *Oauth2TokenQuery {
+	query := &Oauth2TokenQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(oauth2client.Table, oauth2client.FieldID, id),
+			sqlgraph.To(oauth2token.Table, oauth2token.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, oauth2client.Oauth2TokensTable, oauth2client.Oauth2TokensColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *Oauth2ClientClient) Hooks() []Hook {
+	return c.hooks.Oauth2Client
+}
+
+// Oauth2TokenClient is a client for the Oauth2Token schema.
+type Oauth2TokenClient struct {
+	config
+}
+
+// NewOauth2TokenClient returns a client for the Oauth2Token from the given config.
+func NewOauth2TokenClient(c config) *Oauth2TokenClient {
+	return &Oauth2TokenClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `oauth2token.Hooks(f(g(h())))`.
+func (c *Oauth2TokenClient) Use(hooks ...Hook) {
+	c.hooks.Oauth2Token = append(c.hooks.Oauth2Token, hooks...)
+}
+
+// Create returns a create builder for Oauth2Token.
+func (c *Oauth2TokenClient) Create() *Oauth2TokenCreate {
+	mutation := newOauth2TokenMutation(c.config, OpCreate)
+	return &Oauth2TokenCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Oauth2Token entities.
+func (c *Oauth2TokenClient) CreateBulk(builders ...*Oauth2TokenCreate) *Oauth2TokenCreateBulk {
+	return &Oauth2TokenCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Oauth2Token.
+func (c *Oauth2TokenClient) Update() *Oauth2TokenUpdate {
+	mutation := newOauth2TokenMutation(c.config, OpUpdate)
+	return &Oauth2TokenUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *Oauth2TokenClient) UpdateOne(o *Oauth2Token) *Oauth2TokenUpdateOne {
+	mutation := newOauth2TokenMutation(c.config, OpUpdateOne, withOauth2Token(o))
+	return &Oauth2TokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *Oauth2TokenClient) UpdateOneID(id uuid.UUID) *Oauth2TokenUpdateOne {
+	mutation := newOauth2TokenMutation(c.config, OpUpdateOne, withOauth2TokenID(id))
+	return &Oauth2TokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Oauth2Token.
+func (c *Oauth2TokenClient) Delete() *Oauth2TokenDelete {
+	mutation := newOauth2TokenMutation(c.config, OpDelete)
+	return &Oauth2TokenDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *Oauth2TokenClient) DeleteOne(o *Oauth2Token) *Oauth2TokenDeleteOne {
+	return c.DeleteOneID(o.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *Oauth2TokenClient) DeleteOneID(id uuid.UUID) *Oauth2TokenDeleteOne {
+	builder := c.Delete().Where(oauth2token.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &Oauth2TokenDeleteOne{builder}
+}
+
+// Query returns a query builder for Oauth2Token.
+func (c *Oauth2TokenClient) Query() *Oauth2TokenQuery {
+	return &Oauth2TokenQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Oauth2Token entity by its id.
+func (c *Oauth2TokenClient) Get(ctx context.Context, id uuid.UUID) (*Oauth2Token, error) {
+	return c.Query().Where(oauth2token.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *Oauth2TokenClient) GetX(ctx context.Context, id uuid.UUID) *Oauth2Token {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a Oauth2Token.
+func (c *Oauth2TokenClient) QueryUser(o *Oauth2Token) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(oauth2token.Table, oauth2token.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, oauth2token.UserTable, oauth2token.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOauth2client queries the oauth2client edge of a Oauth2Token.
+func (c *Oauth2TokenClient) QueryOauth2client(o *Oauth2Token) *Oauth2ClientQuery {
+	query := &Oauth2ClientQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(oauth2token.Table, oauth2token.FieldID, id),
+			sqlgraph.To(oauth2client.Table, oauth2client.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, oauth2token.Oauth2clientTable, oauth2token.Oauth2clientColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *Oauth2TokenClient) Hooks() []Hook {
+	return c.hooks.Oauth2Token
 }
 
 // PartnerClient is a client for the Partner schema.
@@ -1843,6 +2101,38 @@ func (c *UserClient) GetX(ctx context.Context, id uuid.UUID) *User {
 		panic(err)
 	}
 	return obj
+}
+
+// QueryOauth2Clients queries the oauth2_clients edge of a User.
+func (c *UserClient) QueryOauth2Clients(u *User) *Oauth2ClientQuery {
+	query := &Oauth2ClientQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(oauth2client.Table, oauth2client.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.Oauth2ClientsTable, user.Oauth2ClientsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOauth2Tokens queries the oauth2_tokens edge of a User.
+func (c *UserClient) QueryOauth2Tokens(u *User) *Oauth2TokenQuery {
+	query := &Oauth2TokenQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(oauth2token.Table, oauth2token.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.Oauth2TokensTable, user.Oauth2TokensColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // QueryTalents queries the talents edge of a User.

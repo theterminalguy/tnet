@@ -33,6 +33,10 @@ const (
 	FieldApproved = "approved"
 	// FieldPhotoURL holds the string denoting the photo_url field in the database.
 	FieldPhotoURL = "photo_url"
+	// EdgeOauth2Clients holds the string denoting the oauth2_clients edge name in mutations.
+	EdgeOauth2Clients = "oauth2_clients"
+	// EdgeOauth2Tokens holds the string denoting the oauth2_tokens edge name in mutations.
+	EdgeOauth2Tokens = "oauth2_tokens"
 	// EdgeTalents holds the string denoting the talents edge name in mutations.
 	EdgeTalents = "talents"
 	// EdgeSlackAppInstalls holds the string denoting the slack_app_installs edge name in mutations.
@@ -47,6 +51,20 @@ const (
 	EdgeSessions = "sessions"
 	// Table holds the table name of the user in the database.
 	Table = "users"
+	// Oauth2ClientsTable is the table that holds the oauth2_clients relation/edge.
+	Oauth2ClientsTable = "oauth2clients"
+	// Oauth2ClientsInverseTable is the table name for the Oauth2Client entity.
+	// It exists in this package in order to avoid circular dependency with the "oauth2client" package.
+	Oauth2ClientsInverseTable = "oauth2clients"
+	// Oauth2ClientsColumn is the table column denoting the oauth2_clients relation/edge.
+	Oauth2ClientsColumn = "user_id"
+	// Oauth2TokensTable is the table that holds the oauth2_tokens relation/edge.
+	Oauth2TokensTable = "oauth2tokens"
+	// Oauth2TokensInverseTable is the table name for the Oauth2Token entity.
+	// It exists in this package in order to avoid circular dependency with the "oauth2token" package.
+	Oauth2TokensInverseTable = "oauth2tokens"
+	// Oauth2TokensColumn is the table column denoting the oauth2_tokens relation/edge.
+	Oauth2TokensColumn = "user_id"
 	// TalentsTable is the table that holds the talents relation/edge.
 	TalentsTable = "talents"
 	// TalentsInverseTable is the table name for the Talent entity.
@@ -131,7 +149,7 @@ var (
 // RoleValidator is a validator for the "role" field enum values. It is called by the builders before save.
 func RoleValidator(r userrole.Role) error {
 	switch r {
-	case "talent", "recruiter":
+	case "talent", "recruiter", "developer":
 		return nil
 	default:
 		return fmt.Errorf("user: invalid enum value for role field: %q", r)

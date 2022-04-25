@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/schema/billing"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
@@ -176,6 +177,20 @@ func (saiu *SlackAppInstallUpdate) SetIsEnterpriseInstall(b bool) *SlackAppInsta
 	return saiu
 }
 
+// SetPaymentPlan sets the "payment_plan" field.
+func (saiu *SlackAppInstallUpdate) SetPaymentPlan(bp billing.PaymentPlan) *SlackAppInstallUpdate {
+	saiu.mutation.SetPaymentPlan(bp)
+	return saiu
+}
+
+// SetNillablePaymentPlan sets the "payment_plan" field if the given value is not nil.
+func (saiu *SlackAppInstallUpdate) SetNillablePaymentPlan(bp *billing.PaymentPlan) *SlackAppInstallUpdate {
+	if bp != nil {
+		saiu.SetPaymentPlan(*bp)
+	}
+	return saiu
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (saiu *SlackAppInstallUpdate) SetUser(u *User) *SlackAppInstallUpdate {
 	return saiu.SetUserID(u.ID)
@@ -200,12 +215,18 @@ func (saiu *SlackAppInstallUpdate) Save(ctx context.Context) (int, error) {
 	)
 	saiu.defaults()
 	if len(saiu.hooks) == 0 {
+		if err = saiu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = saiu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*SlackAppInstallMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = saiu.check(); err != nil {
+				return 0, err
 			}
 			saiu.mutation = mutation
 			affected, err = saiu.sqlSave(ctx)
@@ -253,6 +274,16 @@ func (saiu *SlackAppInstallUpdate) defaults() {
 		v := slackappinstall.UpdateDefaultUpdatedAt()
 		saiu.mutation.SetUpdatedAt(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (saiu *SlackAppInstallUpdate) check() error {
+	if v, ok := saiu.mutation.PaymentPlan(); ok {
+		if err := slackappinstall.PaymentPlanValidator(v); err != nil {
+			return &ValidationError{Name: "payment_plan", err: fmt.Errorf(`ent: validator failed for field "SlackAppInstall.payment_plan": %w`, err)}
+		}
+	}
+	return nil
 }
 
 func (saiu *SlackAppInstallUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -387,6 +418,13 @@ func (saiu *SlackAppInstallUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: slackappinstall.FieldIsEnterpriseInstall,
+		})
+	}
+	if value, ok := saiu.mutation.PaymentPlan(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: slackappinstall.FieldPaymentPlan,
 		})
 	}
 	if saiu.mutation.UserCleared() {
@@ -589,6 +627,20 @@ func (saiuo *SlackAppInstallUpdateOne) SetIsEnterpriseInstall(b bool) *SlackAppI
 	return saiuo
 }
 
+// SetPaymentPlan sets the "payment_plan" field.
+func (saiuo *SlackAppInstallUpdateOne) SetPaymentPlan(bp billing.PaymentPlan) *SlackAppInstallUpdateOne {
+	saiuo.mutation.SetPaymentPlan(bp)
+	return saiuo
+}
+
+// SetNillablePaymentPlan sets the "payment_plan" field if the given value is not nil.
+func (saiuo *SlackAppInstallUpdateOne) SetNillablePaymentPlan(bp *billing.PaymentPlan) *SlackAppInstallUpdateOne {
+	if bp != nil {
+		saiuo.SetPaymentPlan(*bp)
+	}
+	return saiuo
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (saiuo *SlackAppInstallUpdateOne) SetUser(u *User) *SlackAppInstallUpdateOne {
 	return saiuo.SetUserID(u.ID)
@@ -620,12 +672,18 @@ func (saiuo *SlackAppInstallUpdateOne) Save(ctx context.Context) (*SlackAppInsta
 	)
 	saiuo.defaults()
 	if len(saiuo.hooks) == 0 {
+		if err = saiuo.check(); err != nil {
+			return nil, err
+		}
 		node, err = saiuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*SlackAppInstallMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = saiuo.check(); err != nil {
+				return nil, err
 			}
 			saiuo.mutation = mutation
 			node, err = saiuo.sqlSave(ctx)
@@ -673,6 +731,16 @@ func (saiuo *SlackAppInstallUpdateOne) defaults() {
 		v := slackappinstall.UpdateDefaultUpdatedAt()
 		saiuo.mutation.SetUpdatedAt(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (saiuo *SlackAppInstallUpdateOne) check() error {
+	if v, ok := saiuo.mutation.PaymentPlan(); ok {
+		if err := slackappinstall.PaymentPlanValidator(v); err != nil {
+			return &ValidationError{Name: "payment_plan", err: fmt.Errorf(`ent: validator failed for field "SlackAppInstall.payment_plan": %w`, err)}
+		}
+	}
+	return nil
 }
 
 func (saiuo *SlackAppInstallUpdateOne) sqlSave(ctx context.Context) (_node *SlackAppInstall, err error) {
@@ -824,6 +892,13 @@ func (saiuo *SlackAppInstallUpdateOne) sqlSave(ctx context.Context) (_node *Slac
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: slackappinstall.FieldIsEnterpriseInstall,
+		})
+	}
+	if value, ok := saiuo.mutation.PaymentPlan(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: slackappinstall.FieldPaymentPlan,
 		})
 	}
 	if saiuo.mutation.UserCleared() {

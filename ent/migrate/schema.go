@@ -257,6 +257,105 @@ var (
 			},
 		},
 	}
+	// Oauth2clientsColumns holds the columns for the "oauth2clients" table.
+	Oauth2clientsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "app_name", Type: field.TypeString},
+		{Name: "app_description", Type: field.TypeString},
+		{Name: "app_logo_uri", Type: field.TypeString},
+		{Name: "app_homepage_uri", Type: field.TypeString},
+		{Name: "app_privacy_policy_uri", Type: field.TypeString},
+		{Name: "scopes", Type: field.TypeJSON},
+		{Name: "hashed_secret", Type: field.TypeString},
+		{Name: "redirect_uris", Type: field.TypeJSON},
+		{Name: "client_type", Type: field.TypeEnum, Enums: []string{"confidential", "public"}},
+		{Name: "is_internal", Type: field.TypeBool, Default: false},
+		{Name: "approved", Type: field.TypeBool, Default: false},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
+	}
+	// Oauth2clientsTable holds the schema information for the "oauth2clients" table.
+	Oauth2clientsTable = &schema.Table{
+		Name:       "oauth2clients",
+		Columns:    Oauth2clientsColumns,
+		PrimaryKey: []*schema.Column{Oauth2clientsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "oauth2clients_users_oauth2_clients",
+				Columns:    []*schema.Column{Oauth2clientsColumns[15]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "oauth2client_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{Oauth2clientsColumns[15]},
+			},
+		},
+	}
+	// Oauth2tokensColumns holds the columns for the "oauth2tokens" table.
+	Oauth2tokensColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "redirect_uri", Type: field.TypeString, Nullable: true},
+		{Name: "scopes", Type: field.TypeString},
+		{Name: "code", Type: field.TypeString},
+		{Name: "code_challenge", Type: field.TypeString},
+		{Name: "code_challenge_method", Type: field.TypeString},
+		{Name: "access_token", Type: field.TypeString},
+		{Name: "refresh_token", Type: field.TypeString},
+		{Name: "code_created_at", Type: field.TypeTime},
+		{Name: "access_token_created_at", Type: field.TypeTime},
+		{Name: "refresh_token_created_at", Type: field.TypeTime},
+		{Name: "code_expires_in", Type: field.TypeInt64},
+		{Name: "access_token_expires_in", Type: field.TypeInt64},
+		{Name: "refresh_token_expires_in", Type: field.TypeInt64},
+		{Name: "oauth2_client_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
+	}
+	// Oauth2tokensTable holds the schema information for the "oauth2tokens" table.
+	Oauth2tokensTable = &schema.Table{
+		Name:       "oauth2tokens",
+		Columns:    Oauth2tokensColumns,
+		PrimaryKey: []*schema.Column{Oauth2tokensColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "oauth2tokens_oauth2clients_oauth2_tokens",
+				Columns:    []*schema.Column{Oauth2tokensColumns[17]},
+				RefColumns: []*schema.Column{Oauth2clientsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "oauth2tokens_users_oauth2_tokens",
+				Columns:    []*schema.Column{Oauth2tokensColumns[18]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "oauth2token_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{Oauth2tokensColumns[18]},
+			},
+			{
+				Name:    "oauth2token_oauth2_client_id",
+				Unique:  false,
+				Columns: []*schema.Column{Oauth2tokensColumns[17]},
+			},
+			{
+				Name:    "oauth2token_code_access_token_refresh_token",
+				Unique:  false,
+				Columns: []*schema.Column{Oauth2tokensColumns[6], Oauth2tokensColumns[9], Oauth2tokensColumns[10]},
+			},
+		},
+	}
 	// PartnersColumns holds the columns for the "partners" table.
 	PartnersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -397,6 +496,7 @@ var (
 		{Name: "token_type", Type: field.TypeString},
 		{Name: "scope", Type: field.TypeString},
 		{Name: "is_enterprise_install", Type: field.TypeBool},
+		{Name: "payment_plan", Type: field.TypeEnum, Enums: []string{"free"}, Default: "free"},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// SlackAppInstallsTable holds the schema information for the "slack_app_installs" table.
@@ -407,7 +507,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "slack_app_installs_users_slack_app_installs",
-				Columns:    []*schema.Column{SlackAppInstallsColumns[16]},
+				Columns:    []*schema.Column{SlackAppInstallsColumns[17]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -416,7 +516,7 @@ var (
 			{
 				Name:    "slackappinstall_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{SlackAppInstallsColumns[16]},
+				Columns: []*schema.Column{SlackAppInstallsColumns[17]},
 			},
 			{
 				Name:    "slackappinstall_team_id",
@@ -520,7 +620,7 @@ var (
 		{Name: "first_name", Type: field.TypeString},
 		{Name: "last_name", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString},
-		{Name: "role", Type: field.TypeEnum, Enums: []string{"talent", "recruiter"}},
+		{Name: "role", Type: field.TypeEnum, Enums: []string{"talent", "recruiter", "developer"}},
 		{Name: "approved", Type: field.TypeBool, Default: false},
 		{Name: "photo_url", Type: field.TypeString},
 	}
@@ -586,6 +686,8 @@ var (
 		JobsTable,
 		JobApplicationsTable,
 		MissionsTable,
+		Oauth2clientsTable,
+		Oauth2tokensTable,
 		PartnersTable,
 		PortfolioLinksTable,
 		SessionsTable,
@@ -607,6 +709,9 @@ func init() {
 	JobApplicationsTable.ForeignKeys[1].RefTable = TalentsTable
 	MissionsTable.ForeignKeys[0].RefTable = PartnersTable
 	MissionsTable.ForeignKeys[1].RefTable = TalentsTable
+	Oauth2clientsTable.ForeignKeys[0].RefTable = UsersTable
+	Oauth2tokensTable.ForeignKeys[0].RefTable = Oauth2clientsTable
+	Oauth2tokensTable.ForeignKeys[1].RefTable = UsersTable
 	PortfolioLinksTable.ForeignKeys[0].RefTable = TalentsTable
 	SessionsTable.ForeignKeys[0].RefTable = UsersTable
 	SkillsTable.ForeignKeys[0].RefTable = TalentsTable

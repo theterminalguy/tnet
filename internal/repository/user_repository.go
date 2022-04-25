@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -16,11 +17,11 @@ type UserRepository struct{}
 
 type UserParams struct {
 	ID        uuid.UUID
-	FirstName string        `json:"first_name" validate:"required"`
-	LastName  string        `json:"last_name" validate:"required"`
-	PhotoURL  string        `json:"photo_url" validate:"required"`
-	Email     string        `json:"email" validate:"required,email"`
-	Role      userrole.Role `json:"role"`
+	FirstName string `json:"first_name" validate:"required"`
+	LastName  string `json:"last_name" validate:"required"`
+	PhotoURL  string `json:"photo_url"`
+	Email     string `json:"email" validate:"required,email"`
+	Role      userrole.Role
 	Approved  bool
 }
 
@@ -41,6 +42,20 @@ func (*UserRepository) GetAll() ([]*ent.User, error) {
 func (*UserRepository) GetByID(id uuid.UUID) (*ent.User, error) {
 	record, err := dBConn.User.Query().
 		Where(user.ID(id)).
+		Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	if record.DeletedAt != nil {
+		return nil, ErrRecordDeleted
+	}
+	return record, nil
+}
+
+func (*UserRepository) GetRecruiterByID(id uuid.UUID) (*ent.User, error) {
+	record, err := dBConn.User.Query().
+		Where(user.ID(id)).
+		Where(user.RoleEQ(userrole.Recruiter)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err
@@ -117,6 +132,24 @@ func (r *UserRepository) Update(id uuid.UUID, p UserParams) (*ent.User, []error)
 		return nil, []error{err}
 	}
 	return record, nil
+}
+
+func (*UserRepository) UpdateFields(u *ent.User, fields map[string]interface{}) error {
+	bldr := u.Update()
+	for k, v := range fields {
+		switch k {
+		case user.FieldApproved:
+			bldr.SetApproved(v.(bool))
+		// TODO: case add more fields here
+		default:
+			return fmt.Errorf("unknown field: %s", k)
+		}
+	}
+	_, err := bldr.Save(dBContext)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *UserRepository) DeleteByID(id uuid.UUID) error {

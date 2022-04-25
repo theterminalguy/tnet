@@ -42,3 +42,20 @@ func UUIDDiffs(prevIDs []uuid.UUID, currentIDs []uuid.UUID) []uuid.UUID {
 	}
 	return diffs
 }
+
+func UniqueCombineStr(s1, s2 []string) []string {
+	var s []string
+	m := make(map[string]bool)
+	for _, v := range s1 {
+		m[v] = true
+	}
+	for _, v := range s2 {
+		if _, ok := m[v]; !ok {
+			m[v] = true
+		}
+	}
+	for k := range m {
+		s = append(s, k)
+	}
+	return s
+}

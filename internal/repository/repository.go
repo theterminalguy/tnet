@@ -29,7 +29,7 @@ func init() {
 	// TODO: should we have this here or in main?
 	osutil.CheckEnv()
 
-	tenlog.SetAppName("jobs_api")
+	tenlog.SetAppName("tentn")
 	tenlog.SetEnvName(os.Getenv("ENV"))
 
 	var client *ent.Client
@@ -120,4 +120,11 @@ func LinearCheckElemArray(a, b []string) bool {
 		}
 	}
 	return m >= n
+}
+
+func rollback(tx *ent.Tx, err error) error {
+	if rerr := tx.Rollback(); rerr != nil {
+		err = fmt.Errorf("%w: %v", err, rerr)
+	}
+	return err
 }

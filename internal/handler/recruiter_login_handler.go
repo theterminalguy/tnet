@@ -183,7 +183,7 @@ func SlackOauth2CallbackHandler(c echo.Context) error {
 	}
 	if err != nil {
 		store := entsm.GetSessionStore()
-		session, _ = store.Get(c.Request(), "tentn-session")
+		session, _ = store.Get(c.Request(), entsm.DefaultSessionName)
 		session.Values["authenticated"] = true
 		session.Values["team_id"] = oauthResp.Team.ID
 	}
@@ -203,8 +203,8 @@ func SlackOauth2CallbackHandler(c echo.Context) error {
 
 func RecruiterLoginHanlder(c echo.Context) error {
 	store := entsm.GetSessionStore()
-	session, _ := store.Get(c.Request(), "tentn-session")
-	if auth, ok := session.Values["authenticated"].(bool); ok || auth {
+	session, _ := store.Get(c.Request(), entsm.DefaultSessionName)
+	if _, ok := session.Values["authenticated"].(bool); ok {
 		return c.Redirect(http.StatusTemporaryRedirect, os.Getenv("APP_HOST"))
 	}
 	slackOauth2StateToken = randutil.GenerateOauthStateToken()
@@ -214,7 +214,7 @@ func RecruiterLoginHanlder(c echo.Context) error {
 
 func LogoutHandler(c echo.Context) error {
 	store := entsm.GetSessionStore()
-	session, _ := store.Get(c.Request(), "tentn-session")
+	session, _ := store.Get(c.Request(), entsm.DefaultSessionName)
 	// Revoke users authentication
 	session.Options.MaxAge = -1
 	session.Save(c.Request(), c.Response())
