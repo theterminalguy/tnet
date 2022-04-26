@@ -26,6 +26,10 @@ func (p *OffsetPaginater) GetOffset() int {
 	return p.offset
 }
 
+func (*OffsetPaginater) GetLimit() int {
+	return MaxResults
+}
+
 func (p *OffsetPaginater) Paginate(items []interface{}, total int) *OffsetPaginater {
 	p.Items = items
 	p.Total = total
