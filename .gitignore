@@ -21,7 +21,6 @@ __debug_bin
 TODO
 
 *.ideas 
-*.pem
 playground.go
 ./rql
 
