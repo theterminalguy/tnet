@@ -63,33 +63,23 @@ func (t *TalentRepository) Filter(page string, prd ...predicate.Talent) (*pagina
 	if err != nil {
 		return nil, err
 	}
-	allTalents, err := dBConn.
-		Debug(). // TODO: remove
-		Talent.
-		Query().
-		WithUser().
-		WithEducations().
-		WithWorkExperiences().
-		WithPortfoliolinks().
-		WithSkills().
-		Where(prd...).
-		Offset(pager.GetOffset()).
-		Count(dBContext)
+	query := dBConn.Debug(). // TODO: remove
+					Talent.
+					Query().
+					WithUser().
+					WithEducations().
+					WithWorkExperiences().
+					WithPortfoliolinks().
+					WithSkills().
+					Where(prd...)
+
+	talentCount, err := query.Count(dBContext)
 	if err != nil {
 		return nil, err
 	}
-	talents, err := dBConn.
-		Debug(). // TODO: remove
-		Talent.
-		Query().
-		WithUser().
-		WithEducations().
-		WithWorkExperiences().
-		WithPortfoliolinks().
-		WithSkills().
-		Where(prd...).
+	talents, err := query.
 		Order(ent.Desc(talent.FieldProfessionalStartDate)).
-		Limit(paginator.MaxResults).
+		Limit(pager.GetLimit()).
 		Offset(pager.GetOffset()).
 		All(dBContext)
 	if err != nil {
@@ -100,7 +90,7 @@ func (t *TalentRepository) Filter(page string, prd ...predicate.Talent) (*pagina
 		response := decorator.DecorateTalent(t)
 		talentList = append(talentList, response)
 	}
-	return pager.Paginate(talentList, allTalents), nil
+	return pager.Paginate(talentList, talentCount), nil
 }
 
 func (*TalentRepository) GetAll() ([]*ent.Talent, error) {
