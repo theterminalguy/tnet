@@ -22,6 +22,8 @@ func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c 
 
 func main() {
 	e := router.DefineRoutes()
+	e.Static("/public/views/css", "public/views/css")
+	e.Static("/public/views/img", "public/views/img")
 	renderer := &TemplateRenderer{
 		templates: template.Must(template.ParseGlob("public/views/index.html")),
 	}

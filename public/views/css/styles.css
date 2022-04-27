@@ -1,0 +1,194 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 100%;
+  font-family: "Open Sans", sans-serif;
+}
+
+img {
+  width: 100%;
+}
+
+.site-page {
+  width: 100%;
+  padding: 20px 5%;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 8px;
+}
+
+.header-logo {
+  display: flex;
+  flex-direction: column;
+}
+
+.worldstalent {
+  font-size: 13px;
+  font-family: "Hind Siliguri";
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  align-items: left;
+  text-align: left;
+  color: #1d1c1d;
+  margin-top: -6px;
+  width: auto;
+  padding-left: 30px;
+}
+
+.hambugar,
+.closeButton {
+  display: none;
+}
+
+.developer-link {
+  cursor: pointer;
+  width: 100%;
+}
+
+.text-container {
+  width: 55%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.header-text {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 2rem;
+}
+
+.text {
+  font-size: 1.25rem;
+}
+
+.logo {
+  font-family: "Segoe UI";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 140%;
+  text-align: center;
+  color: #1a2228;
+}
+
+.toslack {
+  background: #ffffff;
+  border-radius: 4px;
+  margin-top: 30px;
+}
+
+.toslack img {
+  width: 200px;
+}
+
+.midimage {
+  margin-top: 50px;
+}
+
+.midimage img {
+  width: 80%;
+  margin: auto;
+}
+
+@media screen and (max-width: 1280px) {
+  .text-container {
+    width: 75%;
+    margin-top: 3rem;
+  }
+}
+
+@media screen and (max-width: 780px) {
+  .site-page {
+    padding: 14px 3%;
+  }
+
+  .text-container {
+    width: 90%;
+    margin-top: 3rem;
+  }
+
+  .header-menu {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 200px;
+    height: auto;
+    background: #fff;
+    transform: translateX(1000%);
+    transition: all 400ms ease-in-out;
+    padding: 20px 10px 50px 25px;
+    border: 2px solid #ced4ed;
+    border-radius: 15px;
+    z-index: 50;
+    cursor: default;
+  }
+
+  .header-menu.show {
+    transform: translateX(0);
+  }
+
+  .hambugar {
+    display: block;
+    margin-top: -10px;
+    z-index: 3;
+  }
+
+  .closeButton {
+    display: block;
+    margin-top: -10px;
+    margin-bottom: 20px;
+    text-align: right;
+  }
+
+  .hambugar i,
+  .closeButton {
+    font-size: 22px;
+    cursor: pointer;
+  }
+
+  .midimage img {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .header-logo img {
+    width: 150px;
+  }
+
+  .hambugar {
+    margin-right: 10px;
+  }
+
+  .header .text-container {
+    width: 100%;
+  }
+
+  .header-text {
+    font-size: 1.7rem;
+  }
+
+  .text {
+    font-size: 1.15rem;
+  }
+
+  .toslack img {
+    width: 180px;
+  }
+}
