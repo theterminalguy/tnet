@@ -27,11 +27,11 @@ var requiredRuntimeEnvForDev = []string{
 }
 
 var requiredRuntimeEnvForProd = []string{
-	// "CLOUDSQL_PG_USER",
-	// "CLOUDSQL_PG_PASSWORD",
-	// "CLOUDSQL_PG_SOCKET",
-	// "CLOUDSQL_PG_INSTANCE",
-	// "CLOUDSQL_PG_DBNAME",
+	"CLOUDSQL_PG_USER",
+	"CLOUDSQL_PG_PASSWORD",
+	"CLOUDSQL_PG_DBNAME",
+	"CLOUDSQL_PG_SOCKET_DIR",
+	"CLOUDSQL_PG_INSTANCE",
 }
 
 func CheckEnv() {
@@ -62,10 +62,10 @@ func CheckEnv() {
 				errs = append(errs, "Missing required env var for dev mode: "+key)
 			}
 		}
-	} else if os.Getenv("ENV") == "prod" {
+	} else if os.Getenv("ENV") == "production" {
 		for _, key := range requiredRuntimeEnvForProd {
 			if os.Getenv(key) == "" {
-				errs = append(errs, "Missing required env var for prod mode: "+key)
+				errs = append(errs, "Missing required env var for production mode: "+key)
 			}
 		}
 	}

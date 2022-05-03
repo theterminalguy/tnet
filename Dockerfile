@@ -49,10 +49,10 @@ CMD ["sh", "-c", "go vet ./... ; richgo test -v ./..."]
 # Use the official Debian slim image for a lean production container.
 # https://hub.docker.com/_/debian
 # https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
-FROM debian:buster-slim as prod
+FROM debian:buster-slim as production
 
 # TODO: this is only use for testing we would change it to prod once we are ready to go live
-ENV ENV staging
+ENV ENV production
 
 RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     ca-certificates && \

@@ -42,14 +42,14 @@ steps:
       ]
 
   - name: "gcr.io/cloud-builders/docker"
-    id: "Building image for staging"
+    id: "Building image for production"
     args:
       [
         "build",
         "-t",
-        "${_STG_IMAGE}",
+        "${_PRD_IMAGE}",
         "--target",
-        "prod",
+        "production",
         ".",
         "--build-arg",
         "GITHUB_USER=$_GITHUB_USER",
@@ -60,19 +60,20 @@ steps:
       - "DOCKER_BUILDKIT=1"
 
   - name: "gcr.io/cloud-builders/docker"
-    id: "Pushing the staging image to Artifact registry"
-    args: ["push", "${_STG_IMAGE}"]
+    id: "Pushing the production image to Artifact registry"
+    args: ["push", "${_PRD_IMAGE}"]
 
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-    id: "Deploying staging image to Google Cloud Run"
+    id: "Deploying production image to Google Cloud Run"
     entrypoint: gcloud
+    timeout: "240s"
     args:
       [
         "run",
         "deploy",
         "${_SERVICE_NAME}",
         "--image",
-        "${_STG_IMAGE}",
+        "${_PRD_IMAGE}",
         "--region",
         "${_REGION}",
         "--platform",
@@ -81,6 +82,8 @@ steps:
         "${_MIN_INSTANCES}",
         "--allow-unauthenticated",
         "--set-env-vars",
+        "ENV=production",
+        "--set-env-vars",
         "JWT_SIGNED_SECRET=${_JWT_SIGNED_SECRET}",
         "--set-env-vars",
         "APP_HOST=${_APP_HOST}",
@@ -88,18 +91,34 @@ steps:
         "GOOGLE_OAUTH_CLIENT_ID=${_GOOGLE_OAUTH_CLIENT_ID}",
         "--set-env-vars",
         "GOOGLE_OAUTH_CLIENT_SECRET=${_GOOGLE_OAUTH_CLIENT_SECRET}",
+        "--set-env-vars",
+        "CLOUDSQL_PG_DBNAME=${_CLOUDSQL_PG_DBNAME}",
+        "--set-env-vars",
+        "CLOUDSQL_PG_SOCKET_DIR=${_CLOUDSQL_PG_SOCKET_DIR}",
+        "--set-env-vars",
+        "CLOUDSQL_PG_PASSWORD=${_CLOUDSQL_PG_PASSWORD}",
+        "--set-env-vars",
+        "CLOUDSQL_PG_INSTANCE=${_CLOUDSQL_PG_INSTANCE}",
+        "--set-env-vars",
+        "CLOUDSQL_PG_USER=${_CLOUDSQL_PG_USER}",
+        "--set-env-vars",
+        "SESSION_KEY=${_SESSION_KEY}",
+        "--set-env-vars",
+        "SLACK_OAUTH_CLIENT_ID=${_SLACK_OAUTH_CLIENT_ID}",
+        "--set-env-vars",
+        "SLACK_OAUTH_CLIENT_SECRET=${_SLACK_OAUTH_CLIENT_SECRET}",
       ]
 
 images:
   - "${_TEST_IMAGE}"
-  - "${_STG_IMAGE}"
+  - "${_PRD_IMAGE}"
 
 tags: ["tentn"]
 
 substitutions:
-  _MIN_INSTANCES: "0"
+  _MIN_INSTANCES: "1" # Should scale up when traffic increases
   _REGION: "us-central1"
-  _SERVICE_NAME: "${REPO_NAME}-staging"
+  _SERVICE_NAME: "${REPO_NAME}-prod"
   _ARTIFACT_REPO: "tentn-docker-repo"
   _TEST_IMAGE: "us-central1-docker.pkg.dev/${PROJECT_ID}/tentn-docker-repo/${REPO_NAME}-test:${SHORT_SHA}"
-  _STG_IMAGE: "us-central1-docker.pkg.dev/${PROJECT_ID}/tentn-docker-repo/${REPO_NAME}-stg:${SHORT_SHA}"
+  _PRD_IMAGE: "us-central1-docker.pkg.dev/${PROJECT_ID}/tentn-docker-repo/${REPO_NAME}-prod:${SHORT_SHA}"

@@ -18,6 +18,7 @@ type DBPostgres struct {
 var _ Databaser = (*DBPostgres)(nil)
 
 func (*DBPostgres) GetDSN() string {
+	fmt.Print("Setting up Postgres database connection...")
 	if os.Getenv("ENV") == "production" {
 		return fmt.Sprintf(
 			"user=%s password=%s database=%s host=%s/%s",
