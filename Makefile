@@ -7,7 +7,7 @@ help: ## Output available commands
 setup: ## Builds the web container
 	STAGE=app-build docker-compose -f docker-compose.yml build web
 
-start: ## Start all services
+up: ## Start all services
 	STAGE=app-build docker-compose -f docker-compose.yml up
 
 dev: ## Run the web server in dev mode without using docker
@@ -19,7 +19,7 @@ pg: ## Starts the postgres server
 pgadmin: ## Start PG Admin
 	docker-compose -f docker-compose.yml up -d pgadmin
 
-stop: ## Stop all services
+down: ## Stop all services
 	STAGE=app-build docker-compose -f docker-compose.yml down
 
 destroy: ## Remove all containers and images. Also, destroy all volumes

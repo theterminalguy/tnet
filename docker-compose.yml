@@ -11,6 +11,17 @@ services:
       - postgres:/var/lib/postgresql/data
     env_file:
       - .env
+  
+  redis:
+    image: redis:7.0-alpine
+    networks:
+      - tentn
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+    env_file:
+      - .env
 
   pgadmin:
     depends_on:
@@ -22,19 +33,6 @@ services:
       - 5050:80
     volumes:
       - pgadmin:/var/lib/pgadmin
-    env_file:
-      - .env
-
-  metabase:
-    depends_on:
-      - postgres
-    image: metabase/metabase
-    networks:
-      - tentn
-    ports:
-      - 5051:3000
-    volumes:
-      - metabase:/metabase-data/metabase.db
     env_file:
       - .env
 
@@ -72,8 +70,8 @@ services:
 
 volumes:
   postgres:
+  redis:
   pgadmin:
-  metabase:
 
 networks:
   tentn:
