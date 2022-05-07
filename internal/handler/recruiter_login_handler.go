@@ -29,6 +29,7 @@ type SlackOauthResponse struct {
 		Name string `json:"name"`
 	} `json:"team"`
 	Ok                  bool   `json:"ok"`
+	Error               string `json:"error"`
 	AppID               string `json:"app_id"`
 	Scope               string `json:"scope"`
 	TokenType           string `json:"token_type"`
@@ -77,6 +78,9 @@ func (s *SlackOauth2Client) Exchange(code string) (*SlackOauthResponse, error) {
 	var oauthResp SlackOauthResponse
 	if err := json.NewDecoder(resp.Body).Decode(&oauthResp); err != nil {
 		return nil, err
+	}
+	if !oauthResp.Ok {
+		return nil, fmt.Errorf("slack Oauth2 response is not ok: %v", oauthResp.Error)
 	}
 	return &oauthResp, nil
 }

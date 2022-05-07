@@ -27,3 +27,4 @@ playground.go
 routes.json
 data/emails.cache
 data/reachout-emails.cache
+cert*
