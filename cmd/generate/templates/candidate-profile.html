@@ -1,0 +1,159 @@
+<!Doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Candidate Profile</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Always Hiring Candidate Profile">
+	<meta name="author" content="Candidate Profile">
+	<meta name="robots" content="noindex, nofollow">
+
+	<style type="text/css">
+		body {
+			font-family: sans-serif;
+		}
+
+		table {
+			border-spacing: 30px;
+		}
+
+		table,
+		th,
+		td {
+			border-collapse: collapse;
+			padding: 4px;
+		}
+
+		#highlights td:first-child {
+			font-weight: bold;
+		}
+
+		th,
+		td {
+			padding: 5px;
+		}
+
+		th {
+			text-align: left;
+		}
+	</style>
+</head>
+
+<body>
+	<p style="text-align: right;">Always Hiring Profile</p>
+	<h1>{{.FirstName}} {{.LastName}</h1>
+	<div>
+		<p>{{.PreferredJobTitle}} | {{.Pronoun}} </p>
+		<p>{{.Email}}</p>
+		<p>{{.Phone}}</p>
+		<p>{{.Location}} / {{.Timezone}}</p>
+	</div>
+
+	<div class="about">
+		<h3>About</h3>
+		<p>
+			{{.ProfessionalSummary}}
+		</p>
+	</div>
+
+
+	<div class="hightlights">
+		<h3>Highlights</h3>
+
+		<table id="highlights">
+			<tr>
+				<td>Available</td>
+				<td>{{.Available}}</td>
+			</tr>
+			<tr>
+				<td>Job Preference</td>
+				<td>{{.JobPreference}}</td>
+			</tr>
+
+			<tr>
+				<td>Career Start Date</td>
+				<td>{{.CareerStartDate}}</td>
+			</tr>
+		</table>
+
+	</div>
+
+	<div class="skills">
+		<h3>Skills</h3>
+		<table>
+			<tr>
+				<th></th>
+				<th></th>
+				<th>YOE</th>
+				<th>Preferred</th>
+				<th>Note</th>
+			</tr>
+			<tr>
+				<td>1.</td>
+				<td>HTML/CSS</td>
+				<td>4 years</td>
+				<td>No</td>
+				<td>I have built website with this</td>
+			</tr>
+			<tr>
+				<td>2.</td>
+				<td>Python</td>
+				<td>8 years</td>
+				<td>Yes</td>
+				<td>Built the standard framework</td>
+			</tr>
+		</table>
+	</div>
+
+	<div class="portfolios">
+		<h3>Portfolios</h3>
+		<ul>
+			<li>LinkedIn -
+				<a href="www.linkedin.com/in/imoleayo-moses-75849112b">www.linkedin.com/in/imoleayo-moses-75849112b</a>
+			</li>
+		</ul>
+	</div>
+
+	<div class="work-experience">
+		<h3>Work Experience</h3>
+
+		<div class="experience">
+			<h4>2012 - 2020 | Software Developer, Huawei</h4>
+			<p>Location: Ilorin, Nigeria</p>
+
+			<p>Core Technologies</p>
+			<ul>
+				<li>Asp.net Webform, MySQL, C#, Php, Git, Azure, soap API, Windows service, MSSQL jobs, Asp.net </li>
+			</ul>
+
+			<p>Responsibilities</p>
+			<ul>
+				<li>Developed and maintained the core software framework</li>
+				<li>Developed and maintained the core software framework</li>
+				<li>Developed and maintained the core software framework</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="education">
+		<h3>Education</h3>
+
+		<div class="education-item">
+			<h4>2012 - 2012 | University of Ilorin </h4>
+			<p>Location: Illorin, Nigeria</p>
+
+			<p>Degree</p>
+			<ul>
+				<li>Bachelor of Science in Computer Science</li>
+			</ul>
+
+			<p>Overview</p>
+			<ul>
+				<li>Electrical and Electronics Engineering</li>
+			</ul>
+		</div>
+	</div>
+</body>
+
+</html>

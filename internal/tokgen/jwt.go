@@ -19,7 +19,7 @@ const (
 // SignedKeyID is the key id for the signing key
 // See https://stackoverflow.com/questions/43867440/whats-the-meaning-of-the-kid-claim-in-a-jwt-token
 const DefaultSigningKeyID = ""
-const DefaultAccessTokenExp = time.Hour * 24 * 7   // 1 day
+const DefaultAccessTokenExp = time.Hour * 24 * 7   // 7 days
 const DefaultRefreshTokenExp = time.Hour * 24 * 30 // 30 days
 
 func GetDefualtSigningKey() []byte {
