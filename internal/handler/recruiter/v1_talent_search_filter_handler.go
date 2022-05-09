@@ -68,9 +68,9 @@ func (v *V1TalentSearchFilterHandler) ReadByID(c echo.Context) error {
 	if format == "pdf" {
 		c.Response().Header().Set(
 			echo.HeaderContentDisposition,
-			fmt.Sprintf("attachment; filename=%s-%s.pdf", record.FirstName, id),
+			fmt.Sprintf("attachment; filename=%s-%s.pdf", record.FirstName, record.LastName),
 		)
-		pdf, err := v.PDFService.Generate()
+		pdf, err := v.PDFService.Generate(record)
 		if err != nil {
 			return c.String(http.StatusBadRequest, err.Error())
 		}

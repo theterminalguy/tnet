@@ -2,8 +2,10 @@ package service
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 
+	"github.com/10hourlabs/tentn/ent"
 	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
 )
 
@@ -29,24 +31,23 @@ type CandidateProfile struct {
 	CareerStartDate     string
 }
 
-func (p *PDFService) Generate() ([]byte, error) {
+func (p *PDFService) Generate(u *ent.Talent) ([]byte, error) {
 	t, err := template.ParseFiles("cmd/generate/templates/candidate-profile.html")
 	if err != nil {
 		return nil, err
 	}
 	data := CandidateProfile{
-		FirstName:           "John",
-		LastName:            "Doe",
-		PreferredJobTitle:   "Software Engineer",
-		Pronoun:             "He/Him",
-		Email:               "johndoe@example.com",
-		Phone:               "555-555-5555",
-		Location:            "San Francisco, CA",
-		Timezone:            "GMT-08:00",
-		ProfessionalSummary: "I am a software engineer with a background in electrical engineering and computer science. I am currently working at a startup called tentn.io. I am a self-taught programmer with a passion for learning and problem solving. I am currently looking for a software engineer position in the San Francisco Bay Area.",
-		Available:           "Immediately",
-		JobPreference:       "Remote",
-		CareerStartDate:     "January 1, 2020",
+		FirstName:           u.FirstName,
+		LastName:            u.LastName,
+		PreferredJobTitle:   u.PreferredJobTitle,
+		Pronoun:             u.Pronoun,
+		Email:               u.Email,
+		Phone:               u.Phone,
+		Location:            fmt.Sprintf("%s,%s", u.City, u.CountryCode),
+		Timezone:            u.Timezone,
+		ProfessionalSummary: u.ProfessionalSummary,
+		JobPreference:       u.JobPreference.String(),
+		CareerStartDate:     u.ProfessionalStartDate.String(),
 	}
 
 	var body bytes.Buffer
