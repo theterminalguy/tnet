@@ -66,17 +66,15 @@ func (v *V1TalentSearchFilterHandler) ReadByID(c echo.Context) error {
 	}
 	format := c.QueryParam("format")
 	if format == "pdf" {
-		c.Response().Header().Set("Content-Disposition", "attachment; filename=profile.pdf")
-		c.Response().Header().Set(echo.HeaderContentType, "application/pdf")
+		c.Response().Header().Set(
+			echo.HeaderContentDisposition,
+			fmt.Sprintf("attachment; filename=%s-%s.pdf", record.FirstName, id),
+		)
 		pdf, err := v.PDFService.Generate()
 		if err != nil {
 			return c.String(http.StatusBadRequest, err.Error())
 		}
-		c.Response().WriteHeader(http.StatusOK)
-		c.Response().Write(pdf)
-		return nil
-		//return c.Blob(http.StatusOK, "application/pdf", pdf)
-
+		return c.Blob(http.StatusOK, "application/pdf", pdf)
 	}
 	return c.JSON(http.StatusOK, record)
 }
