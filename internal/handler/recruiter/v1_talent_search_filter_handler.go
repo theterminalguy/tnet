@@ -8,6 +8,7 @@ import (
 	"github.com/10hourlabs/tentn/internal/paginator"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/search"
+	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -15,11 +16,13 @@ import (
 
 type V1TalentSearchFilterHandler struct {
 	TalentRepo *repo.TalentRepository
+	PDFService *service.PDFService
 }
 
 func NewV1TalentSearchFilterHandler() *V1TalentSearchFilterHandler {
 	return &V1TalentSearchFilterHandler{
 		TalentRepo: repo.NewTalentRepository(),
+		PDFService: service.NewPDFService(),
 	}
 }
 
@@ -60,6 +63,20 @@ func (v *V1TalentSearchFilterHandler) ReadByID(c echo.Context) error {
 	record, err := v.TalentRepo.GetByID(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())
+	}
+	format := c.QueryParam("format")
+	if format == "pdf" {
+		c.Response().Header().Set("Content-Disposition", "attachment; filename=profile.pdf")
+		c.Response().Header().Set(echo.HeaderContentType, "application/pdf")
+		pdf, err := v.PDFService.Generate()
+		if err != nil {
+			return c.String(http.StatusBadRequest, err.Error())
+		}
+		c.Response().WriteHeader(http.StatusOK)
+		c.Response().Write(pdf)
+		return nil
+		//return c.Blob(http.StatusOK, "application/pdf", pdf)
+
 	}
 	return c.JSON(http.StatusOK, record)
 }
