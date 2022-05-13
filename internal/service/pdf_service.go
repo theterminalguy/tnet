@@ -4,19 +4,23 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"time"
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
 )
 
 type PDFService struct {
+	Location *GeoLocationService
 }
 
 func NewPDFService() *PDFService {
-	return &PDFService{}
+	return &PDFService{
+		Location: NewGeoLocationService(),
+	}
 }
 
-type CandidateProfile struct {
+type TalentProfile struct {
 	FirstName           string
 	LastName            string
 	PreferredJobTitle   string
@@ -26,28 +30,41 @@ type CandidateProfile struct {
 	Location            string
 	Timezone            string
 	ProfessionalSummary string
-	Available           string
+	Available           bool
 	JobPreference       string
-	CareerStartDate     string
+	CareerStartDate     time.Time
+	Skills              []*ent.Skill
+	Portfolios          []*ent.PortfolioLink
+	WorkExperiences     []*ent.WorkExperience
+	Educations          []*ent.Education
 }
 
 func (p *PDFService) Generate(u *ent.Talent) ([]byte, error) {
-	t, err := template.ParseFiles("cmd/generate/templates/candidate-profile.html")
+	t, err := template.ParseFiles("cmd/generate/templates/talent-profile.html")
 	if err != nil {
 		return nil, err
 	}
-	data := CandidateProfile{
+	countryName, err := p.Location.GetCountryNameByCode(u.CountryCode)
+	if err != nil {
+		return nil, err
+	}
+	data := TalentProfile{
 		FirstName:           u.FirstName,
 		LastName:            u.LastName,
 		PreferredJobTitle:   u.PreferredJobTitle,
 		Pronoun:             u.Pronoun,
 		Email:               u.Email,
 		Phone:               u.Phone,
-		Location:            fmt.Sprintf("%s,%s", u.City, u.CountryCode),
+		Location:            fmt.Sprintf("%s, %s", u.City, countryName),
 		Timezone:            u.Timezone,
 		ProfessionalSummary: u.ProfessionalSummary,
+		Available:           u.IsAvailable,
 		JobPreference:       u.JobPreference.String(),
-		CareerStartDate:     u.ProfessionalStartDate.String(),
+		CareerStartDate:     u.ProfessionalStartDate,
+		Skills:              u.Edges.Skills,
+		Portfolios:          u.Edges.Portfoliolinks,
+		WorkExperiences:     u.Edges.WorkExperiences,
+		Educations:          u.Edges.Educations,
 	}
 
 	var body bytes.Buffer
@@ -82,6 +99,5 @@ func (p *PDFService) Generate(u *ent.Talent) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return pdfg.Bytes(), nil
 }

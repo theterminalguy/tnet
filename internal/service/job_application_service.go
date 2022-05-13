@@ -61,7 +61,7 @@ func (j *JobApplicationService) Validateq(jb ent.Job, pfLinks []*ent.PortfolioLi
 			return nil
 		}
 	}
-	return errors.New("no linkedin profile for candidate")
+	return errors.New("no linkedin profile for talent")
 }
 
 //ContainsGithub checks to see if the array of given links contain Github
