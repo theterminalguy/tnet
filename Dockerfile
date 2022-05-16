@@ -55,7 +55,7 @@ FROM debian:buster-slim as production
 ENV ENV production
 
 RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    ca-certificates && \
+    ca-certificates \
     # start deps needed for wkhtmltopdf
     curl \
     libxrender1 \
