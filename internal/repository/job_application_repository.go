@@ -28,7 +28,7 @@ type JobApplicationParams struct {
 	ReferralSource string    `json:"referral_source"`
 
 	// The Note field is only used internal by 10HL admins/recruiters
-	// this is used to keep track of useful notes related to a candidate
+	// this is used to keep track of useful notes related to a talent
 	// Talent for a specific job
 	Note   string `json:"note"`
 	Status string `json:"status"`

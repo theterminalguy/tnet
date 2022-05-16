@@ -1,0 +1,165 @@
+<!Doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Talent Profile</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Always Hiring Candidate Profile">
+	<meta name="author" content="Candidate Profile">
+	<meta name="robots" content="noindex, nofollow">
+
+	<style>
+		body {
+			font-family: sans-serif;
+		}
+
+		table {
+			border-spacing: 30px;
+		}
+
+		table,
+		th,
+		td {
+			border-collapse: collapse;
+			padding: 4px;
+		}
+
+		th,
+		td {
+			padding: 5px;
+		}
+
+		th {
+			text-align: left;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="overview">
+		<p style="text-align: right;">
+			<a href="https://alwayshiring.io">Always Hiring Profile</a>
+		</p>
+		<h1>{{.FirstName}} {{.LastName}}</h1>
+		<p>{{.PreferredJobTitle}} | {{.Pronoun}} </p>
+		<p>{{.Email}}</p>
+		<p>{{.Phone}}</p>
+		<p>{{.Location}} / {{.Timezone}}</p>
+	</div>
+
+	<div class="about">
+		<h3>About</h3>
+		<p>
+			{{.ProfessionalSummary}}
+		</p>
+	</div>
+
+	<div class="hightlights">
+		<h3>Highlights</h3>
+
+		<table id="highlights">
+			<tr>
+				<td>Looking for new opportunities?</td>
+				<td>{{if .Available}}Yes{{else}}No{{end}}</td>
+			</tr>
+			<tr>
+				<td>Job Preference</td>
+				<td>{{.JobPreference}}</td>
+			</tr>
+
+			<tr>
+				<td>Career Start Date</td>
+				<td>{{.CareerStartDate.Format "Jan 02, 2006" }}</td>
+			</tr>
+		</table>
+
+	</div>
+
+	<div class="skills">
+		<h3>Skills</h3>
+		<table>
+			<tr>
+				<th></th>
+				<th></th>
+				<th>Experience</th>
+				<th>Preferred</th>
+				<th>Note</th>
+			</tr>
+			{{range .Skills}}
+			<tr>
+				<td>&#45;</td>
+				<td>{{.Name}}</td>
+				<td>{{.YearsOfExperience}} years</td>
+				<td>{{if .Preferred}}Yes{{else}}No{{end}}</td>
+				<td>{{if .Note}}{{.Note}}{{else}}&#45;{{end}}</td>
+			</tr>
+			{{end}}
+		</table>
+	</div>
+
+	<div class="portfolios">
+		<h3>Portfolios</h3>
+		<ul>
+			{{range .Portfolios}}
+			<li>
+				{{.Name}} &#124; <a href="{{.URL}}">{{.URL}}</a>
+			</li>
+			{{end}}
+		</ul>
+	</div>
+
+	<div class="work-experience">
+		<h3>Work Experience</h3>
+
+		{{range .WorkExperiences}}
+		<div class="work-experience-item">
+			<h4>{{.CompanyName}}</h4>
+			<p>
+				{{.JobTitle}}
+			</p>
+			<p>
+{{.StartDate.Format "Jan 02, 2006"}} - {{if .EndDate}}{{.EndDate.Format "Jan 02, 2006"}}{{else}}Present{{end}}
+			</p>
+
+			<h4>Responsibilities</h4>
+			<p>
+				{{.Description}}
+			</p>
+
+			{{if .PrimaryTechnologies}}
+			<h4>Technologies</h4>
+			<ul>
+				{{range .PrimaryTechnologies}}
+				<li>{{.}}</li>
+				{{end}}
+			</ul>
+			{{end}}
+		</div>
+		{{end}}
+	</div>
+
+	<div class="education">
+		<h3>Education</h3>
+
+		{{range .Educations}}
+			<div class="education-item">
+				<h4>{{.InstitutionName}} &#124; {{.Location}}</h4>
+				<p>
+					{{.Degree}} | {{.Program}}
+				</p>
+				<p>
+					{{.StartDate.Format "Jan 02, 2006"}} - {{if .EndDate}}{{.EndDate.Format "Jan 02, 2006"}}{{else}}Present{{end}}
+				</p>
+
+				<h4>Overview</h4>
+				<p>
+					{{.Overview}}
+				</p>
+			</div>
+		{{end}}
+	</div>
+
+</body>
+
+</html>

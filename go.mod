@@ -6,6 +6,7 @@ require (
 	entgo.io/ent v0.10.1
 	github.com/10hourlabs/rql v0.0.1
 	github.com/10hourlabs/tenlog v0.0.0-20220120192329-cae27c6b7caa
+	github.com/SebastiaanKlippert/go-wkhtmltopdf v1.7.2
 	github.com/brianvoe/gofakeit/v6 v6.15.0
 	github.com/go-oauth2/oauth2/v4 v4.4.3
 	github.com/go-playground/validator/v10 v10.10.1
