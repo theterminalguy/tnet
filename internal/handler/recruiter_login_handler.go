@@ -13,6 +13,7 @@ import (
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/internal/tokgen"
 	"github.com/10hourlabs/tentn/randutil"
+	"github.com/10hourlabs/tentn/util/photo"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
@@ -102,7 +103,7 @@ func (s *SlackUserProfile) FullName() string {
 
 func (s *SlackUserProfile) GetPhotoURL() string {
 	if s.Profile.PhotoURL == "" || strings.Contains(s.Profile.PhotoURL, "gravatar") {
-		return fmt.Sprintf("https://ui-avatars.com/api/?name=%s&background=random&size=64", s.FullName())
+		return photo.GenerateDefaultPhoto(s.Profile.FirstName, s.Profile.LastName)
 	}
 	return s.Profile.PhotoURL
 }

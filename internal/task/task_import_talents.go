@@ -11,6 +11,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/util/photo"
 	"github.com/google/uuid"
@@ -179,13 +180,9 @@ func extractTalentData(record []byte) *TalentData {
 		FirstName: uup.FirstName,
 		LastName:  uup.LastName,
 		Email:     uup.Email,
-		PhotoURL: fmt.Sprintf(
-			"https://ui-avatars.com/api/?name=%s+%s&background=random&size=64",
-			uup.FirstName,
-			uup.LastName,
-		),
-		Role:     "talent",
-		Approved: true,
+		PhotoURL:  photo.GenerateDefaultPhoto(uup.FirstName, uup.LastName),
+		Role:      userrole.Talent,
+		Approved:  true,
 	}
 
 	/*fmt.Println(user.FirstName + " " + user.LastName)
@@ -215,7 +212,6 @@ func extractTalentData(record []byte) *TalentData {
 		TimeZone:              "GMT+1",
 		Available:             true,
 		State:                 uup.City,
-		PhotoURL:              photo.GenerateDefaultPhoto(user.FirstName, user.LastName),
 		ProfessionalSummary:   fmt.Sprintf("An experienced %s", uup.PreferredJobTitle),
 	}
 

@@ -47,7 +47,6 @@ type TalentParams struct {
 	TimeZone              string               `json:"timezone" validate:"required"`
 	State                 string               `json:"state" validate:"required"`
 	ProfessionalSummary   string               `json:"professional_summary"`
-	PhotoURL              string               `json:"photo_url" validate:"required"`
 }
 
 func NewTalentRepository() *TalentRepository {
@@ -167,8 +166,7 @@ func (r *TalentRepository) Create(p TalentParams) (*decorator.TalentResponse, er
 		SetIsAvailable(p.Available).
 		SetTimezone(timeZoneName[1]).
 		SetState(p.State).
-		SetProfessionalSummary(p.ProfessionalSummary).
-		SetPhotoURL(p.PhotoURL)
+		SetProfessionalSummary(p.ProfessionalSummary)
 	a, err := q.Save(dBContext)
 	if err != nil {
 		return nil, err
@@ -327,18 +325,6 @@ func (r *TalentRepository) Update(id uuid.UUID, p TalentParams) (*decorator.Tale
 
 	if p.ProfessionalSummary != "" {
 		bldr.SetProfessionalSummary(p.ProfessionalSummary)
-	}
-
-	// Set and Validate PhotoURL if provided
-	if vldErr := setNillableStringField(p.PhotoURL, func(v string) error {
-		err := ValidateParams(p, "PhotoURL")
-		if err != nil {
-			return err
-		}
-		bldr.SetPhotoURL(p.PhotoURL)
-		return nil
-	}); vldErr != nil {
-		vldErrs = append(vldErrs, vldErr)
 	}
 
 	// Set and Validate JobPreference if provided
