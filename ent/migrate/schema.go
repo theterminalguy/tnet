@@ -551,7 +551,6 @@ var (
 		{Name: "timezone", Type: field.TypeString},
 		{Name: "state", Type: field.TypeString},
 		{Name: "professional_summary", Type: field.TypeString, Nullable: true},
-		{Name: "photo_url", Type: field.TypeString, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// TalentsTable holds the schema information for the "talents" table.
@@ -562,7 +561,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "talents_users_talents",
-				Columns:    []*schema.Column{TalentsColumns[20]},
+				Columns:    []*schema.Column{TalentsColumns[19]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -571,7 +570,7 @@ var (
 			{
 				Name:    "talent_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{TalentsColumns[20]},
+				Columns: []*schema.Column{TalentsColumns[19]},
 			},
 			{
 				Name:    "talent_email_phone",

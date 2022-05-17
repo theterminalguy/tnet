@@ -63,8 +63,6 @@ func (Talent) Fields() []ent.Field {
 		field.String("state"),
 
 		field.String("professional_summary").Optional(),
-
-		field.String("photo_url").Optional(),
 	}
 }
 

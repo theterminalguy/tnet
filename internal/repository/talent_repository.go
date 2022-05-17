@@ -12,7 +12,6 @@ import (
 	"github.com/10hourlabs/tentn/internal/paginator"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/10hourlabs/tentn/util/date"
-	"github.com/10hourlabs/tentn/util/photo"
 	"github.com/google/uuid"
 )
 
@@ -434,19 +433,4 @@ func (*TalentRepository) UpsertMany(params []*TalentParams) error {
 	}
 	return dBConn.Talent.CreateBulk(builders...).
 		Exec(dBContext)
-}
-
-func (r *TalentRepository) DeleteProfilePictureUrl(id uuid.UUID) error {
-	record, err := r.GetByID(id)
-	if err != nil {
-		return err
-	}
-	defaultPhoto := photo.GenerateDefaultPhoto(record.FirstName, record.LastName)
-	_, err = record.Update().
-		SetPhotoURL(defaultPhoto).
-		Save(dBContext)
-	if err != nil {
-		return err
-	}
-	return nil
 }

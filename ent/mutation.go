@@ -13247,7 +13247,6 @@ type TalentMutation struct {
 	timezone                  *string
 	state                     *string
 	professional_summary      *string
-	photo_url                 *string
 	clearedFields             map[string]struct{}
 	user                      *uuid.UUID
 	cleareduser               bool
@@ -14104,55 +14103,6 @@ func (m *TalentMutation) ResetProfessionalSummary() {
 	delete(m.clearedFields, talent.FieldProfessionalSummary)
 }
 
-// SetPhotoURL sets the "photo_url" field.
-func (m *TalentMutation) SetPhotoURL(s string) {
-	m.photo_url = &s
-}
-
-// PhotoURL returns the value of the "photo_url" field in the mutation.
-func (m *TalentMutation) PhotoURL() (r string, exists bool) {
-	v := m.photo_url
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPhotoURL returns the old "photo_url" field's value of the Talent entity.
-// If the Talent object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TalentMutation) OldPhotoURL(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPhotoURL is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPhotoURL requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPhotoURL: %w", err)
-	}
-	return oldValue.PhotoURL, nil
-}
-
-// ClearPhotoURL clears the value of the "photo_url" field.
-func (m *TalentMutation) ClearPhotoURL() {
-	m.photo_url = nil
-	m.clearedFields[talent.FieldPhotoURL] = struct{}{}
-}
-
-// PhotoURLCleared returns if the "photo_url" field was cleared in this mutation.
-func (m *TalentMutation) PhotoURLCleared() bool {
-	_, ok := m.clearedFields[talent.FieldPhotoURL]
-	return ok
-}
-
-// ResetPhotoURL resets all changes to the "photo_url" field.
-func (m *TalentMutation) ResetPhotoURL() {
-	m.photo_url = nil
-	delete(m.clearedFields, talent.FieldPhotoURL)
-}
-
 // ClearUser clears the "user" edge to the User entity.
 func (m *TalentMutation) ClearUser() {
 	m.cleareduser = true
@@ -14576,7 +14526,7 @@ func (m *TalentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TalentMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, talent.FieldCreatedAt)
 	}
@@ -14634,9 +14584,6 @@ func (m *TalentMutation) Fields() []string {
 	if m.professional_summary != nil {
 		fields = append(fields, talent.FieldProfessionalSummary)
 	}
-	if m.photo_url != nil {
-		fields = append(fields, talent.FieldPhotoURL)
-	}
 	return fields
 }
 
@@ -14683,8 +14630,6 @@ func (m *TalentMutation) Field(name string) (ent.Value, bool) {
 		return m.State()
 	case talent.FieldProfessionalSummary:
 		return m.ProfessionalSummary()
-	case talent.FieldPhotoURL:
-		return m.PhotoURL()
 	}
 	return nil, false
 }
@@ -14732,8 +14677,6 @@ func (m *TalentMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldState(ctx)
 	case talent.FieldProfessionalSummary:
 		return m.OldProfessionalSummary(ctx)
-	case talent.FieldPhotoURL:
-		return m.OldPhotoURL(ctx)
 	}
 	return nil, fmt.Errorf("unknown Talent field %s", name)
 }
@@ -14876,13 +14819,6 @@ func (m *TalentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetProfessionalSummary(v)
 		return nil
-	case talent.FieldPhotoURL:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPhotoURL(v)
-		return nil
 	}
 	return fmt.Errorf("unknown Talent field %s", name)
 }
@@ -14922,9 +14858,6 @@ func (m *TalentMutation) ClearedFields() []string {
 	if m.FieldCleared(talent.FieldProfessionalSummary) {
 		fields = append(fields, talent.FieldProfessionalSummary)
 	}
-	if m.FieldCleared(talent.FieldPhotoURL) {
-		fields = append(fields, talent.FieldPhotoURL)
-	}
 	return fields
 }
 
@@ -14947,9 +14880,6 @@ func (m *TalentMutation) ClearField(name string) error {
 		return nil
 	case talent.FieldProfessionalSummary:
 		m.ClearProfessionalSummary()
-		return nil
-	case talent.FieldPhotoURL:
-		m.ClearPhotoURL()
 		return nil
 	}
 	return fmt.Errorf("unknown Talent nullable field %s", name)
@@ -15015,9 +14945,6 @@ func (m *TalentMutation) ResetField(name string) error {
 		return nil
 	case talent.FieldProfessionalSummary:
 		m.ResetProfessionalSummary()
-		return nil
-	case talent.FieldPhotoURL:
-		m.ResetPhotoURL()
 		return nil
 	}
 	return fmt.Errorf("unknown Talent field %s", name)

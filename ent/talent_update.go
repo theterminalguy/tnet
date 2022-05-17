@@ -187,26 +187,6 @@ func (tu *TalentUpdate) ClearProfessionalSummary() *TalentUpdate {
 	return tu
 }
 
-// SetPhotoURL sets the "photo_url" field.
-func (tu *TalentUpdate) SetPhotoURL(s string) *TalentUpdate {
-	tu.mutation.SetPhotoURL(s)
-	return tu
-}
-
-// SetNillablePhotoURL sets the "photo_url" field if the given value is not nil.
-func (tu *TalentUpdate) SetNillablePhotoURL(s *string) *TalentUpdate {
-	if s != nil {
-		tu.SetPhotoURL(*s)
-	}
-	return tu
-}
-
-// ClearPhotoURL clears the value of the "photo_url" field.
-func (tu *TalentUpdate) ClearPhotoURL() *TalentUpdate {
-	tu.mutation.ClearPhotoURL()
-	return tu
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (tu *TalentUpdate) SetUser(u *User) *TalentUpdate {
 	return tu.SetUserID(u.ID)
@@ -706,19 +686,6 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: talent.FieldProfessionalSummary,
-		})
-	}
-	if value, ok := tu.mutation.PhotoURL(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: talent.FieldPhotoURL,
-		})
-	}
-	if tu.mutation.PhotoURLCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: talent.FieldPhotoURL,
 		})
 	}
 	if tu.mutation.UserCleared() {
@@ -1303,26 +1270,6 @@ func (tuo *TalentUpdateOne) ClearProfessionalSummary() *TalentUpdateOne {
 	return tuo
 }
 
-// SetPhotoURL sets the "photo_url" field.
-func (tuo *TalentUpdateOne) SetPhotoURL(s string) *TalentUpdateOne {
-	tuo.mutation.SetPhotoURL(s)
-	return tuo
-}
-
-// SetNillablePhotoURL sets the "photo_url" field if the given value is not nil.
-func (tuo *TalentUpdateOne) SetNillablePhotoURL(s *string) *TalentUpdateOne {
-	if s != nil {
-		tuo.SetPhotoURL(*s)
-	}
-	return tuo
-}
-
-// ClearPhotoURL clears the value of the "photo_url" field.
-func (tuo *TalentUpdateOne) ClearPhotoURL() *TalentUpdateOne {
-	tuo.mutation.ClearPhotoURL()
-	return tuo
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (tuo *TalentUpdateOne) SetUser(u *User) *TalentUpdateOne {
 	return tuo.SetUserID(u.ID)
@@ -1846,19 +1793,6 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: talent.FieldProfessionalSummary,
-		})
-	}
-	if value, ok := tuo.mutation.PhotoURL(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: talent.FieldPhotoURL,
-		})
-	}
-	if tuo.mutation.PhotoURLCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: talent.FieldPhotoURL,
 		})
 	}
 	if tuo.mutation.UserCleared() {

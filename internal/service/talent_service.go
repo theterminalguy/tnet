@@ -5,7 +5,6 @@ import (
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/internal/decorator"
 	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/util/photo"
 )
 
 type TalentService struct {
