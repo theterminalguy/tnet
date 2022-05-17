@@ -24,6 +24,7 @@ func NewCreateFakeJob() *CreateFakeJob {
 
 func (j *CreateFakeJob) CreateFakeJob(userID uuid.UUID) error {
 	jobParams := repo.JobParams{
+		TimeZone: "GMT",
 		Hiring: true,
 		Title: (func() string {
 			return []string{"Front-End Developer", "Back-End Developer"}[rand.Intn(2)]
