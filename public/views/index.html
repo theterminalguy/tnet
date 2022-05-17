@@ -9,6 +9,15 @@
     <link rel="stylesheet" href="/public/views/css/styles.css">
     <title>Always Hiring</title>
 
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KE2SRKPDR7"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-KE2SRKPDR7');
+    </script>
 </head>
 
 <body>
@@ -20,7 +29,7 @@
             </div>
             <div class="header-menu">
                 <i class="fa fa-times closeButton"></i>
-                <a href="talent/auth" class="developer-link">I'm a Developer</a>
+                <a href="talent/auth" class="developer-link" id="btnDeveloper">I'm a Developer</a>
             </div>
             <div class="hambugar">
                 <i class="fa fa-bars"></i>
@@ -34,7 +43,7 @@
                 talent? Connect directly with talent across the globe without leaving
                 your workspace
             </p>
-            <a href="/recruiter/auth">
+            <a href="/recruiter/auth" id="btnAddToSlack">
                 <p class="toslack"><img src="/public/views/img/addtoslack.png" alt="addtoslack"></p>
             </a>
 
@@ -47,9 +56,9 @@
     <!-- JAVASCRIPT -->
 
     <script>
-        let hamburgerButton = document.querySelector(".hambugar");
-        let closeButton = document.querySelector(".closeButton");
-        let mobileMenu = document.querySelector(".header-menu");
+        const hamburgerButton = document.querySelector(".hambugar");
+        const closeButton = document.querySelector(".closeButton");
+        const mobileMenu = document.querySelector(".header-menu");
 
         hamburgerButton.addEventListener("click", () => {
             mobileMenu.classList.toggle("show")
@@ -57,6 +66,20 @@
 
         closeButton.addEventListener("click", () => {
             mobileMenu.classList.remove("show")
+        });
+
+        const btnAddToSlack = document.querySelector("#btnAddToSlack");
+        btnAddToSlack.addEventListener("click", () => {
+            console.log("inside add to slack");
+            window.gtag('event', 'add_to_slack');
+            window.location.href = "/recruiter/auth";
+        });
+
+        const btnDeveloper = document.querySelector("#btnDeveloper");
+        btnDeveloper.addEventListener("click", () => {
+            console.log("inside developer");
+            window.gtag('event', 'developer_link');
+            window.location.href = "/talent/auth";
         });
     </script>
 
