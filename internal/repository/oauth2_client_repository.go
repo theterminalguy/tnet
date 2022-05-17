@@ -47,7 +47,7 @@ func (*Oauth2ClientRepository) GetByID(ctx context.Context, id string) (oauth2.C
 	}
 	record, err := dBConn.Oauth2Client.Query().
 		Where(oauth2client.IDEQ(uuid.MustParse(id))).
-		Only(dBContext)
+		Only(ctx)
 	if err != nil {
 		return nil, err
 	}
