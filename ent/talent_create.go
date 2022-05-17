@@ -183,20 +183,6 @@ func (tc *TalentCreate) SetNillableProfessionalSummary(s *string) *TalentCreate 
 	return tc
 }
 
-// SetPhotoURL sets the "photo_url" field.
-func (tc *TalentCreate) SetPhotoURL(s string) *TalentCreate {
-	tc.mutation.SetPhotoURL(s)
-	return tc
-}
-
-// SetNillablePhotoURL sets the "photo_url" field if the given value is not nil.
-func (tc *TalentCreate) SetNillablePhotoURL(s *string) *TalentCreate {
-	if s != nil {
-		tc.SetPhotoURL(*s)
-	}
-	return tc
-}
-
 // SetID sets the "id" field.
 func (tc *TalentCreate) SetID(u uuid.UUID) *TalentCreate {
 	tc.mutation.SetID(u)
@@ -645,14 +631,6 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Column: talent.FieldProfessionalSummary,
 		})
 		_node.ProfessionalSummary = value
-	}
-	if value, ok := tc.mutation.PhotoURL(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: talent.FieldPhotoURL,
-		})
-		_node.PhotoURL = value
 	}
 	if nodes := tc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

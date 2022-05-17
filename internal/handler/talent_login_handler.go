@@ -12,6 +12,7 @@ import (
 	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/10hourlabs/tentn/internal/tokgen"
 	"github.com/10hourlabs/tentn/randutil"
+	"github.com/10hourlabs/tentn/util/photo"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -53,6 +54,12 @@ func (s *GoogleOauth2Client) GetUsersProfile(tok *oauth2.Token) (*repo.UserParam
 	var userInfo UserInfo
 	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
 		return nil, err
+	}
+	if userInfo.Picture == "" {
+		userInfo.Picture = photo.GenerateDefaultPhoto(
+			userInfo.GivenName,
+			userInfo.FamilyName,
+		)
 	}
 	return &repo.UserParams{
 		FirstName: userInfo.GivenName,
