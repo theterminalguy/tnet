@@ -41,7 +41,6 @@ func init() {
 	manager.MustTokenStorage(repo.NewOauth2TokenRepository(), nil)
 	// configure client storage
 	manager.MapClientStorage(repo.NewOauth2ClientRepository())
-	fmt.Println("DefaultSinging Method:", tokgen.GetDefaultSigningMethod())
 	manager.MapAccessGenerate(generates.NewJWTAccessGenerate(
 		tokgen.DefaultSigningKeyID,
 		tokgen.GetDefualtSigningKey(),
