@@ -52,6 +52,8 @@ type Talent struct {
 	JobPreference talent.JobPreference `json:"job_preference,omitempty"`
 	// Timezone holds the value of the "timezone" field.
 	Timezone string `json:"timezone,omitempty"`
+	// Locale holds the value of the "locale" field.
+	Locale string `json:"locale,omitempty"`
 	// State holds the value of the "state" field.
 	State string `json:"state,omitempty"`
 	// ProfessionalSummary holds the value of the "professional_summary" field.
@@ -168,7 +170,7 @@ func (*Talent) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case talent.FieldIsAvailable:
 			values[i] = new(sql.NullBool)
-		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity, talent.FieldJobPreference, talent.FieldTimezone, talent.FieldState, talent.FieldProfessionalSummary:
+		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity, talent.FieldJobPreference, talent.FieldTimezone, talent.FieldLocale, talent.FieldState, talent.FieldProfessionalSummary:
 			values[i] = new(sql.NullString)
 		case talent.FieldCreatedAt, talent.FieldUpdatedAt, talent.FieldDeletedAt, talent.FieldProfessionalStartDate:
 			values[i] = new(sql.NullTime)
@@ -298,6 +300,12 @@ func (t *Talent) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				t.Timezone = value.String
 			}
+		case talent.FieldLocale:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field locale", values[i])
+			} else if value.Valid {
+				t.Locale = value.String
+			}
 		case talent.FieldState:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field state", values[i])
@@ -414,6 +422,8 @@ func (t *Talent) String() string {
 	builder.WriteString(fmt.Sprintf("%v", t.JobPreference))
 	builder.WriteString(", timezone=")
 	builder.WriteString(t.Timezone)
+	builder.WriteString(", locale=")
+	builder.WriteString(t.Locale)
 	builder.WriteString(", state=")
 	builder.WriteString(t.State)
 	builder.WriteString(", professional_summary=")

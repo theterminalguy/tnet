@@ -598,6 +598,7 @@ var (
 		{Name: "city", Type: field.TypeString},
 		{Name: "job_preference", Type: field.TypeEnum, Enums: []string{"remote", "onsite", "flexible"}},
 		{Name: "timezone", Type: field.TypeString},
+		{Name: "locale", Type: field.TypeString, Default: "en-US"},
 		{Name: "state", Type: field.TypeString},
 		{Name: "professional_summary", Type: field.TypeString, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
@@ -610,7 +611,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "talents_users_talents",
-				Columns:    []*schema.Column{TalentsColumns[19]},
+				Columns:    []*schema.Column{TalentsColumns[20]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -619,7 +620,7 @@ var (
 			{
 				Name:    "talent_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{TalentsColumns[19]},
+				Columns: []*schema.Column{TalentsColumns[20]},
 			},
 			{
 				Name:    "talent_email_phone",

@@ -161,6 +161,20 @@ func (tu *TalentUpdate) SetTimezone(s string) *TalentUpdate {
 	return tu
 }
 
+// SetLocale sets the "locale" field.
+func (tu *TalentUpdate) SetLocale(s string) *TalentUpdate {
+	tu.mutation.SetLocale(s)
+	return tu
+}
+
+// SetNillableLocale sets the "locale" field if the given value is not nil.
+func (tu *TalentUpdate) SetNillableLocale(s *string) *TalentUpdate {
+	if s != nil {
+		tu.SetLocale(*s)
+	}
+	return tu
+}
+
 // SetState sets the "state" field.
 func (tu *TalentUpdate) SetState(s string) *TalentUpdate {
 	tu.mutation.SetState(s)
@@ -666,6 +680,13 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: talent.FieldTimezone,
+		})
+	}
+	if value, ok := tu.mutation.Locale(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: talent.FieldLocale,
 		})
 	}
 	if value, ok := tu.mutation.State(); ok {
@@ -1244,6 +1265,20 @@ func (tuo *TalentUpdateOne) SetTimezone(s string) *TalentUpdateOne {
 	return tuo
 }
 
+// SetLocale sets the "locale" field.
+func (tuo *TalentUpdateOne) SetLocale(s string) *TalentUpdateOne {
+	tuo.mutation.SetLocale(s)
+	return tuo
+}
+
+// SetNillableLocale sets the "locale" field if the given value is not nil.
+func (tuo *TalentUpdateOne) SetNillableLocale(s *string) *TalentUpdateOne {
+	if s != nil {
+		tuo.SetLocale(*s)
+	}
+	return tuo
+}
+
 // SetState sets the "state" field.
 func (tuo *TalentUpdateOne) SetState(s string) *TalentUpdateOne {
 	tuo.mutation.SetState(s)
@@ -1773,6 +1808,13 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Type:   field.TypeString,
 			Value:  value,
 			Column: talent.FieldTimezone,
+		})
+	}
+	if value, ok := tuo.mutation.Locale(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: talent.FieldLocale,
 		})
 	}
 	if value, ok := tuo.mutation.State(); ok {

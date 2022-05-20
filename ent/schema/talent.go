@@ -60,6 +60,8 @@ func (Talent) Fields() []ent.Field {
 
 		field.String("timezone"),
 
+		field.String("locale").Default("en-US"),
+
 		field.String("state"),
 
 		field.String("professional_summary").Optional(),

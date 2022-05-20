@@ -388,6 +388,10 @@ func init() {
 			return nil
 		}
 	}()
+	// talentDescLocale is the schema descriptor for locale field.
+	talentDescLocale := talentFields[13].Descriptor()
+	// talent.DefaultLocale holds the default value on creation for the locale field.
+	talent.DefaultLocale = talentDescLocale.Default.(string)
 	// talentDescID is the schema descriptor for id field.
 	talentDescID := talentMixinFields0[0].Descriptor()
 	// talent.DefaultID holds the default value on creation for the id field.

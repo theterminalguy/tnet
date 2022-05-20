@@ -14464,6 +14464,7 @@ type TalentMutation struct {
 	city                      *string
 	job_preference            *talent.JobPreference
 	timezone                  *string
+	locale                    *string
 	state                     *string
 	professional_summary      *string
 	clearedFields             map[string]struct{}
@@ -15237,6 +15238,42 @@ func (m *TalentMutation) ResetTimezone() {
 	m.timezone = nil
 }
 
+// SetLocale sets the "locale" field.
+func (m *TalentMutation) SetLocale(s string) {
+	m.locale = &s
+}
+
+// Locale returns the value of the "locale" field in the mutation.
+func (m *TalentMutation) Locale() (r string, exists bool) {
+	v := m.locale
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLocale returns the old "locale" field's value of the Talent entity.
+// If the Talent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TalentMutation) OldLocale(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLocale is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLocale requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLocale: %w", err)
+	}
+	return oldValue.Locale, nil
+}
+
+// ResetLocale resets all changes to the "locale" field.
+func (m *TalentMutation) ResetLocale() {
+	m.locale = nil
+}
+
 // SetState sets the "state" field.
 func (m *TalentMutation) SetState(s string) {
 	m.state = &s
@@ -15745,7 +15782,7 @@ func (m *TalentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TalentMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, talent.FieldCreatedAt)
 	}
@@ -15797,6 +15834,9 @@ func (m *TalentMutation) Fields() []string {
 	if m.timezone != nil {
 		fields = append(fields, talent.FieldTimezone)
 	}
+	if m.locale != nil {
+		fields = append(fields, talent.FieldLocale)
+	}
 	if m.state != nil {
 		fields = append(fields, talent.FieldState)
 	}
@@ -15845,6 +15885,8 @@ func (m *TalentMutation) Field(name string) (ent.Value, bool) {
 		return m.JobPreference()
 	case talent.FieldTimezone:
 		return m.Timezone()
+	case talent.FieldLocale:
+		return m.Locale()
 	case talent.FieldState:
 		return m.State()
 	case talent.FieldProfessionalSummary:
@@ -15892,6 +15934,8 @@ func (m *TalentMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldJobPreference(ctx)
 	case talent.FieldTimezone:
 		return m.OldTimezone(ctx)
+	case talent.FieldLocale:
+		return m.OldLocale(ctx)
 	case talent.FieldState:
 		return m.OldState(ctx)
 	case talent.FieldProfessionalSummary:
@@ -16023,6 +16067,13 @@ func (m *TalentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTimezone(v)
+		return nil
+	case talent.FieldLocale:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLocale(v)
 		return nil
 	case talent.FieldState:
 		v, ok := value.(string)
@@ -16158,6 +16209,9 @@ func (m *TalentMutation) ResetField(name string) error {
 		return nil
 	case talent.FieldTimezone:
 		m.ResetTimezone()
+		return nil
+	case talent.FieldLocale:
+		m.ResetLocale()
 		return nil
 	case talent.FieldState:
 		m.ResetState()
