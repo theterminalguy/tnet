@@ -138,6 +138,20 @@ func (sauu *SlackAppUserUpdate) SetTimezoneLabel(s string) *SlackAppUserUpdate {
 	return sauu
 }
 
+// SetLocale sets the "locale" field.
+func (sauu *SlackAppUserUpdate) SetLocale(s string) *SlackAppUserUpdate {
+	sauu.mutation.SetLocale(s)
+	return sauu
+}
+
+// SetNillableLocale sets the "locale" field if the given value is not nil.
+func (sauu *SlackAppUserUpdate) SetNillableLocale(s *string) *SlackAppUserUpdate {
+	if s != nil {
+		sauu.SetLocale(*s)
+	}
+	return sauu
+}
+
 // SetIsBotUser sets the "is_bot_user" field.
 func (sauu *SlackAppUserUpdate) SetIsBotUser(b bool) *SlackAppUserUpdate {
 	sauu.mutation.SetIsBotUser(b)
@@ -323,6 +337,13 @@ func (sauu *SlackAppUserUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Column: slackappuser.FieldTimezoneLabel,
 		})
 	}
+	if value, ok := sauu.mutation.Locale(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: slackappuser.FieldLocale,
+		})
+	}
 	if value, ok := sauu.mutation.IsBotUser(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -489,6 +510,20 @@ func (sauuo *SlackAppUserUpdateOne) SetTimezone(s string) *SlackAppUserUpdateOne
 // SetTimezoneLabel sets the "timezone_label" field.
 func (sauuo *SlackAppUserUpdateOne) SetTimezoneLabel(s string) *SlackAppUserUpdateOne {
 	sauuo.mutation.SetTimezoneLabel(s)
+	return sauuo
+}
+
+// SetLocale sets the "locale" field.
+func (sauuo *SlackAppUserUpdateOne) SetLocale(s string) *SlackAppUserUpdateOne {
+	sauuo.mutation.SetLocale(s)
+	return sauuo
+}
+
+// SetNillableLocale sets the "locale" field if the given value is not nil.
+func (sauuo *SlackAppUserUpdateOne) SetNillableLocale(s *string) *SlackAppUserUpdateOne {
+	if s != nil {
+		sauuo.SetLocale(*s)
+	}
 	return sauuo
 }
 
@@ -699,6 +734,13 @@ func (sauuo *SlackAppUserUpdateOne) sqlSave(ctx context.Context) (_node *SlackAp
 			Type:   field.TypeString,
 			Value:  value,
 			Column: slackappuser.FieldTimezoneLabel,
+		})
+	}
+	if value, ok := sauuo.mutation.Locale(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: slackappuser.FieldLocale,
 		})
 	}
 	if value, ok := sauuo.mutation.IsBotUser(); ok {

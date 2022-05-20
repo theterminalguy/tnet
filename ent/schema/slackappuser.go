@@ -36,6 +36,7 @@ func (SlackAppUser) Fields() []ent.Field {
 		field.String("slack_team_id"),
 		field.String("timezone"),
 		field.String("timezone_label"),
+		field.String("locale").Default("en-US"),
 		field.Bool("is_bot_user"),
 	}
 }

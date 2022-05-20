@@ -37,6 +37,8 @@ const (
 	FieldTimezone = "timezone"
 	// FieldTimezoneLabel holds the string denoting the timezone_label field in the database.
 	FieldTimezoneLabel = "timezone_label"
+	// FieldLocale holds the string denoting the locale field in the database.
+	FieldLocale = "locale"
 	// FieldIsBotUser holds the string denoting the is_bot_user field in the database.
 	FieldIsBotUser = "is_bot_user"
 	// EdgeSlackAppInstall holds the string denoting the slack_app_install edge name in mutations.
@@ -67,6 +69,7 @@ var Columns = []string{
 	FieldSlackTeamID,
 	FieldTimezone,
 	FieldTimezoneLabel,
+	FieldLocale,
 	FieldIsBotUser,
 }
 
@@ -87,6 +90,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultLocale holds the default value on creation for the "locale" field.
+	DefaultLocale string
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

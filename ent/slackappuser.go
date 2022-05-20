@@ -42,6 +42,8 @@ type SlackAppUser struct {
 	Timezone string `json:"timezone,omitempty"`
 	// TimezoneLabel holds the value of the "timezone_label" field.
 	TimezoneLabel string `json:"timezone_label,omitempty"`
+	// Locale holds the value of the "locale" field.
+	Locale string `json:"locale,omitempty"`
 	// IsBotUser holds the value of the "is_bot_user" field.
 	IsBotUser bool `json:"is_bot_user,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -79,7 +81,7 @@ func (*SlackAppUser) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case slackappuser.FieldIsBotUser:
 			values[i] = new(sql.NullBool)
-		case slackappuser.FieldFullName, slackappuser.FieldTitle, slackappuser.FieldEmail, slackappuser.FieldPhotoURL, slackappuser.FieldSlackUserID, slackappuser.FieldSlackTeamID, slackappuser.FieldTimezone, slackappuser.FieldTimezoneLabel:
+		case slackappuser.FieldFullName, slackappuser.FieldTitle, slackappuser.FieldEmail, slackappuser.FieldPhotoURL, slackappuser.FieldSlackUserID, slackappuser.FieldSlackTeamID, slackappuser.FieldTimezone, slackappuser.FieldTimezoneLabel, slackappuser.FieldLocale:
 			values[i] = new(sql.NullString)
 		case slackappuser.FieldCreatedAt, slackappuser.FieldUpdatedAt, slackappuser.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -179,6 +181,12 @@ func (sau *SlackAppUser) assignValues(columns []string, values []interface{}) er
 			} else if value.Valid {
 				sau.TimezoneLabel = value.String
 			}
+		case slackappuser.FieldLocale:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field locale", values[i])
+			} else if value.Valid {
+				sau.Locale = value.String
+			}
 		case slackappuser.FieldIsBotUser:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field is_bot_user", values[i])
@@ -244,6 +252,8 @@ func (sau *SlackAppUser) String() string {
 	builder.WriteString(sau.Timezone)
 	builder.WriteString(", timezone_label=")
 	builder.WriteString(sau.TimezoneLabel)
+	builder.WriteString(", locale=")
+	builder.WriteString(sau.Locale)
 	builder.WriteString(", is_bot_user=")
 	builder.WriteString(fmt.Sprintf("%v", sau.IsBotUser))
 	builder.WriteByte(')')

@@ -345,6 +345,10 @@ func init() {
 	slackappuser.DefaultUpdatedAt = slackappuserDescUpdatedAt.Default.(func() time.Time)
 	// slackappuser.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	slackappuser.UpdateDefaultUpdatedAt = slackappuserDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// slackappuserDescLocale is the schema descriptor for locale field.
+	slackappuserDescLocale := slackappuserFields[8].Descriptor()
+	// slackappuser.DefaultLocale holds the default value on creation for the locale field.
+	slackappuser.DefaultLocale = slackappuserDescLocale.Default.(string)
 	// slackappuserDescID is the schema descriptor for id field.
 	slackappuserDescID := slackappuserMixinFields0[0].Descriptor()
 	// slackappuser.DefaultID holds the default value on creation for the id field.

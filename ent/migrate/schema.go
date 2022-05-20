@@ -544,6 +544,7 @@ var (
 		{Name: "slack_team_id", Type: field.TypeString},
 		{Name: "timezone", Type: field.TypeString},
 		{Name: "timezone_label", Type: field.TypeString},
+		{Name: "locale", Type: field.TypeString, Default: "en-US"},
 		{Name: "is_bot_user", Type: field.TypeBool},
 		{Name: "slack_app_install_id", Type: field.TypeUUID, Nullable: true},
 	}
@@ -555,7 +556,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "slack_app_users_slack_app_installs_slack_app_users",
-				Columns:    []*schema.Column{SlackAppUsersColumns[13]},
+				Columns:    []*schema.Column{SlackAppUsersColumns[14]},
 				RefColumns: []*schema.Column{SlackAppInstallsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -564,7 +565,7 @@ var (
 			{
 				Name:    "slackappuser_slack_app_install_id",
 				Unique:  false,
-				Columns: []*schema.Column{SlackAppUsersColumns[13]},
+				Columns: []*schema.Column{SlackAppUsersColumns[14]},
 			},
 			{
 				Name:    "slackappuser_slack_user_id_email",

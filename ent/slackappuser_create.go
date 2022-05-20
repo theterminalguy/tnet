@@ -134,6 +134,20 @@ func (sauc *SlackAppUserCreate) SetTimezoneLabel(s string) *SlackAppUserCreate {
 	return sauc
 }
 
+// SetLocale sets the "locale" field.
+func (sauc *SlackAppUserCreate) SetLocale(s string) *SlackAppUserCreate {
+	sauc.mutation.SetLocale(s)
+	return sauc
+}
+
+// SetNillableLocale sets the "locale" field if the given value is not nil.
+func (sauc *SlackAppUserCreate) SetNillableLocale(s *string) *SlackAppUserCreate {
+	if s != nil {
+		sauc.SetLocale(*s)
+	}
+	return sauc
+}
+
 // SetIsBotUser sets the "is_bot_user" field.
 func (sauc *SlackAppUserCreate) SetIsBotUser(b bool) *SlackAppUserCreate {
 	sauc.mutation.SetIsBotUser(b)
@@ -238,6 +252,10 @@ func (sauc *SlackAppUserCreate) defaults() {
 		v := slackappuser.DefaultUpdatedAt()
 		sauc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := sauc.mutation.Locale(); !ok {
+		v := slackappuser.DefaultLocale
+		sauc.mutation.SetLocale(v)
+	}
 	if _, ok := sauc.mutation.ID(); !ok {
 		v := slackappuser.DefaultID()
 		sauc.mutation.SetID(v)
@@ -272,6 +290,9 @@ func (sauc *SlackAppUserCreate) check() error {
 	}
 	if _, ok := sauc.mutation.TimezoneLabel(); !ok {
 		return &ValidationError{Name: "timezone_label", err: errors.New(`ent: missing required field "SlackAppUser.timezone_label"`)}
+	}
+	if _, ok := sauc.mutation.Locale(); !ok {
+		return &ValidationError{Name: "locale", err: errors.New(`ent: missing required field "SlackAppUser.locale"`)}
 	}
 	if _, ok := sauc.mutation.IsBotUser(); !ok {
 		return &ValidationError{Name: "is_bot_user", err: errors.New(`ent: missing required field "SlackAppUser.is_bot_user"`)}
@@ -399,6 +420,14 @@ func (sauc *SlackAppUserCreate) createSpec() (*SlackAppUser, *sqlgraph.CreateSpe
 			Column: slackappuser.FieldTimezoneLabel,
 		})
 		_node.TimezoneLabel = value
+	}
+	if value, ok := sauc.mutation.Locale(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: slackappuser.FieldLocale,
+		})
+		_node.Locale = value
 	}
 	if value, ok := sauc.mutation.IsBotUser(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

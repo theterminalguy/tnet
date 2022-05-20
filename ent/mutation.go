@@ -13325,6 +13325,7 @@ type SlackAppUserMutation struct {
 	slack_team_id            *string
 	timezone                 *string
 	timezone_label           *string
+	locale                   *string
 	is_bot_user              *bool
 	clearedFields            map[string]struct{}
 	slack_app_install        *uuid.UUID
@@ -13909,6 +13910,42 @@ func (m *SlackAppUserMutation) ResetTimezoneLabel() {
 	m.timezone_label = nil
 }
 
+// SetLocale sets the "locale" field.
+func (m *SlackAppUserMutation) SetLocale(s string) {
+	m.locale = &s
+}
+
+// Locale returns the value of the "locale" field in the mutation.
+func (m *SlackAppUserMutation) Locale() (r string, exists bool) {
+	v := m.locale
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLocale returns the old "locale" field's value of the SlackAppUser entity.
+// If the SlackAppUser object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppUserMutation) OldLocale(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLocale is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLocale requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLocale: %w", err)
+	}
+	return oldValue.Locale, nil
+}
+
+// ResetLocale resets all changes to the "locale" field.
+func (m *SlackAppUserMutation) ResetLocale() {
+	m.locale = nil
+}
+
 // SetIsBotUser sets the "is_bot_user" field.
 func (m *SlackAppUserMutation) SetIsBotUser(b bool) {
 	m.is_bot_user = &b
@@ -13990,7 +14027,7 @@ func (m *SlackAppUserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SlackAppUserMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, slackappuser.FieldCreatedAt)
 	}
@@ -14027,6 +14064,9 @@ func (m *SlackAppUserMutation) Fields() []string {
 	if m.timezone_label != nil {
 		fields = append(fields, slackappuser.FieldTimezoneLabel)
 	}
+	if m.locale != nil {
+		fields = append(fields, slackappuser.FieldLocale)
+	}
 	if m.is_bot_user != nil {
 		fields = append(fields, slackappuser.FieldIsBotUser)
 	}
@@ -14062,6 +14102,8 @@ func (m *SlackAppUserMutation) Field(name string) (ent.Value, bool) {
 		return m.Timezone()
 	case slackappuser.FieldTimezoneLabel:
 		return m.TimezoneLabel()
+	case slackappuser.FieldLocale:
+		return m.Locale()
 	case slackappuser.FieldIsBotUser:
 		return m.IsBotUser()
 	}
@@ -14097,6 +14139,8 @@ func (m *SlackAppUserMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldTimezone(ctx)
 	case slackappuser.FieldTimezoneLabel:
 		return m.OldTimezoneLabel(ctx)
+	case slackappuser.FieldLocale:
+		return m.OldLocale(ctx)
 	case slackappuser.FieldIsBotUser:
 		return m.OldIsBotUser(ctx)
 	}
@@ -14191,6 +14235,13 @@ func (m *SlackAppUserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTimezoneLabel(v)
+		return nil
+	case slackappuser.FieldLocale:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLocale(v)
 		return nil
 	case slackappuser.FieldIsBotUser:
 		v, ok := value.(bool)
@@ -14304,6 +14355,9 @@ func (m *SlackAppUserMutation) ResetField(name string) error {
 		return nil
 	case slackappuser.FieldTimezoneLabel:
 		m.ResetTimezoneLabel()
+		return nil
+	case slackappuser.FieldLocale:
+		m.ResetLocale()
 		return nil
 	case slackappuser.FieldIsBotUser:
 		m.ResetIsBotUser()

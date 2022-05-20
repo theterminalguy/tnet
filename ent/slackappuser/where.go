@@ -178,6 +178,13 @@ func TimezoneLabel(v string) predicate.SlackAppUser {
 	})
 }
 
+// Locale applies equality check predicate on the "locale" field. It's identical to LocaleEQ.
+func Locale(v string) predicate.SlackAppUser {
+	return predicate.SlackAppUser(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLocale), v))
+	})
+}
+
 // IsBotUser applies equality check predicate on the "is_bot_user" field. It's identical to IsBotUserEQ.
 func IsBotUser(v bool) predicate.SlackAppUser {
 	return predicate.SlackAppUser(func(s *sql.Selector) {
@@ -1388,6 +1395,117 @@ func TimezoneLabelEqualFold(v string) predicate.SlackAppUser {
 func TimezoneLabelContainsFold(v string) predicate.SlackAppUser {
 	return predicate.SlackAppUser(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldTimezoneLabel), v))
+	})
+}
+
+// LocaleEQ applies the EQ predicate on the "locale" field.
+func LocaleEQ(v string) predicate.SlackAppUser {
+	return predicate.SlackAppUser(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLocale), v))
+	})
+}
+
+// LocaleNEQ applies the NEQ predicate on the "locale" field.
+func LocaleNEQ(v string) predicate.SlackAppUser {
+	return predicate.SlackAppUser(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLocale), v))
+	})
+}
+
+// LocaleIn applies the In predicate on the "locale" field.
+func LocaleIn(vs ...string) predicate.SlackAppUser {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SlackAppUser(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldLocale), v...))
+	})
+}
+
+// LocaleNotIn applies the NotIn predicate on the "locale" field.
+func LocaleNotIn(vs ...string) predicate.SlackAppUser {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SlackAppUser(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldLocale), v...))
+	})
+}
+
+// LocaleGT applies the GT predicate on the "locale" field.
+func LocaleGT(v string) predicate.SlackAppUser {
+	return predicate.SlackAppUser(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldLocale), v))
+	})
+}
+
+// LocaleGTE applies the GTE predicate on the "locale" field.
+func LocaleGTE(v string) predicate.SlackAppUser {
+	return predicate.SlackAppUser(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldLocale), v))
+	})
+}
+
+// LocaleLT applies the LT predicate on the "locale" field.
+func LocaleLT(v string) predicate.SlackAppUser {
+	return predicate.SlackAppUser(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldLocale), v))
+	})
+}
+
+// LocaleLTE applies the LTE predicate on the "locale" field.
+func LocaleLTE(v string) predicate.SlackAppUser {
+	return predicate.SlackAppUser(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldLocale), v))
+	})
+}
+
+// LocaleContains applies the Contains predicate on the "locale" field.
+func LocaleContains(v string) predicate.SlackAppUser {
+	return predicate.SlackAppUser(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldLocale), v))
+	})
+}
+
+// LocaleHasPrefix applies the HasPrefix predicate on the "locale" field.
+func LocaleHasPrefix(v string) predicate.SlackAppUser {
+	return predicate.SlackAppUser(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldLocale), v))
+	})
+}
+
+// LocaleHasSuffix applies the HasSuffix predicate on the "locale" field.
+func LocaleHasSuffix(v string) predicate.SlackAppUser {
+	return predicate.SlackAppUser(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldLocale), v))
+	})
+}
+
+// LocaleEqualFold applies the EqualFold predicate on the "locale" field.
+func LocaleEqualFold(v string) predicate.SlackAppUser {
+	return predicate.SlackAppUser(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldLocale), v))
+	})
+}
+
+// LocaleContainsFold applies the ContainsFold predicate on the "locale" field.
+func LocaleContainsFold(v string) predicate.SlackAppUser {
+	return predicate.SlackAppUser(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldLocale), v))
 	})
 }
 
