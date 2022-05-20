@@ -117,6 +117,17 @@ The above will generate a self signed certificate for the domain `localhost`. Ho
 $ mkcert -key-file cert-key.pem -cert-file cert.pem localhost
 ```
 
+### Turnning off TLS
+
+If you don't want to use TLS, you can use the following command to turn it off.
+
+```shell
+$ make dev SSL=0
+```
+
+**Note:** SSL is enabled by default.
+
+
 Now head over to https://localhost:`<YOUR_HTTP_PORT>` and you should be able to see the app.
 
 ## Private Repo Dependency

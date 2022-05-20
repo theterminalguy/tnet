@@ -8,17 +8,20 @@ import (
 	"github.com/10hourlabs/tentn/internal/middleware/globalctx"
 	"github.com/10hourlabs/tentn/internal/middleware/header"
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/internal/service"
 	"github.com/labstack/echo/v4"
 )
 
 type SlackPlatformAuth struct {
 	PlatformAuth
-	sar *repo.SlackAppInstallRepository
+	sar  *repo.SlackAppInstallRepository
+	saus *service.SlackAppUserService
 }
 
 func NewSlackPlatformAuth() PlatformAuth {
 	return &SlackPlatformAuth{
-		sar: repo.NewSlackAppInstallRepository(),
+		sar:  repo.NewSlackAppInstallRepository(),
+		saus: service.NewSlackAppUserService(),
 	}
 }
 
@@ -48,6 +51,14 @@ func (s SlackPlatformAuth) Authorize(ctx echo.Context) error {
 		// so attach the current request to the user who installed it
 		tenlog.Warn("App not in use by a primary user")
 	}
+
+	// track the current user making the request
+	// TODO: let's cache this
+	if _, err := s.saus.CreateUser(slackUserID, app.ID); err != nil {
+		tenlog.Error("Failed to create slack app user", err)
+		return echo.ErrUnauthorized
+	}
+
 	// For free plans, every request is tied to the primary user
 	// The primary user is the user who installed the app
 	primaryUser, err := s.sar.GetRecruiterByTeamID(slackTeamID)

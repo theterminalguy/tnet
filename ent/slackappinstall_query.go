@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -13,6 +14,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
+	"github.com/10hourlabs/tentn/ent/slackappuser"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -27,7 +29,8 @@ type SlackAppInstallQuery struct {
 	fields     []string
 	predicates []predicate.SlackAppInstall
 	// eager-loading edges.
-	withUser *UserQuery
+	withUser          *UserQuery
+	withSlackAppUsers *SlackAppUserQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -79,6 +82,28 @@ func (saiq *SlackAppInstallQuery) QueryUser() *UserQuery {
 			sqlgraph.From(slackappinstall.Table, slackappinstall.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, slackappinstall.UserTable, slackappinstall.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(saiq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySlackAppUsers chains the current query on the "slack_app_users" edge.
+func (saiq *SlackAppInstallQuery) QuerySlackAppUsers() *SlackAppUserQuery {
+	query := &SlackAppUserQuery{config: saiq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := saiq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := saiq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(slackappinstall.Table, slackappinstall.FieldID, selector),
+			sqlgraph.To(slackappuser.Table, slackappuser.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, slackappinstall.SlackAppUsersTable, slackappinstall.SlackAppUsersColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(saiq.driver.Dialect(), step)
 		return fromU, nil
@@ -262,12 +287,13 @@ func (saiq *SlackAppInstallQuery) Clone() *SlackAppInstallQuery {
 		return nil
 	}
 	return &SlackAppInstallQuery{
-		config:     saiq.config,
-		limit:      saiq.limit,
-		offset:     saiq.offset,
-		order:      append([]OrderFunc{}, saiq.order...),
-		predicates: append([]predicate.SlackAppInstall{}, saiq.predicates...),
-		withUser:   saiq.withUser.Clone(),
+		config:            saiq.config,
+		limit:             saiq.limit,
+		offset:            saiq.offset,
+		order:             append([]OrderFunc{}, saiq.order...),
+		predicates:        append([]predicate.SlackAppInstall{}, saiq.predicates...),
+		withUser:          saiq.withUser.Clone(),
+		withSlackAppUsers: saiq.withSlackAppUsers.Clone(),
 		// clone intermediate query.
 		sql:    saiq.sql.Clone(),
 		path:   saiq.path,
@@ -283,6 +309,17 @@ func (saiq *SlackAppInstallQuery) WithUser(opts ...func(*UserQuery)) *SlackAppIn
 		opt(query)
 	}
 	saiq.withUser = query
+	return saiq
+}
+
+// WithSlackAppUsers tells the query-builder to eager-load the nodes that are connected to
+// the "slack_app_users" edge. The optional arguments are used to configure the query builder of the edge.
+func (saiq *SlackAppInstallQuery) WithSlackAppUsers(opts ...func(*SlackAppUserQuery)) *SlackAppInstallQuery {
+	query := &SlackAppUserQuery{config: saiq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	saiq.withSlackAppUsers = query
 	return saiq
 }
 
@@ -351,8 +388,9 @@ func (saiq *SlackAppInstallQuery) sqlAll(ctx context.Context) ([]*SlackAppInstal
 	var (
 		nodes       = []*SlackAppInstall{}
 		_spec       = saiq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			saiq.withUser != nil,
+			saiq.withSlackAppUsers != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -398,6 +436,31 @@ func (saiq *SlackAppInstallQuery) sqlAll(ctx context.Context) ([]*SlackAppInstal
 			for i := range nodes {
 				nodes[i].Edges.User = n
 			}
+		}
+	}
+
+	if query := saiq.withSlackAppUsers; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uuid.UUID]*SlackAppInstall)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.SlackAppUsers = []*SlackAppUser{}
+		}
+		query.Where(predicate.SlackAppUser(func(s *sql.Selector) {
+			s.Where(sql.InValues(slackappinstall.SlackAppUsersColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.SlackAppInstallID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "slack_app_install_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.SlackAppUsers = append(node.Edges.SlackAppUsers, n)
 		}
 	}
 

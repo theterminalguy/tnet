@@ -48,6 +48,8 @@ const (
 	FieldJobPreference = "job_preference"
 	// FieldTimezone holds the string denoting the timezone field in the database.
 	FieldTimezone = "timezone"
+	// FieldLocale holds the string denoting the locale field in the database.
+	FieldLocale = "locale"
 	// FieldState holds the string denoting the state field in the database.
 	FieldState = "state"
 	// FieldProfessionalSummary holds the string denoting the professional_summary field in the database.
@@ -148,6 +150,7 @@ var Columns = []string{
 	FieldCity,
 	FieldJobPreference,
 	FieldTimezone,
+	FieldLocale,
 	FieldState,
 	FieldProfessionalSummary,
 }
@@ -171,6 +174,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// CountryCodeValidator is a validator for the "country_code" field. It is called by the builders before save.
 	CountryCodeValidator func(string) error
+	// DefaultLocale holds the default value on creation for the "locale" field.
+	DefaultLocale string
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

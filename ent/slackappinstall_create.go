@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/schema/billing"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
+	"github.com/10hourlabs/tentn/ent/slackappuser"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -198,6 +199,21 @@ func (saic *SlackAppInstallCreate) SetNillableID(u *uuid.UUID) *SlackAppInstallC
 // SetUser sets the "user" edge to the User entity.
 func (saic *SlackAppInstallCreate) SetUser(u *User) *SlackAppInstallCreate {
 	return saic.SetUserID(u.ID)
+}
+
+// AddSlackAppUserIDs adds the "slack_app_users" edge to the SlackAppUser entity by IDs.
+func (saic *SlackAppInstallCreate) AddSlackAppUserIDs(ids ...uuid.UUID) *SlackAppInstallCreate {
+	saic.mutation.AddSlackAppUserIDs(ids...)
+	return saic
+}
+
+// AddSlackAppUsers adds the "slack_app_users" edges to the SlackAppUser entity.
+func (saic *SlackAppInstallCreate) AddSlackAppUsers(s ...*SlackAppUser) *SlackAppInstallCreate {
+	ids := make([]uuid.UUID, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return saic.AddSlackAppUserIDs(ids...)
 }
 
 // Mutation returns the SlackAppInstallMutation object of the builder.
@@ -517,6 +533,25 @@ func (saic *SlackAppInstallCreate) createSpec() (*SlackAppInstall, *sqlgraph.Cre
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.UserID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := saic.mutation.SlackAppUsersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   slackappinstall.SlackAppUsersTable,
+			Columns: []string{slackappinstall.SlackAppUsersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: slackappuser.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

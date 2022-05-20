@@ -163,6 +163,20 @@ func (tc *TalentCreate) SetTimezone(s string) *TalentCreate {
 	return tc
 }
 
+// SetLocale sets the "locale" field.
+func (tc *TalentCreate) SetLocale(s string) *TalentCreate {
+	tc.mutation.SetLocale(s)
+	return tc
+}
+
+// SetNillableLocale sets the "locale" field if the given value is not nil.
+func (tc *TalentCreate) SetNillableLocale(s *string) *TalentCreate {
+	if s != nil {
+		tc.SetLocale(*s)
+	}
+	return tc
+}
+
 // SetState sets the "state" field.
 func (tc *TalentCreate) SetState(s string) *TalentCreate {
 	tc.mutation.SetState(s)
@@ -386,6 +400,10 @@ func (tc *TalentCreate) defaults() {
 		v := talent.DefaultUpdatedAt()
 		tc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := tc.mutation.Locale(); !ok {
+		v := talent.DefaultLocale
+		tc.mutation.SetLocale(v)
+	}
 	if _, ok := tc.mutation.ID(); !ok {
 		v := talent.DefaultID()
 		tc.mutation.SetID(v)
@@ -448,6 +466,9 @@ func (tc *TalentCreate) check() error {
 	}
 	if _, ok := tc.mutation.Timezone(); !ok {
 		return &ValidationError{Name: "timezone", err: errors.New(`ent: missing required field "Talent.timezone"`)}
+	}
+	if _, ok := tc.mutation.Locale(); !ok {
+		return &ValidationError{Name: "locale", err: errors.New(`ent: missing required field "Talent.locale"`)}
 	}
 	if _, ok := tc.mutation.State(); !ok {
 		return &ValidationError{Name: "state", err: errors.New(`ent: missing required field "Talent.state"`)}
@@ -615,6 +636,14 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Column: talent.FieldTimezone,
 		})
 		_node.Timezone = value
+	}
+	if value, ok := tc.mutation.Locale(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: talent.FieldLocale,
+		})
+		_node.Locale = value
 	}
 	if value, ok := tc.mutation.State(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

@@ -19,6 +19,7 @@ require (
 	github.com/labstack/gommon v0.3.1
 	github.com/lib/pq v1.10.4
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
+	github.com/slack-go/slack v0.10.3
 	github.com/stretchr/testify v1.7.1
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
 	golang.org/x/oauth2 v0.0.0-20220309155454-6242fa91716a
@@ -34,7 +35,8 @@ require (
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/google/go-cmp v0.5.7 // indirect
+	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/hashicorp/hcl/v2 v2.10.0 // indirect
 	github.com/klauspost/compress v1.15.3 // indirect

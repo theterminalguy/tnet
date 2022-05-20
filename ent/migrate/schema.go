@@ -530,6 +530,55 @@ var (
 			},
 		},
 	}
+	// SlackAppUsersColumns holds the columns for the "slack_app_users" table.
+	SlackAppUsersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "full_name", Type: field.TypeString},
+		{Name: "title", Type: field.TypeString, Nullable: true},
+		{Name: "email", Type: field.TypeString},
+		{Name: "photo_url", Type: field.TypeString},
+		{Name: "slack_user_id", Type: field.TypeString},
+		{Name: "slack_team_id", Type: field.TypeString},
+		{Name: "timezone", Type: field.TypeString},
+		{Name: "timezone_label", Type: field.TypeString},
+		{Name: "locale", Type: field.TypeString, Default: "en-US"},
+		{Name: "is_bot_user", Type: field.TypeBool},
+		{Name: "slack_app_install_id", Type: field.TypeUUID, Nullable: true},
+	}
+	// SlackAppUsersTable holds the schema information for the "slack_app_users" table.
+	SlackAppUsersTable = &schema.Table{
+		Name:       "slack_app_users",
+		Columns:    SlackAppUsersColumns,
+		PrimaryKey: []*schema.Column{SlackAppUsersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "slack_app_users_slack_app_installs_slack_app_users",
+				Columns:    []*schema.Column{SlackAppUsersColumns[14]},
+				RefColumns: []*schema.Column{SlackAppInstallsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "slackappuser_slack_app_install_id",
+				Unique:  false,
+				Columns: []*schema.Column{SlackAppUsersColumns[14]},
+			},
+			{
+				Name:    "slackappuser_slack_user_id_email",
+				Unique:  true,
+				Columns: []*schema.Column{SlackAppUsersColumns[8], SlackAppUsersColumns[6]},
+			},
+			{
+				Name:    "slackappuser_slack_team_id",
+				Unique:  false,
+				Columns: []*schema.Column{SlackAppUsersColumns[9]},
+			},
+		},
+	}
 	// TalentsColumns holds the columns for the "talents" table.
 	TalentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -549,6 +598,7 @@ var (
 		{Name: "city", Type: field.TypeString},
 		{Name: "job_preference", Type: field.TypeEnum, Enums: []string{"remote", "onsite", "flexible"}},
 		{Name: "timezone", Type: field.TypeString},
+		{Name: "locale", Type: field.TypeString, Default: "en-US"},
 		{Name: "state", Type: field.TypeString},
 		{Name: "professional_summary", Type: field.TypeString, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
@@ -561,7 +611,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "talents_users_talents",
-				Columns:    []*schema.Column{TalentsColumns[19]},
+				Columns:    []*schema.Column{TalentsColumns[20]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -570,7 +620,7 @@ var (
 			{
 				Name:    "talent_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{TalentsColumns[19]},
+				Columns: []*schema.Column{TalentsColumns[20]},
 			},
 			{
 				Name:    "talent_email_phone",
@@ -692,6 +742,7 @@ var (
 		SessionsTable,
 		SkillsTable,
 		SlackAppInstallsTable,
+		SlackAppUsersTable,
 		TalentsTable,
 		TalentCollectionsTable,
 		UsersTable,
@@ -715,6 +766,7 @@ func init() {
 	SessionsTable.ForeignKeys[0].RefTable = UsersTable
 	SkillsTable.ForeignKeys[0].RefTable = TalentsTable
 	SlackAppInstallsTable.ForeignKeys[0].RefTable = UsersTable
+	SlackAppUsersTable.ForeignKeys[0].RefTable = SlackAppInstallsTable
 	TalentsTable.ForeignKeys[0].RefTable = UsersTable
 	TalentCollectionsTable.ForeignKeys[0].RefTable = UsersTable
 	WorkExperiencesTable.ForeignKeys[0].RefTable = TalentsTable
