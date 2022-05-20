@@ -9,10 +9,13 @@ import (
 	"log"
 	"os"
 	"sort"
+	"strings"
 	"time"
 
+	"github.com/10hourlabs/tenlog"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/10hourlabs/tentn/util/osutil"
 	"github.com/10hourlabs/tentn/util/photo"
 	"github.com/google/uuid"
 )
@@ -62,7 +65,6 @@ func (t *ImportTalents) Run(_ string) error {
 	}
 	defer f.Close()
 
-	var td *TalentData
 	manyUsers := make([]*repo.UserParams, 0)
 	manyTalents := make([]*repo.TalentParams, 0)
 	manySkills := make([]*repo.SkillParams, 0)
@@ -71,17 +73,22 @@ func (t *ImportTalents) Run(_ string) error {
 	manyWorkExperiences := make([]*repo.WorkExperienceParams, 0)
 
 	csvReader := csv.NewReader(f)
-	// load a file of emails
-	emailFile, err := os.OpenFile("data/emails.cache", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		return err
-	}
-	defer emailFile.Close()
-	// convert the emails to a map
-	emailMap := make(map[string]bool)
-	scanner := bufio.NewScanner(emailFile)
-	for scanner.Scan() {
-		emailMap[scanner.Text()] = true
+
+	emailCache := make(map[string]bool)
+	var emailFile *os.File
+	var emailFileErr error
+	if osutil.InDevMode() {
+		// load a file of emails
+		emailFile, emailFileErr = os.OpenFile("data/emails.cache", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		if emailFileErr != nil {
+			return emailFileErr
+		}
+		defer emailFile.Close()
+		// convert the emails to a map
+		scanner := bufio.NewScanner(emailFile)
+		for scanner.Scan() {
+			emailCache[scanner.Text()] = true
+		}
 	}
 	for {
 		record, err := csvReader.Read()
@@ -92,16 +99,23 @@ func (t *ImportTalents) Run(_ string) error {
 			return err
 		}
 		payload := []byte(record[1])
-		td = extractTalentData(payload)
-		talentsEmail := td.User.Email
-		if ok := emailMap[talentsEmail]; ok {
+		td, err := extractTalentData(payload)
+		if err != nil {
+			fmt.Println("Record", record[1])
+			fmt.Printf("An error occured %s\n", err.Error())
+			panic("something bad happened")
+		}
+		talentsEmail := strings.ToLower(td.User.Email)
+		if ok := emailCache[talentsEmail]; ok {
 			log.Printf("skipping duplicate email: %s", talentsEmail)
 			continue
 		}
 		// update emails map
-		emailMap[talentsEmail] = true
+		emailCache[talentsEmail] = true
 		// write the new email to the file
-		emailFile.WriteString(talentsEmail + "\n")
+		if osutil.InDevMode() {
+			emailFile.WriteString(talentsEmail + "\n")
+		}
 		manyUsers = append(manyUsers, td.User)
 		manyTalents = append(manyTalents, td.Talent)
 		manySkills = append(manySkills, td.Skills...)
@@ -169,11 +183,12 @@ type TalentData struct {
 	Portfolios      []*repo.PortfolioLinkParams
 }
 
-func extractTalentData(record []byte) *TalentData {
+func extractTalentData(record []byte) (*TalentData, error) {
 	var uup UpsertUserParams
 	err := json.Unmarshal(record, &uup)
 	if err != nil {
 		fmt.Println("error unmarshalling: ", err)
+		return nil, err
 	}
 	user := &repo.UserParams{
 		ID:        uuid.New(),
@@ -291,16 +306,20 @@ func extractTalentData(record []byte) *TalentData {
 
 	date, err := time.Parse("2006-01-02", talent.ProfessionalStartDate)
 	if err != nil {
-		log.Fatal(err)
+		tenlog.Error(err)
+		return nil, err
 	}
 
 	if date.Year() < 2000 {
-		emailFile, err := os.OpenFile("data/reachout-emails.cache", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-		if err != nil {
-			log.Fatal(err)
+		if osutil.InDevMode() {
+			emailFile, err := os.OpenFile("data/reachout-emails.cache", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+			if err != nil {
+				tenlog.Error(err)
+				return nil, err
+			}
+			defer emailFile.Close()
+			emailFile.WriteString(user.Email + "\n")
 		}
-		defer emailFile.Close()
-		emailFile.WriteString(user.Email + "\n")
 	}
 
 	// fmt.Println("\tEducations: ")
@@ -348,5 +367,5 @@ func extractTalentData(record []byte) *TalentData {
 		Educations:      uup.Educations,
 		WorkExperiences: uup.WorkExperiences,
 		Portfolios:      uup.Portfolios,
-	}
+	}, nil
 }

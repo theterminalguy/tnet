@@ -101,3 +101,7 @@ func SetEnvFromFile(file string) {
 		os.Setenv(parts[0], parts[1])
 	}
 }
+
+func InDevMode() bool {
+	return strings.HasPrefix(os.Getenv("ENV"), "dev")
+}

@@ -59,6 +59,14 @@ func StringParamsToMap(params string) map[string]string {
 	return result
 }
 
+func MapToStringParams(m map[string]interface{}) string {
+	var params []string
+	for k, v := range m {
+		params = append(params, k+"="+v.(string))
+	}
+	return strings.Join(params, ",")
+}
+
 func Titlelize(s string) string {
 	return strings.Title(strings.ToLower(s))
 }

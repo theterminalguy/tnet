@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/10hourlabs/tentn/internal/task"
@@ -18,6 +19,11 @@ func main() {
 	fmt.Scanln(&answer)
 	if answer == "y" {
 		fmt.Println("Runnig task...")
-		task.Run(taskName, params)
+		executor := ""
+		err := task.Run(taskName, params, executor)
+		if err != nil {
+			log.Fatalf("Error running task: %s", err)
+		}
+		fmt.Println("Task completed successfully")
 	}
 }

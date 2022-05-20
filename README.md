@@ -163,3 +163,18 @@ $  make task name=approve-client params="<client_id>"
 $ make task name=update-client-scope params="client-id=<client-id>,scope=<scope1,scope2,scope3>"
 ```
 
+## Querying the Internal Endpoint
+
+Internal endpoints are only available to a few users. You will need to provide the following headers to be able to query the internal endpoints:
+
+```
+X-TN-Internal-User-ID: <your-10hl-email>
+X-TN-Internal-API-Key: <api-key>
+```
+
+API key can be generated using the following command:
+
+```shell
+$ openssl rand -base64 32
+```
+Once generated, set the value in your .env file as INTERNAL_API_KEY

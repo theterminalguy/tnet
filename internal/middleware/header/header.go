@@ -12,6 +12,9 @@ const (
 	X_TN_SLACK_USER_ID = "X-TN-Slack-User-ID"
 	X_TN_TALENT_ID     = "X-TN-Talent-ID"
 	X_TN_RECRUITER_ID  = "X-TN-Recruiter-ID"
+
+	X_TN_INTERNAL_USER_ID = "X-TN-Internal-User-ID"
+	X_TN_INTERNAL_API_KEY = "X-TN-Internal-API-Key"
 )
 
 // ValidateHeaders checks if the request has the required headers

@@ -1,8 +1,11 @@
 package task
 
 import (
+	"fmt"
+
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/service"
+	"github.com/10hourlabs/tentn/util"
 	"github.com/google/uuid"
 )
 
@@ -18,7 +21,13 @@ func NewTaskApproveClient() *TaskApproveClient {
 	}
 }
 
-func (t *TaskApproveClient) Run(clientID string) error {
+func (t *TaskApproveClient) Run(params string) error {
+	fmt.Println("approving client.......")
+	m := util.StringParamsToMap(params)
+	clientID, ok := m["client_id"]
+	if !ok {
+		return fmt.Errorf("provide a client_id")
+	}
 	client, err := t.Oauth2Repo.GetByUUID(uuid.MustParse(clientID))
 	if err != nil {
 		return err

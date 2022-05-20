@@ -8,6 +8,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
+	"github.com/10hourlabs/tentn/ent/internaltask"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/mission"
@@ -95,6 +96,27 @@ func init() {
 	emergencycontactDescID := emergencycontactMixinFields0[0].Descriptor()
 	// emergencycontact.DefaultID holds the default value on creation for the id field.
 	emergencycontact.DefaultID = emergencycontactDescID.Default.(func() uuid.UUID)
+	internaltaskMixin := schema.InternalTask{}.Mixin()
+	internaltaskMixinFields0 := internaltaskMixin[0].Fields()
+	_ = internaltaskMixinFields0
+	internaltaskMixinFields1 := internaltaskMixin[1].Fields()
+	_ = internaltaskMixinFields1
+	internaltaskFields := schema.InternalTask{}.Fields()
+	_ = internaltaskFields
+	// internaltaskDescCreatedAt is the schema descriptor for created_at field.
+	internaltaskDescCreatedAt := internaltaskMixinFields1[0].Descriptor()
+	// internaltask.DefaultCreatedAt holds the default value on creation for the created_at field.
+	internaltask.DefaultCreatedAt = internaltaskDescCreatedAt.Default.(func() time.Time)
+	// internaltaskDescUpdatedAt is the schema descriptor for updated_at field.
+	internaltaskDescUpdatedAt := internaltaskMixinFields1[1].Descriptor()
+	// internaltask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	internaltask.DefaultUpdatedAt = internaltaskDescUpdatedAt.Default.(func() time.Time)
+	// internaltask.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	internaltask.UpdateDefaultUpdatedAt = internaltaskDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// internaltaskDescID is the schema descriptor for id field.
+	internaltaskDescID := internaltaskMixinFields0[0].Descriptor()
+	// internaltask.DefaultID holds the default value on creation for the id field.
+	internaltask.DefaultID = internaltaskDescID.Default.(func() uuid.UUID)
 	jobMixin := schema.Job{}.Mixin()
 	jobMixinFields0 := jobMixin[0].Fields()
 	_ = jobMixinFields0

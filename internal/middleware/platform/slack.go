@@ -2,6 +2,7 @@ package platform
 
 import (
 	"errors"
+	"net/http"
 
 	"github.com/10hourlabs/tenlog"
 	"github.com/10hourlabs/tentn/ent/schema/billing"
@@ -43,7 +44,7 @@ func (s SlackPlatformAuth) Authorize(ctx echo.Context) error {
 	// https://github.com/allegro/bigcache
 	app, err := s.sar.GetByTeamID(slackTeamID)
 	if err != nil {
-		return echo.ErrUnauthorized
+		return echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
 	if app.PaymentPlan != billing.Free {
 		// TODO:

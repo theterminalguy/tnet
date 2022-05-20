@@ -13,6 +13,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
+	"github.com/10hourlabs/tentn/ent/internaltask"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/mission"
@@ -46,6 +47,8 @@ type Client struct {
 	EmailTemplate *EmailTemplateClient
 	// EmergencyContact is the client for interacting with the EmergencyContact builders.
 	EmergencyContact *EmergencyContactClient
+	// InternalTask is the client for interacting with the InternalTask builders.
+	InternalTask *InternalTaskClient
 	// Job is the client for interacting with the Job builders.
 	Job *JobClient
 	// JobApplication is the client for interacting with the JobApplication builders.
@@ -94,6 +97,7 @@ func (c *Client) init() {
 	c.Education = NewEducationClient(c.config)
 	c.EmailTemplate = NewEmailTemplateClient(c.config)
 	c.EmergencyContact = NewEmergencyContactClient(c.config)
+	c.InternalTask = NewInternalTaskClient(c.config)
 	c.Job = NewJobClient(c.config)
 	c.JobApplication = NewJobApplicationClient(c.config)
 	c.Mission = NewMissionClient(c.config)
@@ -146,6 +150,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Education:        NewEducationClient(cfg),
 		EmailTemplate:    NewEmailTemplateClient(cfg),
 		EmergencyContact: NewEmergencyContactClient(cfg),
+		InternalTask:     NewInternalTaskClient(cfg),
 		Job:              NewJobClient(cfg),
 		JobApplication:   NewJobApplicationClient(cfg),
 		Mission:          NewMissionClient(cfg),
@@ -184,6 +189,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Education:        NewEducationClient(cfg),
 		EmailTemplate:    NewEmailTemplateClient(cfg),
 		EmergencyContact: NewEmergencyContactClient(cfg),
+		InternalTask:     NewInternalTaskClient(cfg),
 		Job:              NewJobClient(cfg),
 		JobApplication:   NewJobApplicationClient(cfg),
 		Mission:          NewMissionClient(cfg),
@@ -232,6 +238,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Education.Use(hooks...)
 	c.EmailTemplate.Use(hooks...)
 	c.EmergencyContact.Use(hooks...)
+	c.InternalTask.Use(hooks...)
 	c.Job.Use(hooks...)
 	c.JobApplication.Use(hooks...)
 	c.Mission.Use(hooks...)
@@ -566,6 +573,96 @@ func (c *EmergencyContactClient) QueryTalent(ec *EmergencyContact) *TalentQuery 
 // Hooks returns the client hooks.
 func (c *EmergencyContactClient) Hooks() []Hook {
 	return c.hooks.EmergencyContact
+}
+
+// InternalTaskClient is a client for the InternalTask schema.
+type InternalTaskClient struct {
+	config
+}
+
+// NewInternalTaskClient returns a client for the InternalTask from the given config.
+func NewInternalTaskClient(c config) *InternalTaskClient {
+	return &InternalTaskClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `internaltask.Hooks(f(g(h())))`.
+func (c *InternalTaskClient) Use(hooks ...Hook) {
+	c.hooks.InternalTask = append(c.hooks.InternalTask, hooks...)
+}
+
+// Create returns a create builder for InternalTask.
+func (c *InternalTaskClient) Create() *InternalTaskCreate {
+	mutation := newInternalTaskMutation(c.config, OpCreate)
+	return &InternalTaskCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of InternalTask entities.
+func (c *InternalTaskClient) CreateBulk(builders ...*InternalTaskCreate) *InternalTaskCreateBulk {
+	return &InternalTaskCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for InternalTask.
+func (c *InternalTaskClient) Update() *InternalTaskUpdate {
+	mutation := newInternalTaskMutation(c.config, OpUpdate)
+	return &InternalTaskUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *InternalTaskClient) UpdateOne(it *InternalTask) *InternalTaskUpdateOne {
+	mutation := newInternalTaskMutation(c.config, OpUpdateOne, withInternalTask(it))
+	return &InternalTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *InternalTaskClient) UpdateOneID(id uuid.UUID) *InternalTaskUpdateOne {
+	mutation := newInternalTaskMutation(c.config, OpUpdateOne, withInternalTaskID(id))
+	return &InternalTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for InternalTask.
+func (c *InternalTaskClient) Delete() *InternalTaskDelete {
+	mutation := newInternalTaskMutation(c.config, OpDelete)
+	return &InternalTaskDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *InternalTaskClient) DeleteOne(it *InternalTask) *InternalTaskDeleteOne {
+	return c.DeleteOneID(it.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *InternalTaskClient) DeleteOneID(id uuid.UUID) *InternalTaskDeleteOne {
+	builder := c.Delete().Where(internaltask.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &InternalTaskDeleteOne{builder}
+}
+
+// Query returns a query builder for InternalTask.
+func (c *InternalTaskClient) Query() *InternalTaskQuery {
+	return &InternalTaskQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a InternalTask entity by its id.
+func (c *InternalTaskClient) Get(ctx context.Context, id uuid.UUID) (*InternalTask, error) {
+	return c.Query().Where(internaltask.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *InternalTaskClient) GetX(ctx context.Context, id uuid.UUID) *InternalTask {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *InternalTaskClient) Hooks() []Hook {
+	return c.hooks.InternalTask
 }
 
 // JobClient is a client for the Job schema.

@@ -1,19 +1,44 @@
 package task
 
-import "log"
+import (
+	"fmt"
+	"os"
+	"strings"
+
+	"github.com/10hourlabs/tenlog"
+	"github.com/10hourlabs/tentn/util/collection"
+)
 
 type Tasker interface {
 	Run(params string) error
 }
 
-func Run(name, params string) {
+var AllowedExecutors = [1]string{
+	"sp@10hourlabs.com",
+}
+
+func Run(name, params, executor string) error {
+	// executor is only required in production
+	if os.Getenv("ENV") == "production" {
+		if strings.Contains(name, "fake") {
+			// do not run fake tasks in production
+			return nil
+		}
+		if executor == "" {
+			return fmt.Errorf("executor is required")
+		}
+		if !collection.Contains(AllowedExecutors, executor) {
+			return fmt.Errorf("executor %s is not allowed", executor)
+		}
+	}
 	if task, ok := Lookup[name]; ok {
 		if err := task.Run(params); err != nil {
-			log.Println(err)
-			return
+			tenlog.Error(fmt.Sprintf("Error running task %s: %s", name, err))
+			return err
 		}
-		log.Println("Task completed successfully")
-		return
+		tenlog.Info(fmt.Sprintf("Task %s completed successfully", name))
+		return nil
 	}
-	log.Printf("task %s not found\n", name)
+	tenlog.Error(fmt.Sprintf("Task %s not found", name))
+	return fmt.Errorf("task %s not found", name)
 }

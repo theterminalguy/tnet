@@ -15,6 +15,9 @@ type EmailTemplate func(*sql.Selector)
 // EmergencyContact is the predicate function for emergencycontact builders.
 type EmergencyContact func(*sql.Selector)
 
+// InternalTask is the predicate function for internaltask builders.
+type InternalTask func(*sql.Selector)
+
 // Job is the predicate function for job builders.
 type Job func(*sql.Selector)
 

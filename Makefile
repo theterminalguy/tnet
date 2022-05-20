@@ -52,4 +52,4 @@ routes:
 	ENV=dev go run cmd/web/routes/main.go && cat routes.json
 
 reset-db:
-	ENV=dev docker-compose down -v
+	ENV=dev docker-compose down -v --remove-orphans

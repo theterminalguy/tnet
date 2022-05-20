@@ -12,6 +12,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
+	"github.com/10hourlabs/tentn/ent/internaltask"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/mission"
@@ -48,6 +49,7 @@ const (
 	TypeEducation        = "Education"
 	TypeEmailTemplate    = "EmailTemplate"
 	TypeEmergencyContact = "EmergencyContact"
+	TypeInternalTask     = "InternalTask"
 	TypeJob              = "Job"
 	TypeJobApplication   = "JobApplication"
 	TypeMission          = "Mission"
@@ -2780,6 +2782,723 @@ func (m *EmergencyContactMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown EmergencyContact edge %s", name)
+}
+
+// InternalTaskMutation represents an operation that mutates the InternalTask nodes in the graph.
+type InternalTaskMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uuid.UUID
+	created_at    *time.Time
+	updated_at    *time.Time
+	deleted_at    *time.Time
+	name          *string
+	params        *string
+	executed_by   *string
+	succeeded     *bool
+	error         *string
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*InternalTask, error)
+	predicates    []predicate.InternalTask
+}
+
+var _ ent.Mutation = (*InternalTaskMutation)(nil)
+
+// internaltaskOption allows management of the mutation configuration using functional options.
+type internaltaskOption func(*InternalTaskMutation)
+
+// newInternalTaskMutation creates new mutation for the InternalTask entity.
+func newInternalTaskMutation(c config, op Op, opts ...internaltaskOption) *InternalTaskMutation {
+	m := &InternalTaskMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeInternalTask,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withInternalTaskID sets the ID field of the mutation.
+func withInternalTaskID(id uuid.UUID) internaltaskOption {
+	return func(m *InternalTaskMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *InternalTask
+		)
+		m.oldValue = func(ctx context.Context) (*InternalTask, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().InternalTask.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withInternalTask sets the old InternalTask of the mutation.
+func withInternalTask(node *InternalTask) internaltaskOption {
+	return func(m *InternalTaskMutation) {
+		m.oldValue = func(context.Context) (*InternalTask, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m InternalTaskMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m InternalTaskMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of InternalTask entities.
+func (m *InternalTaskMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *InternalTaskMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *InternalTaskMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().InternalTask.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *InternalTaskMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *InternalTaskMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the InternalTask entity.
+// If the InternalTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InternalTaskMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *InternalTaskMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *InternalTaskMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *InternalTaskMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the InternalTask entity.
+// If the InternalTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InternalTaskMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *InternalTaskMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *InternalTaskMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *InternalTaskMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the InternalTask entity.
+// If the InternalTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InternalTaskMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *InternalTaskMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[internaltask.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *InternalTaskMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[internaltask.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *InternalTaskMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, internaltask.FieldDeletedAt)
+}
+
+// SetName sets the "name" field.
+func (m *InternalTaskMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *InternalTaskMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the InternalTask entity.
+// If the InternalTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InternalTaskMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *InternalTaskMutation) ResetName() {
+	m.name = nil
+}
+
+// SetParams sets the "params" field.
+func (m *InternalTaskMutation) SetParams(s string) {
+	m.params = &s
+}
+
+// Params returns the value of the "params" field in the mutation.
+func (m *InternalTaskMutation) Params() (r string, exists bool) {
+	v := m.params
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParams returns the old "params" field's value of the InternalTask entity.
+// If the InternalTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InternalTaskMutation) OldParams(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParams is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParams requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParams: %w", err)
+	}
+	return oldValue.Params, nil
+}
+
+// ResetParams resets all changes to the "params" field.
+func (m *InternalTaskMutation) ResetParams() {
+	m.params = nil
+}
+
+// SetExecutedBy sets the "executed_by" field.
+func (m *InternalTaskMutation) SetExecutedBy(s string) {
+	m.executed_by = &s
+}
+
+// ExecutedBy returns the value of the "executed_by" field in the mutation.
+func (m *InternalTaskMutation) ExecutedBy() (r string, exists bool) {
+	v := m.executed_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExecutedBy returns the old "executed_by" field's value of the InternalTask entity.
+// If the InternalTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InternalTaskMutation) OldExecutedBy(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExecutedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExecutedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExecutedBy: %w", err)
+	}
+	return oldValue.ExecutedBy, nil
+}
+
+// ResetExecutedBy resets all changes to the "executed_by" field.
+func (m *InternalTaskMutation) ResetExecutedBy() {
+	m.executed_by = nil
+}
+
+// SetSucceeded sets the "succeeded" field.
+func (m *InternalTaskMutation) SetSucceeded(b bool) {
+	m.succeeded = &b
+}
+
+// Succeeded returns the value of the "succeeded" field in the mutation.
+func (m *InternalTaskMutation) Succeeded() (r bool, exists bool) {
+	v := m.succeeded
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSucceeded returns the old "succeeded" field's value of the InternalTask entity.
+// If the InternalTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InternalTaskMutation) OldSucceeded(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSucceeded is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSucceeded requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSucceeded: %w", err)
+	}
+	return oldValue.Succeeded, nil
+}
+
+// ResetSucceeded resets all changes to the "succeeded" field.
+func (m *InternalTaskMutation) ResetSucceeded() {
+	m.succeeded = nil
+}
+
+// SetError sets the "error" field.
+func (m *InternalTaskMutation) SetError(s string) {
+	m.error = &s
+}
+
+// Error returns the value of the "error" field in the mutation.
+func (m *InternalTaskMutation) Error() (r string, exists bool) {
+	v := m.error
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldError returns the old "error" field's value of the InternalTask entity.
+// If the InternalTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InternalTaskMutation) OldError(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldError is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldError requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldError: %w", err)
+	}
+	return oldValue.Error, nil
+}
+
+// ResetError resets all changes to the "error" field.
+func (m *InternalTaskMutation) ResetError() {
+	m.error = nil
+}
+
+// Where appends a list predicates to the InternalTaskMutation builder.
+func (m *InternalTaskMutation) Where(ps ...predicate.InternalTask) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *InternalTaskMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (InternalTask).
+func (m *InternalTaskMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *InternalTaskMutation) Fields() []string {
+	fields := make([]string, 0, 8)
+	if m.created_at != nil {
+		fields = append(fields, internaltask.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, internaltask.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, internaltask.FieldDeletedAt)
+	}
+	if m.name != nil {
+		fields = append(fields, internaltask.FieldName)
+	}
+	if m.params != nil {
+		fields = append(fields, internaltask.FieldParams)
+	}
+	if m.executed_by != nil {
+		fields = append(fields, internaltask.FieldExecutedBy)
+	}
+	if m.succeeded != nil {
+		fields = append(fields, internaltask.FieldSucceeded)
+	}
+	if m.error != nil {
+		fields = append(fields, internaltask.FieldError)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *InternalTaskMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case internaltask.FieldCreatedAt:
+		return m.CreatedAt()
+	case internaltask.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case internaltask.FieldDeletedAt:
+		return m.DeletedAt()
+	case internaltask.FieldName:
+		return m.Name()
+	case internaltask.FieldParams:
+		return m.Params()
+	case internaltask.FieldExecutedBy:
+		return m.ExecutedBy()
+	case internaltask.FieldSucceeded:
+		return m.Succeeded()
+	case internaltask.FieldError:
+		return m.Error()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *InternalTaskMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case internaltask.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case internaltask.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case internaltask.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case internaltask.FieldName:
+		return m.OldName(ctx)
+	case internaltask.FieldParams:
+		return m.OldParams(ctx)
+	case internaltask.FieldExecutedBy:
+		return m.OldExecutedBy(ctx)
+	case internaltask.FieldSucceeded:
+		return m.OldSucceeded(ctx)
+	case internaltask.FieldError:
+		return m.OldError(ctx)
+	}
+	return nil, fmt.Errorf("unknown InternalTask field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *InternalTaskMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case internaltask.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case internaltask.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case internaltask.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case internaltask.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case internaltask.FieldParams:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParams(v)
+		return nil
+	case internaltask.FieldExecutedBy:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExecutedBy(v)
+		return nil
+	case internaltask.FieldSucceeded:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSucceeded(v)
+		return nil
+	case internaltask.FieldError:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetError(v)
+		return nil
+	}
+	return fmt.Errorf("unknown InternalTask field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *InternalTaskMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *InternalTaskMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *InternalTaskMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown InternalTask numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *InternalTaskMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(internaltask.FieldDeletedAt) {
+		fields = append(fields, internaltask.FieldDeletedAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *InternalTaskMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *InternalTaskMutation) ClearField(name string) error {
+	switch name {
+	case internaltask.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown InternalTask nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *InternalTaskMutation) ResetField(name string) error {
+	switch name {
+	case internaltask.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case internaltask.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case internaltask.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case internaltask.FieldName:
+		m.ResetName()
+		return nil
+	case internaltask.FieldParams:
+		m.ResetParams()
+		return nil
+	case internaltask.FieldExecutedBy:
+		m.ResetExecutedBy()
+		return nil
+	case internaltask.FieldSucceeded:
+		m.ResetSucceeded()
+		return nil
+	case internaltask.FieldError:
+		m.ResetError()
+		return nil
+	}
+	return fmt.Errorf("unknown InternalTask field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *InternalTaskMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *InternalTaskMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *InternalTaskMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *InternalTaskMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *InternalTaskMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *InternalTaskMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *InternalTaskMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown InternalTask unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *InternalTaskMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown InternalTask edge %s", name)
 }
 
 // JobMutation represents an operation that mutates the Job nodes in the graph.

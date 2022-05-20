@@ -112,9 +112,12 @@ func (o2 *Oauth2ClientService) RegisterClient(p Oauth2ClientRegistraionParams) (
 
 func (o2 *Oauth2ClientService) ApproveClient(c ent.Oauth2Client) error {
 	if !c.Approved && c.DeletedAt == nil {
-		o2.Oauth2Repo.UpdateFields(&c, map[string]interface{}{
+		err := o2.Oauth2Repo.UpdateFields(&c, map[string]interface{}{
 			oauth2client.FieldApproved: true,
 		})
+		if err != nil {
+			return err
+		}
 	}
 	u, err := o2.Oauth2Repo.GetUser(&c)
 	if err != nil {

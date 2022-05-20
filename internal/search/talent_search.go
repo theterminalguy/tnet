@@ -184,7 +184,6 @@ func (s *TalentSearch) Search(cursor, qs string) (*paginator.OffsetPaginater, []
 	if collection.HasAny(errors) {
 		return nil, errors
 	}
-	ps = append(ps, talent.HasEducations(), talent.HasSkills(), talent.HasWorkExperiences(), talent.HasPortfoliolinks())
 	records, err := s.TalentRepository.Filter(cursor, ps...)
 	if err != nil {
 		errors = append(errors, err)

@@ -1,6 +1,7 @@
 package router
 
 import (
+	"github.com/10hourlabs/tentn/internal/handler"
 	public_handler "github.com/10hourlabs/tentn/internal/handler/public"
 	recruiter_handler "github.com/10hourlabs/tentn/internal/handler/recruiter"
 	talent_handler "github.com/10hourlabs/tentn/internal/handler/talent"
@@ -128,6 +129,22 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 		},
 	}
 	recruiterRouter.BuildRoutes()
+
+	internalV1Router := &Router{
+		group: e.Group("/v1/internal"),
+		middlewares: []echo.MiddlewareFunc{
+			middleware.AuthInternalRequest(),
+		},
+		handlers: []RouteHandler{
+			{
+				Path:        "tasks",
+				Handler:     handler.NewInternalTaskHandler(),
+				Only:        []Request{CREATE_ONE},
+				Middlewares: nil,
+			},
+		},
+	}
+	internalV1Router.BuildRoutes()
 
 	return e
 }

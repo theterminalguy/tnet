@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 	"text/template"
 
 	"github.com/10hourlabs/tentn/internal/router"
+	"github.com/10hourlabs/tentn/util/osutil"
 	"github.com/labstack/echo/v4"
 )
 
@@ -21,10 +21,6 @@ func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c 
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
-func inDevMode() bool {
-	return strings.HasPrefix(os.Getenv("ENV"), "dev")
-}
-
 func main() {
 	e := router.DefineRoutes()
 	e.Static("/public/views/css", "public/views/css")
@@ -35,7 +31,7 @@ func main() {
 	e.Renderer = renderer
 
 	httpPort := fmt.Sprintf(":%v", os.Getenv("PORT"))
-	if inDevMode() && os.Getenv("SSL") == "" {
+	if osutil.InDevMode() && os.Getenv("SSL") == "" {
 		fmt.Println("Running in development mode with SSL")
 		e.Logger.Fatal(e.StartTLS(httpPort, "cert.pem", "cert-key.pem"))
 	} else {

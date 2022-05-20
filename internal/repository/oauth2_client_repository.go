@@ -86,6 +86,8 @@ func (*Oauth2ClientRepository) UpdateFields(client *ent.Oauth2Client, fields map
 		switch k {
 		case oauth2client.FieldApproved:
 			bldr.SetApproved(v.(bool))
+		case oauth2client.FieldIsInternal:
+			bldr.SetIsInternal(v.(bool))
 		case oauth2client.FieldScopes:
 			bldr.SetScopes(v.([]string))
 		// TODO: case add more fields here

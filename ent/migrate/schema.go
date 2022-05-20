@@ -113,6 +113,31 @@ var (
 			},
 		},
 	}
+	// InternalTasksColumns holds the columns for the "internal_tasks" table.
+	InternalTasksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "params", Type: field.TypeString},
+		{Name: "executed_by", Type: field.TypeString},
+		{Name: "succeeded", Type: field.TypeBool},
+		{Name: "error", Type: field.TypeString},
+	}
+	// InternalTasksTable holds the schema information for the "internal_tasks" table.
+	InternalTasksTable = &schema.Table{
+		Name:       "internal_tasks",
+		Columns:    InternalTasksColumns,
+		PrimaryKey: []*schema.Column{InternalTasksColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "internaltask_name_executed_by",
+				Unique:  false,
+				Columns: []*schema.Column{InternalTasksColumns[4], InternalTasksColumns[6]},
+			},
+		},
+	}
 	// JobsColumns holds the columns for the "jobs" table.
 	JobsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -757,6 +782,7 @@ var (
 		EducationsTable,
 		EmailTemplatesTable,
 		EmergencyContactsTable,
+		InternalTasksTable,
 		JobsTable,
 		JobApplicationsTable,
 		MissionsTable,
