@@ -20,6 +20,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/oauth2token"
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
+	"github.com/10hourlabs/tentn/ent/searchlog"
 	"github.com/10hourlabs/tentn/ent/session"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
@@ -59,6 +60,8 @@ type Client struct {
 	Partner *PartnerClient
 	// PortfolioLink is the client for interacting with the PortfolioLink builders.
 	PortfolioLink *PortfolioLinkClient
+	// SearchLog is the client for interacting with the SearchLog builders.
+	SearchLog *SearchLogClient
 	// Session is the client for interacting with the Session builders.
 	Session *SessionClient
 	// Skill is the client for interacting with the Skill builders.
@@ -98,6 +101,7 @@ func (c *Client) init() {
 	c.Oauth2Token = NewOauth2TokenClient(c.config)
 	c.Partner = NewPartnerClient(c.config)
 	c.PortfolioLink = NewPortfolioLinkClient(c.config)
+	c.SearchLog = NewSearchLogClient(c.config)
 	c.Session = NewSessionClient(c.config)
 	c.Skill = NewSkillClient(c.config)
 	c.SlackAppInstall = NewSlackAppInstallClient(c.config)
@@ -149,6 +153,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Oauth2Token:      NewOauth2TokenClient(cfg),
 		Partner:          NewPartnerClient(cfg),
 		PortfolioLink:    NewPortfolioLinkClient(cfg),
+		SearchLog:        NewSearchLogClient(cfg),
 		Session:          NewSessionClient(cfg),
 		Skill:            NewSkillClient(cfg),
 		SlackAppInstall:  NewSlackAppInstallClient(cfg),
@@ -186,6 +191,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Oauth2Token:      NewOauth2TokenClient(cfg),
 		Partner:          NewPartnerClient(cfg),
 		PortfolioLink:    NewPortfolioLinkClient(cfg),
+		SearchLog:        NewSearchLogClient(cfg),
 		Session:          NewSessionClient(cfg),
 		Skill:            NewSkillClient(cfg),
 		SlackAppInstall:  NewSlackAppInstallClient(cfg),
@@ -233,6 +239,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Oauth2Token.Use(hooks...)
 	c.Partner.Use(hooks...)
 	c.PortfolioLink.Use(hooks...)
+	c.SearchLog.Use(hooks...)
 	c.Session.Use(hooks...)
 	c.Skill.Use(hooks...)
 	c.SlackAppInstall.Use(hooks...)
@@ -1381,6 +1388,96 @@ func (c *PortfolioLinkClient) QueryTalent(pl *PortfolioLink) *TalentQuery {
 // Hooks returns the client hooks.
 func (c *PortfolioLinkClient) Hooks() []Hook {
 	return c.hooks.PortfolioLink
+}
+
+// SearchLogClient is a client for the SearchLog schema.
+type SearchLogClient struct {
+	config
+}
+
+// NewSearchLogClient returns a client for the SearchLog from the given config.
+func NewSearchLogClient(c config) *SearchLogClient {
+	return &SearchLogClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `searchlog.Hooks(f(g(h())))`.
+func (c *SearchLogClient) Use(hooks ...Hook) {
+	c.hooks.SearchLog = append(c.hooks.SearchLog, hooks...)
+}
+
+// Create returns a create builder for SearchLog.
+func (c *SearchLogClient) Create() *SearchLogCreate {
+	mutation := newSearchLogMutation(c.config, OpCreate)
+	return &SearchLogCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SearchLog entities.
+func (c *SearchLogClient) CreateBulk(builders ...*SearchLogCreate) *SearchLogCreateBulk {
+	return &SearchLogCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SearchLog.
+func (c *SearchLogClient) Update() *SearchLogUpdate {
+	mutation := newSearchLogMutation(c.config, OpUpdate)
+	return &SearchLogUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SearchLogClient) UpdateOne(sl *SearchLog) *SearchLogUpdateOne {
+	mutation := newSearchLogMutation(c.config, OpUpdateOne, withSearchLog(sl))
+	return &SearchLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SearchLogClient) UpdateOneID(id uuid.UUID) *SearchLogUpdateOne {
+	mutation := newSearchLogMutation(c.config, OpUpdateOne, withSearchLogID(id))
+	return &SearchLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SearchLog.
+func (c *SearchLogClient) Delete() *SearchLogDelete {
+	mutation := newSearchLogMutation(c.config, OpDelete)
+	return &SearchLogDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *SearchLogClient) DeleteOne(sl *SearchLog) *SearchLogDeleteOne {
+	return c.DeleteOneID(sl.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *SearchLogClient) DeleteOneID(id uuid.UUID) *SearchLogDeleteOne {
+	builder := c.Delete().Where(searchlog.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SearchLogDeleteOne{builder}
+}
+
+// Query returns a query builder for SearchLog.
+func (c *SearchLogClient) Query() *SearchLogQuery {
+	return &SearchLogQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a SearchLog entity by its id.
+func (c *SearchLogClient) Get(ctx context.Context, id uuid.UUID) (*SearchLog, error) {
+	return c.Query().Where(searchlog.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SearchLogClient) GetX(ctx context.Context, id uuid.UUID) *SearchLog {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SearchLogClient) Hooks() []Hook {
+	return c.hooks.SearchLog
 }
 
 // SessionClient is a client for the Session schema.

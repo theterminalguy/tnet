@@ -32,6 +32,11 @@ func (s SlackPlatformAuth) Authorize(ctx echo.Context) error {
 	}
 	slackTeamID := ctx.Request().Header.Get(header.X_TN_SLACK_TEAM_ID)
 	slackUserID := ctx.Request().Header.Get(header.X_TN_SLACK_USER_ID)
+
+	globalctx.SetPlatformContext(ctx, string(PlatformSlack))
+	globalctx.SetPlatformTeamIDContext(ctx, slackTeamID)
+	globalctx.SetPlatformUserIDContext(ctx, slackUserID)
+
 	// TODO:
 	// This should be cached
 	// Suggested interim cache library:

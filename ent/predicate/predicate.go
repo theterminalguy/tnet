@@ -36,6 +36,9 @@ type Partner func(*sql.Selector)
 // PortfolioLink is the predicate function for portfoliolink builders.
 type PortfolioLink func(*sql.Selector)
 
+// SearchLog is the predicate function for searchlog builders.
+type SearchLog func(*sql.Selector)
+
 // Session is the predicate function for session builders.
 type Session func(*sql.Selector)
 

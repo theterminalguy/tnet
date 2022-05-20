@@ -16,6 +16,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/partner"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/schema"
+	"github.com/10hourlabs/tentn/ent/searchlog"
 	"github.com/10hourlabs/tentn/ent/session"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
@@ -257,6 +258,27 @@ func init() {
 	portfoliolinkDescID := portfoliolinkMixinFields0[0].Descriptor()
 	// portfoliolink.DefaultID holds the default value on creation for the id field.
 	portfoliolink.DefaultID = portfoliolinkDescID.Default.(func() uuid.UUID)
+	searchlogMixin := schema.SearchLog{}.Mixin()
+	searchlogMixinFields0 := searchlogMixin[0].Fields()
+	_ = searchlogMixinFields0
+	searchlogMixinFields1 := searchlogMixin[1].Fields()
+	_ = searchlogMixinFields1
+	searchlogFields := schema.SearchLog{}.Fields()
+	_ = searchlogFields
+	// searchlogDescCreatedAt is the schema descriptor for created_at field.
+	searchlogDescCreatedAt := searchlogMixinFields1[0].Descriptor()
+	// searchlog.DefaultCreatedAt holds the default value on creation for the created_at field.
+	searchlog.DefaultCreatedAt = searchlogDescCreatedAt.Default.(func() time.Time)
+	// searchlogDescUpdatedAt is the schema descriptor for updated_at field.
+	searchlogDescUpdatedAt := searchlogMixinFields1[1].Descriptor()
+	// searchlog.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	searchlog.DefaultUpdatedAt = searchlogDescUpdatedAt.Default.(func() time.Time)
+	// searchlog.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	searchlog.UpdateDefaultUpdatedAt = searchlogDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// searchlogDescID is the schema descriptor for id field.
+	searchlogDescID := searchlogMixinFields0[0].Descriptor()
+	// searchlog.DefaultID holds the default value on creation for the id field.
+	searchlog.DefaultID = searchlogDescID.Default.(func() uuid.UUID)
 	sessionMixin := schema.Session{}.Mixin()
 	sessionMixinFields0 := sessionMixin[0].Fields()
 	_ = sessionMixinFields0

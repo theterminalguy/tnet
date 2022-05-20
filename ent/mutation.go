@@ -22,6 +22,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/schema/billing"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
+	"github.com/10hourlabs/tentn/ent/searchlog"
 	"github.com/10hourlabs/tentn/ent/session"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
@@ -54,6 +55,7 @@ const (
 	TypeOauth2Token      = "Oauth2Token"
 	TypePartner          = "Partner"
 	TypePortfolioLink    = "PortfolioLink"
+	TypeSearchLog        = "SearchLog"
 	TypeSession          = "Session"
 	TypeSkill            = "Skill"
 	TypeSlackAppInstall  = "SlackAppInstall"
@@ -10160,6 +10162,759 @@ func (m *PortfolioLinkMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown PortfolioLink edge %s", name)
+}
+
+// SearchLogMutation represents an operation that mutates the SearchLog nodes in the graph.
+type SearchLogMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *uuid.UUID
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	query            *string
+	result_count     *int
+	addresult_count  *int
+	platform         *string
+	platform_user_id *string
+	platform_team_id *string
+	clearedFields    map[string]struct{}
+	done             bool
+	oldValue         func(context.Context) (*SearchLog, error)
+	predicates       []predicate.SearchLog
+}
+
+var _ ent.Mutation = (*SearchLogMutation)(nil)
+
+// searchlogOption allows management of the mutation configuration using functional options.
+type searchlogOption func(*SearchLogMutation)
+
+// newSearchLogMutation creates new mutation for the SearchLog entity.
+func newSearchLogMutation(c config, op Op, opts ...searchlogOption) *SearchLogMutation {
+	m := &SearchLogMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeSearchLog,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withSearchLogID sets the ID field of the mutation.
+func withSearchLogID(id uuid.UUID) searchlogOption {
+	return func(m *SearchLogMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *SearchLog
+		)
+		m.oldValue = func(ctx context.Context) (*SearchLog, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().SearchLog.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withSearchLog sets the old SearchLog of the mutation.
+func withSearchLog(node *SearchLog) searchlogOption {
+	return func(m *SearchLogMutation) {
+		m.oldValue = func(context.Context) (*SearchLog, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m SearchLogMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m SearchLogMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of SearchLog entities.
+func (m *SearchLogMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *SearchLogMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *SearchLogMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().SearchLog.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *SearchLogMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *SearchLogMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the SearchLog entity.
+// If the SearchLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SearchLogMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *SearchLogMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *SearchLogMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *SearchLogMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the SearchLog entity.
+// If the SearchLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SearchLogMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *SearchLogMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *SearchLogMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *SearchLogMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the SearchLog entity.
+// If the SearchLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SearchLogMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *SearchLogMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[searchlog.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *SearchLogMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[searchlog.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *SearchLogMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, searchlog.FieldDeletedAt)
+}
+
+// SetQuery sets the "query" field.
+func (m *SearchLogMutation) SetQuery(s string) {
+	m.query = &s
+}
+
+// Query returns the value of the "query" field in the mutation.
+func (m *SearchLogMutation) Query() (r string, exists bool) {
+	v := m.query
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldQuery returns the old "query" field's value of the SearchLog entity.
+// If the SearchLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SearchLogMutation) OldQuery(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldQuery is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldQuery requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldQuery: %w", err)
+	}
+	return oldValue.Query, nil
+}
+
+// ResetQuery resets all changes to the "query" field.
+func (m *SearchLogMutation) ResetQuery() {
+	m.query = nil
+}
+
+// SetResultCount sets the "result_count" field.
+func (m *SearchLogMutation) SetResultCount(i int) {
+	m.result_count = &i
+	m.addresult_count = nil
+}
+
+// ResultCount returns the value of the "result_count" field in the mutation.
+func (m *SearchLogMutation) ResultCount() (r int, exists bool) {
+	v := m.result_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResultCount returns the old "result_count" field's value of the SearchLog entity.
+// If the SearchLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SearchLogMutation) OldResultCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResultCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResultCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResultCount: %w", err)
+	}
+	return oldValue.ResultCount, nil
+}
+
+// AddResultCount adds i to the "result_count" field.
+func (m *SearchLogMutation) AddResultCount(i int) {
+	if m.addresult_count != nil {
+		*m.addresult_count += i
+	} else {
+		m.addresult_count = &i
+	}
+}
+
+// AddedResultCount returns the value that was added to the "result_count" field in this mutation.
+func (m *SearchLogMutation) AddedResultCount() (r int, exists bool) {
+	v := m.addresult_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetResultCount resets all changes to the "result_count" field.
+func (m *SearchLogMutation) ResetResultCount() {
+	m.result_count = nil
+	m.addresult_count = nil
+}
+
+// SetPlatform sets the "platform" field.
+func (m *SearchLogMutation) SetPlatform(s string) {
+	m.platform = &s
+}
+
+// Platform returns the value of the "platform" field in the mutation.
+func (m *SearchLogMutation) Platform() (r string, exists bool) {
+	v := m.platform
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlatform returns the old "platform" field's value of the SearchLog entity.
+// If the SearchLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SearchLogMutation) OldPlatform(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlatform is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlatform requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlatform: %w", err)
+	}
+	return oldValue.Platform, nil
+}
+
+// ResetPlatform resets all changes to the "platform" field.
+func (m *SearchLogMutation) ResetPlatform() {
+	m.platform = nil
+}
+
+// SetPlatformUserID sets the "platform_user_id" field.
+func (m *SearchLogMutation) SetPlatformUserID(s string) {
+	m.platform_user_id = &s
+}
+
+// PlatformUserID returns the value of the "platform_user_id" field in the mutation.
+func (m *SearchLogMutation) PlatformUserID() (r string, exists bool) {
+	v := m.platform_user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlatformUserID returns the old "platform_user_id" field's value of the SearchLog entity.
+// If the SearchLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SearchLogMutation) OldPlatformUserID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlatformUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlatformUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlatformUserID: %w", err)
+	}
+	return oldValue.PlatformUserID, nil
+}
+
+// ResetPlatformUserID resets all changes to the "platform_user_id" field.
+func (m *SearchLogMutation) ResetPlatformUserID() {
+	m.platform_user_id = nil
+}
+
+// SetPlatformTeamID sets the "platform_team_id" field.
+func (m *SearchLogMutation) SetPlatformTeamID(s string) {
+	m.platform_team_id = &s
+}
+
+// PlatformTeamID returns the value of the "platform_team_id" field in the mutation.
+func (m *SearchLogMutation) PlatformTeamID() (r string, exists bool) {
+	v := m.platform_team_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlatformTeamID returns the old "platform_team_id" field's value of the SearchLog entity.
+// If the SearchLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SearchLogMutation) OldPlatformTeamID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlatformTeamID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlatformTeamID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlatformTeamID: %w", err)
+	}
+	return oldValue.PlatformTeamID, nil
+}
+
+// ResetPlatformTeamID resets all changes to the "platform_team_id" field.
+func (m *SearchLogMutation) ResetPlatformTeamID() {
+	m.platform_team_id = nil
+}
+
+// Where appends a list predicates to the SearchLogMutation builder.
+func (m *SearchLogMutation) Where(ps ...predicate.SearchLog) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *SearchLogMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (SearchLog).
+func (m *SearchLogMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *SearchLogMutation) Fields() []string {
+	fields := make([]string, 0, 8)
+	if m.created_at != nil {
+		fields = append(fields, searchlog.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, searchlog.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, searchlog.FieldDeletedAt)
+	}
+	if m.query != nil {
+		fields = append(fields, searchlog.FieldQuery)
+	}
+	if m.result_count != nil {
+		fields = append(fields, searchlog.FieldResultCount)
+	}
+	if m.platform != nil {
+		fields = append(fields, searchlog.FieldPlatform)
+	}
+	if m.platform_user_id != nil {
+		fields = append(fields, searchlog.FieldPlatformUserID)
+	}
+	if m.platform_team_id != nil {
+		fields = append(fields, searchlog.FieldPlatformTeamID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *SearchLogMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case searchlog.FieldCreatedAt:
+		return m.CreatedAt()
+	case searchlog.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case searchlog.FieldDeletedAt:
+		return m.DeletedAt()
+	case searchlog.FieldQuery:
+		return m.Query()
+	case searchlog.FieldResultCount:
+		return m.ResultCount()
+	case searchlog.FieldPlatform:
+		return m.Platform()
+	case searchlog.FieldPlatformUserID:
+		return m.PlatformUserID()
+	case searchlog.FieldPlatformTeamID:
+		return m.PlatformTeamID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *SearchLogMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case searchlog.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case searchlog.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case searchlog.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case searchlog.FieldQuery:
+		return m.OldQuery(ctx)
+	case searchlog.FieldResultCount:
+		return m.OldResultCount(ctx)
+	case searchlog.FieldPlatform:
+		return m.OldPlatform(ctx)
+	case searchlog.FieldPlatformUserID:
+		return m.OldPlatformUserID(ctx)
+	case searchlog.FieldPlatformTeamID:
+		return m.OldPlatformTeamID(ctx)
+	}
+	return nil, fmt.Errorf("unknown SearchLog field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SearchLogMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case searchlog.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case searchlog.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case searchlog.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case searchlog.FieldQuery:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetQuery(v)
+		return nil
+	case searchlog.FieldResultCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResultCount(v)
+		return nil
+	case searchlog.FieldPlatform:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlatform(v)
+		return nil
+	case searchlog.FieldPlatformUserID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlatformUserID(v)
+		return nil
+	case searchlog.FieldPlatformTeamID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlatformTeamID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SearchLog field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *SearchLogMutation) AddedFields() []string {
+	var fields []string
+	if m.addresult_count != nil {
+		fields = append(fields, searchlog.FieldResultCount)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *SearchLogMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case searchlog.FieldResultCount:
+		return m.AddedResultCount()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SearchLogMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case searchlog.FieldResultCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddResultCount(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SearchLog numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *SearchLogMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(searchlog.FieldDeletedAt) {
+		fields = append(fields, searchlog.FieldDeletedAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *SearchLogMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *SearchLogMutation) ClearField(name string) error {
+	switch name {
+	case searchlog.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown SearchLog nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *SearchLogMutation) ResetField(name string) error {
+	switch name {
+	case searchlog.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case searchlog.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case searchlog.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case searchlog.FieldQuery:
+		m.ResetQuery()
+		return nil
+	case searchlog.FieldResultCount:
+		m.ResetResultCount()
+		return nil
+	case searchlog.FieldPlatform:
+		m.ResetPlatform()
+		return nil
+	case searchlog.FieldPlatformUserID:
+		m.ResetPlatformUserID()
+		return nil
+	case searchlog.FieldPlatformTeamID:
+		m.ResetPlatformTeamID()
+		return nil
+	}
+	return fmt.Errorf("unknown SearchLog field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *SearchLogMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *SearchLogMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *SearchLogMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *SearchLogMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *SearchLogMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *SearchLogMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *SearchLogMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown SearchLog unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *SearchLogMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown SearchLog edge %s", name)
 }
 
 // SessionMutation represents an operation that mutates the Session nodes in the graph.

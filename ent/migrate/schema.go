@@ -406,6 +406,31 @@ var (
 			},
 		},
 	}
+	// SearchLogsColumns holds the columns for the "search_logs" table.
+	SearchLogsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "query", Type: field.TypeString},
+		{Name: "result_count", Type: field.TypeInt},
+		{Name: "platform", Type: field.TypeString},
+		{Name: "platform_user_id", Type: field.TypeString},
+		{Name: "platform_team_id", Type: field.TypeString},
+	}
+	// SearchLogsTable holds the schema information for the "search_logs" table.
+	SearchLogsTable = &schema.Table{
+		Name:       "search_logs",
+		Columns:    SearchLogsColumns,
+		PrimaryKey: []*schema.Column{SearchLogsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "searchlog_platform_platform_team_id_platform_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{SearchLogsColumns[6], SearchLogsColumns[8], SearchLogsColumns[7]},
+			},
+		},
+	}
 	// SessionsColumns holds the columns for the "sessions" table.
 	SessionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -739,6 +764,7 @@ var (
 		Oauth2tokensTable,
 		PartnersTable,
 		PortfolioLinksTable,
+		SearchLogsTable,
 		SessionsTable,
 		SkillsTable,
 		SlackAppInstallsTable,

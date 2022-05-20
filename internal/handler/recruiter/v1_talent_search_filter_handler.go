@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/10hourlabs/rql/parser"
+	"github.com/10hourlabs/tentn/internal/middleware/globalctx"
 	"github.com/10hourlabs/tentn/internal/paginator"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/search"
@@ -15,14 +16,16 @@ import (
 )
 
 type V1TalentSearchFilterHandler struct {
-	TalentRepo *repo.TalentRepository
-	PDFService *service.PDFService
+	TalentRepo    *repo.TalentRepository
+	SearchLogRepo *repo.SearchLogRepository
+	PDFService    *service.PDFService
 }
 
 func NewV1TalentSearchFilterHandler() *V1TalentSearchFilterHandler {
 	return &V1TalentSearchFilterHandler{
-		TalentRepo: repo.NewTalentRepository(),
-		PDFService: service.NewPDFService(),
+		TalentRepo:    repo.NewTalentRepository(),
+		SearchLogRepo: repo.NewSearchLogRepository(),
+		PDFService:    service.NewPDFService(),
 	}
 }
 
@@ -47,6 +50,17 @@ func (h *V1TalentSearchFilterHandler) Search(c echo.Context) error {
 		return c.JSON(
 			http.StatusBadRequest,
 			map[string]string{"error": fmt.Errorf("%v", vldErrs).Error()})
+	}
+	// Log the search
+	searchLog := repo.SearchLogParams{
+		Query:          c.QueryParam("q"),
+		ResultCount:    records.Total,
+		Platform:       globalctx.GetPlatform(c),
+		PlatformUserID: globalctx.GetPlatformUserID(c),
+		PlatformTeamID: globalctx.GetPlatformTeamID(c),
+	}
+	if _, err := h.SearchLogRepo.Create(searchLog); err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
 	}
 	return c.JSON(http.StatusOK, records)
 }

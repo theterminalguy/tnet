@@ -139,6 +139,19 @@ func (f PortfolioLinkFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Valu
 	return f(ctx, mv)
 }
 
+// The SearchLogFunc type is an adapter to allow the use of ordinary
+// function as SearchLog mutator.
+type SearchLogFunc func(context.Context, *ent.SearchLogMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SearchLogFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.SearchLogMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SearchLogMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The SessionFunc type is an adapter to allow the use of ordinary
 // function as Session mutator.
 type SessionFunc func(context.Context, *ent.SessionMutation) (ent.Value, error)

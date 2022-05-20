@@ -34,6 +34,7 @@ type hooks struct {
 	Oauth2Token      []ent.Hook
 	Partner          []ent.Hook
 	PortfolioLink    []ent.Hook
+	SearchLog        []ent.Hook
 	Session          []ent.Hook
 	Skill            []ent.Hook
 	SlackAppInstall  []ent.Hook
