@@ -107,6 +107,8 @@ steps:
         "SLACK_OAUTH_CLIENT_ID=${_SLACK_OAUTH_CLIENT_ID}",
         "--set-env-vars",
         "SLACK_OAUTH_CLIENT_SECRET=${_SLACK_OAUTH_CLIENT_SECRET}",
+        "--set-env-vars",
+        "SLACK_BOT_TOKEN=${_SLACK_BOT_TOKEN}",
       ]
 
 images:
