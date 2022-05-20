@@ -35,6 +35,10 @@ func (w WebPlatformAuth) Authorize(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
+	globalctx.SetPlatformContext(ctx, string(PlatformWeb))
+	globalctx.SetPlatformTeamIDContext(ctx, recruiter.ID.String())
+	globalctx.SetPlatformUserIDContext(ctx, recruiter.ID.String())
+
 	return globalctx.SetCurrentRecruiterContext(ctx, recruiter)
 }
 
