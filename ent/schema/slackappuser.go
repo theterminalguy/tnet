@@ -28,9 +28,10 @@ func (SlackAppUser) Mixin() []ent.Mixin {
 // Fields of the SlackAppUser.
 func (SlackAppUser) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("first_name"),
-		field.String("last_name"),
-		field.String("title"),
+		field.String("full_name"),
+		field.String("title").Optional(),
+		field.String("email"),
+		field.String("photo_url"),
 		field.String("slack_user_id"),
 		field.String("slack_team_id"),
 		field.String("timezone"),
@@ -42,7 +43,8 @@ func (SlackAppUser) Fields() []ent.Field {
 // Indexes for SlackAppUser
 func (SlackAppUser) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("slack_user_id", "slack_team_id"),
+		index.Fields("slack_user_id", "email").Unique(),
+		index.Fields("slack_team_id"),
 	}
 }
 

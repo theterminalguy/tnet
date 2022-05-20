@@ -37,6 +37,7 @@ type hooks struct {
 	Session          []ent.Hook
 	Skill            []ent.Hook
 	SlackAppInstall  []ent.Hook
+	SlackAppUser     []ent.Hook
 	Talent           []ent.Hook
 	TalentCollection []ent.Hook
 	User             []ent.Hook

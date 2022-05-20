@@ -38,6 +38,8 @@ type Tx struct {
 	Skill *SkillClient
 	// SlackAppInstall is the client for interacting with the SlackAppInstall builders.
 	SlackAppInstall *SlackAppInstallClient
+	// SlackAppUser is the client for interacting with the SlackAppUser builders.
+	SlackAppUser *SlackAppUserClient
 	// Talent is the client for interacting with the Talent builders.
 	Talent *TalentClient
 	// TalentCollection is the client for interacting with the TalentCollection builders.
@@ -194,6 +196,7 @@ func (tx *Tx) init() {
 	tx.Session = NewSessionClient(tx.config)
 	tx.Skill = NewSkillClient(tx.config)
 	tx.SlackAppInstall = NewSlackAppInstallClient(tx.config)
+	tx.SlackAppUser = NewSlackAppUserClient(tx.config)
 	tx.Talent = NewTalentClient(tx.config)
 	tx.TalentCollection = NewTalentCollectionClient(tx.config)
 	tx.User = NewUserClient(tx.config)

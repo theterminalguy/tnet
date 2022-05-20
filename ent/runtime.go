@@ -19,6 +19,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/session"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
+	"github.com/10hourlabs/tentn/ent/slackappuser"
 	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/talentcollection"
 	"github.com/10hourlabs/tentn/ent/user"
@@ -327,6 +328,27 @@ func init() {
 	slackappinstallDescID := slackappinstallMixinFields0[0].Descriptor()
 	// slackappinstall.DefaultID holds the default value on creation for the id field.
 	slackappinstall.DefaultID = slackappinstallDescID.Default.(func() uuid.UUID)
+	slackappuserMixin := schema.SlackAppUser{}.Mixin()
+	slackappuserMixinFields0 := slackappuserMixin[0].Fields()
+	_ = slackappuserMixinFields0
+	slackappuserMixinFields1 := slackappuserMixin[1].Fields()
+	_ = slackappuserMixinFields1
+	slackappuserFields := schema.SlackAppUser{}.Fields()
+	_ = slackappuserFields
+	// slackappuserDescCreatedAt is the schema descriptor for created_at field.
+	slackappuserDescCreatedAt := slackappuserMixinFields1[0].Descriptor()
+	// slackappuser.DefaultCreatedAt holds the default value on creation for the created_at field.
+	slackappuser.DefaultCreatedAt = slackappuserDescCreatedAt.Default.(func() time.Time)
+	// slackappuserDescUpdatedAt is the schema descriptor for updated_at field.
+	slackappuserDescUpdatedAt := slackappuserMixinFields1[1].Descriptor()
+	// slackappuser.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	slackappuser.DefaultUpdatedAt = slackappuserDescUpdatedAt.Default.(func() time.Time)
+	// slackappuser.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	slackappuser.UpdateDefaultUpdatedAt = slackappuserDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// slackappuserDescID is the schema descriptor for id field.
+	slackappuserDescID := slackappuserMixinFields0[0].Descriptor()
+	// slackappuser.DefaultID holds the default value on creation for the id field.
+	slackappuser.DefaultID = slackappuserDescID.Default.(func() uuid.UUID)
 	talentMixin := schema.Talent{}.Mixin()
 	talentMixinFields0 := talentMixin[0].Fields()
 	_ = talentMixinFields0

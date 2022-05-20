@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"github.com/10hourlabs/tentn/ent/schema/billing"
@@ -62,5 +63,7 @@ func (SlackAppInstall) Indexes() []ent.Index {
 
 // Edges of the SlackAppInstall.
 func (SlackAppInstall) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.To("slack_app_users", SlackAppUser.Type),
+	}
 }

@@ -21,6 +21,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/session"
 	"github.com/10hourlabs/tentn/ent/skill"
 	"github.com/10hourlabs/tentn/ent/slackappinstall"
+	"github.com/10hourlabs/tentn/ent/slackappuser"
 	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/10hourlabs/tentn/ent/talentcollection"
 	"github.com/10hourlabs/tentn/ent/user"
@@ -58,6 +59,7 @@ func columnChecker(table string) func(string) error {
 		session.Table:          session.ValidColumn,
 		skill.Table:            skill.ValidColumn,
 		slackappinstall.Table:  slackappinstall.ValidColumn,
+		slackappuser.Table:     slackappuser.ValidColumn,
 		talent.Table:           talent.ValidColumn,
 		talentcollection.Table: talentcollection.ValidColumn,
 		user.Table:             user.ValidColumn,
