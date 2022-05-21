@@ -13,7 +13,7 @@ type Tasker interface {
 	Run(params string) error
 }
 
-var AllowedExecutors = [1]string{
+var AllowedExecutors = []string{
 	"sp@10hourlabs.com",
 }
 
