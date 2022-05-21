@@ -59,12 +59,6 @@ type UpsertUserParams struct {
 }
 
 func (t *ImportTalents) Run(_ string) error {
-	f, err := os.Open("data/talents.csv")
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
 	manyUsers := make([]*repo.UserParams, 0)
 	manyTalents := make([]*repo.TalentParams, 0)
 	manySkills := make([]*repo.SkillParams, 0)
@@ -72,7 +66,22 @@ func (t *ImportTalents) Run(_ string) error {
 	manyEducations := make([]*repo.EducationParams, 0)
 	manyWorkExperiences := make([]*repo.WorkExperienceParams, 0)
 
-	csvReader := csv.NewReader(f)
+	var csvReader *csv.Reader
+	if os.Getenv("ENV") == "production" {
+		resp, err := osutil.ReadCSVFromURL("https://storage.googleapis.com/tentn-bucket/temp/talents.csv")
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		csvReader = csv.NewReader(resp.Body)
+	} else {
+		f, err := os.Open("data/talents.csv")
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+		csvReader = csv.NewReader(f)
+	}
 
 	emailCache := make(map[string]bool)
 	var emailFile *os.File
