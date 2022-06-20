@@ -3,11 +3,13 @@ package recruiter
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/repository/scope"
 	"github.com/10hourlabs/tentn/internal/search"
 	"github.com/10hourlabs/tentn/oneword"
+	"github.com/10hourlabs/tentn/util"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -58,17 +60,30 @@ func (h *V1RecruiterJobHandler) ReadByID(c echo.Context) error {
 
 // CreateOne creates a new job for the recruiter
 func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
-	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
-	params := new(repo.JobParams)
-	if err := c.Bind(params); err != nil {
+	const MAX_FILE_SIZE = 1024 * 1024 * 10 // 10MB
+	const FILE_PATH = "data/jd"
+	response, err := util.FileUpload(c, FILE_PATH, MAX_FILE_SIZE)
+	if err != nil {
 		return err
 	}
-	params.UserID = currentRecruiter.GetID()
-	j, err := h.JobRepository.Create(*params)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
+	if !strings.Contains(response, FILE_PATH) {
+		return c.String(http.StatusOK, response)
 	}
-	return c.JSON(http.StatusCreated, j)
+
+	return c.String(http.StatusOK, "Document received")
+
+	// currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
+	// params := new(repo.JobParams)
+	// if err := c.Bind(params); err != nil {
+	// 	return err
+	// }
+
+	// params.UserID = currentRecruiter.GetID()
+	// j, err := h.JobRepository.Create(*params)
+	// if err != nil {
+	// 	return c.String(http.StatusBadRequest, err.Error())
+	// }
+	// return c.JSON(http.StatusCreated, j)
 }
 
 // UpdateByID updates a job by its id. The job must be created by the recruiter
