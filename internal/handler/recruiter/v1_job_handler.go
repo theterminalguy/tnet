@@ -3,6 +3,7 @@ package recruiter
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
@@ -60,13 +61,19 @@ func (h *V1RecruiterJobHandler) ReadByID(c echo.Context) error {
 
 // CreateOne creates a new job for the recruiter
 func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
+	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
+	recruiterID := currentRecruiter.GetID()
 	const MAX_FILE_SIZE = 1024 * 1024 * 10 // 10MB
-	const FILE_PATH = "data/jd"
-	response, err := util.FileUpload(c, FILE_PATH, MAX_FILE_SIZE)
+	directory := fmt.Sprintf("data/jd/%s", recruiterID)
+	err := os.MkdirAll(directory, os.ModePerm)
 	if err != nil {
 		return err
 	}
-	if !strings.Contains(response, FILE_PATH) {
+	response, err := util.FileUpload(c, directory, MAX_FILE_SIZE)
+	if err != nil {
+		return err
+	}
+	if !strings.Contains(response, directory) {
 		return c.String(http.StatusOK, response)
 	}
 
