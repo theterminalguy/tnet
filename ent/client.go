@@ -13,6 +13,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
+	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/internaltask"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
@@ -47,6 +48,8 @@ type Client struct {
 	EmailTemplate *EmailTemplateClient
 	// EmergencyContact is the client for interacting with the EmergencyContact builders.
 	EmergencyContact *EmergencyContactClient
+	// FileUpload is the client for interacting with the FileUpload builders.
+	FileUpload *FileUploadClient
 	// InternalTask is the client for interacting with the InternalTask builders.
 	InternalTask *InternalTaskClient
 	// Job is the client for interacting with the Job builders.
@@ -97,6 +100,7 @@ func (c *Client) init() {
 	c.Education = NewEducationClient(c.config)
 	c.EmailTemplate = NewEmailTemplateClient(c.config)
 	c.EmergencyContact = NewEmergencyContactClient(c.config)
+	c.FileUpload = NewFileUploadClient(c.config)
 	c.InternalTask = NewInternalTaskClient(c.config)
 	c.Job = NewJobClient(c.config)
 	c.JobApplication = NewJobApplicationClient(c.config)
@@ -150,6 +154,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Education:        NewEducationClient(cfg),
 		EmailTemplate:    NewEmailTemplateClient(cfg),
 		EmergencyContact: NewEmergencyContactClient(cfg),
+		FileUpload:       NewFileUploadClient(cfg),
 		InternalTask:     NewInternalTaskClient(cfg),
 		Job:              NewJobClient(cfg),
 		JobApplication:   NewJobApplicationClient(cfg),
@@ -189,6 +194,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Education:        NewEducationClient(cfg),
 		EmailTemplate:    NewEmailTemplateClient(cfg),
 		EmergencyContact: NewEmergencyContactClient(cfg),
+		FileUpload:       NewFileUploadClient(cfg),
 		InternalTask:     NewInternalTaskClient(cfg),
 		Job:              NewJobClient(cfg),
 		JobApplication:   NewJobApplicationClient(cfg),
@@ -238,6 +244,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Education.Use(hooks...)
 	c.EmailTemplate.Use(hooks...)
 	c.EmergencyContact.Use(hooks...)
+	c.FileUpload.Use(hooks...)
 	c.InternalTask.Use(hooks...)
 	c.Job.Use(hooks...)
 	c.JobApplication.Use(hooks...)
@@ -573,6 +580,112 @@ func (c *EmergencyContactClient) QueryTalent(ec *EmergencyContact) *TalentQuery 
 // Hooks returns the client hooks.
 func (c *EmergencyContactClient) Hooks() []Hook {
 	return c.hooks.EmergencyContact
+}
+
+// FileUploadClient is a client for the FileUpload schema.
+type FileUploadClient struct {
+	config
+}
+
+// NewFileUploadClient returns a client for the FileUpload from the given config.
+func NewFileUploadClient(c config) *FileUploadClient {
+	return &FileUploadClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `fileupload.Hooks(f(g(h())))`.
+func (c *FileUploadClient) Use(hooks ...Hook) {
+	c.hooks.FileUpload = append(c.hooks.FileUpload, hooks...)
+}
+
+// Create returns a create builder for FileUpload.
+func (c *FileUploadClient) Create() *FileUploadCreate {
+	mutation := newFileUploadMutation(c.config, OpCreate)
+	return &FileUploadCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of FileUpload entities.
+func (c *FileUploadClient) CreateBulk(builders ...*FileUploadCreate) *FileUploadCreateBulk {
+	return &FileUploadCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for FileUpload.
+func (c *FileUploadClient) Update() *FileUploadUpdate {
+	mutation := newFileUploadMutation(c.config, OpUpdate)
+	return &FileUploadUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FileUploadClient) UpdateOne(fu *FileUpload) *FileUploadUpdateOne {
+	mutation := newFileUploadMutation(c.config, OpUpdateOne, withFileUpload(fu))
+	return &FileUploadUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FileUploadClient) UpdateOneID(id uuid.UUID) *FileUploadUpdateOne {
+	mutation := newFileUploadMutation(c.config, OpUpdateOne, withFileUploadID(id))
+	return &FileUploadUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for FileUpload.
+func (c *FileUploadClient) Delete() *FileUploadDelete {
+	mutation := newFileUploadMutation(c.config, OpDelete)
+	return &FileUploadDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *FileUploadClient) DeleteOne(fu *FileUpload) *FileUploadDeleteOne {
+	return c.DeleteOneID(fu.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *FileUploadClient) DeleteOneID(id uuid.UUID) *FileUploadDeleteOne {
+	builder := c.Delete().Where(fileupload.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FileUploadDeleteOne{builder}
+}
+
+// Query returns a query builder for FileUpload.
+func (c *FileUploadClient) Query() *FileUploadQuery {
+	return &FileUploadQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a FileUpload entity by its id.
+func (c *FileUploadClient) Get(ctx context.Context, id uuid.UUID) (*FileUpload, error) {
+	return c.Query().Where(fileupload.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FileUploadClient) GetX(ctx context.Context, id uuid.UUID) *FileUpload {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a FileUpload.
+func (c *FileUploadClient) QueryUser(fu *FileUpload) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := fu.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(fileupload.Table, fileupload.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, fileupload.UserTable, fileupload.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(fu.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *FileUploadClient) Hooks() []Hook {
+	return c.hooks.FileUpload
 }
 
 // InternalTaskClient is a client for the InternalTask schema.
@@ -2547,6 +2660,22 @@ func (c *UserClient) QuerySessions(u *User) *SessionQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(session.Table, session.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.SessionsTable, user.SessionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFileUploads queries the file_uploads edge of a User.
+func (c *UserClient) QueryFileUploads(u *User) *FileUploadQuery {
+	query := &FileUploadQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(fileupload.Table, fileupload.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.FileUploadsTable, user.FileUploadsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

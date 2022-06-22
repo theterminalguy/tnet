@@ -49,6 +49,8 @@ const (
 	EdgeTalentCollections = "talent_collections"
 	// EdgeSessions holds the string denoting the sessions edge name in mutations.
 	EdgeSessions = "sessions"
+	// EdgeFileUploads holds the string denoting the file_uploads edge name in mutations.
+	EdgeFileUploads = "file_uploads"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// Oauth2ClientsTable is the table that holds the oauth2_clients relation/edge.
@@ -107,6 +109,13 @@ const (
 	SessionsInverseTable = "sessions"
 	// SessionsColumn is the table column denoting the sessions relation/edge.
 	SessionsColumn = "user_id"
+	// FileUploadsTable is the table that holds the file_uploads relation/edge.
+	FileUploadsTable = "file_uploads"
+	// FileUploadsInverseTable is the table name for the FileUpload entity.
+	// It exists in this package in order to avoid circular dependency with the "fileupload" package.
+	FileUploadsInverseTable = "file_uploads"
+	// FileUploadsColumn is the table column denoting the file_uploads relation/edge.
+	FileUploadsColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.

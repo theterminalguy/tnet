@@ -27,6 +27,7 @@ type hooks struct {
 	Education        []ent.Hook
 	EmailTemplate    []ent.Hook
 	EmergencyContact []ent.Hook
+	FileUpload       []ent.Hook
 	InternalTask     []ent.Hook
 	Job              []ent.Hook
 	JobApplication   []ent.Hook

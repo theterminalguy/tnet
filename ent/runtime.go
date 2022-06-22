@@ -8,6 +8,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
+	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/internaltask"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
@@ -96,6 +97,27 @@ func init() {
 	emergencycontactDescID := emergencycontactMixinFields0[0].Descriptor()
 	// emergencycontact.DefaultID holds the default value on creation for the id field.
 	emergencycontact.DefaultID = emergencycontactDescID.Default.(func() uuid.UUID)
+	fileuploadMixin := schema.FileUpload{}.Mixin()
+	fileuploadMixinFields0 := fileuploadMixin[0].Fields()
+	_ = fileuploadMixinFields0
+	fileuploadMixinFields1 := fileuploadMixin[1].Fields()
+	_ = fileuploadMixinFields1
+	fileuploadFields := schema.FileUpload{}.Fields()
+	_ = fileuploadFields
+	// fileuploadDescCreatedAt is the schema descriptor for created_at field.
+	fileuploadDescCreatedAt := fileuploadMixinFields1[0].Descriptor()
+	// fileupload.DefaultCreatedAt holds the default value on creation for the created_at field.
+	fileupload.DefaultCreatedAt = fileuploadDescCreatedAt.Default.(func() time.Time)
+	// fileuploadDescUpdatedAt is the schema descriptor for updated_at field.
+	fileuploadDescUpdatedAt := fileuploadMixinFields1[1].Descriptor()
+	// fileupload.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	fileupload.DefaultUpdatedAt = fileuploadDescUpdatedAt.Default.(func() time.Time)
+	// fileupload.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	fileupload.UpdateDefaultUpdatedAt = fileuploadDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// fileuploadDescID is the schema descriptor for id field.
+	fileuploadDescID := fileuploadMixinFields0[0].Descriptor()
+	// fileupload.DefaultID holds the default value on creation for the id field.
+	fileupload.DefaultID = fileuploadDescID.Default.(func() uuid.UUID)
 	internaltaskMixin := schema.InternalTask{}.Mixin()
 	internaltaskMixinFields0 := internaltaskMixin[0].Fields()
 	_ = internaltaskMixinFields0

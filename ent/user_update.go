@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
+	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/oauth2token"
@@ -228,6 +229,21 @@ func (uu *UserUpdate) AddSessions(s ...*Session) *UserUpdate {
 	return uu.AddSessionIDs(ids...)
 }
 
+// AddFileUploadIDs adds the "file_uploads" edge to the FileUpload entity by IDs.
+func (uu *UserUpdate) AddFileUploadIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.AddFileUploadIDs(ids...)
+	return uu
+}
+
+// AddFileUploads adds the "file_uploads" edges to the FileUpload entity.
+func (uu *UserUpdate) AddFileUploads(f ...*FileUpload) *UserUpdate {
+	ids := make([]uuid.UUID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return uu.AddFileUploadIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -399,6 +415,27 @@ func (uu *UserUpdate) RemoveSessions(s ...*Session) *UserUpdate {
 		ids[i] = s[i].ID
 	}
 	return uu.RemoveSessionIDs(ids...)
+}
+
+// ClearFileUploads clears all "file_uploads" edges to the FileUpload entity.
+func (uu *UserUpdate) ClearFileUploads() *UserUpdate {
+	uu.mutation.ClearFileUploads()
+	return uu
+}
+
+// RemoveFileUploadIDs removes the "file_uploads" edge to FileUpload entities by IDs.
+func (uu *UserUpdate) RemoveFileUploadIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.RemoveFileUploadIDs(ids...)
+	return uu
+}
+
+// RemoveFileUploads removes "file_uploads" edges to FileUpload entities.
+func (uu *UserUpdate) RemoveFileUploads(f ...*FileUpload) *UserUpdate {
+	ids := make([]uuid.UUID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return uu.RemoveFileUploadIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -992,6 +1029,60 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.FileUploadsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FileUploadsTable,
+			Columns: []string{user.FileUploadsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: fileupload.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedFileUploadsIDs(); len(nodes) > 0 && !uu.mutation.FileUploadsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FileUploadsTable,
+			Columns: []string{user.FileUploadsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: fileupload.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.FileUploadsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FileUploadsTable,
+			Columns: []string{user.FileUploadsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: fileupload.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -1201,6 +1292,21 @@ func (uuo *UserUpdateOne) AddSessions(s ...*Session) *UserUpdateOne {
 	return uuo.AddSessionIDs(ids...)
 }
 
+// AddFileUploadIDs adds the "file_uploads" edge to the FileUpload entity by IDs.
+func (uuo *UserUpdateOne) AddFileUploadIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.AddFileUploadIDs(ids...)
+	return uuo
+}
+
+// AddFileUploads adds the "file_uploads" edges to the FileUpload entity.
+func (uuo *UserUpdateOne) AddFileUploads(f ...*FileUpload) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return uuo.AddFileUploadIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -1372,6 +1478,27 @@ func (uuo *UserUpdateOne) RemoveSessions(s ...*Session) *UserUpdateOne {
 		ids[i] = s[i].ID
 	}
 	return uuo.RemoveSessionIDs(ids...)
+}
+
+// ClearFileUploads clears all "file_uploads" edges to the FileUpload entity.
+func (uuo *UserUpdateOne) ClearFileUploads() *UserUpdateOne {
+	uuo.mutation.ClearFileUploads()
+	return uuo
+}
+
+// RemoveFileUploadIDs removes the "file_uploads" edge to FileUpload entities by IDs.
+func (uuo *UserUpdateOne) RemoveFileUploadIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.RemoveFileUploadIDs(ids...)
+	return uuo
+}
+
+// RemoveFileUploads removes "file_uploads" edges to FileUpload entities.
+func (uuo *UserUpdateOne) RemoveFileUploads(f ...*FileUpload) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return uuo.RemoveFileUploadIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1981,6 +2108,60 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: session.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.FileUploadsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FileUploadsTable,
+			Columns: []string{user.FileUploadsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: fileupload.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedFileUploadsIDs(); len(nodes) > 0 && !uuo.mutation.FileUploadsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FileUploadsTable,
+			Columns: []string{user.FileUploadsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: fileupload.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.FileUploadsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FileUploadsTable,
+			Columns: []string{user.FileUploadsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: fileupload.FieldID,
 				},
 			},
 		}

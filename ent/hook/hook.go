@@ -48,6 +48,19 @@ func (f EmergencyContactFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.V
 	return f(ctx, mv)
 }
 
+// The FileUploadFunc type is an adapter to allow the use of ordinary
+// function as FileUpload mutator.
+type FileUploadFunc func(context.Context, *ent.FileUploadMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f FileUploadFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.FileUploadMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FileUploadMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The InternalTaskFunc type is an adapter to allow the use of ordinary
 // function as InternalTask mutator.
 type InternalTaskFunc func(context.Context, *ent.InternalTaskMutation) (ent.Value, error)

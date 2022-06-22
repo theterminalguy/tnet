@@ -113,6 +113,36 @@ var (
 			},
 		},
 	}
+	// FileUploadsColumns holds the columns for the "file_uploads" table.
+	FileUploadsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "file_url", Type: field.TypeString},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
+	}
+	// FileUploadsTable holds the schema information for the "file_uploads" table.
+	FileUploadsTable = &schema.Table{
+		Name:       "file_uploads",
+		Columns:    FileUploadsColumns,
+		PrimaryKey: []*schema.Column{FileUploadsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "file_uploads_users_file_uploads",
+				Columns:    []*schema.Column{FileUploadsColumns[5]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "fileupload_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{FileUploadsColumns[5]},
+			},
+		},
+	}
 	// InternalTasksColumns holds the columns for the "internal_tasks" table.
 	InternalTasksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -782,6 +812,7 @@ var (
 		EducationsTable,
 		EmailTemplatesTable,
 		EmergencyContactsTable,
+		FileUploadsTable,
 		InternalTasksTable,
 		JobsTable,
 		JobApplicationsTable,
@@ -806,6 +837,7 @@ func init() {
 	EducationsTable.ForeignKeys[0].RefTable = TalentsTable
 	EmailTemplatesTable.ForeignKeys[0].RefTable = UsersTable
 	EmergencyContactsTable.ForeignKeys[0].RefTable = TalentsTable
+	FileUploadsTable.ForeignKeys[0].RefTable = UsersTable
 	JobsTable.ForeignKeys[0].RefTable = UsersTable
 	JobApplicationsTable.ForeignKeys[0].RefTable = JobsTable
 	JobApplicationsTable.ForeignKeys[1].RefTable = TalentsTable

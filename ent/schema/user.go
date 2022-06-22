@@ -58,5 +58,6 @@ func (User) Edges() []ent.Edge {
 		edge.To("email_templates", EmailTemplate.Type),
 		edge.To("talent_collections", TalentCollection.Type),
 		edge.To("sessions", Session.Type),
+		edge.To("file_uploads", FileUpload.Type),
 	}
 }

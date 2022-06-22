@@ -44,3 +44,7 @@ func FileUpload(c echo.Context, file_path string, filesize int) (string, error) 
 	}
 	return file_path, nil
 }
+
+func saveToBucket() {
+
+}

@@ -1,14 +1,17 @@
 package recruiter
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
+	"time"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/repository/scope"
 	"github.com/10hourlabs/tentn/internal/search"
+	"github.com/10hourlabs/tentn/internal/service/file_upload"
+	"github.com/10hourlabs/tentn/logger"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/10hourlabs/tentn/util"
 	"github.com/google/uuid"
@@ -16,13 +19,15 @@ import (
 )
 
 type V1RecruiterJobHandler struct {
-	JobRepository repo.JobQuerier
-	JobSearch     *search.JobSearch
+	JobRepository        repo.JobQuerier
+	JobSearch            *search.JobSearch
+	GoogleClientUploader *file_upload.GoogleClientUploader
 }
 
 func NewV1RecruiterJobHandler(jobQuerier repo.JobQuerier) *V1RecruiterJobHandler {
 	return &V1RecruiterJobHandler{
-		JobRepository: jobQuerier,
+		JobRepository:        jobQuerier,
+		GoogleClientUploader: file_upload.NewGoogleClientUploader(),
 	}
 }
 
@@ -69,13 +74,35 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	response, err := util.FileUpload(c, directory, MAX_FILE_SIZE)
+
+	file, err := c.FormFile("file")
+	src, err := file.Open()
 	if err != nil {
 		return err
 	}
-	if !strings.Contains(response, directory) {
-		return c.String(http.StatusOK, response)
+	var res string
+
+	if os.Getenv("ENV") == "dev" {
+		remote_dir := fmt.Sprintf("%s/%s", "job-posting", recruiterID)
+		now := time.Now()
+		file_name := fmt.Sprintf("%d.pdf", now.UnixNano())
+		res, err = h.GoogleClientUploader.UploadFile(src, remote_dir, file_name)
+	} else {
+		res, err = util.FileUpload(c, directory, MAX_FILE_SIZE)
 	}
+	json, _ := json.Marshal(res)
+	logger.Debug(string(json))
+	if err != nil {
+		return c.String(http.StatusOK, fmt.Sprintf("Error occured %v", err))
+	}
+	// }
+	// response, err := util.FileUpload(c, directory, MAX_FILE_SIZE)
+	// if err != nil {
+	// 	return err
+	// }
+	// if !strings.Contains(response, directory) {
+	// 	return c.String(http.StatusOK, response)
+	// }
 
 	return c.String(http.StatusOK, "Document received")
 
