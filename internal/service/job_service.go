@@ -1,5 +1,7 @@
 package service
 
-func NewJobService() error {
-	return nil
+type JobService struct{}
+
+func NewJobService() *JobService {
+	return &JobService{}
 }
