@@ -24,7 +24,7 @@ func (*FileUploadRepository) GetByID() (*ent.FileUpload, error) {
 	return nil, nil
 }
 
-func (*FileUploadRepository) Create(request *FileUploadParams) (*ent.FileUpload, error) {
+func (*FileUploadRepository) Create(request FileUploadParams) (*ent.FileUpload, error) {
 	err := ValidateParams(request)
 	if err != nil {
 		return nil, err

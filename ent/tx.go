@@ -26,6 +26,8 @@ type Tx struct {
 	Job *JobClient
 	// JobApplication is the client for interacting with the JobApplication builders.
 	JobApplication *JobApplicationClient
+	// JobCollection is the client for interacting with the JobCollection builders.
+	JobCollection *JobCollectionClient
 	// Mission is the client for interacting with the Mission builders.
 	Mission *MissionClient
 	// Oauth2Client is the client for interacting with the Oauth2Client builders.
@@ -196,6 +198,7 @@ func (tx *Tx) init() {
 	tx.InternalTask = NewInternalTaskClient(tx.config)
 	tx.Job = NewJobClient(tx.config)
 	tx.JobApplication = NewJobApplicationClient(tx.config)
+	tx.JobCollection = NewJobCollectionClient(tx.config)
 	tx.Mission = NewMissionClient(tx.config)
 	tx.Oauth2Client = NewOauth2ClientClient(tx.config)
 	tx.Oauth2Token = NewOauth2TokenClient(tx.config)

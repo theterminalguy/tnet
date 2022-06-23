@@ -70,3 +70,13 @@ func MapToStringParams(m map[string]interface{}) string {
 func Titlelize(s string) string {
 	return strings.Title(strings.ToLower(s))
 }
+
+const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+func RandStringBytes(n int) string {
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	return string(b)
+}

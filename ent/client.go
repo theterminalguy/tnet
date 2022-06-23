@@ -17,6 +17,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/internaltask"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/jobcollection"
 	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/oauth2token"
@@ -56,6 +57,8 @@ type Client struct {
 	Job *JobClient
 	// JobApplication is the client for interacting with the JobApplication builders.
 	JobApplication *JobApplicationClient
+	// JobCollection is the client for interacting with the JobCollection builders.
+	JobCollection *JobCollectionClient
 	// Mission is the client for interacting with the Mission builders.
 	Mission *MissionClient
 	// Oauth2Client is the client for interacting with the Oauth2Client builders.
@@ -104,6 +107,7 @@ func (c *Client) init() {
 	c.InternalTask = NewInternalTaskClient(c.config)
 	c.Job = NewJobClient(c.config)
 	c.JobApplication = NewJobApplicationClient(c.config)
+	c.JobCollection = NewJobCollectionClient(c.config)
 	c.Mission = NewMissionClient(c.config)
 	c.Oauth2Client = NewOauth2ClientClient(c.config)
 	c.Oauth2Token = NewOauth2TokenClient(c.config)
@@ -158,6 +162,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		InternalTask:     NewInternalTaskClient(cfg),
 		Job:              NewJobClient(cfg),
 		JobApplication:   NewJobApplicationClient(cfg),
+		JobCollection:    NewJobCollectionClient(cfg),
 		Mission:          NewMissionClient(cfg),
 		Oauth2Client:     NewOauth2ClientClient(cfg),
 		Oauth2Token:      NewOauth2TokenClient(cfg),
@@ -198,6 +203,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		InternalTask:     NewInternalTaskClient(cfg),
 		Job:              NewJobClient(cfg),
 		JobApplication:   NewJobApplicationClient(cfg),
+		JobCollection:    NewJobCollectionClient(cfg),
 		Mission:          NewMissionClient(cfg),
 		Oauth2Client:     NewOauth2ClientClient(cfg),
 		Oauth2Token:      NewOauth2TokenClient(cfg),
@@ -248,6 +254,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.InternalTask.Use(hooks...)
 	c.Job.Use(hooks...)
 	c.JobApplication.Use(hooks...)
+	c.JobCollection.Use(hooks...)
 	c.Mission.Use(hooks...)
 	c.Oauth2Client.Use(hooks...)
 	c.Oauth2Token.Use(hooks...)
@@ -1020,6 +1027,112 @@ func (c *JobApplicationClient) QueryJob(ja *JobApplication) *JobQuery {
 // Hooks returns the client hooks.
 func (c *JobApplicationClient) Hooks() []Hook {
 	return c.hooks.JobApplication
+}
+
+// JobCollectionClient is a client for the JobCollection schema.
+type JobCollectionClient struct {
+	config
+}
+
+// NewJobCollectionClient returns a client for the JobCollection from the given config.
+func NewJobCollectionClient(c config) *JobCollectionClient {
+	return &JobCollectionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `jobcollection.Hooks(f(g(h())))`.
+func (c *JobCollectionClient) Use(hooks ...Hook) {
+	c.hooks.JobCollection = append(c.hooks.JobCollection, hooks...)
+}
+
+// Create returns a create builder for JobCollection.
+func (c *JobCollectionClient) Create() *JobCollectionCreate {
+	mutation := newJobCollectionMutation(c.config, OpCreate)
+	return &JobCollectionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of JobCollection entities.
+func (c *JobCollectionClient) CreateBulk(builders ...*JobCollectionCreate) *JobCollectionCreateBulk {
+	return &JobCollectionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for JobCollection.
+func (c *JobCollectionClient) Update() *JobCollectionUpdate {
+	mutation := newJobCollectionMutation(c.config, OpUpdate)
+	return &JobCollectionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *JobCollectionClient) UpdateOne(jc *JobCollection) *JobCollectionUpdateOne {
+	mutation := newJobCollectionMutation(c.config, OpUpdateOne, withJobCollection(jc))
+	return &JobCollectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *JobCollectionClient) UpdateOneID(id uuid.UUID) *JobCollectionUpdateOne {
+	mutation := newJobCollectionMutation(c.config, OpUpdateOne, withJobCollectionID(id))
+	return &JobCollectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for JobCollection.
+func (c *JobCollectionClient) Delete() *JobCollectionDelete {
+	mutation := newJobCollectionMutation(c.config, OpDelete)
+	return &JobCollectionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *JobCollectionClient) DeleteOne(jc *JobCollection) *JobCollectionDeleteOne {
+	return c.DeleteOneID(jc.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *JobCollectionClient) DeleteOneID(id uuid.UUID) *JobCollectionDeleteOne {
+	builder := c.Delete().Where(jobcollection.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &JobCollectionDeleteOne{builder}
+}
+
+// Query returns a query builder for JobCollection.
+func (c *JobCollectionClient) Query() *JobCollectionQuery {
+	return &JobCollectionQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a JobCollection entity by its id.
+func (c *JobCollectionClient) Get(ctx context.Context, id uuid.UUID) (*JobCollection, error) {
+	return c.Query().Where(jobcollection.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *JobCollectionClient) GetX(ctx context.Context, id uuid.UUID) *JobCollection {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUsers queries the users edge of a JobCollection.
+func (c *JobCollectionClient) QueryUsers(jc *JobCollection) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := jc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(jobcollection.Table, jobcollection.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, jobcollection.UsersTable, jobcollection.UsersColumn),
+		)
+		fromV = sqlgraph.Neighbors(jc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *JobCollectionClient) Hooks() []Hook {
+	return c.hooks.JobCollection
 }
 
 // MissionClient is a client for the Mission schema.
@@ -2676,6 +2789,22 @@ func (c *UserClient) QueryFileUploads(u *User) *FileUploadQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(fileupload.Table, fileupload.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.FileUploadsTable, user.FileUploadsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryJobCollections queries the job_collections edge of a User.
+func (c *UserClient) QueryJobCollections(u *User) *JobCollectionQuery {
+	query := &JobCollectionQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(jobcollection.Table, jobcollection.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.JobCollectionsTable, user.JobCollectionsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

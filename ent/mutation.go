@@ -16,6 +16,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/internaltask"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/jobcollection"
 	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/oauth2token"
@@ -54,6 +55,7 @@ const (
 	TypeInternalTask     = "InternalTask"
 	TypeJob              = "Job"
 	TypeJobApplication   = "JobApplication"
+	TypeJobCollection    = "JobCollection"
 	TypeMission          = "Mission"
 	TypeOauth2Client     = "Oauth2Client"
 	TypeOauth2Token      = "Oauth2Token"
@@ -6310,6 +6312,702 @@ func (m *JobApplicationMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown JobApplication edge %s", name)
+}
+
+// JobCollectionMutation represents an operation that mutates the JobCollection nodes in the graph.
+type JobCollectionMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uuid.UUID
+	created_at    *time.Time
+	updated_at    *time.Time
+	deleted_at    *time.Time
+	status        *jobcollection.Status
+	title         *string
+	clearedFields map[string]struct{}
+	users         *uuid.UUID
+	clearedusers  bool
+	done          bool
+	oldValue      func(context.Context) (*JobCollection, error)
+	predicates    []predicate.JobCollection
+}
+
+var _ ent.Mutation = (*JobCollectionMutation)(nil)
+
+// jobcollectionOption allows management of the mutation configuration using functional options.
+type jobcollectionOption func(*JobCollectionMutation)
+
+// newJobCollectionMutation creates new mutation for the JobCollection entity.
+func newJobCollectionMutation(c config, op Op, opts ...jobcollectionOption) *JobCollectionMutation {
+	m := &JobCollectionMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeJobCollection,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withJobCollectionID sets the ID field of the mutation.
+func withJobCollectionID(id uuid.UUID) jobcollectionOption {
+	return func(m *JobCollectionMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *JobCollection
+		)
+		m.oldValue = func(ctx context.Context) (*JobCollection, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().JobCollection.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withJobCollection sets the old JobCollection of the mutation.
+func withJobCollection(node *JobCollection) jobcollectionOption {
+	return func(m *JobCollectionMutation) {
+		m.oldValue = func(context.Context) (*JobCollection, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m JobCollectionMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m JobCollectionMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of JobCollection entities.
+func (m *JobCollectionMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *JobCollectionMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *JobCollectionMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().JobCollection.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *JobCollectionMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *JobCollectionMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the JobCollection entity.
+// If the JobCollection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobCollectionMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *JobCollectionMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *JobCollectionMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *JobCollectionMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the JobCollection entity.
+// If the JobCollection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobCollectionMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *JobCollectionMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *JobCollectionMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *JobCollectionMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the JobCollection entity.
+// If the JobCollection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobCollectionMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *JobCollectionMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[jobcollection.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *JobCollectionMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[jobcollection.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *JobCollectionMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, jobcollection.FieldDeletedAt)
+}
+
+// SetRecruiterID sets the "recruiter_id" field.
+func (m *JobCollectionMutation) SetRecruiterID(u uuid.UUID) {
+	m.users = &u
+}
+
+// RecruiterID returns the value of the "recruiter_id" field in the mutation.
+func (m *JobCollectionMutation) RecruiterID() (r uuid.UUID, exists bool) {
+	v := m.users
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecruiterID returns the old "recruiter_id" field's value of the JobCollection entity.
+// If the JobCollection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobCollectionMutation) OldRecruiterID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecruiterID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecruiterID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecruiterID: %w", err)
+	}
+	return oldValue.RecruiterID, nil
+}
+
+// ClearRecruiterID clears the value of the "recruiter_id" field.
+func (m *JobCollectionMutation) ClearRecruiterID() {
+	m.users = nil
+	m.clearedFields[jobcollection.FieldRecruiterID] = struct{}{}
+}
+
+// RecruiterIDCleared returns if the "recruiter_id" field was cleared in this mutation.
+func (m *JobCollectionMutation) RecruiterIDCleared() bool {
+	_, ok := m.clearedFields[jobcollection.FieldRecruiterID]
+	return ok
+}
+
+// ResetRecruiterID resets all changes to the "recruiter_id" field.
+func (m *JobCollectionMutation) ResetRecruiterID() {
+	m.users = nil
+	delete(m.clearedFields, jobcollection.FieldRecruiterID)
+}
+
+// SetStatus sets the "status" field.
+func (m *JobCollectionMutation) SetStatus(j jobcollection.Status) {
+	m.status = &j
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *JobCollectionMutation) Status() (r jobcollection.Status, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the JobCollection entity.
+// If the JobCollection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobCollectionMutation) OldStatus(ctx context.Context) (v jobcollection.Status, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *JobCollectionMutation) ResetStatus() {
+	m.status = nil
+}
+
+// SetTitle sets the "title" field.
+func (m *JobCollectionMutation) SetTitle(s string) {
+	m.title = &s
+}
+
+// Title returns the value of the "title" field in the mutation.
+func (m *JobCollectionMutation) Title() (r string, exists bool) {
+	v := m.title
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTitle returns the old "title" field's value of the JobCollection entity.
+// If the JobCollection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobCollectionMutation) OldTitle(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTitle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTitle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTitle: %w", err)
+	}
+	return oldValue.Title, nil
+}
+
+// ResetTitle resets all changes to the "title" field.
+func (m *JobCollectionMutation) ResetTitle() {
+	m.title = nil
+}
+
+// SetUsersID sets the "users" edge to the User entity by id.
+func (m *JobCollectionMutation) SetUsersID(id uuid.UUID) {
+	m.users = &id
+}
+
+// ClearUsers clears the "users" edge to the User entity.
+func (m *JobCollectionMutation) ClearUsers() {
+	m.clearedusers = true
+}
+
+// UsersCleared reports if the "users" edge to the User entity was cleared.
+func (m *JobCollectionMutation) UsersCleared() bool {
+	return m.RecruiterIDCleared() || m.clearedusers
+}
+
+// UsersID returns the "users" edge ID in the mutation.
+func (m *JobCollectionMutation) UsersID() (id uuid.UUID, exists bool) {
+	if m.users != nil {
+		return *m.users, true
+	}
+	return
+}
+
+// UsersIDs returns the "users" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UsersID instead. It exists only for internal usage by the builders.
+func (m *JobCollectionMutation) UsersIDs() (ids []uuid.UUID) {
+	if id := m.users; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUsers resets all changes to the "users" edge.
+func (m *JobCollectionMutation) ResetUsers() {
+	m.users = nil
+	m.clearedusers = false
+}
+
+// Where appends a list predicates to the JobCollectionMutation builder.
+func (m *JobCollectionMutation) Where(ps ...predicate.JobCollection) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *JobCollectionMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (JobCollection).
+func (m *JobCollectionMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *JobCollectionMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.created_at != nil {
+		fields = append(fields, jobcollection.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, jobcollection.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, jobcollection.FieldDeletedAt)
+	}
+	if m.users != nil {
+		fields = append(fields, jobcollection.FieldRecruiterID)
+	}
+	if m.status != nil {
+		fields = append(fields, jobcollection.FieldStatus)
+	}
+	if m.title != nil {
+		fields = append(fields, jobcollection.FieldTitle)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *JobCollectionMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case jobcollection.FieldCreatedAt:
+		return m.CreatedAt()
+	case jobcollection.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case jobcollection.FieldDeletedAt:
+		return m.DeletedAt()
+	case jobcollection.FieldRecruiterID:
+		return m.RecruiterID()
+	case jobcollection.FieldStatus:
+		return m.Status()
+	case jobcollection.FieldTitle:
+		return m.Title()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *JobCollectionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case jobcollection.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case jobcollection.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case jobcollection.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case jobcollection.FieldRecruiterID:
+		return m.OldRecruiterID(ctx)
+	case jobcollection.FieldStatus:
+		return m.OldStatus(ctx)
+	case jobcollection.FieldTitle:
+		return m.OldTitle(ctx)
+	}
+	return nil, fmt.Errorf("unknown JobCollection field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *JobCollectionMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case jobcollection.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case jobcollection.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case jobcollection.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case jobcollection.FieldRecruiterID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecruiterID(v)
+		return nil
+	case jobcollection.FieldStatus:
+		v, ok := value.(jobcollection.Status)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case jobcollection.FieldTitle:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTitle(v)
+		return nil
+	}
+	return fmt.Errorf("unknown JobCollection field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *JobCollectionMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *JobCollectionMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *JobCollectionMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown JobCollection numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *JobCollectionMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(jobcollection.FieldDeletedAt) {
+		fields = append(fields, jobcollection.FieldDeletedAt)
+	}
+	if m.FieldCleared(jobcollection.FieldRecruiterID) {
+		fields = append(fields, jobcollection.FieldRecruiterID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *JobCollectionMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *JobCollectionMutation) ClearField(name string) error {
+	switch name {
+	case jobcollection.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case jobcollection.FieldRecruiterID:
+		m.ClearRecruiterID()
+		return nil
+	}
+	return fmt.Errorf("unknown JobCollection nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *JobCollectionMutation) ResetField(name string) error {
+	switch name {
+	case jobcollection.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case jobcollection.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case jobcollection.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case jobcollection.FieldRecruiterID:
+		m.ResetRecruiterID()
+		return nil
+	case jobcollection.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case jobcollection.FieldTitle:
+		m.ResetTitle()
+		return nil
+	}
+	return fmt.Errorf("unknown JobCollection field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *JobCollectionMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.users != nil {
+		edges = append(edges, jobcollection.EdgeUsers)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *JobCollectionMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case jobcollection.EdgeUsers:
+		if id := m.users; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *JobCollectionMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *JobCollectionMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *JobCollectionMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedusers {
+		edges = append(edges, jobcollection.EdgeUsers)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *JobCollectionMutation) EdgeCleared(name string) bool {
+	switch name {
+	case jobcollection.EdgeUsers:
+		return m.clearedusers
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *JobCollectionMutation) ClearEdge(name string) error {
+	switch name {
+	case jobcollection.EdgeUsers:
+		m.ClearUsers()
+		return nil
+	}
+	return fmt.Errorf("unknown JobCollection unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *JobCollectionMutation) ResetEdge(name string) error {
+	switch name {
+	case jobcollection.EdgeUsers:
+		m.ResetUsers()
+		return nil
+	}
+	return fmt.Errorf("unknown JobCollection edge %s", name)
 }
 
 // MissionMutation represents an operation that mutates the Mission nodes in the graph.
@@ -19312,6 +20010,9 @@ type UserMutation struct {
 	file_uploads              map[uuid.UUID]struct{}
 	removedfile_uploads       map[uuid.UUID]struct{}
 	clearedfile_uploads       bool
+	job_collections           map[uuid.UUID]struct{}
+	removedjob_collections    map[uuid.UUID]struct{}
+	clearedjob_collections    bool
 	done                      bool
 	oldValue                  func(context.Context) (*User, error)
 	predicates                []predicate.User
@@ -20244,6 +20945,60 @@ func (m *UserMutation) ResetFileUploads() {
 	m.removedfile_uploads = nil
 }
 
+// AddJobCollectionIDs adds the "job_collections" edge to the JobCollection entity by ids.
+func (m *UserMutation) AddJobCollectionIDs(ids ...uuid.UUID) {
+	if m.job_collections == nil {
+		m.job_collections = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.job_collections[ids[i]] = struct{}{}
+	}
+}
+
+// ClearJobCollections clears the "job_collections" edge to the JobCollection entity.
+func (m *UserMutation) ClearJobCollections() {
+	m.clearedjob_collections = true
+}
+
+// JobCollectionsCleared reports if the "job_collections" edge to the JobCollection entity was cleared.
+func (m *UserMutation) JobCollectionsCleared() bool {
+	return m.clearedjob_collections
+}
+
+// RemoveJobCollectionIDs removes the "job_collections" edge to the JobCollection entity by IDs.
+func (m *UserMutation) RemoveJobCollectionIDs(ids ...uuid.UUID) {
+	if m.removedjob_collections == nil {
+		m.removedjob_collections = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.job_collections, ids[i])
+		m.removedjob_collections[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedJobCollections returns the removed IDs of the "job_collections" edge to the JobCollection entity.
+func (m *UserMutation) RemovedJobCollectionsIDs() (ids []uuid.UUID) {
+	for id := range m.removedjob_collections {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// JobCollectionsIDs returns the "job_collections" edge IDs in the mutation.
+func (m *UserMutation) JobCollectionsIDs() (ids []uuid.UUID) {
+	for id := range m.job_collections {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetJobCollections resets all changes to the "job_collections" edge.
+func (m *UserMutation) ResetJobCollections() {
+	m.job_collections = nil
+	m.clearedjob_collections = false
+	m.removedjob_collections = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -20507,7 +21262,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.oauth2_clients != nil {
 		edges = append(edges, user.EdgeOauth2Clients)
 	}
@@ -20534,6 +21289,9 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.file_uploads != nil {
 		edges = append(edges, user.EdgeFileUploads)
+	}
+	if m.job_collections != nil {
+		edges = append(edges, user.EdgeJobCollections)
 	}
 	return edges
 }
@@ -20596,13 +21354,19 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeJobCollections:
+		ids := make([]ent.Value, 0, len(m.job_collections))
+		for id := range m.job_collections {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.removedoauth2_clients != nil {
 		edges = append(edges, user.EdgeOauth2Clients)
 	}
@@ -20629,6 +21393,9 @@ func (m *UserMutation) RemovedEdges() []string {
 	}
 	if m.removedfile_uploads != nil {
 		edges = append(edges, user.EdgeFileUploads)
+	}
+	if m.removedjob_collections != nil {
+		edges = append(edges, user.EdgeJobCollections)
 	}
 	return edges
 }
@@ -20691,13 +21458,19 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeJobCollections:
+		ids := make([]ent.Value, 0, len(m.removedjob_collections))
+		for id := range m.removedjob_collections {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.clearedoauth2_clients {
 		edges = append(edges, user.EdgeOauth2Clients)
 	}
@@ -20725,6 +21498,9 @@ func (m *UserMutation) ClearedEdges() []string {
 	if m.clearedfile_uploads {
 		edges = append(edges, user.EdgeFileUploads)
 	}
+	if m.clearedjob_collections {
+		edges = append(edges, user.EdgeJobCollections)
+	}
 	return edges
 }
 
@@ -20750,6 +21526,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedsessions
 	case user.EdgeFileUploads:
 		return m.clearedfile_uploads
+	case user.EdgeJobCollections:
+		return m.clearedjob_collections
 	}
 	return false
 }
@@ -20792,6 +21570,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeFileUploads:
 		m.ResetFileUploads()
+		return nil
+	case user.EdgeJobCollections:
+		m.ResetJobCollections()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

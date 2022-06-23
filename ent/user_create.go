@@ -13,6 +13,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/jobcollection"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/oauth2token"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
@@ -264,6 +265,21 @@ func (uc *UserCreate) AddFileUploads(f ...*FileUpload) *UserCreate {
 		ids[i] = f[i].ID
 	}
 	return uc.AddFileUploadIDs(ids...)
+}
+
+// AddJobCollectionIDs adds the "job_collections" edge to the JobCollection entity by IDs.
+func (uc *UserCreate) AddJobCollectionIDs(ids ...uuid.UUID) *UserCreate {
+	uc.mutation.AddJobCollectionIDs(ids...)
+	return uc
+}
+
+// AddJobCollections adds the "job_collections" edges to the JobCollection entity.
+func (uc *UserCreate) AddJobCollections(j ...*JobCollection) *UserCreate {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return uc.AddJobCollectionIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -657,6 +673,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: fileupload.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.JobCollectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.JobCollectionsTable,
+			Columns: []string{user.JobCollectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: jobcollection.FieldID,
 				},
 			},
 		}

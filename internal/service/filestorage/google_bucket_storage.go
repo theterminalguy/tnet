@@ -1,4 +1,4 @@
-package file_upload
+package filestorage
 
 import (
 	"context"
@@ -13,49 +13,44 @@ import (
 	"google.golang.org/api/option"
 )
 
-type GoogleClientUploader struct {
+// type GoogleClientUploader struct {
+// 	cl         *storage.Client
+// 	projectID  string
+// 	bucketName string
+// 	FileInfo   GoogleBucketFileInfo
+// }
+
+type GoogleBucketFileInfo struct {
+	file_path  string
 	cl         *storage.Client
 	projectID  string
 	bucketName string
 }
 
-const GOOGLE_API_URL = "https://storage.cloud.google.com"
+const BUCKET_API_URL = "https://storage.cloud.google.com"
 
 var (
-	maxSize    int64 = 5 * 1024 * 1024 // 5MB
-	projectID        = os.Getenv("PROJECT_ID")
-	bucketName       = os.Getenv("BUCKET_NAME")
+	projectID  = os.Getenv("PROJECT_ID")
+	bucketName = os.Getenv("BUCKET_NAME")
 )
 
-type Js struct {
-	Type                        string
-	Project_id                  string
-	Private_key_id              string
-	Private_key                 string
-	Client_email                string
-	Client_id                   string
-	Auth_uri                    string
-	Token_uri                   string
-	Auth_provider_x509_cert_url string
-	Client_x509_cert_url        string
-}
-
-func NewGoogleClientUploader() *GoogleClientUploader {
+func NewGoogleBucketFileStorage(file_path string) *GoogleBucketFileInfo {
 	client, err := storage.NewClient(context.Background(), option.WithCredentialsJSON([]byte(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")))) // TODO: avoid Background context
 	if err != nil {
 		log.Fatalf("Failed to create client: %v", err)
 	}
-	uploader := &GoogleClientUploader{
+	uploader := &GoogleBucketFileInfo{
 		cl:         client,
 		bucketName: bucketName,
 		projectID:  projectID,
+		file_path:  file_path,
 	}
 	return uploader
 }
 
-func (c *GoogleClientUploader) UploadFile(file multipart.File, uploadPath, fileName string) (string, error) {
+func (c *GoogleBucketFileInfo) Upload(file multipart.File) (string, error) {
 	ctx := context.Background()
-	uploadFolder := uploadPath + "/" + fileName
+	uploadFolder := c.file_path
 	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
 	defer cancel()
 
@@ -67,6 +62,7 @@ func (c *GoogleClientUploader) UploadFile(file multipart.File, uploadPath, fileN
 	if err := wc.Close(); err != nil {
 		return "", fmt.Errorf("Writer.Close: %v", err)
 	}
-	link := GOOGLE_API_URL + "/" + bucketName + "/" + uploadFolder
+	link := BUCKET_API_URL + "/" + bucketName + "/" + uploadFolder
+
 	return link, nil
 }

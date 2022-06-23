@@ -1153,6 +1153,34 @@ func HasFileUploadsWith(preds ...predicate.FileUpload) predicate.User {
 	})
 }
 
+// HasJobCollections applies the HasEdge predicate on the "job_collections" edge.
+func HasJobCollections() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(JobCollectionsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, JobCollectionsTable, JobCollectionsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasJobCollectionsWith applies the HasEdge predicate on the "job_collections" edge with a given conditions (other predicates).
+func HasJobCollectionsWith(preds ...predicate.JobCollection) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(JobCollectionsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, JobCollectionsTable, JobCollectionsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
