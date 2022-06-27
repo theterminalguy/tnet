@@ -106,6 +106,12 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 				Middlewares: nil,
 			},
 			{
+				Path:        "webhook",
+				Handler:     recruiter_handler.NewV1PaymentHandler(),
+				Middlewares: nil,
+				// Only:        []Request{CREATE_ONE},
+			},
+			{
 				Path:        "talents",
 				Handler:     recruiter_handler.NewV1TalentSearchFilterHandler(),
 				Middlewares: nil,
