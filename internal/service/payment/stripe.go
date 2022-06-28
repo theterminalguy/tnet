@@ -1,15 +1,16 @@
 package payment
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 
+	"github.com/10hourlabs/tentn/logger"
 	"github.com/labstack/echo/v4"
 	"github.com/stripe/stripe-go/webhook"
 )
-
-var URL = os.Getenv("STRIPE_PAYMENT_LINK")
 
 type StripePayment struct {
 	Id          string
@@ -23,7 +24,7 @@ func NewStripePayment() *StripePayment {
 
 func (*StripePayment) Pay(req echo.Context) error {
 	const MaxBodyBytes = int64(65536)
-	// req.Body = http.MaxBytesReader(w, req.Body, MaxBodyBytes)
+	req.Request().Body = http.MaxBytesReader(req.Response().Writer, req.Request().Body, MaxBodyBytes)
 	payload, err := ioutil.ReadAll(req.Request().Body)
 	if err != nil {
 		// fmt.Fprintf(os.Stderr, "Error reading request body: %v\n", err)
@@ -42,6 +43,11 @@ func (*StripePayment) Pay(req echo.Context) error {
 		// w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
 		return err
 	}
+
+	json, _ := json.Marshal(event)
+	logger.Debug(string(json))
+
+	fmt.Println(string(payload))
 
 	// Unmarshal the event data into an appropriate struct depending on its Type
 	switch event.Type {

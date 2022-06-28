@@ -1,8 +1,11 @@
 package recruiter
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 
+	"github.com/10hourlabs/tentn/internal/service/payment"
 	"github.com/labstack/echo/v4"
 )
 
@@ -13,9 +16,10 @@ func NewV1PaymentHandler() *PaymentHandler {
 }
 
 func (*PaymentHandler) CreateOne(c echo.Context) error {
-	// driver := os.Getenv("PAYMENT_DRIVER")
-	// pay := payment.NewPaymentService(driver)
-	// pay.Pay(c)
+	driver := os.Getenv("PAYMENT_DRIVER")
+	pay := payment.NewPaymentService(driver)
+	resp := pay.Pay(c)
+	fmt.Println(resp)
 	return c.String(http.StatusOK, "Hello world")
 }
 
