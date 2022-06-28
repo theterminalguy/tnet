@@ -34,6 +34,7 @@ type hooks struct {
 	Oauth2Client     []ent.Hook
 	Oauth2Token      []ent.Hook
 	Partner          []ent.Hook
+	Payment          []ent.Hook
 	PortfolioLink    []ent.Hook
 	SearchLog        []ent.Hook
 	Session          []ent.Hook

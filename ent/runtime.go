@@ -15,6 +15,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/oauth2token"
 	"github.com/10hourlabs/tentn/ent/partner"
+	"github.com/10hourlabs/tentn/ent/payment"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/schema"
 	"github.com/10hourlabs/tentn/ent/searchlog"
@@ -259,6 +260,27 @@ func init() {
 	partnerDescID := partnerMixinFields0[0].Descriptor()
 	// partner.DefaultID holds the default value on creation for the id field.
 	partner.DefaultID = partnerDescID.Default.(func() uuid.UUID)
+	paymentMixin := schema.Payment{}.Mixin()
+	paymentMixinFields0 := paymentMixin[0].Fields()
+	_ = paymentMixinFields0
+	paymentMixinFields1 := paymentMixin[1].Fields()
+	_ = paymentMixinFields1
+	paymentFields := schema.Payment{}.Fields()
+	_ = paymentFields
+	// paymentDescCreatedAt is the schema descriptor for created_at field.
+	paymentDescCreatedAt := paymentMixinFields1[0].Descriptor()
+	// payment.DefaultCreatedAt holds the default value on creation for the created_at field.
+	payment.DefaultCreatedAt = paymentDescCreatedAt.Default.(func() time.Time)
+	// paymentDescUpdatedAt is the schema descriptor for updated_at field.
+	paymentDescUpdatedAt := paymentMixinFields1[1].Descriptor()
+	// payment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	payment.DefaultUpdatedAt = paymentDescUpdatedAt.Default.(func() time.Time)
+	// payment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	payment.UpdateDefaultUpdatedAt = paymentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// paymentDescID is the schema descriptor for id field.
+	paymentDescID := paymentMixinFields0[0].Descriptor()
+	// payment.DefaultID holds the default value on creation for the id field.
+	payment.DefaultID = paymentDescID.Default.(func() uuid.UUID)
 	portfoliolinkMixin := schema.PortfolioLink{}.Mixin()
 	portfoliolinkMixinFields0 := portfoliolinkMixin[0].Fields()
 	_ = portfoliolinkMixinFields0
