@@ -49,6 +49,8 @@ const (
 	EdgeTalentCollections = "talent_collections"
 	// EdgeSessions holds the string denoting the sessions edge name in mutations.
 	EdgeSessions = "sessions"
+	// EdgePayments holds the string denoting the payments edge name in mutations.
+	EdgePayments = "payments"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// Oauth2ClientsTable is the table that holds the oauth2_clients relation/edge.
@@ -107,6 +109,13 @@ const (
 	SessionsInverseTable = "sessions"
 	// SessionsColumn is the table column denoting the sessions relation/edge.
 	SessionsColumn = "user_id"
+	// PaymentsTable is the table that holds the payments relation/edge.
+	PaymentsTable = "payments"
+	// PaymentsInverseTable is the table name for the Payment entity.
+	// It exists in this package in order to avoid circular dependency with the "payment" package.
+	PaymentsInverseTable = "payments"
+	// PaymentsColumn is the table column denoting the payments relation/edge.
+	PaymentsColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.

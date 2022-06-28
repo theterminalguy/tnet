@@ -59,9 +59,11 @@ type UserEdges struct {
 	TalentCollections []*TalentCollection `json:"talent_collections,omitempty"`
 	// Sessions holds the value of the sessions edge.
 	Sessions []*Session `json:"sessions,omitempty"`
+	// Payments holds the value of the payments edge.
+	Payments []*Payment `json:"payments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [9]bool
 }
 
 // Oauth2ClientsOrErr returns the Oauth2Clients value or an error if the edge
@@ -134,6 +136,15 @@ func (e UserEdges) SessionsOrErr() ([]*Session, error) {
 		return e.Sessions, nil
 	}
 	return nil, &NotLoadedError{edge: "sessions"}
+}
+
+// PaymentsOrErr returns the Payments value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) PaymentsOrErr() ([]*Payment, error) {
+	if e.loadedTypes[8] {
+		return e.Payments, nil
+	}
+	return nil, &NotLoadedError{edge: "payments"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -268,6 +279,11 @@ func (u *User) QueryTalentCollections() *TalentCollectionQuery {
 // QuerySessions queries the "sessions" edge of the User entity.
 func (u *User) QuerySessions() *SessionQuery {
 	return (&UserClient{config: u.config}).QuerySessions(u)
+}
+
+// QueryPayments queries the "payments" edge of the User entity.
+func (u *User) QueryPayments() *PaymentQuery {
+	return (&UserClient{config: u.config}).QueryPayments(u)
 }
 
 // Update returns a builder for updating this User.

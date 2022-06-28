@@ -400,6 +400,38 @@ var (
 		Columns:    PartnersColumns,
 		PrimaryKey: []*schema.Column{PartnersColumns[0]},
 	}
+	// PaymentsColumns holds the columns for the "payments" table.
+	PaymentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "amount", Type: field.TypeFloat64},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"paid", "not_paid"}},
+		{Name: "ref_id", Type: field.TypeString},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
+	}
+	// PaymentsTable holds the schema information for the "payments" table.
+	PaymentsTable = &schema.Table{
+		Name:       "payments",
+		Columns:    PaymentsColumns,
+		PrimaryKey: []*schema.Column{PaymentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "payments_users_payments",
+				Columns:    []*schema.Column{PaymentsColumns[7]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "payment_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{PaymentsColumns[7]},
+			},
+		},
+	}
 	// PortfolioLinksColumns holds the columns for the "portfolio_links" table.
 	PortfolioLinksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -789,6 +821,7 @@ var (
 		Oauth2clientsTable,
 		Oauth2tokensTable,
 		PartnersTable,
+		PaymentsTable,
 		PortfolioLinksTable,
 		SearchLogsTable,
 		SessionsTable,
@@ -814,6 +847,7 @@ func init() {
 	Oauth2clientsTable.ForeignKeys[0].RefTable = UsersTable
 	Oauth2tokensTable.ForeignKeys[0].RefTable = Oauth2clientsTable
 	Oauth2tokensTable.ForeignKeys[1].RefTable = UsersTable
+	PaymentsTable.ForeignKeys[0].RefTable = UsersTable
 	PortfolioLinksTable.ForeignKeys[0].RefTable = TalentsTable
 	SessionsTable.ForeignKeys[0].RefTable = UsersTable
 	SkillsTable.ForeignKeys[0].RefTable = TalentsTable
