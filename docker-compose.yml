@@ -37,7 +37,6 @@ services:
       - .env
 
   web:
-    platform: linux/amd64
     depends_on:
       - postgres
     build:
@@ -49,7 +48,7 @@ services:
     networks:
       - tentn
     ports:
-      - 3000:5000
+      - 5000:5000
     volumes:
       - ./:/app
     env_file:

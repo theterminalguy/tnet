@@ -12,7 +12,7 @@ WORKDIR /app
 
 RUN git config \
     --global \
-    url."https://iamhabbeboy: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@github.com".insteadOf \
+    url."https://${GITHUB_USER}:$GITHUB_PERSONAL_TOKEN@github.com".insteadOf \
     "https://github.com"
 
 COPY go.* ./
