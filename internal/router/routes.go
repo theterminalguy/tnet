@@ -17,6 +17,7 @@ func DefineRoutes() *echo.Echo {
 	e.Use(middleware.Recover())
 	e.GET("/", handler.IndexHandler)
 	e.GET("/health", handler.HealthHandler)
+	e.GET("/how-to-search", handler.HowToSearchHandler)
 
 	// TODO: Group routes by recruiters or talent
 	e.GET("/talent/auth", handler.TalentLoginHanlder)
