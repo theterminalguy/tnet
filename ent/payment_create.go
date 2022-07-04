@@ -84,6 +84,14 @@ func (pc *PaymentCreate) SetAmount(f float64) *PaymentCreate {
 	return pc
 }
 
+// SetNillableAmount sets the "amount" field if the given value is not nil.
+func (pc *PaymentCreate) SetNillableAmount(f *float64) *PaymentCreate {
+	if f != nil {
+		pc.SetAmount(*f)
+	}
+	return pc
+}
+
 // SetStatus sets the "status" field.
 func (pc *PaymentCreate) SetStatus(pa payment.Status) *PaymentCreate {
 	pc.mutation.SetStatus(pa)
@@ -93,6 +101,68 @@ func (pc *PaymentCreate) SetStatus(pa payment.Status) *PaymentCreate {
 // SetRefID sets the "ref_id" field.
 func (pc *PaymentCreate) SetRefID(s string) *PaymentCreate {
 	pc.mutation.SetRefID(s)
+	return pc
+}
+
+// SetNillableRefID sets the "ref_id" field if the given value is not nil.
+func (pc *PaymentCreate) SetNillableRefID(s *string) *PaymentCreate {
+	if s != nil {
+		pc.SetRefID(*s)
+	}
+	return pc
+}
+
+// SetMessage sets the "message" field.
+func (pc *PaymentCreate) SetMessage(s string) *PaymentCreate {
+	pc.mutation.SetMessage(s)
+	return pc
+}
+
+// SetCurrency sets the "currency" field.
+func (pc *PaymentCreate) SetCurrency(s string) *PaymentCreate {
+	pc.mutation.SetCurrency(s)
+	return pc
+}
+
+// SetNillableCurrency sets the "currency" field if the given value is not nil.
+func (pc *PaymentCreate) SetNillableCurrency(s *string) *PaymentCreate {
+	if s != nil {
+		pc.SetCurrency(*s)
+	}
+	return pc
+}
+
+// SetPaymentLink sets the "payment_link" field.
+func (pc *PaymentCreate) SetPaymentLink(s string) *PaymentCreate {
+	pc.mutation.SetPaymentLink(s)
+	return pc
+}
+
+// SetNillablePaymentLink sets the "payment_link" field if the given value is not nil.
+func (pc *PaymentCreate) SetNillablePaymentLink(s *string) *PaymentCreate {
+	if s != nil {
+		pc.SetPaymentLink(*s)
+	}
+	return pc
+}
+
+// SetJobCollectionID sets the "job_collection_id" field.
+func (pc *PaymentCreate) SetJobCollectionID(u uuid.UUID) *PaymentCreate {
+	pc.mutation.SetJobCollectionID(u)
+	return pc
+}
+
+// SetNillableJobCollectionID sets the "job_collection_id" field if the given value is not nil.
+func (pc *PaymentCreate) SetNillableJobCollectionID(u *uuid.UUID) *PaymentCreate {
+	if u != nil {
+		pc.SetJobCollectionID(*u)
+	}
+	return pc
+}
+
+// SetPayload sets the "payload" field.
+func (pc *PaymentCreate) SetPayload(s []string) *PaymentCreate {
+	pc.mutation.SetPayload(s)
 	return pc
 }
 
@@ -208,9 +278,6 @@ func (pc *PaymentCreate) check() error {
 	if _, ok := pc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Payment.updated_at"`)}
 	}
-	if _, ok := pc.mutation.Amount(); !ok {
-		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "Payment.amount"`)}
-	}
 	if _, ok := pc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Payment.status"`)}
 	}
@@ -219,8 +286,8 @@ func (pc *PaymentCreate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Payment.status": %w`, err)}
 		}
 	}
-	if _, ok := pc.mutation.RefID(); !ok {
-		return &ValidationError{Name: "ref_id", err: errors.New(`ent: missing required field "Payment.ref_id"`)}
+	if _, ok := pc.mutation.Message(); !ok {
+		return &ValidationError{Name: "message", err: errors.New(`ent: missing required field "Payment.message"`)}
 	}
 	return nil
 }
@@ -288,7 +355,7 @@ func (pc *PaymentCreate) createSpec() (*Payment, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: payment.FieldAmount,
 		})
-		_node.Amount = value
+		_node.Amount = &value
 	}
 	if value, ok := pc.mutation.Status(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -304,7 +371,47 @@ func (pc *PaymentCreate) createSpec() (*Payment, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: payment.FieldRefID,
 		})
-		_node.RefID = value
+		_node.RefID = &value
+	}
+	if value, ok := pc.mutation.Message(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: payment.FieldMessage,
+		})
+		_node.Message = value
+	}
+	if value, ok := pc.mutation.Currency(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: payment.FieldCurrency,
+		})
+		_node.Currency = &value
+	}
+	if value, ok := pc.mutation.PaymentLink(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: payment.FieldPaymentLink,
+		})
+		_node.PaymentLink = &value
+	}
+	if value, ok := pc.mutation.JobCollectionID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: payment.FieldJobCollectionID,
+		})
+		_node.JobCollectionID = &value
+	}
+	if value, ok := pc.mutation.Payload(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: payment.FieldPayload,
+		})
+		_node.Payload = value
 	}
 	if nodes := pc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

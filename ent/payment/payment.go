@@ -28,6 +28,16 @@ const (
 	FieldStatus = "status"
 	// FieldRefID holds the string denoting the ref_id field in the database.
 	FieldRefID = "ref_id"
+	// FieldMessage holds the string denoting the message field in the database.
+	FieldMessage = "message"
+	// FieldCurrency holds the string denoting the currency field in the database.
+	FieldCurrency = "currency"
+	// FieldPaymentLink holds the string denoting the payment_link field in the database.
+	FieldPaymentLink = "payment_link"
+	// FieldJobCollectionID holds the string denoting the job_collection_id field in the database.
+	FieldJobCollectionID = "job_collection_id"
+	// FieldPayload holds the string denoting the payload field in the database.
+	FieldPayload = "payload"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// Table holds the table name of the payment in the database.
@@ -51,6 +61,11 @@ var Columns = []string{
 	FieldAmount,
 	FieldStatus,
 	FieldRefID,
+	FieldMessage,
+	FieldCurrency,
+	FieldPaymentLink,
+	FieldJobCollectionID,
+	FieldPayload,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

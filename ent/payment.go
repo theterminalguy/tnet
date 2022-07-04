@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -27,11 +28,21 @@ type Payment struct {
 	// UserID holds the value of the "user_id" field.
 	UserID uuid.UUID `json:"-"`
 	// Amount holds the value of the "amount" field.
-	Amount float64 `json:"amount,omitempty"`
+	Amount *float64 `json:"amount,omitempty"`
 	// Status holds the value of the "status" field.
 	Status payment.Status `json:"status,omitempty"`
 	// RefID holds the value of the "ref_id" field.
-	RefID string `json:"ref_id,omitempty"`
+	RefID *string `json:"ref_id,omitempty"`
+	// Message holds the value of the "message" field.
+	Message string `json:"message,omitempty"`
+	// Currency holds the value of the "currency" field.
+	Currency *string `json:"currency,omitempty"`
+	// PaymentLink holds the value of the "payment_link" field.
+	PaymentLink *string `json:"payment_link,omitempty"`
+	// JobCollectionID holds the value of the "job_collection_id" field.
+	JobCollectionID *uuid.UUID `json:"job_collection_id,omitempty"`
+	// Payload holds the value of the "payload" field.
+	Payload []string `json:"payload,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PaymentQuery when eager-loading is set.
 	Edges PaymentEdges `json:"edges"`
@@ -65,9 +76,13 @@ func (*Payment) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case payment.FieldJobCollectionID:
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
+		case payment.FieldPayload:
+			values[i] = new([]byte)
 		case payment.FieldAmount:
 			values[i] = new(sql.NullFloat64)
-		case payment.FieldStatus, payment.FieldRefID:
+		case payment.FieldStatus, payment.FieldRefID, payment.FieldMessage, payment.FieldCurrency, payment.FieldPaymentLink:
 			values[i] = new(sql.NullString)
 		case payment.FieldCreatedAt, payment.FieldUpdatedAt, payment.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -123,7 +138,8 @@ func (pa *Payment) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field amount", values[i])
 			} else if value.Valid {
-				pa.Amount = value.Float64
+				pa.Amount = new(float64)
+				*pa.Amount = value.Float64
 			}
 		case payment.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -135,7 +151,43 @@ func (pa *Payment) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field ref_id", values[i])
 			} else if value.Valid {
-				pa.RefID = value.String
+				pa.RefID = new(string)
+				*pa.RefID = value.String
+			}
+		case payment.FieldMessage:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field message", values[i])
+			} else if value.Valid {
+				pa.Message = value.String
+			}
+		case payment.FieldCurrency:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field currency", values[i])
+			} else if value.Valid {
+				pa.Currency = new(string)
+				*pa.Currency = value.String
+			}
+		case payment.FieldPaymentLink:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field payment_link", values[i])
+			} else if value.Valid {
+				pa.PaymentLink = new(string)
+				*pa.PaymentLink = value.String
+			}
+		case payment.FieldJobCollectionID:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field job_collection_id", values[i])
+			} else if value.Valid {
+				pa.JobCollectionID = new(uuid.UUID)
+				*pa.JobCollectionID = *value.S.(*uuid.UUID)
+			}
+		case payment.FieldPayload:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field payload", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pa.Payload); err != nil {
+					return fmt.Errorf("unmarshal field payload: %w", err)
+				}
 			}
 		}
 	}
@@ -180,12 +232,32 @@ func (pa *Payment) String() string {
 	}
 	builder.WriteString(", user_id=")
 	builder.WriteString(fmt.Sprintf("%v", pa.UserID))
-	builder.WriteString(", amount=")
-	builder.WriteString(fmt.Sprintf("%v", pa.Amount))
+	if v := pa.Amount; v != nil {
+		builder.WriteString(", amount=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", pa.Status))
-	builder.WriteString(", ref_id=")
-	builder.WriteString(pa.RefID)
+	if v := pa.RefID; v != nil {
+		builder.WriteString(", ref_id=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", message=")
+	builder.WriteString(pa.Message)
+	if v := pa.Currency; v != nil {
+		builder.WriteString(", currency=")
+		builder.WriteString(*v)
+	}
+	if v := pa.PaymentLink; v != nil {
+		builder.WriteString(", payment_link=")
+		builder.WriteString(*v)
+	}
+	if v := pa.JobCollectionID; v != nil {
+		builder.WriteString(", job_collection_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", payload=")
+	builder.WriteString(fmt.Sprintf("%v", pa.Payload))
 	builder.WriteByte(')')
 	return builder.String()
 }

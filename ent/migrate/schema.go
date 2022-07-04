@@ -406,9 +406,14 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "amount", Type: field.TypeFloat64},
+		{Name: "amount", Type: field.TypeFloat64, Nullable: true},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"paid", "not_paid"}},
-		{Name: "ref_id", Type: field.TypeString},
+		{Name: "ref_id", Type: field.TypeString, Nullable: true},
+		{Name: "message", Type: field.TypeString},
+		{Name: "currency", Type: field.TypeString, Nullable: true},
+		{Name: "payment_link", Type: field.TypeString, Nullable: true, Size: 2147483647},
+		{Name: "job_collection_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "payload", Type: field.TypeJSON, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// PaymentsTable holds the schema information for the "payments" table.
@@ -419,7 +424,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "payments_users_payments",
-				Columns:    []*schema.Column{PaymentsColumns[7]},
+				Columns:    []*schema.Column{PaymentsColumns[12]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -428,7 +433,7 @@ var (
 			{
 				Name:    "payment_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{PaymentsColumns[7]},
+				Columns: []*schema.Column{PaymentsColumns[12]},
 			},
 		},
 	}

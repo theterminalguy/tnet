@@ -83,9 +83,23 @@ func (pu *PaymentUpdate) SetAmount(f float64) *PaymentUpdate {
 	return pu
 }
 
+// SetNillableAmount sets the "amount" field if the given value is not nil.
+func (pu *PaymentUpdate) SetNillableAmount(f *float64) *PaymentUpdate {
+	if f != nil {
+		pu.SetAmount(*f)
+	}
+	return pu
+}
+
 // AddAmount adds f to the "amount" field.
 func (pu *PaymentUpdate) AddAmount(f float64) *PaymentUpdate {
 	pu.mutation.AddAmount(f)
+	return pu
+}
+
+// ClearAmount clears the value of the "amount" field.
+func (pu *PaymentUpdate) ClearAmount() *PaymentUpdate {
+	pu.mutation.ClearAmount()
 	return pu
 }
 
@@ -98,6 +112,98 @@ func (pu *PaymentUpdate) SetStatus(pa payment.Status) *PaymentUpdate {
 // SetRefID sets the "ref_id" field.
 func (pu *PaymentUpdate) SetRefID(s string) *PaymentUpdate {
 	pu.mutation.SetRefID(s)
+	return pu
+}
+
+// SetNillableRefID sets the "ref_id" field if the given value is not nil.
+func (pu *PaymentUpdate) SetNillableRefID(s *string) *PaymentUpdate {
+	if s != nil {
+		pu.SetRefID(*s)
+	}
+	return pu
+}
+
+// ClearRefID clears the value of the "ref_id" field.
+func (pu *PaymentUpdate) ClearRefID() *PaymentUpdate {
+	pu.mutation.ClearRefID()
+	return pu
+}
+
+// SetMessage sets the "message" field.
+func (pu *PaymentUpdate) SetMessage(s string) *PaymentUpdate {
+	pu.mutation.SetMessage(s)
+	return pu
+}
+
+// SetCurrency sets the "currency" field.
+func (pu *PaymentUpdate) SetCurrency(s string) *PaymentUpdate {
+	pu.mutation.SetCurrency(s)
+	return pu
+}
+
+// SetNillableCurrency sets the "currency" field if the given value is not nil.
+func (pu *PaymentUpdate) SetNillableCurrency(s *string) *PaymentUpdate {
+	if s != nil {
+		pu.SetCurrency(*s)
+	}
+	return pu
+}
+
+// ClearCurrency clears the value of the "currency" field.
+func (pu *PaymentUpdate) ClearCurrency() *PaymentUpdate {
+	pu.mutation.ClearCurrency()
+	return pu
+}
+
+// SetPaymentLink sets the "payment_link" field.
+func (pu *PaymentUpdate) SetPaymentLink(s string) *PaymentUpdate {
+	pu.mutation.SetPaymentLink(s)
+	return pu
+}
+
+// SetNillablePaymentLink sets the "payment_link" field if the given value is not nil.
+func (pu *PaymentUpdate) SetNillablePaymentLink(s *string) *PaymentUpdate {
+	if s != nil {
+		pu.SetPaymentLink(*s)
+	}
+	return pu
+}
+
+// ClearPaymentLink clears the value of the "payment_link" field.
+func (pu *PaymentUpdate) ClearPaymentLink() *PaymentUpdate {
+	pu.mutation.ClearPaymentLink()
+	return pu
+}
+
+// SetJobCollectionID sets the "job_collection_id" field.
+func (pu *PaymentUpdate) SetJobCollectionID(u uuid.UUID) *PaymentUpdate {
+	pu.mutation.SetJobCollectionID(u)
+	return pu
+}
+
+// SetNillableJobCollectionID sets the "job_collection_id" field if the given value is not nil.
+func (pu *PaymentUpdate) SetNillableJobCollectionID(u *uuid.UUID) *PaymentUpdate {
+	if u != nil {
+		pu.SetJobCollectionID(*u)
+	}
+	return pu
+}
+
+// ClearJobCollectionID clears the value of the "job_collection_id" field.
+func (pu *PaymentUpdate) ClearJobCollectionID() *PaymentUpdate {
+	pu.mutation.ClearJobCollectionID()
+	return pu
+}
+
+// SetPayload sets the "payload" field.
+func (pu *PaymentUpdate) SetPayload(s []string) *PaymentUpdate {
+	pu.mutation.SetPayload(s)
+	return pu
+}
+
+// ClearPayload clears the value of the "payload" field.
+func (pu *PaymentUpdate) ClearPayload() *PaymentUpdate {
+	pu.mutation.ClearPayload()
 	return pu
 }
 
@@ -248,6 +354,12 @@ func (pu *PaymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: payment.FieldAmount,
 		})
 	}
+	if pu.mutation.AmountCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: payment.FieldAmount,
+		})
+	}
 	if value, ok := pu.mutation.Status(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
@@ -260,6 +372,71 @@ func (pu *PaymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: payment.FieldRefID,
+		})
+	}
+	if pu.mutation.RefIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: payment.FieldRefID,
+		})
+	}
+	if value, ok := pu.mutation.Message(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: payment.FieldMessage,
+		})
+	}
+	if value, ok := pu.mutation.Currency(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: payment.FieldCurrency,
+		})
+	}
+	if pu.mutation.CurrencyCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: payment.FieldCurrency,
+		})
+	}
+	if value, ok := pu.mutation.PaymentLink(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: payment.FieldPaymentLink,
+		})
+	}
+	if pu.mutation.PaymentLinkCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: payment.FieldPaymentLink,
+		})
+	}
+	if value, ok := pu.mutation.JobCollectionID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: payment.FieldJobCollectionID,
+		})
+	}
+	if pu.mutation.JobCollectionIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Column: payment.FieldJobCollectionID,
+		})
+	}
+	if value, ok := pu.mutation.Payload(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: payment.FieldPayload,
+		})
+	}
+	if pu.mutation.PayloadCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: payment.FieldPayload,
 		})
 	}
 	if pu.mutation.UserCleared() {
@@ -369,9 +546,23 @@ func (puo *PaymentUpdateOne) SetAmount(f float64) *PaymentUpdateOne {
 	return puo
 }
 
+// SetNillableAmount sets the "amount" field if the given value is not nil.
+func (puo *PaymentUpdateOne) SetNillableAmount(f *float64) *PaymentUpdateOne {
+	if f != nil {
+		puo.SetAmount(*f)
+	}
+	return puo
+}
+
 // AddAmount adds f to the "amount" field.
 func (puo *PaymentUpdateOne) AddAmount(f float64) *PaymentUpdateOne {
 	puo.mutation.AddAmount(f)
+	return puo
+}
+
+// ClearAmount clears the value of the "amount" field.
+func (puo *PaymentUpdateOne) ClearAmount() *PaymentUpdateOne {
+	puo.mutation.ClearAmount()
 	return puo
 }
 
@@ -384,6 +575,98 @@ func (puo *PaymentUpdateOne) SetStatus(pa payment.Status) *PaymentUpdateOne {
 // SetRefID sets the "ref_id" field.
 func (puo *PaymentUpdateOne) SetRefID(s string) *PaymentUpdateOne {
 	puo.mutation.SetRefID(s)
+	return puo
+}
+
+// SetNillableRefID sets the "ref_id" field if the given value is not nil.
+func (puo *PaymentUpdateOne) SetNillableRefID(s *string) *PaymentUpdateOne {
+	if s != nil {
+		puo.SetRefID(*s)
+	}
+	return puo
+}
+
+// ClearRefID clears the value of the "ref_id" field.
+func (puo *PaymentUpdateOne) ClearRefID() *PaymentUpdateOne {
+	puo.mutation.ClearRefID()
+	return puo
+}
+
+// SetMessage sets the "message" field.
+func (puo *PaymentUpdateOne) SetMessage(s string) *PaymentUpdateOne {
+	puo.mutation.SetMessage(s)
+	return puo
+}
+
+// SetCurrency sets the "currency" field.
+func (puo *PaymentUpdateOne) SetCurrency(s string) *PaymentUpdateOne {
+	puo.mutation.SetCurrency(s)
+	return puo
+}
+
+// SetNillableCurrency sets the "currency" field if the given value is not nil.
+func (puo *PaymentUpdateOne) SetNillableCurrency(s *string) *PaymentUpdateOne {
+	if s != nil {
+		puo.SetCurrency(*s)
+	}
+	return puo
+}
+
+// ClearCurrency clears the value of the "currency" field.
+func (puo *PaymentUpdateOne) ClearCurrency() *PaymentUpdateOne {
+	puo.mutation.ClearCurrency()
+	return puo
+}
+
+// SetPaymentLink sets the "payment_link" field.
+func (puo *PaymentUpdateOne) SetPaymentLink(s string) *PaymentUpdateOne {
+	puo.mutation.SetPaymentLink(s)
+	return puo
+}
+
+// SetNillablePaymentLink sets the "payment_link" field if the given value is not nil.
+func (puo *PaymentUpdateOne) SetNillablePaymentLink(s *string) *PaymentUpdateOne {
+	if s != nil {
+		puo.SetPaymentLink(*s)
+	}
+	return puo
+}
+
+// ClearPaymentLink clears the value of the "payment_link" field.
+func (puo *PaymentUpdateOne) ClearPaymentLink() *PaymentUpdateOne {
+	puo.mutation.ClearPaymentLink()
+	return puo
+}
+
+// SetJobCollectionID sets the "job_collection_id" field.
+func (puo *PaymentUpdateOne) SetJobCollectionID(u uuid.UUID) *PaymentUpdateOne {
+	puo.mutation.SetJobCollectionID(u)
+	return puo
+}
+
+// SetNillableJobCollectionID sets the "job_collection_id" field if the given value is not nil.
+func (puo *PaymentUpdateOne) SetNillableJobCollectionID(u *uuid.UUID) *PaymentUpdateOne {
+	if u != nil {
+		puo.SetJobCollectionID(*u)
+	}
+	return puo
+}
+
+// ClearJobCollectionID clears the value of the "job_collection_id" field.
+func (puo *PaymentUpdateOne) ClearJobCollectionID() *PaymentUpdateOne {
+	puo.mutation.ClearJobCollectionID()
+	return puo
+}
+
+// SetPayload sets the "payload" field.
+func (puo *PaymentUpdateOne) SetPayload(s []string) *PaymentUpdateOne {
+	puo.mutation.SetPayload(s)
+	return puo
+}
+
+// ClearPayload clears the value of the "payload" field.
+func (puo *PaymentUpdateOne) ClearPayload() *PaymentUpdateOne {
+	puo.mutation.ClearPayload()
 	return puo
 }
 
@@ -558,6 +841,12 @@ func (puo *PaymentUpdateOne) sqlSave(ctx context.Context) (_node *Payment, err e
 			Column: payment.FieldAmount,
 		})
 	}
+	if puo.mutation.AmountCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: payment.FieldAmount,
+		})
+	}
 	if value, ok := puo.mutation.Status(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
@@ -570,6 +859,71 @@ func (puo *PaymentUpdateOne) sqlSave(ctx context.Context) (_node *Payment, err e
 			Type:   field.TypeString,
 			Value:  value,
 			Column: payment.FieldRefID,
+		})
+	}
+	if puo.mutation.RefIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: payment.FieldRefID,
+		})
+	}
+	if value, ok := puo.mutation.Message(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: payment.FieldMessage,
+		})
+	}
+	if value, ok := puo.mutation.Currency(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: payment.FieldCurrency,
+		})
+	}
+	if puo.mutation.CurrencyCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: payment.FieldCurrency,
+		})
+	}
+	if value, ok := puo.mutation.PaymentLink(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: payment.FieldPaymentLink,
+		})
+	}
+	if puo.mutation.PaymentLinkCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: payment.FieldPaymentLink,
+		})
+	}
+	if value, ok := puo.mutation.JobCollectionID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: payment.FieldJobCollectionID,
+		})
+	}
+	if puo.mutation.JobCollectionIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Column: payment.FieldJobCollectionID,
+		})
+	}
+	if value, ok := puo.mutation.Payload(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: payment.FieldPayload,
+		})
+	}
+	if puo.mutation.PayloadCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: payment.FieldPayload,
 		})
 	}
 	if puo.mutation.UserCleared() {
