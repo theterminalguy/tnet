@@ -3,6 +3,7 @@ package payment
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -125,10 +126,11 @@ func (p *StripePayment) Pay(req echo.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// This is your Stripe CLI webhook secret for testing your endpoint locally.
-	endpointSecret := "whsec_395e25c1e34329e5499a86a52d6a7b2654805443129e957820bf364937493766"
-	// Pass the request body and Stripe-Signature header to ConstructEvent, along
-	// with the webhook signing key.
+
+	endpointSecret := os.Getenv("STRIPE_ENDPOINT_SECRET")
+	if endpointSecret == "" {
+		return "", errors.New("invalid endpoint secret")
+	}
 	event, err := webhook.ConstructEvent(payload, req.Request().Header.Get("Stripe-Signature"),
 		endpointSecret)
 
@@ -164,13 +166,11 @@ func (p *StripePayment) Pay(req echo.Context) (string, error) {
 			return "", err
 		}
 		return "successful", nil
-	}
-
-	//send mail to admin for successful payment.
-	if event.Type == "charge.failed" {
-
+	} else {
+		// var session session.Metadata
+		// json, _ := json.Marshal()
+		//send mail to admin for successful payment.
+		// if event.Type == "charge.failed" {
 		return "payment failed", nil
 	}
-
-	return "error occured", nil
 }
