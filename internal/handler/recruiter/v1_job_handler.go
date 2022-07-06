@@ -20,7 +20,7 @@ import (
 type V1RecruiterJobHandler struct {
 	JobRepository           repo.JobQuerier
 	JobSearch               *search.JobSearch
-	JobCollectionRepository *repo.JobCollectionRepository
+	JobCollectionRepository *repo.JobRepository
 	FileUploadRepository    *repo.FileUploadRepository
 }
 
@@ -28,7 +28,7 @@ func NewV1RecruiterJobHandler(jobQuerier repo.JobQuerier) *V1RecruiterJobHandler
 	return &V1RecruiterJobHandler{
 		JobRepository:           jobQuerier,
 		FileUploadRepository:    repo.NewFileUploadRepository(),
-		JobCollectionRepository: repo.NewJobCollectionRepository(),
+		JobCollectionRepository: repo.NewJobRepository(),
 	}
 }
 
@@ -74,7 +74,7 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	const SUPPORTED_FILE_EXT = ".pdf"
 	directory := fmt.Sprintf("job-posting/%s", recruiterID)
 
-	file, err := c.FormFile("file")
+	file, _ := c.FormFile("file")
 	src, err := file.Open()
 	if err != nil {
 		return err
@@ -131,11 +131,21 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	if f != nil {
 		//create a Job Collection
 		title := fmt.Sprintf("job-title-%s", util.RandStringBytes(10)) //TODO: change this later
-		params := new(repo.JobCollectionParams)
-		params.Status = "pending"
+		params := new(repo.JobParams)
 		params.Title = title
-		params.RecruiterID = recruiterID
-		h.JobCollectionRepository.Create(*params)
+		params.Summary = "N/A"
+		params.Thumbnail = "https://alwayshiring.io"
+		params.WeHave = []string{""}
+		params.TimeZone = "GMT"
+		params.Employment = "full_time"
+		params.YouHave = []string{""}
+		params.Requirements = []string{""}
+		params.Category = "engineering"
+		params.UserID = recruiterID
+		_, err := h.JobRepository.Create(*params)
+		if err != nil {
+			return c.String(http.StatusBadGateway, err.Error())
+		}
 	}
 
 	return c.String(http.StatusOK, "Document received")
