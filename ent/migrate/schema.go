@@ -179,13 +179,14 @@ var (
 		{Name: "slug", Type: field.TypeString, Unique: true},
 		{Name: "location", Type: field.TypeString, Default: "Remote, Earth"},
 		{Name: "summary", Type: field.TypeString},
-		{Name: "employment", Type: field.TypeEnum, Enums: []string{"part_time", "full_time", "contract"}},
-		{Name: "category", Type: field.TypeEnum, Enums: []string{"engineering", "product_design", "sales", "marketing"}},
+		{Name: "employment", Type: field.TypeEnum, Enums: []string{"part_time", "full_time", "contract", "na"}},
+		{Name: "category", Type: field.TypeEnum, Enums: []string{"engineering", "product_design", "sales", "marketing", "na"}},
 		{Name: "thumbnail", Type: field.TypeString},
 		{Name: "we_have", Type: field.TypeJSON},
 		{Name: "requirements", Type: field.TypeJSON},
 		{Name: "you_have", Type: field.TypeJSON},
 		{Name: "timezone", Type: field.TypeString},
+		{Name: "attachment_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// JobsTable holds the schema information for the "jobs" table.
@@ -195,8 +196,14 @@ var (
 		PrimaryKey: []*schema.Column{JobsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "jobs_users_jobs",
+				Symbol:     "jobs_file_uploads_jobs",
 				Columns:    []*schema.Column{JobsColumns[16]},
+				RefColumns: []*schema.Column{FileUploadsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "jobs_users_jobs",
+				Columns:    []*schema.Column{JobsColumns[17]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -204,6 +211,11 @@ var (
 		Indexes: []*schema.Index{
 			{
 				Name:    "job_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{JobsColumns[17]},
+			},
+			{
+				Name:    "job_attachment_id",
 				Unique:  false,
 				Columns: []*schema.Column{JobsColumns[16]},
 			},
@@ -838,7 +850,8 @@ func init() {
 	EmailTemplatesTable.ForeignKeys[0].RefTable = UsersTable
 	EmergencyContactsTable.ForeignKeys[0].RefTable = TalentsTable
 	FileUploadsTable.ForeignKeys[0].RefTable = UsersTable
-	JobsTable.ForeignKeys[0].RefTable = UsersTable
+	JobsTable.ForeignKeys[0].RefTable = FileUploadsTable
+	JobsTable.ForeignKeys[1].RefTable = UsersTable
 	JobApplicationsTable.ForeignKeys[0].RefTable = JobsTable
 	JobApplicationsTable.ForeignKeys[1].RefTable = TalentsTable
 	MissionsTable.ForeignKeys[0].RefTable = PartnersTable

@@ -134,14 +134,15 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 		params := new(repo.JobParams)
 		params.Title = title
 		params.Summary = "N/A"
-		params.Thumbnail = "https://alwayshiring.io"
+		params.Thumbnail = "https://"
 		params.WeHave = []string{""}
-		params.TimeZone = "GMT"
-		params.Employment = "full_time"
+		params.TimeZone = "NA"
+		params.Employment = "na"
 		params.YouHave = []string{""}
 		params.Requirements = []string{""}
-		params.Category = "engineering"
+		params.Category = "na"
 		params.UserID = recruiterID
+		params.AttachmentID = f.ID
 		_, err := h.JobRepository.Create(*params)
 		if err != nil {
 			return c.String(http.StatusBadGateway, err.Error())

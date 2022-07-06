@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -12,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/fileupload"
+	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
@@ -28,6 +30,7 @@ type FileUploadQuery struct {
 	predicates []predicate.FileUpload
 	// eager-loading edges.
 	withUser *UserQuery
+	withJobs *JobQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -79,6 +82,28 @@ func (fuq *FileUploadQuery) QueryUser() *UserQuery {
 			sqlgraph.From(fileupload.Table, fileupload.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, fileupload.UserTable, fileupload.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(fuq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryJobs chains the current query on the "jobs" edge.
+func (fuq *FileUploadQuery) QueryJobs() *JobQuery {
+	query := &JobQuery{config: fuq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := fuq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := fuq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(fileupload.Table, fileupload.FieldID, selector),
+			sqlgraph.To(job.Table, job.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, fileupload.JobsTable, fileupload.JobsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(fuq.driver.Dialect(), step)
 		return fromU, nil
@@ -268,6 +293,7 @@ func (fuq *FileUploadQuery) Clone() *FileUploadQuery {
 		order:      append([]OrderFunc{}, fuq.order...),
 		predicates: append([]predicate.FileUpload{}, fuq.predicates...),
 		withUser:   fuq.withUser.Clone(),
+		withJobs:   fuq.withJobs.Clone(),
 		// clone intermediate query.
 		sql:    fuq.sql.Clone(),
 		path:   fuq.path,
@@ -283,6 +309,17 @@ func (fuq *FileUploadQuery) WithUser(opts ...func(*UserQuery)) *FileUploadQuery 
 		opt(query)
 	}
 	fuq.withUser = query
+	return fuq
+}
+
+// WithJobs tells the query-builder to eager-load the nodes that are connected to
+// the "jobs" edge. The optional arguments are used to configure the query builder of the edge.
+func (fuq *FileUploadQuery) WithJobs(opts ...func(*JobQuery)) *FileUploadQuery {
+	query := &JobQuery{config: fuq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	fuq.withJobs = query
 	return fuq
 }
 
@@ -351,8 +388,9 @@ func (fuq *FileUploadQuery) sqlAll(ctx context.Context) ([]*FileUpload, error) {
 	var (
 		nodes       = []*FileUpload{}
 		_spec       = fuq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			fuq.withUser != nil,
+			fuq.withJobs != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -398,6 +436,31 @@ func (fuq *FileUploadQuery) sqlAll(ctx context.Context) ([]*FileUpload, error) {
 			for i := range nodes {
 				nodes[i].Edges.User = n
 			}
+		}
+	}
+
+	if query := fuq.withJobs; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uuid.UUID]*FileUpload)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Jobs = []*Job{}
+		}
+		query.Where(predicate.Job(func(s *sql.Selector) {
+			s.Where(sql.InValues(fileupload.JobsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.AttachmentID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "attachment_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Jobs = append(node.Edges.Jobs, n)
 		}
 	}
 

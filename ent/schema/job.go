@@ -24,6 +24,12 @@ func (Job) Mixin() []ent.Mixin {
 			Ref:        "jobs",
 			ForeignKey: "user_id",
 		},
+		BelongsToMixin{
+			ParentName: "file_uploads",
+			ParentType: FileUpload.Type,
+			Ref:        "jobs",
+			ForeignKey: "attachment_id",
+		},
 	}
 }
 
@@ -32,6 +38,7 @@ func EmploymentTypes() []string {
 		"part_time",
 		"full_time",
 		"contract",
+		"na",
 	}
 }
 
@@ -41,6 +48,7 @@ func JobCategories() []string {
 		"product_design",
 		"sales",
 		"marketing",
+		"na",
 	}
 }
 

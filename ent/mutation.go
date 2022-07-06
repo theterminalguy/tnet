@@ -2799,6 +2799,9 @@ type FileUploadMutation struct {
 	clearedFields map[string]struct{}
 	user          *uuid.UUID
 	cleareduser   bool
+	jobs          map[uuid.UUID]struct{}
+	removedjobs   map[uuid.UUID]struct{}
+	clearedjobs   bool
 	done          bool
 	oldValue      func(context.Context) (*FileUpload, error)
 	predicates    []predicate.FileUpload
@@ -3140,6 +3143,60 @@ func (m *FileUploadMutation) ResetUser() {
 	m.cleareduser = false
 }
 
+// AddJobIDs adds the "jobs" edge to the Job entity by ids.
+func (m *FileUploadMutation) AddJobIDs(ids ...uuid.UUID) {
+	if m.jobs == nil {
+		m.jobs = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.jobs[ids[i]] = struct{}{}
+	}
+}
+
+// ClearJobs clears the "jobs" edge to the Job entity.
+func (m *FileUploadMutation) ClearJobs() {
+	m.clearedjobs = true
+}
+
+// JobsCleared reports if the "jobs" edge to the Job entity was cleared.
+func (m *FileUploadMutation) JobsCleared() bool {
+	return m.clearedjobs
+}
+
+// RemoveJobIDs removes the "jobs" edge to the Job entity by IDs.
+func (m *FileUploadMutation) RemoveJobIDs(ids ...uuid.UUID) {
+	if m.removedjobs == nil {
+		m.removedjobs = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.jobs, ids[i])
+		m.removedjobs[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedJobs returns the removed IDs of the "jobs" edge to the Job entity.
+func (m *FileUploadMutation) RemovedJobsIDs() (ids []uuid.UUID) {
+	for id := range m.removedjobs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// JobsIDs returns the "jobs" edge IDs in the mutation.
+func (m *FileUploadMutation) JobsIDs() (ids []uuid.UUID) {
+	for id := range m.jobs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetJobs resets all changes to the "jobs" edge.
+func (m *FileUploadMutation) ResetJobs() {
+	m.jobs = nil
+	m.clearedjobs = false
+	m.removedjobs = nil
+}
+
 // Where appends a list predicates to the FileUploadMutation builder.
 func (m *FileUploadMutation) Where(ps ...predicate.FileUpload) {
 	m.predicates = append(m.predicates, ps...)
@@ -3341,9 +3398,12 @@ func (m *FileUploadMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *FileUploadMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.user != nil {
 		edges = append(edges, fileupload.EdgeUser)
+	}
+	if m.jobs != nil {
+		edges = append(edges, fileupload.EdgeJobs)
 	}
 	return edges
 }
@@ -3356,13 +3416,22 @@ func (m *FileUploadMutation) AddedIDs(name string) []ent.Value {
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
 		}
+	case fileupload.EdgeJobs:
+		ids := make([]ent.Value, 0, len(m.jobs))
+		for id := range m.jobs {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *FileUploadMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.removedjobs != nil {
+		edges = append(edges, fileupload.EdgeJobs)
+	}
 	return edges
 }
 
@@ -3370,15 +3439,24 @@ func (m *FileUploadMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *FileUploadMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case fileupload.EdgeJobs:
+		ids := make([]ent.Value, 0, len(m.removedjobs))
+		for id := range m.removedjobs {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *FileUploadMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.cleareduser {
 		edges = append(edges, fileupload.EdgeUser)
+	}
+	if m.clearedjobs {
+		edges = append(edges, fileupload.EdgeJobs)
 	}
 	return edges
 }
@@ -3389,6 +3467,8 @@ func (m *FileUploadMutation) EdgeCleared(name string) bool {
 	switch name {
 	case fileupload.EdgeUser:
 		return m.cleareduser
+	case fileupload.EdgeJobs:
+		return m.clearedjobs
 	}
 	return false
 }
@@ -3410,6 +3490,9 @@ func (m *FileUploadMutation) ResetEdge(name string) error {
 	switch name {
 	case fileupload.EdgeUser:
 		m.ResetUser()
+		return nil
+	case fileupload.EdgeJobs:
+		m.ResetJobs()
 		return nil
 	}
 	return fmt.Errorf("unknown FileUpload edge %s", name)
@@ -4156,6 +4239,8 @@ type JobMutation struct {
 	clearedFields       map[string]struct{}
 	user                *uuid.UUID
 	cleareduser         bool
+	file_uploads        *uuid.UUID
+	clearedfile_uploads bool
 	applications        map[uuid.UUID]struct{}
 	removedapplications map[uuid.UUID]struct{}
 	clearedapplications bool
@@ -4436,6 +4521,55 @@ func (m *JobMutation) UserIDCleared() bool {
 func (m *JobMutation) ResetUserID() {
 	m.user = nil
 	delete(m.clearedFields, job.FieldUserID)
+}
+
+// SetAttachmentID sets the "attachment_id" field.
+func (m *JobMutation) SetAttachmentID(u uuid.UUID) {
+	m.file_uploads = &u
+}
+
+// AttachmentID returns the value of the "attachment_id" field in the mutation.
+func (m *JobMutation) AttachmentID() (r uuid.UUID, exists bool) {
+	v := m.file_uploads
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAttachmentID returns the old "attachment_id" field's value of the Job entity.
+// If the Job object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobMutation) OldAttachmentID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAttachmentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAttachmentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAttachmentID: %w", err)
+	}
+	return oldValue.AttachmentID, nil
+}
+
+// ClearAttachmentID clears the value of the "attachment_id" field.
+func (m *JobMutation) ClearAttachmentID() {
+	m.file_uploads = nil
+	m.clearedFields[job.FieldAttachmentID] = struct{}{}
+}
+
+// AttachmentIDCleared returns if the "attachment_id" field was cleared in this mutation.
+func (m *JobMutation) AttachmentIDCleared() bool {
+	_, ok := m.clearedFields[job.FieldAttachmentID]
+	return ok
+}
+
+// ResetAttachmentID resets all changes to the "attachment_id" field.
+func (m *JobMutation) ResetAttachmentID() {
+	m.file_uploads = nil
+	delete(m.clearedFields, job.FieldAttachmentID)
 }
 
 // SetHiring sets the "hiring" field.
@@ -4896,6 +5030,45 @@ func (m *JobMutation) ResetUser() {
 	m.cleareduser = false
 }
 
+// SetFileUploadsID sets the "file_uploads" edge to the FileUpload entity by id.
+func (m *JobMutation) SetFileUploadsID(id uuid.UUID) {
+	m.file_uploads = &id
+}
+
+// ClearFileUploads clears the "file_uploads" edge to the FileUpload entity.
+func (m *JobMutation) ClearFileUploads() {
+	m.clearedfile_uploads = true
+}
+
+// FileUploadsCleared reports if the "file_uploads" edge to the FileUpload entity was cleared.
+func (m *JobMutation) FileUploadsCleared() bool {
+	return m.AttachmentIDCleared() || m.clearedfile_uploads
+}
+
+// FileUploadsID returns the "file_uploads" edge ID in the mutation.
+func (m *JobMutation) FileUploadsID() (id uuid.UUID, exists bool) {
+	if m.file_uploads != nil {
+		return *m.file_uploads, true
+	}
+	return
+}
+
+// FileUploadsIDs returns the "file_uploads" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// FileUploadsID instead. It exists only for internal usage by the builders.
+func (m *JobMutation) FileUploadsIDs() (ids []uuid.UUID) {
+	if id := m.file_uploads; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetFileUploads resets all changes to the "file_uploads" edge.
+func (m *JobMutation) ResetFileUploads() {
+	m.file_uploads = nil
+	m.clearedfile_uploads = false
+}
+
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by ids.
 func (m *JobMutation) AddApplicationIDs(ids ...uuid.UUID) {
 	if m.applications == nil {
@@ -4969,7 +5142,7 @@ func (m *JobMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *JobMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 17)
 	if m.created_at != nil {
 		fields = append(fields, job.FieldCreatedAt)
 	}
@@ -4981,6 +5154,9 @@ func (m *JobMutation) Fields() []string {
 	}
 	if m.user != nil {
 		fields = append(fields, job.FieldUserID)
+	}
+	if m.file_uploads != nil {
+		fields = append(fields, job.FieldAttachmentID)
 	}
 	if m.hiring != nil {
 		fields = append(fields, job.FieldHiring)
@@ -5034,6 +5210,8 @@ func (m *JobMutation) Field(name string) (ent.Value, bool) {
 		return m.DeletedAt()
 	case job.FieldUserID:
 		return m.UserID()
+	case job.FieldAttachmentID:
+		return m.AttachmentID()
 	case job.FieldHiring:
 		return m.Hiring()
 	case job.FieldTitle:
@@ -5075,6 +5253,8 @@ func (m *JobMutation) OldField(ctx context.Context, name string) (ent.Value, err
 		return m.OldDeletedAt(ctx)
 	case job.FieldUserID:
 		return m.OldUserID(ctx)
+	case job.FieldAttachmentID:
+		return m.OldAttachmentID(ctx)
 	case job.FieldHiring:
 		return m.OldHiring(ctx)
 	case job.FieldTitle:
@@ -5135,6 +5315,13 @@ func (m *JobMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUserID(v)
+		return nil
+	case job.FieldAttachmentID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAttachmentID(v)
 		return nil
 	case job.FieldHiring:
 		v, ok := value.(bool)
@@ -5256,6 +5443,9 @@ func (m *JobMutation) ClearedFields() []string {
 	if m.FieldCleared(job.FieldUserID) {
 		fields = append(fields, job.FieldUserID)
 	}
+	if m.FieldCleared(job.FieldAttachmentID) {
+		fields = append(fields, job.FieldAttachmentID)
+	}
 	return fields
 }
 
@@ -5276,6 +5466,9 @@ func (m *JobMutation) ClearField(name string) error {
 	case job.FieldUserID:
 		m.ClearUserID()
 		return nil
+	case job.FieldAttachmentID:
+		m.ClearAttachmentID()
+		return nil
 	}
 	return fmt.Errorf("unknown Job nullable field %s", name)
 }
@@ -5295,6 +5488,9 @@ func (m *JobMutation) ResetField(name string) error {
 		return nil
 	case job.FieldUserID:
 		m.ResetUserID()
+		return nil
+	case job.FieldAttachmentID:
+		m.ResetAttachmentID()
 		return nil
 	case job.FieldHiring:
 		m.ResetHiring()
@@ -5338,9 +5534,12 @@ func (m *JobMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *JobMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.user != nil {
 		edges = append(edges, job.EdgeUser)
+	}
+	if m.file_uploads != nil {
+		edges = append(edges, job.EdgeFileUploads)
 	}
 	if m.applications != nil {
 		edges = append(edges, job.EdgeApplications)
@@ -5356,6 +5555,10 @@ func (m *JobMutation) AddedIDs(name string) []ent.Value {
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
 		}
+	case job.EdgeFileUploads:
+		if id := m.file_uploads; id != nil {
+			return []ent.Value{*id}
+		}
 	case job.EdgeApplications:
 		ids := make([]ent.Value, 0, len(m.applications))
 		for id := range m.applications {
@@ -5368,7 +5571,7 @@ func (m *JobMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *JobMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedapplications != nil {
 		edges = append(edges, job.EdgeApplications)
 	}
@@ -5391,9 +5594,12 @@ func (m *JobMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *JobMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.cleareduser {
 		edges = append(edges, job.EdgeUser)
+	}
+	if m.clearedfile_uploads {
+		edges = append(edges, job.EdgeFileUploads)
 	}
 	if m.clearedapplications {
 		edges = append(edges, job.EdgeApplications)
@@ -5407,6 +5613,8 @@ func (m *JobMutation) EdgeCleared(name string) bool {
 	switch name {
 	case job.EdgeUser:
 		return m.cleareduser
+	case job.EdgeFileUploads:
+		return m.clearedfile_uploads
 	case job.EdgeApplications:
 		return m.clearedapplications
 	}
@@ -5420,6 +5628,9 @@ func (m *JobMutation) ClearEdge(name string) error {
 	case job.EdgeUser:
 		m.ClearUser()
 		return nil
+	case job.EdgeFileUploads:
+		m.ClearFileUploads()
+		return nil
 	}
 	return fmt.Errorf("unknown Job unique edge %s", name)
 }
@@ -5430,6 +5641,9 @@ func (m *JobMutation) ResetEdge(name string) error {
 	switch name {
 	case job.EdgeUser:
 		m.ResetUser()
+		return nil
+	case job.EdgeFileUploads:
+		m.ResetFileUploads()
 		return nil
 	case job.EdgeApplications:
 		m.ResetApplications()

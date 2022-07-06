@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
 
@@ -32,5 +33,7 @@ func (FileUpload) Fields() []ent.Field {
 
 // Edges of the FileUpload.
 func (FileUpload) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.To("jobs", Job.Type),
+	}
 }

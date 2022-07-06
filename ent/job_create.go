@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/user"
@@ -75,6 +76,20 @@ func (jc *JobCreate) SetUserID(u uuid.UUID) *JobCreate {
 func (jc *JobCreate) SetNillableUserID(u *uuid.UUID) *JobCreate {
 	if u != nil {
 		jc.SetUserID(*u)
+	}
+	return jc
+}
+
+// SetAttachmentID sets the "attachment_id" field.
+func (jc *JobCreate) SetAttachmentID(u uuid.UUID) *JobCreate {
+	jc.mutation.SetAttachmentID(u)
+	return jc
+}
+
+// SetNillableAttachmentID sets the "attachment_id" field if the given value is not nil.
+func (jc *JobCreate) SetNillableAttachmentID(u *uuid.UUID) *JobCreate {
+	if u != nil {
+		jc.SetAttachmentID(*u)
 	}
 	return jc
 }
@@ -184,6 +199,25 @@ func (jc *JobCreate) SetNillableID(u *uuid.UUID) *JobCreate {
 // SetUser sets the "user" edge to the User entity.
 func (jc *JobCreate) SetUser(u *User) *JobCreate {
 	return jc.SetUserID(u.ID)
+}
+
+// SetFileUploadsID sets the "file_uploads" edge to the FileUpload entity by ID.
+func (jc *JobCreate) SetFileUploadsID(id uuid.UUID) *JobCreate {
+	jc.mutation.SetFileUploadsID(id)
+	return jc
+}
+
+// SetNillableFileUploadsID sets the "file_uploads" edge to the FileUpload entity by ID if the given value is not nil.
+func (jc *JobCreate) SetNillableFileUploadsID(id *uuid.UUID) *JobCreate {
+	if id != nil {
+		jc = jc.SetFileUploadsID(*id)
+	}
+	return jc
+}
+
+// SetFileUploads sets the "file_uploads" edge to the FileUpload entity.
+func (jc *JobCreate) SetFileUploads(f *FileUpload) *JobCreate {
+	return jc.SetFileUploadsID(f.ID)
 }
 
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
@@ -522,6 +556,26 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.UserID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := jc.mutation.FileUploadsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   job.FileUploadsTable,
+			Columns: []string{job.FileUploadsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: fileupload.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AttachmentID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := jc.mutation.ApplicationsIDs(); len(nodes) > 0 {

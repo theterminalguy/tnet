@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
@@ -27,6 +28,8 @@ type Job struct {
 	DeletedAt *time.Time `json:"deleted_at"`
 	// UserID holds the value of the "user_id" field.
 	UserID uuid.UUID `json:"-"`
+	// AttachmentID holds the value of the "attachment_id" field.
+	AttachmentID uuid.UUID `json:"-"`
 	// Hiring holds the value of the "hiring" field.
 	Hiring bool `json:"hiring"`
 	// Title holds the value of the "title" field.
@@ -60,11 +63,13 @@ type Job struct {
 type JobEdges struct {
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
+	// FileUploads holds the value of the file_uploads edge.
+	FileUploads *FileUpload `json:"file_uploads,omitempty"`
 	// Applications holds the value of the applications edge.
 	Applications []*JobApplication `json:"applications,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -81,10 +86,24 @@ func (e JobEdges) UserOrErr() (*User, error) {
 	return nil, &NotLoadedError{edge: "user"}
 }
 
+// FileUploadsOrErr returns the FileUploads value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e JobEdges) FileUploadsOrErr() (*FileUpload, error) {
+	if e.loadedTypes[1] {
+		if e.FileUploads == nil {
+			// The edge file_uploads was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: fileupload.Label}
+		}
+		return e.FileUploads, nil
+	}
+	return nil, &NotLoadedError{edge: "file_uploads"}
+}
+
 // ApplicationsOrErr returns the Applications value or an error if the edge
 // was not loaded in eager-loading.
 func (e JobEdges) ApplicationsOrErr() ([]*JobApplication, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Applications, nil
 	}
 	return nil, &NotLoadedError{edge: "applications"}
@@ -103,7 +122,7 @@ func (*Job) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullString)
 		case job.FieldCreatedAt, job.FieldUpdatedAt, job.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case job.FieldID, job.FieldUserID:
+		case job.FieldID, job.FieldUserID, job.FieldAttachmentID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Job", columns[i])
@@ -150,6 +169,12 @@ func (j *Job) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value != nil {
 				j.UserID = *value
+			}
+		case job.FieldAttachmentID:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field attachment_id", values[i])
+			} else if value != nil {
+				j.AttachmentID = *value
 			}
 		case job.FieldHiring:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -239,6 +264,11 @@ func (j *Job) QueryUser() *UserQuery {
 	return (&JobClient{config: j.config}).QueryUser(j)
 }
 
+// QueryFileUploads queries the "file_uploads" edge of the Job entity.
+func (j *Job) QueryFileUploads() *FileUploadQuery {
+	return (&JobClient{config: j.config}).QueryFileUploads(j)
+}
+
 // QueryApplications queries the "applications" edge of the Job entity.
 func (j *Job) QueryApplications() *JobApplicationQuery {
 	return (&JobClient{config: j.config}).QueryApplications(j)
@@ -277,6 +307,8 @@ func (j *Job) String() string {
 	}
 	builder.WriteString(", user_id=")
 	builder.WriteString(fmt.Sprintf("%v", j.UserID))
+	builder.WriteString(", attachment_id=")
+	builder.WriteString(fmt.Sprintf("%v", j.AttachmentID))
 	builder.WriteString(", hiring=")
 	builder.WriteString(fmt.Sprintf("%v", j.Hiring))
 	builder.WriteString(", title=")

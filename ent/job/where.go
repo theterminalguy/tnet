@@ -122,6 +122,13 @@ func UserID(v uuid.UUID) predicate.Job {
 	})
 }
 
+// AttachmentID applies equality check predicate on the "attachment_id" field. It's identical to AttachmentIDEQ.
+func AttachmentID(v uuid.UUID) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAttachmentID), v))
+	})
+}
+
 // Hiring applies equality check predicate on the "hiring" field. It's identical to HiringEQ.
 func Hiring(v bool) predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
@@ -472,6 +479,68 @@ func UserIDIsNil() predicate.Job {
 func UserIDNotNil() predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldUserID)))
+	})
+}
+
+// AttachmentIDEQ applies the EQ predicate on the "attachment_id" field.
+func AttachmentIDEQ(v uuid.UUID) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAttachmentID), v))
+	})
+}
+
+// AttachmentIDNEQ applies the NEQ predicate on the "attachment_id" field.
+func AttachmentIDNEQ(v uuid.UUID) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAttachmentID), v))
+	})
+}
+
+// AttachmentIDIn applies the In predicate on the "attachment_id" field.
+func AttachmentIDIn(vs ...uuid.UUID) predicate.Job {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Job(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAttachmentID), v...))
+	})
+}
+
+// AttachmentIDNotIn applies the NotIn predicate on the "attachment_id" field.
+func AttachmentIDNotIn(vs ...uuid.UUID) predicate.Job {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Job(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAttachmentID), v...))
+	})
+}
+
+// AttachmentIDIsNil applies the IsNil predicate on the "attachment_id" field.
+func AttachmentIDIsNil() predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAttachmentID)))
+	})
+}
+
+// AttachmentIDNotNil applies the NotNil predicate on the "attachment_id" field.
+func AttachmentIDNotNil() predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAttachmentID)))
 	})
 }
 
@@ -1270,6 +1339,34 @@ func HasUserWith(preds ...predicate.User) predicate.Job {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(UserInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasFileUploads applies the HasEdge predicate on the "file_uploads" edge.
+func HasFileUploads() predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(FileUploadsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, FileUploadsTable, FileUploadsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasFileUploadsWith applies the HasEdge predicate on the "file_uploads" edge with a given conditions (other predicates).
+func HasFileUploadsWith(preds ...predicate.FileUpload) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(FileUploadsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, FileUploadsTable, FileUploadsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

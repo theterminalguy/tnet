@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/fileupload"
+	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
@@ -87,6 +88,21 @@ func (fuu *FileUploadUpdate) SetUser(u *User) *FileUploadUpdate {
 	return fuu.SetUserID(u.ID)
 }
 
+// AddJobIDs adds the "jobs" edge to the Job entity by IDs.
+func (fuu *FileUploadUpdate) AddJobIDs(ids ...uuid.UUID) *FileUploadUpdate {
+	fuu.mutation.AddJobIDs(ids...)
+	return fuu
+}
+
+// AddJobs adds the "jobs" edges to the Job entity.
+func (fuu *FileUploadUpdate) AddJobs(j ...*Job) *FileUploadUpdate {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return fuu.AddJobIDs(ids...)
+}
+
 // Mutation returns the FileUploadMutation object of the builder.
 func (fuu *FileUploadUpdate) Mutation() *FileUploadMutation {
 	return fuu.mutation
@@ -96,6 +112,27 @@ func (fuu *FileUploadUpdate) Mutation() *FileUploadMutation {
 func (fuu *FileUploadUpdate) ClearUser() *FileUploadUpdate {
 	fuu.mutation.ClearUser()
 	return fuu
+}
+
+// ClearJobs clears all "jobs" edges to the Job entity.
+func (fuu *FileUploadUpdate) ClearJobs() *FileUploadUpdate {
+	fuu.mutation.ClearJobs()
+	return fuu
+}
+
+// RemoveJobIDs removes the "jobs" edge to Job entities by IDs.
+func (fuu *FileUploadUpdate) RemoveJobIDs(ids ...uuid.UUID) *FileUploadUpdate {
+	fuu.mutation.RemoveJobIDs(ids...)
+	return fuu
+}
+
+// RemoveJobs removes "jobs" edges to Job entities.
+func (fuu *FileUploadUpdate) RemoveJobs(j ...*Job) *FileUploadUpdate {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return fuu.RemoveJobIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -241,6 +278,60 @@ func (fuu *FileUploadUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if fuu.mutation.JobsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   fileupload.JobsTable,
+			Columns: []string{fileupload.JobsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: job.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := fuu.mutation.RemovedJobsIDs(); len(nodes) > 0 && !fuu.mutation.JobsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   fileupload.JobsTable,
+			Columns: []string{fileupload.JobsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: job.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := fuu.mutation.JobsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   fileupload.JobsTable,
+			Columns: []string{fileupload.JobsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: job.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, fuu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{fileupload.Label}
@@ -317,6 +408,21 @@ func (fuuo *FileUploadUpdateOne) SetUser(u *User) *FileUploadUpdateOne {
 	return fuuo.SetUserID(u.ID)
 }
 
+// AddJobIDs adds the "jobs" edge to the Job entity by IDs.
+func (fuuo *FileUploadUpdateOne) AddJobIDs(ids ...uuid.UUID) *FileUploadUpdateOne {
+	fuuo.mutation.AddJobIDs(ids...)
+	return fuuo
+}
+
+// AddJobs adds the "jobs" edges to the Job entity.
+func (fuuo *FileUploadUpdateOne) AddJobs(j ...*Job) *FileUploadUpdateOne {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return fuuo.AddJobIDs(ids...)
+}
+
 // Mutation returns the FileUploadMutation object of the builder.
 func (fuuo *FileUploadUpdateOne) Mutation() *FileUploadMutation {
 	return fuuo.mutation
@@ -326,6 +432,27 @@ func (fuuo *FileUploadUpdateOne) Mutation() *FileUploadMutation {
 func (fuuo *FileUploadUpdateOne) ClearUser() *FileUploadUpdateOne {
 	fuuo.mutation.ClearUser()
 	return fuuo
+}
+
+// ClearJobs clears all "jobs" edges to the Job entity.
+func (fuuo *FileUploadUpdateOne) ClearJobs() *FileUploadUpdateOne {
+	fuuo.mutation.ClearJobs()
+	return fuuo
+}
+
+// RemoveJobIDs removes the "jobs" edge to Job entities by IDs.
+func (fuuo *FileUploadUpdateOne) RemoveJobIDs(ids ...uuid.UUID) *FileUploadUpdateOne {
+	fuuo.mutation.RemoveJobIDs(ids...)
+	return fuuo
+}
+
+// RemoveJobs removes "jobs" edges to Job entities.
+func (fuuo *FileUploadUpdateOne) RemoveJobs(j ...*Job) *FileUploadUpdateOne {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return fuuo.RemoveJobIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -487,6 +614,60 @@ func (fuuo *FileUploadUpdateOne) sqlSave(ctx context.Context) (_node *FileUpload
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if fuuo.mutation.JobsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   fileupload.JobsTable,
+			Columns: []string{fileupload.JobsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: job.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := fuuo.mutation.RemovedJobsIDs(); len(nodes) > 0 && !fuuo.mutation.JobsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   fileupload.JobsTable,
+			Columns: []string{fileupload.JobsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: job.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := fuuo.mutation.JobsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   fileupload.JobsTable,
+			Columns: []string{fileupload.JobsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: job.FieldID,
 				},
 			},
 		}

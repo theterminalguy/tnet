@@ -166,6 +166,11 @@ var TimeZoneRepo = map[string][]string{
 		"Central African Time",
 		"GMT-1:00",
 	},
+	"NA": {
+		"NA",
+		"NA",
+		"NA",
+	},
 }
 
 type TimeZoneData struct {

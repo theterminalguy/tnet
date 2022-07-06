@@ -22,6 +22,8 @@ const (
 	FieldDeletedAt = "deleted_at"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
+	// FieldAttachmentID holds the string denoting the attachment_id field in the database.
+	FieldAttachmentID = "attachment_id"
 	// FieldHiring holds the string denoting the hiring field in the database.
 	FieldHiring = "hiring"
 	// FieldTitle holds the string denoting the title field in the database.
@@ -48,6 +50,8 @@ const (
 	FieldTimezone = "timezone"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
+	// EdgeFileUploads holds the string denoting the file_uploads edge name in mutations.
+	EdgeFileUploads = "file_uploads"
 	// EdgeApplications holds the string denoting the applications edge name in mutations.
 	EdgeApplications = "applications"
 	// Table holds the table name of the job in the database.
@@ -59,6 +63,13 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
+	// FileUploadsTable is the table that holds the file_uploads relation/edge.
+	FileUploadsTable = "jobs"
+	// FileUploadsInverseTable is the table name for the FileUpload entity.
+	// It exists in this package in order to avoid circular dependency with the "fileupload" package.
+	FileUploadsInverseTable = "file_uploads"
+	// FileUploadsColumn is the table column denoting the file_uploads relation/edge.
+	FileUploadsColumn = "attachment_id"
 	// ApplicationsTable is the table that holds the applications relation/edge.
 	ApplicationsTable = "job_applications"
 	// ApplicationsInverseTable is the table name for the JobApplication entity.
@@ -75,6 +86,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldDeletedAt,
 	FieldUserID,
+	FieldAttachmentID,
 	FieldHiring,
 	FieldTitle,
 	FieldSlug,
@@ -122,6 +134,7 @@ const (
 	EmploymentPartTime Employment = "part_time"
 	EmploymentFullTime Employment = "full_time"
 	EmploymentContract Employment = "contract"
+	EmploymentNa       Employment = "na"
 )
 
 func (e Employment) String() string {
@@ -131,7 +144,7 @@ func (e Employment) String() string {
 // EmploymentValidator is a validator for the "employment" field enum values. It is called by the builders before save.
 func EmploymentValidator(e Employment) error {
 	switch e {
-	case EmploymentPartTime, EmploymentFullTime, EmploymentContract:
+	case EmploymentPartTime, EmploymentFullTime, EmploymentContract, EmploymentNa:
 		return nil
 	default:
 		return fmt.Errorf("job: invalid enum value for employment field: %q", e)
@@ -147,6 +160,7 @@ const (
 	CategoryProductDesign Category = "product_design"
 	CategorySales         Category = "sales"
 	CategoryMarketing     Category = "marketing"
+	CategoryNa            Category = "na"
 )
 
 func (c Category) String() string {
@@ -156,7 +170,7 @@ func (c Category) String() string {
 // CategoryValidator is a validator for the "category" field enum values. It is called by the builders before save.
 func CategoryValidator(c Category) error {
 	switch c {
-	case CategoryEngineering, CategoryProductDesign, CategorySales, CategoryMarketing:
+	case CategoryEngineering, CategoryProductDesign, CategorySales, CategoryMarketing, CategoryNa:
 		return nil
 	default:
 		return fmt.Errorf("job: invalid enum value for category field: %q", c)

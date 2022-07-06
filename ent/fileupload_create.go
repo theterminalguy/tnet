@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/fileupload"
+	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -101,6 +102,21 @@ func (fuc *FileUploadCreate) SetNillableID(u *uuid.UUID) *FileUploadCreate {
 // SetUser sets the "user" edge to the User entity.
 func (fuc *FileUploadCreate) SetUser(u *User) *FileUploadCreate {
 	return fuc.SetUserID(u.ID)
+}
+
+// AddJobIDs adds the "jobs" edge to the Job entity by IDs.
+func (fuc *FileUploadCreate) AddJobIDs(ids ...uuid.UUID) *FileUploadCreate {
+	fuc.mutation.AddJobIDs(ids...)
+	return fuc
+}
+
+// AddJobs adds the "jobs" edges to the Job entity.
+func (fuc *FileUploadCreate) AddJobs(j ...*Job) *FileUploadCreate {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return fuc.AddJobIDs(ids...)
 }
 
 // Mutation returns the FileUploadMutation object of the builder.
@@ -285,6 +301,25 @@ func (fuc *FileUploadCreate) createSpec() (*FileUpload, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.UserID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := fuc.mutation.JobsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   fileupload.JobsTable,
+			Columns: []string{fileupload.JobsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: job.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

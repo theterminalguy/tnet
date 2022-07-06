@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/predicate"
@@ -30,6 +31,7 @@ type JobQuery struct {
 	predicates []predicate.Job
 	// eager-loading edges.
 	withUser         *UserQuery
+	withFileUploads  *FileUploadQuery
 	withApplications *JobApplicationQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -82,6 +84,28 @@ func (jq *JobQuery) QueryUser() *UserQuery {
 			sqlgraph.From(job.Table, job.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, job.UserTable, job.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(jq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryFileUploads chains the current query on the "file_uploads" edge.
+func (jq *JobQuery) QueryFileUploads() *FileUploadQuery {
+	query := &FileUploadQuery{config: jq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := jq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := jq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(job.Table, job.FieldID, selector),
+			sqlgraph.To(fileupload.Table, fileupload.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, job.FileUploadsTable, job.FileUploadsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(jq.driver.Dialect(), step)
 		return fromU, nil
@@ -293,6 +317,7 @@ func (jq *JobQuery) Clone() *JobQuery {
 		order:            append([]OrderFunc{}, jq.order...),
 		predicates:       append([]predicate.Job{}, jq.predicates...),
 		withUser:         jq.withUser.Clone(),
+		withFileUploads:  jq.withFileUploads.Clone(),
 		withApplications: jq.withApplications.Clone(),
 		// clone intermediate query.
 		sql:    jq.sql.Clone(),
@@ -309,6 +334,17 @@ func (jq *JobQuery) WithUser(opts ...func(*UserQuery)) *JobQuery {
 		opt(query)
 	}
 	jq.withUser = query
+	return jq
+}
+
+// WithFileUploads tells the query-builder to eager-load the nodes that are connected to
+// the "file_uploads" edge. The optional arguments are used to configure the query builder of the edge.
+func (jq *JobQuery) WithFileUploads(opts ...func(*FileUploadQuery)) *JobQuery {
+	query := &FileUploadQuery{config: jq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	jq.withFileUploads = query
 	return jq
 }
 
@@ -388,8 +424,9 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 	var (
 		nodes       = []*Job{}
 		_spec       = jq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			jq.withUser != nil,
+			jq.withFileUploads != nil,
 			jq.withApplications != nil,
 		}
 	)
@@ -435,6 +472,32 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 			}
 			for i := range nodes {
 				nodes[i].Edges.User = n
+			}
+		}
+	}
+
+	if query := jq.withFileUploads; query != nil {
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*Job)
+		for i := range nodes {
+			fk := nodes[i].AttachmentID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(fileupload.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "attachment_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.FileUploads = n
 			}
 		}
 	}

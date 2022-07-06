@@ -37,9 +37,11 @@ type FileUpload struct {
 type FileUploadEdges struct {
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
+	// Jobs holds the value of the jobs edge.
+	Jobs []*Job `json:"jobs,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -54,6 +56,15 @@ func (e FileUploadEdges) UserOrErr() (*User, error) {
 		return e.User, nil
 	}
 	return nil, &NotLoadedError{edge: "user"}
+}
+
+// JobsOrErr returns the Jobs value or an error if the edge
+// was not loaded in eager-loading.
+func (e FileUploadEdges) JobsOrErr() ([]*Job, error) {
+	if e.loadedTypes[1] {
+		return e.Jobs, nil
+	}
+	return nil, &NotLoadedError{edge: "jobs"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -127,6 +138,11 @@ func (fu *FileUpload) assignValues(columns []string, values []interface{}) error
 // QueryUser queries the "user" edge of the FileUpload entity.
 func (fu *FileUpload) QueryUser() *UserQuery {
 	return (&FileUploadClient{config: fu.config}).QueryUser(fu)
+}
+
+// QueryJobs queries the "jobs" edge of the FileUpload entity.
+func (fu *FileUpload) QueryJobs() *JobQuery {
+	return (&FileUploadClient{config: fu.config}).QueryJobs(fu)
 }
 
 // Update returns a builder for updating this FileUpload.
