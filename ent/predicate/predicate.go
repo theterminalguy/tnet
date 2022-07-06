@@ -39,6 +39,9 @@ type Oauth2Token func(*sql.Selector)
 // Partner is the predicate function for partner builders.
 type Partner func(*sql.Selector)
 
+// Payment is the predicate function for payment builders.
+type Payment func(*sql.Selector)
+
 // PortfolioLink is the predicate function for portfoliolink builders.
 type PortfolioLink func(*sql.Selector)
 

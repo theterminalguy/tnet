@@ -34,6 +34,8 @@ type Tx struct {
 	Oauth2Token *Oauth2TokenClient
 	// Partner is the client for interacting with the Partner builders.
 	Partner *PartnerClient
+	// Payment is the client for interacting with the Payment builders.
+	Payment *PaymentClient
 	// PortfolioLink is the client for interacting with the PortfolioLink builders.
 	PortfolioLink *PortfolioLinkClient
 	// SearchLog is the client for interacting with the SearchLog builders.
@@ -200,6 +202,7 @@ func (tx *Tx) init() {
 	tx.Oauth2Client = NewOauth2ClientClient(tx.config)
 	tx.Oauth2Token = NewOauth2TokenClient(tx.config)
 	tx.Partner = NewPartnerClient(tx.config)
+	tx.Payment = NewPaymentClient(tx.config)
 	tx.PortfolioLink = NewPortfolioLinkClient(tx.config)
 	tx.SearchLog = NewSearchLogClient(tx.config)
 	tx.Session = NewSessionClient(tx.config)

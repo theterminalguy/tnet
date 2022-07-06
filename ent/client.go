@@ -21,6 +21,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/oauth2token"
 	"github.com/10hourlabs/tentn/ent/partner"
+	"github.com/10hourlabs/tentn/ent/payment"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/searchlog"
 	"github.com/10hourlabs/tentn/ent/session"
@@ -64,6 +65,8 @@ type Client struct {
 	Oauth2Token *Oauth2TokenClient
 	// Partner is the client for interacting with the Partner builders.
 	Partner *PartnerClient
+	// Payment is the client for interacting with the Payment builders.
+	Payment *PaymentClient
 	// PortfolioLink is the client for interacting with the PortfolioLink builders.
 	PortfolioLink *PortfolioLinkClient
 	// SearchLog is the client for interacting with the SearchLog builders.
@@ -108,6 +111,7 @@ func (c *Client) init() {
 	c.Oauth2Client = NewOauth2ClientClient(c.config)
 	c.Oauth2Token = NewOauth2TokenClient(c.config)
 	c.Partner = NewPartnerClient(c.config)
+	c.Payment = NewPaymentClient(c.config)
 	c.PortfolioLink = NewPortfolioLinkClient(c.config)
 	c.SearchLog = NewSearchLogClient(c.config)
 	c.Session = NewSessionClient(c.config)
@@ -162,6 +166,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Oauth2Client:     NewOauth2ClientClient(cfg),
 		Oauth2Token:      NewOauth2TokenClient(cfg),
 		Partner:          NewPartnerClient(cfg),
+		Payment:          NewPaymentClient(cfg),
 		PortfolioLink:    NewPortfolioLinkClient(cfg),
 		SearchLog:        NewSearchLogClient(cfg),
 		Session:          NewSessionClient(cfg),
@@ -202,6 +207,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Oauth2Client:     NewOauth2ClientClient(cfg),
 		Oauth2Token:      NewOauth2TokenClient(cfg),
 		Partner:          NewPartnerClient(cfg),
+		Payment:          NewPaymentClient(cfg),
 		PortfolioLink:    NewPortfolioLinkClient(cfg),
 		SearchLog:        NewSearchLogClient(cfg),
 		Session:          NewSessionClient(cfg),
@@ -252,6 +258,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Oauth2Client.Use(hooks...)
 	c.Oauth2Token.Use(hooks...)
 	c.Partner.Use(hooks...)
+	c.Payment.Use(hooks...)
 	c.PortfolioLink.Use(hooks...)
 	c.SearchLog.Use(hooks...)
 	c.Session.Use(hooks...)
@@ -1510,6 +1517,112 @@ func (c *PartnerClient) Hooks() []Hook {
 	return c.hooks.Partner
 }
 
+// PaymentClient is a client for the Payment schema.
+type PaymentClient struct {
+	config
+}
+
+// NewPaymentClient returns a client for the Payment from the given config.
+func NewPaymentClient(c config) *PaymentClient {
+	return &PaymentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `payment.Hooks(f(g(h())))`.
+func (c *PaymentClient) Use(hooks ...Hook) {
+	c.hooks.Payment = append(c.hooks.Payment, hooks...)
+}
+
+// Create returns a create builder for Payment.
+func (c *PaymentClient) Create() *PaymentCreate {
+	mutation := newPaymentMutation(c.config, OpCreate)
+	return &PaymentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Payment entities.
+func (c *PaymentClient) CreateBulk(builders ...*PaymentCreate) *PaymentCreateBulk {
+	return &PaymentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Payment.
+func (c *PaymentClient) Update() *PaymentUpdate {
+	mutation := newPaymentMutation(c.config, OpUpdate)
+	return &PaymentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PaymentClient) UpdateOne(pa *Payment) *PaymentUpdateOne {
+	mutation := newPaymentMutation(c.config, OpUpdateOne, withPayment(pa))
+	return &PaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PaymentClient) UpdateOneID(id uuid.UUID) *PaymentUpdateOne {
+	mutation := newPaymentMutation(c.config, OpUpdateOne, withPaymentID(id))
+	return &PaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Payment.
+func (c *PaymentClient) Delete() *PaymentDelete {
+	mutation := newPaymentMutation(c.config, OpDelete)
+	return &PaymentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *PaymentClient) DeleteOne(pa *Payment) *PaymentDeleteOne {
+	return c.DeleteOneID(pa.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *PaymentClient) DeleteOneID(id uuid.UUID) *PaymentDeleteOne {
+	builder := c.Delete().Where(payment.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PaymentDeleteOne{builder}
+}
+
+// Query returns a query builder for Payment.
+func (c *PaymentClient) Query() *PaymentQuery {
+	return &PaymentQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Payment entity by its id.
+func (c *PaymentClient) Get(ctx context.Context, id uuid.UUID) (*Payment, error) {
+	return c.Query().Where(payment.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PaymentClient) GetX(ctx context.Context, id uuid.UUID) *Payment {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a Payment.
+func (c *PaymentClient) QueryUser(pa *Payment) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pa.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(payment.Table, payment.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, payment.UserTable, payment.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(pa.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PaymentClient) Hooks() []Hook {
+	return c.hooks.Payment
+}
+
 // PortfolioLinkClient is a client for the PortfolioLink schema.
 type PortfolioLinkClient struct {
 	config
@@ -2676,6 +2789,22 @@ func (c *UserClient) QuerySessions(u *User) *SessionQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(session.Table, session.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.SessionsTable, user.SessionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPayments queries the payments edge of a User.
+func (c *UserClient) QueryPayments(u *User) *PaymentQuery {
+	query := &PaymentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(payment.Table, payment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.PaymentsTable, user.PaymentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
