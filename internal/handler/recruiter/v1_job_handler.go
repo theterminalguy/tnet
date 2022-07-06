@@ -139,19 +139,6 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	}
 
 	return c.String(http.StatusOK, "Document received")
-
-	// currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
-	// params := new(repo.JobParams)
-	// if err := c.Bind(params); err != nil {
-	// 	return err
-	// }
-
-	// params.UserID = currentRecruiter.GetID()
-	// j, err := h.JobRepository.Create(*params)
-	// if err != nil {
-	// 	return c.String(http.StatusBadRequest, err.Error())
-	// }
-	// return c.JSON(http.StatusCreated, j)
 }
 
 // UpdateByID updates a job by its id. The job must be created by the recruiter

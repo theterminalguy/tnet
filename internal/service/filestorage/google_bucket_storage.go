@@ -13,13 +13,6 @@ import (
 	"google.golang.org/api/option"
 )
 
-// type GoogleClientUploader struct {
-// 	cl         *storage.Client
-// 	projectID  string
-// 	bucketName string
-// 	FileInfo   GoogleBucketFileInfo
-// }
-
 type GoogleBucketFileInfo struct {
 	file_path  string
 	cl         *storage.Client
