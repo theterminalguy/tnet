@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
-	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/oauth2token"
@@ -249,21 +248,6 @@ func (uc *UserCreate) AddSessions(s ...*Session) *UserCreate {
 		ids[i] = s[i].ID
 	}
 	return uc.AddSessionIDs(ids...)
-}
-
-// AddFileUploadIDs adds the "file_uploads" edge to the FileUpload entity by IDs.
-func (uc *UserCreate) AddFileUploadIDs(ids ...uuid.UUID) *UserCreate {
-	uc.mutation.AddFileUploadIDs(ids...)
-	return uc
-}
-
-// AddFileUploads adds the "file_uploads" edges to the FileUpload entity.
-func (uc *UserCreate) AddFileUploads(f ...*FileUpload) *UserCreate {
-	ids := make([]uuid.UUID, len(f))
-	for i := range f {
-		ids[i] = f[i].ID
-	}
-	return uc.AddFileUploadIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -638,25 +622,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: session.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := uc.mutation.FileUploadsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.FileUploadsTable,
-			Columns: []string{user.FileUploadsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: fileupload.FieldID,
 				},
 			},
 		}

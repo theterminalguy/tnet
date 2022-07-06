@@ -14,7 +14,6 @@ import (
 	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -57,35 +56,10 @@ func (fuu *FileUploadUpdate) ClearDeletedAt() *FileUploadUpdate {
 	return fuu
 }
 
-// SetUserID sets the "user_id" field.
-func (fuu *FileUploadUpdate) SetUserID(u uuid.UUID) *FileUploadUpdate {
-	fuu.mutation.SetUserID(u)
-	return fuu
-}
-
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (fuu *FileUploadUpdate) SetNillableUserID(u *uuid.UUID) *FileUploadUpdate {
-	if u != nil {
-		fuu.SetUserID(*u)
-	}
-	return fuu
-}
-
-// ClearUserID clears the value of the "user_id" field.
-func (fuu *FileUploadUpdate) ClearUserID() *FileUploadUpdate {
-	fuu.mutation.ClearUserID()
-	return fuu
-}
-
 // SetFileURL sets the "file_url" field.
 func (fuu *FileUploadUpdate) SetFileURL(s string) *FileUploadUpdate {
 	fuu.mutation.SetFileURL(s)
 	return fuu
-}
-
-// SetUser sets the "user" edge to the User entity.
-func (fuu *FileUploadUpdate) SetUser(u *User) *FileUploadUpdate {
-	return fuu.SetUserID(u.ID)
 }
 
 // AddJobIDs adds the "jobs" edge to the Job entity by IDs.
@@ -106,12 +80,6 @@ func (fuu *FileUploadUpdate) AddJobs(j ...*Job) *FileUploadUpdate {
 // Mutation returns the FileUploadMutation object of the builder.
 func (fuu *FileUploadUpdate) Mutation() *FileUploadMutation {
 	return fuu.mutation
-}
-
-// ClearUser clears the "user" edge to the User entity.
-func (fuu *FileUploadUpdate) ClearUser() *FileUploadUpdate {
-	fuu.mutation.ClearUser()
-	return fuu
 }
 
 // ClearJobs clears all "jobs" edges to the Job entity.
@@ -243,41 +211,6 @@ func (fuu *FileUploadUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: fileupload.FieldFileURL,
 		})
 	}
-	if fuu.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   fileupload.UserTable,
-			Columns: []string{fileupload.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: user.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := fuu.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   fileupload.UserTable,
-			Columns: []string{fileupload.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: user.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if fuu.mutation.JobsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -377,35 +310,10 @@ func (fuuo *FileUploadUpdateOne) ClearDeletedAt() *FileUploadUpdateOne {
 	return fuuo
 }
 
-// SetUserID sets the "user_id" field.
-func (fuuo *FileUploadUpdateOne) SetUserID(u uuid.UUID) *FileUploadUpdateOne {
-	fuuo.mutation.SetUserID(u)
-	return fuuo
-}
-
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (fuuo *FileUploadUpdateOne) SetNillableUserID(u *uuid.UUID) *FileUploadUpdateOne {
-	if u != nil {
-		fuuo.SetUserID(*u)
-	}
-	return fuuo
-}
-
-// ClearUserID clears the value of the "user_id" field.
-func (fuuo *FileUploadUpdateOne) ClearUserID() *FileUploadUpdateOne {
-	fuuo.mutation.ClearUserID()
-	return fuuo
-}
-
 // SetFileURL sets the "file_url" field.
 func (fuuo *FileUploadUpdateOne) SetFileURL(s string) *FileUploadUpdateOne {
 	fuuo.mutation.SetFileURL(s)
 	return fuuo
-}
-
-// SetUser sets the "user" edge to the User entity.
-func (fuuo *FileUploadUpdateOne) SetUser(u *User) *FileUploadUpdateOne {
-	return fuuo.SetUserID(u.ID)
 }
 
 // AddJobIDs adds the "jobs" edge to the Job entity by IDs.
@@ -426,12 +334,6 @@ func (fuuo *FileUploadUpdateOne) AddJobs(j ...*Job) *FileUploadUpdateOne {
 // Mutation returns the FileUploadMutation object of the builder.
 func (fuuo *FileUploadUpdateOne) Mutation() *FileUploadMutation {
 	return fuuo.mutation
-}
-
-// ClearUser clears the "user" edge to the User entity.
-func (fuuo *FileUploadUpdateOne) ClearUser() *FileUploadUpdateOne {
-	fuuo.mutation.ClearUser()
-	return fuuo
 }
 
 // ClearJobs clears all "jobs" edges to the Job entity.
@@ -586,41 +488,6 @@ func (fuuo *FileUploadUpdateOne) sqlSave(ctx context.Context) (_node *FileUpload
 			Value:  value,
 			Column: fileupload.FieldFileURL,
 		})
-	}
-	if fuuo.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   fileupload.UserTable,
-			Columns: []string{fileupload.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: user.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := fuuo.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   fileupload.UserTable,
-			Columns: []string{fileupload.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: user.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if fuuo.mutation.JobsCleared() {
 		edge := &sqlgraph.EdgeSpec{

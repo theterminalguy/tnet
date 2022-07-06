@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
-	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/oauth2token"
@@ -44,7 +43,6 @@ type UserQuery struct {
 	withEmailTemplates    *EmailTemplateQuery
 	withTalentCollections *TalentCollectionQuery
 	withSessions          *SessionQuery
-	withFileUploads       *FileUploadQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -257,28 +255,6 @@ func (uq *UserQuery) QuerySessions() *SessionQuery {
 	return query
 }
 
-// QueryFileUploads chains the current query on the "file_uploads" edge.
-func (uq *UserQuery) QueryFileUploads() *FileUploadQuery {
-	query := &FileUploadQuery{config: uq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := uq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := uq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(fileupload.Table, fileupload.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.FileUploadsTable, user.FileUploadsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // First returns the first User entity from the query.
 // Returns a *NotFoundError when no User was found.
 func (uq *UserQuery) First(ctx context.Context) (*User, error) {
@@ -468,7 +444,6 @@ func (uq *UserQuery) Clone() *UserQuery {
 		withEmailTemplates:    uq.withEmailTemplates.Clone(),
 		withTalentCollections: uq.withTalentCollections.Clone(),
 		withSessions:          uq.withSessions.Clone(),
-		withFileUploads:       uq.withFileUploads.Clone(),
 		// clone intermediate query.
 		sql:    uq.sql.Clone(),
 		path:   uq.path,
@@ -564,17 +539,6 @@ func (uq *UserQuery) WithSessions(opts ...func(*SessionQuery)) *UserQuery {
 	return uq
 }
 
-// WithFileUploads tells the query-builder to eager-load the nodes that are connected to
-// the "file_uploads" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithFileUploads(opts ...func(*FileUploadQuery)) *UserQuery {
-	query := &FileUploadQuery{config: uq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	uq.withFileUploads = query
-	return uq
-}
-
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -640,7 +604,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [9]bool{
+		loadedTypes = [8]bool{
 			uq.withOauth2Clients != nil,
 			uq.withOauth2Tokens != nil,
 			uq.withTalents != nil,
@@ -649,7 +613,6 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 			uq.withEmailTemplates != nil,
 			uq.withTalentCollections != nil,
 			uq.withSessions != nil,
-			uq.withFileUploads != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -869,31 +832,6 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Sessions = append(node.Edges.Sessions, n)
-		}
-	}
-
-	if query := uq.withFileUploads; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[uuid.UUID]*User)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.FileUploads = []*FileUpload{}
-		}
-		query.Where(predicate.FileUpload(func(s *sql.Selector) {
-			s.Where(sql.InValues(user.FileUploadsColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.UserID
-			node, ok := nodeids[fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, fk, n.ID)
-			}
-			node.Edges.FileUploads = append(node.Edges.FileUploads, n)
 		}
 	}
 

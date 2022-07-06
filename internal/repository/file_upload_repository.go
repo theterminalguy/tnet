@@ -8,7 +8,6 @@ import (
 type FileUploadRepository struct{}
 
 type FileUploadParams struct {
-	UserID  uuid.UUID
 	FileUrl string `json:"file_url" validate:"required"`
 }
 
@@ -33,7 +32,6 @@ func (*FileUploadRepository) Create(request FileUploadParams) (*ent.FileUpload, 
 	result, err := dBConn.FileUpload.
 		Create().
 		SetFileURL(request.FileUrl).
-		SetUserID(request.UserID).
 		Save(dBContext)
 
 	if err != nil {

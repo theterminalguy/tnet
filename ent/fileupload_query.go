@@ -15,7 +15,6 @@ import (
 	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -29,7 +28,6 @@ type FileUploadQuery struct {
 	fields     []string
 	predicates []predicate.FileUpload
 	// eager-loading edges.
-	withUser *UserQuery
 	withJobs *JobQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -65,28 +63,6 @@ func (fuq *FileUploadQuery) Unique(unique bool) *FileUploadQuery {
 func (fuq *FileUploadQuery) Order(o ...OrderFunc) *FileUploadQuery {
 	fuq.order = append(fuq.order, o...)
 	return fuq
-}
-
-// QueryUser chains the current query on the "user" edge.
-func (fuq *FileUploadQuery) QueryUser() *UserQuery {
-	query := &UserQuery{config: fuq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := fuq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := fuq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(fileupload.Table, fileupload.FieldID, selector),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, fileupload.UserTable, fileupload.UserColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(fuq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // QueryJobs chains the current query on the "jobs" edge.
@@ -292,24 +268,12 @@ func (fuq *FileUploadQuery) Clone() *FileUploadQuery {
 		offset:     fuq.offset,
 		order:      append([]OrderFunc{}, fuq.order...),
 		predicates: append([]predicate.FileUpload{}, fuq.predicates...),
-		withUser:   fuq.withUser.Clone(),
 		withJobs:   fuq.withJobs.Clone(),
 		// clone intermediate query.
 		sql:    fuq.sql.Clone(),
 		path:   fuq.path,
 		unique: fuq.unique,
 	}
-}
-
-// WithUser tells the query-builder to eager-load the nodes that are connected to
-// the "user" edge. The optional arguments are used to configure the query builder of the edge.
-func (fuq *FileUploadQuery) WithUser(opts ...func(*UserQuery)) *FileUploadQuery {
-	query := &UserQuery{config: fuq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	fuq.withUser = query
-	return fuq
 }
 
 // WithJobs tells the query-builder to eager-load the nodes that are connected to
@@ -388,8 +352,7 @@ func (fuq *FileUploadQuery) sqlAll(ctx context.Context) ([]*FileUpload, error) {
 	var (
 		nodes       = []*FileUpload{}
 		_spec       = fuq.querySpec()
-		loadedTypes = [2]bool{
-			fuq.withUser != nil,
+		loadedTypes = [1]bool{
 			fuq.withJobs != nil,
 		}
 	)
@@ -411,32 +374,6 @@ func (fuq *FileUploadQuery) sqlAll(ctx context.Context) ([]*FileUpload, error) {
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
-	}
-
-	if query := fuq.withUser; query != nil {
-		ids := make([]uuid.UUID, 0, len(nodes))
-		nodeids := make(map[uuid.UUID][]*FileUpload)
-		for i := range nodes {
-			fk := nodes[i].UserID
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
-		}
-		query.Where(user.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "user_id" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.User = n
-			}
-		}
 	}
 
 	if query := fuq.withJobs; query != nil {

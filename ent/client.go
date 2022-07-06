@@ -667,22 +667,6 @@ func (c *FileUploadClient) GetX(ctx context.Context, id uuid.UUID) *FileUpload {
 	return obj
 }
 
-// QueryUser queries the user edge of a FileUpload.
-func (c *FileUploadClient) QueryUser(fu *FileUpload) *UserQuery {
-	query := &UserQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := fu.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(fileupload.Table, fileupload.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, fileupload.UserTable, fileupload.UserColumn),
-		)
-		fromV = sqlgraph.Neighbors(fu.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryJobs queries the jobs edge of a FileUpload.
 func (c *FileUploadClient) QueryJobs(fu *FileUpload) *JobQuery {
 	query := &JobQuery{config: c.config}
@@ -2692,22 +2676,6 @@ func (c *UserClient) QuerySessions(u *User) *SessionQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(session.Table, session.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.SessionsTable, user.SessionsColumn),
-		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryFileUploads queries the file_uploads edge of a User.
-func (c *UserClient) QueryFileUploads(u *User) *FileUploadQuery {
-	query := &FileUploadQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(fileupload.Table, fileupload.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.FileUploadsTable, user.FileUploadsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

@@ -59,11 +59,9 @@ type UserEdges struct {
 	TalentCollections []*TalentCollection `json:"talent_collections,omitempty"`
 	// Sessions holds the value of the sessions edge.
 	Sessions []*Session `json:"sessions,omitempty"`
-	// FileUploads holds the value of the file_uploads edge.
-	FileUploads []*FileUpload `json:"file_uploads,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [9]bool
+	loadedTypes [8]bool
 }
 
 // Oauth2ClientsOrErr returns the Oauth2Clients value or an error if the edge
@@ -136,15 +134,6 @@ func (e UserEdges) SessionsOrErr() ([]*Session, error) {
 		return e.Sessions, nil
 	}
 	return nil, &NotLoadedError{edge: "sessions"}
-}
-
-// FileUploadsOrErr returns the FileUploads value or an error if the edge
-// was not loaded in eager-loading.
-func (e UserEdges) FileUploadsOrErr() ([]*FileUpload, error) {
-	if e.loadedTypes[8] {
-		return e.FileUploads, nil
-	}
-	return nil, &NotLoadedError{edge: "file_uploads"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -279,11 +268,6 @@ func (u *User) QueryTalentCollections() *TalentCollectionQuery {
 // QuerySessions queries the "sessions" edge of the User entity.
 func (u *User) QuerySessions() *SessionQuery {
 	return (&UserClient{config: u.config}).QuerySessions(u)
-}
-
-// QueryFileUploads queries the "file_uploads" edge of the User entity.
-func (u *User) QueryFileUploads() *FileUploadQuery {
-	return (&UserClient{config: u.config}).QueryFileUploads(u)
 }
 
 // Update returns a builder for updating this User.

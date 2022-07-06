@@ -120,7 +120,6 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	//create a file upload
 	fileuploadParams := new(repo.FileUploadParams)
 	fileuploadParams.FileUrl = path
-	fileuploadParams.UserID = recruiterID
 
 	f, err := h.FileUploadRepository.Create(*fileuploadParams)
 

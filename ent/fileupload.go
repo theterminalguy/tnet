@@ -9,7 +9,6 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/10hourlabs/tentn/ent/fileupload"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -24,8 +23,6 @@ type FileUpload struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
-	// UserID holds the value of the "user_id" field.
-	UserID uuid.UUID `json:"-"`
 	// FileURL holds the value of the "file_url" field.
 	FileURL string `json:"file_url,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -35,33 +32,17 @@ type FileUpload struct {
 
 // FileUploadEdges holds the relations/edges for other nodes in the graph.
 type FileUploadEdges struct {
-	// User holds the value of the user edge.
-	User *User `json:"user,omitempty"`
 	// Jobs holds the value of the jobs edge.
 	Jobs []*Job `json:"jobs,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
-}
-
-// UserOrErr returns the User value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e FileUploadEdges) UserOrErr() (*User, error) {
-	if e.loadedTypes[0] {
-		if e.User == nil {
-			// The edge user was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: user.Label}
-		}
-		return e.User, nil
-	}
-	return nil, &NotLoadedError{edge: "user"}
+	loadedTypes [1]bool
 }
 
 // JobsOrErr returns the Jobs value or an error if the edge
 // was not loaded in eager-loading.
 func (e FileUploadEdges) JobsOrErr() ([]*Job, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[0] {
 		return e.Jobs, nil
 	}
 	return nil, &NotLoadedError{edge: "jobs"}
@@ -76,7 +57,7 @@ func (*FileUpload) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullString)
 		case fileupload.FieldCreatedAt, fileupload.FieldUpdatedAt, fileupload.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case fileupload.FieldID, fileupload.FieldUserID:
+		case fileupload.FieldID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type FileUpload", columns[i])
@@ -118,12 +99,6 @@ func (fu *FileUpload) assignValues(columns []string, values []interface{}) error
 				fu.DeletedAt = new(time.Time)
 				*fu.DeletedAt = value.Time
 			}
-		case fileupload.FieldUserID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field user_id", values[i])
-			} else if value != nil {
-				fu.UserID = *value
-			}
 		case fileupload.FieldFileURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field file_url", values[i])
@@ -133,11 +108,6 @@ func (fu *FileUpload) assignValues(columns []string, values []interface{}) error
 		}
 	}
 	return nil
-}
-
-// QueryUser queries the "user" edge of the FileUpload entity.
-func (fu *FileUpload) QueryUser() *UserQuery {
-	return (&FileUploadClient{config: fu.config}).QueryUser(fu)
 }
 
 // QueryJobs queries the "jobs" edge of the FileUpload entity.
@@ -176,8 +146,6 @@ func (fu *FileUpload) String() string {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	builder.WriteString(", user_id=")
-	builder.WriteString(fmt.Sprintf("%v", fu.UserID))
 	builder.WriteString(", file_url=")
 	builder.WriteString(fu.FileURL)
 	builder.WriteByte(')')

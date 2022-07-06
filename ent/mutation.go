@@ -2797,8 +2797,6 @@ type FileUploadMutation struct {
 	deleted_at    *time.Time
 	file_url      *string
 	clearedFields map[string]struct{}
-	user          *uuid.UUID
-	cleareduser   bool
 	jobs          map[uuid.UUID]struct{}
 	removedjobs   map[uuid.UUID]struct{}
 	clearedjobs   bool
@@ -3032,55 +3030,6 @@ func (m *FileUploadMutation) ResetDeletedAt() {
 	delete(m.clearedFields, fileupload.FieldDeletedAt)
 }
 
-// SetUserID sets the "user_id" field.
-func (m *FileUploadMutation) SetUserID(u uuid.UUID) {
-	m.user = &u
-}
-
-// UserID returns the value of the "user_id" field in the mutation.
-func (m *FileUploadMutation) UserID() (r uuid.UUID, exists bool) {
-	v := m.user
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUserID returns the old "user_id" field's value of the FileUpload entity.
-// If the FileUpload object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *FileUploadMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUserID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
-	}
-	return oldValue.UserID, nil
-}
-
-// ClearUserID clears the value of the "user_id" field.
-func (m *FileUploadMutation) ClearUserID() {
-	m.user = nil
-	m.clearedFields[fileupload.FieldUserID] = struct{}{}
-}
-
-// UserIDCleared returns if the "user_id" field was cleared in this mutation.
-func (m *FileUploadMutation) UserIDCleared() bool {
-	_, ok := m.clearedFields[fileupload.FieldUserID]
-	return ok
-}
-
-// ResetUserID resets all changes to the "user_id" field.
-func (m *FileUploadMutation) ResetUserID() {
-	m.user = nil
-	delete(m.clearedFields, fileupload.FieldUserID)
-}
-
 // SetFileURL sets the "file_url" field.
 func (m *FileUploadMutation) SetFileURL(s string) {
 	m.file_url = &s
@@ -3115,32 +3064,6 @@ func (m *FileUploadMutation) OldFileURL(ctx context.Context) (v string, err erro
 // ResetFileURL resets all changes to the "file_url" field.
 func (m *FileUploadMutation) ResetFileURL() {
 	m.file_url = nil
-}
-
-// ClearUser clears the "user" edge to the User entity.
-func (m *FileUploadMutation) ClearUser() {
-	m.cleareduser = true
-}
-
-// UserCleared reports if the "user" edge to the User entity was cleared.
-func (m *FileUploadMutation) UserCleared() bool {
-	return m.UserIDCleared() || m.cleareduser
-}
-
-// UserIDs returns the "user" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// UserID instead. It exists only for internal usage by the builders.
-func (m *FileUploadMutation) UserIDs() (ids []uuid.UUID) {
-	if id := m.user; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetUser resets all changes to the "user" edge.
-func (m *FileUploadMutation) ResetUser() {
-	m.user = nil
-	m.cleareduser = false
 }
 
 // AddJobIDs adds the "jobs" edge to the Job entity by ids.
@@ -3216,7 +3139,7 @@ func (m *FileUploadMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FileUploadMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 4)
 	if m.created_at != nil {
 		fields = append(fields, fileupload.FieldCreatedAt)
 	}
@@ -3225,9 +3148,6 @@ func (m *FileUploadMutation) Fields() []string {
 	}
 	if m.deleted_at != nil {
 		fields = append(fields, fileupload.FieldDeletedAt)
-	}
-	if m.user != nil {
-		fields = append(fields, fileupload.FieldUserID)
 	}
 	if m.file_url != nil {
 		fields = append(fields, fileupload.FieldFileURL)
@@ -3246,8 +3166,6 @@ func (m *FileUploadMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case fileupload.FieldDeletedAt:
 		return m.DeletedAt()
-	case fileupload.FieldUserID:
-		return m.UserID()
 	case fileupload.FieldFileURL:
 		return m.FileURL()
 	}
@@ -3265,8 +3183,6 @@ func (m *FileUploadMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldUpdatedAt(ctx)
 	case fileupload.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case fileupload.FieldUserID:
-		return m.OldUserID(ctx)
 	case fileupload.FieldFileURL:
 		return m.OldFileURL(ctx)
 	}
@@ -3298,13 +3214,6 @@ func (m *FileUploadMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
-		return nil
-	case fileupload.FieldUserID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUserID(v)
 		return nil
 	case fileupload.FieldFileURL:
 		v, ok := value.(string)
@@ -3346,9 +3255,6 @@ func (m *FileUploadMutation) ClearedFields() []string {
 	if m.FieldCleared(fileupload.FieldDeletedAt) {
 		fields = append(fields, fileupload.FieldDeletedAt)
 	}
-	if m.FieldCleared(fileupload.FieldUserID) {
-		fields = append(fields, fileupload.FieldUserID)
-	}
 	return fields
 }
 
@@ -3365,9 +3271,6 @@ func (m *FileUploadMutation) ClearField(name string) error {
 	switch name {
 	case fileupload.FieldDeletedAt:
 		m.ClearDeletedAt()
-		return nil
-	case fileupload.FieldUserID:
-		m.ClearUserID()
 		return nil
 	}
 	return fmt.Errorf("unknown FileUpload nullable field %s", name)
@@ -3386,9 +3289,6 @@ func (m *FileUploadMutation) ResetField(name string) error {
 	case fileupload.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case fileupload.FieldUserID:
-		m.ResetUserID()
-		return nil
 	case fileupload.FieldFileURL:
 		m.ResetFileURL()
 		return nil
@@ -3398,10 +3298,7 @@ func (m *FileUploadMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *FileUploadMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.user != nil {
-		edges = append(edges, fileupload.EdgeUser)
-	}
+	edges := make([]string, 0, 1)
 	if m.jobs != nil {
 		edges = append(edges, fileupload.EdgeJobs)
 	}
@@ -3412,10 +3309,6 @@ func (m *FileUploadMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *FileUploadMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case fileupload.EdgeUser:
-		if id := m.user; id != nil {
-			return []ent.Value{*id}
-		}
 	case fileupload.EdgeJobs:
 		ids := make([]ent.Value, 0, len(m.jobs))
 		for id := range m.jobs {
@@ -3428,7 +3321,7 @@ func (m *FileUploadMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *FileUploadMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 1)
 	if m.removedjobs != nil {
 		edges = append(edges, fileupload.EdgeJobs)
 	}
@@ -3451,10 +3344,7 @@ func (m *FileUploadMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *FileUploadMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.cleareduser {
-		edges = append(edges, fileupload.EdgeUser)
-	}
+	edges := make([]string, 0, 1)
 	if m.clearedjobs {
 		edges = append(edges, fileupload.EdgeJobs)
 	}
@@ -3465,8 +3355,6 @@ func (m *FileUploadMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *FileUploadMutation) EdgeCleared(name string) bool {
 	switch name {
-	case fileupload.EdgeUser:
-		return m.cleareduser
 	case fileupload.EdgeJobs:
 		return m.clearedjobs
 	}
@@ -3477,9 +3365,6 @@ func (m *FileUploadMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *FileUploadMutation) ClearEdge(name string) error {
 	switch name {
-	case fileupload.EdgeUser:
-		m.ClearUser()
-		return nil
 	}
 	return fmt.Errorf("unknown FileUpload unique edge %s", name)
 }
@@ -3488,9 +3373,6 @@ func (m *FileUploadMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *FileUploadMutation) ResetEdge(name string) error {
 	switch name {
-	case fileupload.EdgeUser:
-		m.ResetUser()
-		return nil
 	case fileupload.EdgeJobs:
 		m.ResetJobs()
 		return nil
@@ -19523,9 +19405,6 @@ type UserMutation struct {
 	sessions                  map[uuid.UUID]struct{}
 	removedsessions           map[uuid.UUID]struct{}
 	clearedsessions           bool
-	file_uploads              map[uuid.UUID]struct{}
-	removedfile_uploads       map[uuid.UUID]struct{}
-	clearedfile_uploads       bool
 	done                      bool
 	oldValue                  func(context.Context) (*User, error)
 	predicates                []predicate.User
@@ -20404,60 +20283,6 @@ func (m *UserMutation) ResetSessions() {
 	m.removedsessions = nil
 }
 
-// AddFileUploadIDs adds the "file_uploads" edge to the FileUpload entity by ids.
-func (m *UserMutation) AddFileUploadIDs(ids ...uuid.UUID) {
-	if m.file_uploads == nil {
-		m.file_uploads = make(map[uuid.UUID]struct{})
-	}
-	for i := range ids {
-		m.file_uploads[ids[i]] = struct{}{}
-	}
-}
-
-// ClearFileUploads clears the "file_uploads" edge to the FileUpload entity.
-func (m *UserMutation) ClearFileUploads() {
-	m.clearedfile_uploads = true
-}
-
-// FileUploadsCleared reports if the "file_uploads" edge to the FileUpload entity was cleared.
-func (m *UserMutation) FileUploadsCleared() bool {
-	return m.clearedfile_uploads
-}
-
-// RemoveFileUploadIDs removes the "file_uploads" edge to the FileUpload entity by IDs.
-func (m *UserMutation) RemoveFileUploadIDs(ids ...uuid.UUID) {
-	if m.removedfile_uploads == nil {
-		m.removedfile_uploads = make(map[uuid.UUID]struct{})
-	}
-	for i := range ids {
-		delete(m.file_uploads, ids[i])
-		m.removedfile_uploads[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedFileUploads returns the removed IDs of the "file_uploads" edge to the FileUpload entity.
-func (m *UserMutation) RemovedFileUploadsIDs() (ids []uuid.UUID) {
-	for id := range m.removedfile_uploads {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// FileUploadsIDs returns the "file_uploads" edge IDs in the mutation.
-func (m *UserMutation) FileUploadsIDs() (ids []uuid.UUID) {
-	for id := range m.file_uploads {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetFileUploads resets all changes to the "file_uploads" edge.
-func (m *UserMutation) ResetFileUploads() {
-	m.file_uploads = nil
-	m.clearedfile_uploads = false
-	m.removedfile_uploads = nil
-}
-
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -20721,7 +20546,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 8)
 	if m.oauth2_clients != nil {
 		edges = append(edges, user.EdgeOauth2Clients)
 	}
@@ -20745,9 +20570,6 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.sessions != nil {
 		edges = append(edges, user.EdgeSessions)
-	}
-	if m.file_uploads != nil {
-		edges = append(edges, user.EdgeFileUploads)
 	}
 	return edges
 }
@@ -20804,19 +20626,13 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case user.EdgeFileUploads:
-		ids := make([]ent.Value, 0, len(m.file_uploads))
-		for id := range m.file_uploads {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 8)
 	if m.removedoauth2_clients != nil {
 		edges = append(edges, user.EdgeOauth2Clients)
 	}
@@ -20840,9 +20656,6 @@ func (m *UserMutation) RemovedEdges() []string {
 	}
 	if m.removedsessions != nil {
 		edges = append(edges, user.EdgeSessions)
-	}
-	if m.removedfile_uploads != nil {
-		edges = append(edges, user.EdgeFileUploads)
 	}
 	return edges
 }
@@ -20899,19 +20712,13 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case user.EdgeFileUploads:
-		ids := make([]ent.Value, 0, len(m.removedfile_uploads))
-		for id := range m.removedfile_uploads {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 8)
 	if m.clearedoauth2_clients {
 		edges = append(edges, user.EdgeOauth2Clients)
 	}
@@ -20936,9 +20743,6 @@ func (m *UserMutation) ClearedEdges() []string {
 	if m.clearedsessions {
 		edges = append(edges, user.EdgeSessions)
 	}
-	if m.clearedfile_uploads {
-		edges = append(edges, user.EdgeFileUploads)
-	}
 	return edges
 }
 
@@ -20962,8 +20766,6 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedtalent_collections
 	case user.EdgeSessions:
 		return m.clearedsessions
-	case user.EdgeFileUploads:
-		return m.clearedfile_uploads
 	}
 	return false
 }
@@ -21003,9 +20805,6 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeSessions:
 		m.ResetSessions()
-		return nil
-	case user.EdgeFileUploads:
-		m.ResetFileUploads()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

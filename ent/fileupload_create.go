@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -65,20 +64,6 @@ func (fuc *FileUploadCreate) SetNillableDeletedAt(t *time.Time) *FileUploadCreat
 	return fuc
 }
 
-// SetUserID sets the "user_id" field.
-func (fuc *FileUploadCreate) SetUserID(u uuid.UUID) *FileUploadCreate {
-	fuc.mutation.SetUserID(u)
-	return fuc
-}
-
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (fuc *FileUploadCreate) SetNillableUserID(u *uuid.UUID) *FileUploadCreate {
-	if u != nil {
-		fuc.SetUserID(*u)
-	}
-	return fuc
-}
-
 // SetFileURL sets the "file_url" field.
 func (fuc *FileUploadCreate) SetFileURL(s string) *FileUploadCreate {
 	fuc.mutation.SetFileURL(s)
@@ -97,11 +82,6 @@ func (fuc *FileUploadCreate) SetNillableID(u *uuid.UUID) *FileUploadCreate {
 		fuc.SetID(*u)
 	}
 	return fuc
-}
-
-// SetUser sets the "user" edge to the User entity.
-func (fuc *FileUploadCreate) SetUser(u *User) *FileUploadCreate {
-	return fuc.SetUserID(u.ID)
 }
 
 // AddJobIDs adds the "jobs" edge to the Job entity by IDs.
@@ -282,26 +262,6 @@ func (fuc *FileUploadCreate) createSpec() (*FileUpload, *sqlgraph.CreateSpec) {
 			Column: fileupload.FieldFileURL,
 		})
 		_node.FileURL = value
-	}
-	if nodes := fuc.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   fileupload.UserTable,
-			Columns: []string{fileupload.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: user.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.UserID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := fuc.mutation.JobsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

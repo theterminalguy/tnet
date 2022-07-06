@@ -15,12 +15,6 @@ func (FileUpload) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		UUIDMixin{},
 		TimeStampMixin{},
-		BelongsToMixin{
-			ParentName: "user",
-			ParentType: User.Type,
-			Ref:        "file_uploads",
-			ForeignKey: "user_id",
-		},
 	}
 }
 
