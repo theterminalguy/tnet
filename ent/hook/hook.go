@@ -100,19 +100,6 @@ func (f JobApplicationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 	return f(ctx, mv)
 }
 
-// The JobCollectionFunc type is an adapter to allow the use of ordinary
-// function as JobCollection mutator.
-type JobCollectionFunc func(context.Context, *ent.JobCollectionMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f JobCollectionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.JobCollectionMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.JobCollectionMutation", m)
-	}
-	return f(ctx, mv)
-}
-
 // The MissionFunc type is an adapter to allow the use of ordinary
 // function as Mission mutator.
 type MissionFunc func(context.Context, *ent.MissionMutation) (ent.Value, error)

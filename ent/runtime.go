@@ -12,7 +12,6 @@ import (
 	"github.com/10hourlabs/tentn/ent/internaltask"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
-	"github.com/10hourlabs/tentn/ent/jobcollection"
 	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/oauth2token"
@@ -190,27 +189,6 @@ func init() {
 	jobapplicationDescID := jobapplicationMixinFields0[0].Descriptor()
 	// jobapplication.DefaultID holds the default value on creation for the id field.
 	jobapplication.DefaultID = jobapplicationDescID.Default.(func() uuid.UUID)
-	jobcollectionMixin := schema.JobCollection{}.Mixin()
-	jobcollectionMixinFields0 := jobcollectionMixin[0].Fields()
-	_ = jobcollectionMixinFields0
-	jobcollectionMixinFields1 := jobcollectionMixin[1].Fields()
-	_ = jobcollectionMixinFields1
-	jobcollectionFields := schema.JobCollection{}.Fields()
-	_ = jobcollectionFields
-	// jobcollectionDescCreatedAt is the schema descriptor for created_at field.
-	jobcollectionDescCreatedAt := jobcollectionMixinFields1[0].Descriptor()
-	// jobcollection.DefaultCreatedAt holds the default value on creation for the created_at field.
-	jobcollection.DefaultCreatedAt = jobcollectionDescCreatedAt.Default.(func() time.Time)
-	// jobcollectionDescUpdatedAt is the schema descriptor for updated_at field.
-	jobcollectionDescUpdatedAt := jobcollectionMixinFields1[1].Descriptor()
-	// jobcollection.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	jobcollection.DefaultUpdatedAt = jobcollectionDescUpdatedAt.Default.(func() time.Time)
-	// jobcollection.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	jobcollection.UpdateDefaultUpdatedAt = jobcollectionDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// jobcollectionDescID is the schema descriptor for id field.
-	jobcollectionDescID := jobcollectionMixinFields0[0].Descriptor()
-	// jobcollection.DefaultID holds the default value on creation for the id field.
-	jobcollection.DefaultID = jobcollectionDescID.Default.(func() uuid.UUID)
 	missionMixin := schema.Mission{}.Mixin()
 	missionMixinFields0 := missionMixin[0].Fields()
 	_ = missionMixinFields0

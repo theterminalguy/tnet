@@ -61,11 +61,9 @@ type UserEdges struct {
 	Sessions []*Session `json:"sessions,omitempty"`
 	// FileUploads holds the value of the file_uploads edge.
 	FileUploads []*FileUpload `json:"file_uploads,omitempty"`
-	// JobCollections holds the value of the job_collections edge.
-	JobCollections []*JobCollection `json:"job_collections,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [10]bool
+	loadedTypes [9]bool
 }
 
 // Oauth2ClientsOrErr returns the Oauth2Clients value or an error if the edge
@@ -147,15 +145,6 @@ func (e UserEdges) FileUploadsOrErr() ([]*FileUpload, error) {
 		return e.FileUploads, nil
 	}
 	return nil, &NotLoadedError{edge: "file_uploads"}
-}
-
-// JobCollectionsOrErr returns the JobCollections value or an error if the edge
-// was not loaded in eager-loading.
-func (e UserEdges) JobCollectionsOrErr() ([]*JobCollection, error) {
-	if e.loadedTypes[9] {
-		return e.JobCollections, nil
-	}
-	return nil, &NotLoadedError{edge: "job_collections"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -295,11 +284,6 @@ func (u *User) QuerySessions() *SessionQuery {
 // QueryFileUploads queries the "file_uploads" edge of the User entity.
 func (u *User) QueryFileUploads() *FileUploadQuery {
 	return (&UserClient{config: u.config}).QueryFileUploads(u)
-}
-
-// QueryJobCollections queries the "job_collections" edge of the User entity.
-func (u *User) QueryJobCollections() *JobCollectionQuery {
-	return (&UserClient{config: u.config}).QueryJobCollections(u)
 }
 
 // Update returns a builder for updating this User.

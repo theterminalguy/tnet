@@ -51,8 +51,6 @@ const (
 	EdgeSessions = "sessions"
 	// EdgeFileUploads holds the string denoting the file_uploads edge name in mutations.
 	EdgeFileUploads = "file_uploads"
-	// EdgeJobCollections holds the string denoting the job_collections edge name in mutations.
-	EdgeJobCollections = "job_collections"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// Oauth2ClientsTable is the table that holds the oauth2_clients relation/edge.
@@ -118,13 +116,6 @@ const (
 	FileUploadsInverseTable = "file_uploads"
 	// FileUploadsColumn is the table column denoting the file_uploads relation/edge.
 	FileUploadsColumn = "user_id"
-	// JobCollectionsTable is the table that holds the job_collections relation/edge.
-	JobCollectionsTable = "job_collections"
-	// JobCollectionsInverseTable is the table name for the JobCollection entity.
-	// It exists in this package in order to avoid circular dependency with the "jobcollection" package.
-	JobCollectionsInverseTable = "job_collections"
-	// JobCollectionsColumn is the table column denoting the job_collections relation/edge.
-	JobCollectionsColumn = "recruiter_id"
 )
 
 // Columns holds all SQL columns for user fields.

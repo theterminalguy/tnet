@@ -27,9 +27,6 @@ type Job func(*sql.Selector)
 // JobApplication is the predicate function for jobapplication builders.
 type JobApplication func(*sql.Selector)
 
-// JobCollection is the predicate function for jobcollection builders.
-type JobCollection func(*sql.Selector)
-
 // Mission is the predicate function for mission builders.
 type Mission func(*sql.Selector)
 

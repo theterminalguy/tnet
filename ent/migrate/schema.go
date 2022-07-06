@@ -268,37 +268,6 @@ var (
 			},
 		},
 	}
-	// JobCollectionsColumns holds the columns for the "job_collections" table.
-	JobCollectionsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "approved"}},
-		{Name: "title", Type: field.TypeString},
-		{Name: "recruiter_id", Type: field.TypeUUID, Nullable: true},
-	}
-	// JobCollectionsTable holds the schema information for the "job_collections" table.
-	JobCollectionsTable = &schema.Table{
-		Name:       "job_collections",
-		Columns:    JobCollectionsColumns,
-		PrimaryKey: []*schema.Column{JobCollectionsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "job_collections_users_job_collections",
-				Columns:    []*schema.Column{JobCollectionsColumns[6]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "jobcollection_recruiter_id",
-				Unique:  false,
-				Columns: []*schema.Column{JobCollectionsColumns[6]},
-			},
-		},
-	}
 	// MissionsColumns holds the columns for the "missions" table.
 	MissionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -847,7 +816,6 @@ var (
 		InternalTasksTable,
 		JobsTable,
 		JobApplicationsTable,
-		JobCollectionsTable,
 		MissionsTable,
 		Oauth2clientsTable,
 		Oauth2tokensTable,
@@ -873,7 +841,6 @@ func init() {
 	JobsTable.ForeignKeys[0].RefTable = UsersTable
 	JobApplicationsTable.ForeignKeys[0].RefTable = JobsTable
 	JobApplicationsTable.ForeignKeys[1].RefTable = TalentsTable
-	JobCollectionsTable.ForeignKeys[0].RefTable = UsersTable
 	MissionsTable.ForeignKeys[0].RefTable = PartnersTable
 	MissionsTable.ForeignKeys[1].RefTable = TalentsTable
 	Oauth2clientsTable.ForeignKeys[0].RefTable = UsersTable

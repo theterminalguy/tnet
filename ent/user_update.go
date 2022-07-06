@@ -14,7 +14,6 @@ import (
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/jobcollection"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/oauth2token"
 	"github.com/10hourlabs/tentn/ent/predicate"
@@ -245,21 +244,6 @@ func (uu *UserUpdate) AddFileUploads(f ...*FileUpload) *UserUpdate {
 	return uu.AddFileUploadIDs(ids...)
 }
 
-// AddJobCollectionIDs adds the "job_collections" edge to the JobCollection entity by IDs.
-func (uu *UserUpdate) AddJobCollectionIDs(ids ...uuid.UUID) *UserUpdate {
-	uu.mutation.AddJobCollectionIDs(ids...)
-	return uu
-}
-
-// AddJobCollections adds the "job_collections" edges to the JobCollection entity.
-func (uu *UserUpdate) AddJobCollections(j ...*JobCollection) *UserUpdate {
-	ids := make([]uuid.UUID, len(j))
-	for i := range j {
-		ids[i] = j[i].ID
-	}
-	return uu.AddJobCollectionIDs(ids...)
-}
-
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -452,27 +436,6 @@ func (uu *UserUpdate) RemoveFileUploads(f ...*FileUpload) *UserUpdate {
 		ids[i] = f[i].ID
 	}
 	return uu.RemoveFileUploadIDs(ids...)
-}
-
-// ClearJobCollections clears all "job_collections" edges to the JobCollection entity.
-func (uu *UserUpdate) ClearJobCollections() *UserUpdate {
-	uu.mutation.ClearJobCollections()
-	return uu
-}
-
-// RemoveJobCollectionIDs removes the "job_collections" edge to JobCollection entities by IDs.
-func (uu *UserUpdate) RemoveJobCollectionIDs(ids ...uuid.UUID) *UserUpdate {
-	uu.mutation.RemoveJobCollectionIDs(ids...)
-	return uu
-}
-
-// RemoveJobCollections removes "job_collections" edges to JobCollection entities.
-func (uu *UserUpdate) RemoveJobCollections(j ...*JobCollection) *UserUpdate {
-	ids := make([]uuid.UUID, len(j))
-	for i := range j {
-		ids[i] = j[i].ID
-	}
-	return uu.RemoveJobCollectionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1120,60 +1083,6 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if uu.mutation.JobCollectionsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.JobCollectionsTable,
-			Columns: []string{user.JobCollectionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: jobcollection.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uu.mutation.RemovedJobCollectionsIDs(); len(nodes) > 0 && !uu.mutation.JobCollectionsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.JobCollectionsTable,
-			Columns: []string{user.JobCollectionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: jobcollection.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uu.mutation.JobCollectionsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.JobCollectionsTable,
-			Columns: []string{user.JobCollectionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: jobcollection.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -1398,21 +1307,6 @@ func (uuo *UserUpdateOne) AddFileUploads(f ...*FileUpload) *UserUpdateOne {
 	return uuo.AddFileUploadIDs(ids...)
 }
 
-// AddJobCollectionIDs adds the "job_collections" edge to the JobCollection entity by IDs.
-func (uuo *UserUpdateOne) AddJobCollectionIDs(ids ...uuid.UUID) *UserUpdateOne {
-	uuo.mutation.AddJobCollectionIDs(ids...)
-	return uuo
-}
-
-// AddJobCollections adds the "job_collections" edges to the JobCollection entity.
-func (uuo *UserUpdateOne) AddJobCollections(j ...*JobCollection) *UserUpdateOne {
-	ids := make([]uuid.UUID, len(j))
-	for i := range j {
-		ids[i] = j[i].ID
-	}
-	return uuo.AddJobCollectionIDs(ids...)
-}
-
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -1605,27 +1499,6 @@ func (uuo *UserUpdateOne) RemoveFileUploads(f ...*FileUpload) *UserUpdateOne {
 		ids[i] = f[i].ID
 	}
 	return uuo.RemoveFileUploadIDs(ids...)
-}
-
-// ClearJobCollections clears all "job_collections" edges to the JobCollection entity.
-func (uuo *UserUpdateOne) ClearJobCollections() *UserUpdateOne {
-	uuo.mutation.ClearJobCollections()
-	return uuo
-}
-
-// RemoveJobCollectionIDs removes the "job_collections" edge to JobCollection entities by IDs.
-func (uuo *UserUpdateOne) RemoveJobCollectionIDs(ids ...uuid.UUID) *UserUpdateOne {
-	uuo.mutation.RemoveJobCollectionIDs(ids...)
-	return uuo
-}
-
-// RemoveJobCollections removes "job_collections" edges to JobCollection entities.
-func (uuo *UserUpdateOne) RemoveJobCollections(j ...*JobCollection) *UserUpdateOne {
-	ids := make([]uuid.UUID, len(j))
-	for i := range j {
-		ids[i] = j[i].ID
-	}
-	return uuo.RemoveJobCollectionIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -2289,60 +2162,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: fileupload.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if uuo.mutation.JobCollectionsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.JobCollectionsTable,
-			Columns: []string{user.JobCollectionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: jobcollection.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uuo.mutation.RemovedJobCollectionsIDs(); len(nodes) > 0 && !uuo.mutation.JobCollectionsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.JobCollectionsTable,
-			Columns: []string{user.JobCollectionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: jobcollection.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uuo.mutation.JobCollectionsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.JobCollectionsTable,
-			Columns: []string{user.JobCollectionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: jobcollection.FieldID,
 				},
 			},
 		}
