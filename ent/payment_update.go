@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/payment"
 	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -56,23 +56,23 @@ func (pu *PaymentUpdate) ClearDeletedAt() *PaymentUpdate {
 	return pu
 }
 
-// SetUserID sets the "user_id" field.
-func (pu *PaymentUpdate) SetUserID(u uuid.UUID) *PaymentUpdate {
-	pu.mutation.SetUserID(u)
+// SetJobID sets the "job_id" field.
+func (pu *PaymentUpdate) SetJobID(u uuid.UUID) *PaymentUpdate {
+	pu.mutation.SetJobID(u)
 	return pu
 }
 
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (pu *PaymentUpdate) SetNillableUserID(u *uuid.UUID) *PaymentUpdate {
+// SetNillableJobID sets the "job_id" field if the given value is not nil.
+func (pu *PaymentUpdate) SetNillableJobID(u *uuid.UUID) *PaymentUpdate {
 	if u != nil {
-		pu.SetUserID(*u)
+		pu.SetJobID(*u)
 	}
 	return pu
 }
 
-// ClearUserID clears the value of the "user_id" field.
-func (pu *PaymentUpdate) ClearUserID() *PaymentUpdate {
-	pu.mutation.ClearUserID()
+// ClearJobID clears the value of the "job_id" field.
+func (pu *PaymentUpdate) ClearJobID() *PaymentUpdate {
+	pu.mutation.ClearJobID()
 	return pu
 }
 
@@ -97,12 +97,6 @@ func (pu *PaymentUpdate) AddAmount(f float64) *PaymentUpdate {
 	return pu
 }
 
-// ClearAmount clears the value of the "amount" field.
-func (pu *PaymentUpdate) ClearAmount() *PaymentUpdate {
-	pu.mutation.ClearAmount()
-	return pu
-}
-
 // SetStatus sets the "status" field.
 func (pu *PaymentUpdate) SetStatus(pa payment.Status) *PaymentUpdate {
 	pu.mutation.SetStatus(pa)
@@ -120,12 +114,6 @@ func (pu *PaymentUpdate) SetNillableRefID(s *string) *PaymentUpdate {
 	if s != nil {
 		pu.SetRefID(*s)
 	}
-	return pu
-}
-
-// ClearRefID clears the value of the "ref_id" field.
-func (pu *PaymentUpdate) ClearRefID() *PaymentUpdate {
-	pu.mutation.ClearRefID()
 	return pu
 }
 
@@ -149,49 +137,9 @@ func (pu *PaymentUpdate) SetNillableCurrency(s *string) *PaymentUpdate {
 	return pu
 }
 
-// ClearCurrency clears the value of the "currency" field.
-func (pu *PaymentUpdate) ClearCurrency() *PaymentUpdate {
-	pu.mutation.ClearCurrency()
-	return pu
-}
-
 // SetPaymentLink sets the "payment_link" field.
 func (pu *PaymentUpdate) SetPaymentLink(s string) *PaymentUpdate {
 	pu.mutation.SetPaymentLink(s)
-	return pu
-}
-
-// SetNillablePaymentLink sets the "payment_link" field if the given value is not nil.
-func (pu *PaymentUpdate) SetNillablePaymentLink(s *string) *PaymentUpdate {
-	if s != nil {
-		pu.SetPaymentLink(*s)
-	}
-	return pu
-}
-
-// ClearPaymentLink clears the value of the "payment_link" field.
-func (pu *PaymentUpdate) ClearPaymentLink() *PaymentUpdate {
-	pu.mutation.ClearPaymentLink()
-	return pu
-}
-
-// SetJobCollectionID sets the "job_collection_id" field.
-func (pu *PaymentUpdate) SetJobCollectionID(u uuid.UUID) *PaymentUpdate {
-	pu.mutation.SetJobCollectionID(u)
-	return pu
-}
-
-// SetNillableJobCollectionID sets the "job_collection_id" field if the given value is not nil.
-func (pu *PaymentUpdate) SetNillableJobCollectionID(u *uuid.UUID) *PaymentUpdate {
-	if u != nil {
-		pu.SetJobCollectionID(*u)
-	}
-	return pu
-}
-
-// ClearJobCollectionID clears the value of the "job_collection_id" field.
-func (pu *PaymentUpdate) ClearJobCollectionID() *PaymentUpdate {
-	pu.mutation.ClearJobCollectionID()
 	return pu
 }
 
@@ -207,9 +155,9 @@ func (pu *PaymentUpdate) ClearPayload() *PaymentUpdate {
 	return pu
 }
 
-// SetUser sets the "user" edge to the User entity.
-func (pu *PaymentUpdate) SetUser(u *User) *PaymentUpdate {
-	return pu.SetUserID(u.ID)
+// SetJob sets the "job" edge to the Job entity.
+func (pu *PaymentUpdate) SetJob(j *Job) *PaymentUpdate {
+	return pu.SetJobID(j.ID)
 }
 
 // Mutation returns the PaymentMutation object of the builder.
@@ -217,9 +165,9 @@ func (pu *PaymentUpdate) Mutation() *PaymentMutation {
 	return pu.mutation
 }
 
-// ClearUser clears the "user" edge to the User entity.
-func (pu *PaymentUpdate) ClearUser() *PaymentUpdate {
-	pu.mutation.ClearUser()
+// ClearJob clears the "job" edge to the Job entity.
+func (pu *PaymentUpdate) ClearJob() *PaymentUpdate {
+	pu.mutation.ClearJob()
 	return pu
 }
 
@@ -354,12 +302,6 @@ func (pu *PaymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: payment.FieldAmount,
 		})
 	}
-	if pu.mutation.AmountCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: payment.FieldAmount,
-		})
-	}
 	if value, ok := pu.mutation.Status(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
@@ -371,12 +313,6 @@ func (pu *PaymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: payment.FieldRefID,
-		})
-	}
-	if pu.mutation.RefIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
 			Column: payment.FieldRefID,
 		})
 	}
@@ -394,36 +330,11 @@ func (pu *PaymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: payment.FieldCurrency,
 		})
 	}
-	if pu.mutation.CurrencyCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: payment.FieldCurrency,
-		})
-	}
 	if value, ok := pu.mutation.PaymentLink(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
 			Column: payment.FieldPaymentLink,
-		})
-	}
-	if pu.mutation.PaymentLinkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: payment.FieldPaymentLink,
-		})
-	}
-	if value, ok := pu.mutation.JobCollectionID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: payment.FieldJobCollectionID,
-		})
-	}
-	if pu.mutation.JobCollectionIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Column: payment.FieldJobCollectionID,
 		})
 	}
 	if value, ok := pu.mutation.Payload(); ok {
@@ -439,33 +350,33 @@ func (pu *PaymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: payment.FieldPayload,
 		})
 	}
-	if pu.mutation.UserCleared() {
+	if pu.mutation.JobCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   payment.UserTable,
-			Columns: []string{payment.UserColumn},
+			Table:   payment.JobTable,
+			Columns: []string{payment.JobColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: user.FieldID,
+					Column: job.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pu.mutation.UserIDs(); len(nodes) > 0 {
+	if nodes := pu.mutation.JobIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   payment.UserTable,
-			Columns: []string{payment.UserColumn},
+			Table:   payment.JobTable,
+			Columns: []string{payment.JobColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: user.FieldID,
+					Column: job.FieldID,
 				},
 			},
 		}
@@ -519,23 +430,23 @@ func (puo *PaymentUpdateOne) ClearDeletedAt() *PaymentUpdateOne {
 	return puo
 }
 
-// SetUserID sets the "user_id" field.
-func (puo *PaymentUpdateOne) SetUserID(u uuid.UUID) *PaymentUpdateOne {
-	puo.mutation.SetUserID(u)
+// SetJobID sets the "job_id" field.
+func (puo *PaymentUpdateOne) SetJobID(u uuid.UUID) *PaymentUpdateOne {
+	puo.mutation.SetJobID(u)
 	return puo
 }
 
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (puo *PaymentUpdateOne) SetNillableUserID(u *uuid.UUID) *PaymentUpdateOne {
+// SetNillableJobID sets the "job_id" field if the given value is not nil.
+func (puo *PaymentUpdateOne) SetNillableJobID(u *uuid.UUID) *PaymentUpdateOne {
 	if u != nil {
-		puo.SetUserID(*u)
+		puo.SetJobID(*u)
 	}
 	return puo
 }
 
-// ClearUserID clears the value of the "user_id" field.
-func (puo *PaymentUpdateOne) ClearUserID() *PaymentUpdateOne {
-	puo.mutation.ClearUserID()
+// ClearJobID clears the value of the "job_id" field.
+func (puo *PaymentUpdateOne) ClearJobID() *PaymentUpdateOne {
+	puo.mutation.ClearJobID()
 	return puo
 }
 
@@ -560,12 +471,6 @@ func (puo *PaymentUpdateOne) AddAmount(f float64) *PaymentUpdateOne {
 	return puo
 }
 
-// ClearAmount clears the value of the "amount" field.
-func (puo *PaymentUpdateOne) ClearAmount() *PaymentUpdateOne {
-	puo.mutation.ClearAmount()
-	return puo
-}
-
 // SetStatus sets the "status" field.
 func (puo *PaymentUpdateOne) SetStatus(pa payment.Status) *PaymentUpdateOne {
 	puo.mutation.SetStatus(pa)
@@ -583,12 +488,6 @@ func (puo *PaymentUpdateOne) SetNillableRefID(s *string) *PaymentUpdateOne {
 	if s != nil {
 		puo.SetRefID(*s)
 	}
-	return puo
-}
-
-// ClearRefID clears the value of the "ref_id" field.
-func (puo *PaymentUpdateOne) ClearRefID() *PaymentUpdateOne {
-	puo.mutation.ClearRefID()
 	return puo
 }
 
@@ -612,49 +511,9 @@ func (puo *PaymentUpdateOne) SetNillableCurrency(s *string) *PaymentUpdateOne {
 	return puo
 }
 
-// ClearCurrency clears the value of the "currency" field.
-func (puo *PaymentUpdateOne) ClearCurrency() *PaymentUpdateOne {
-	puo.mutation.ClearCurrency()
-	return puo
-}
-
 // SetPaymentLink sets the "payment_link" field.
 func (puo *PaymentUpdateOne) SetPaymentLink(s string) *PaymentUpdateOne {
 	puo.mutation.SetPaymentLink(s)
-	return puo
-}
-
-// SetNillablePaymentLink sets the "payment_link" field if the given value is not nil.
-func (puo *PaymentUpdateOne) SetNillablePaymentLink(s *string) *PaymentUpdateOne {
-	if s != nil {
-		puo.SetPaymentLink(*s)
-	}
-	return puo
-}
-
-// ClearPaymentLink clears the value of the "payment_link" field.
-func (puo *PaymentUpdateOne) ClearPaymentLink() *PaymentUpdateOne {
-	puo.mutation.ClearPaymentLink()
-	return puo
-}
-
-// SetJobCollectionID sets the "job_collection_id" field.
-func (puo *PaymentUpdateOne) SetJobCollectionID(u uuid.UUID) *PaymentUpdateOne {
-	puo.mutation.SetJobCollectionID(u)
-	return puo
-}
-
-// SetNillableJobCollectionID sets the "job_collection_id" field if the given value is not nil.
-func (puo *PaymentUpdateOne) SetNillableJobCollectionID(u *uuid.UUID) *PaymentUpdateOne {
-	if u != nil {
-		puo.SetJobCollectionID(*u)
-	}
-	return puo
-}
-
-// ClearJobCollectionID clears the value of the "job_collection_id" field.
-func (puo *PaymentUpdateOne) ClearJobCollectionID() *PaymentUpdateOne {
-	puo.mutation.ClearJobCollectionID()
 	return puo
 }
 
@@ -670,9 +529,9 @@ func (puo *PaymentUpdateOne) ClearPayload() *PaymentUpdateOne {
 	return puo
 }
 
-// SetUser sets the "user" edge to the User entity.
-func (puo *PaymentUpdateOne) SetUser(u *User) *PaymentUpdateOne {
-	return puo.SetUserID(u.ID)
+// SetJob sets the "job" edge to the Job entity.
+func (puo *PaymentUpdateOne) SetJob(j *Job) *PaymentUpdateOne {
+	return puo.SetJobID(j.ID)
 }
 
 // Mutation returns the PaymentMutation object of the builder.
@@ -680,9 +539,9 @@ func (puo *PaymentUpdateOne) Mutation() *PaymentMutation {
 	return puo.mutation
 }
 
-// ClearUser clears the "user" edge to the User entity.
-func (puo *PaymentUpdateOne) ClearUser() *PaymentUpdateOne {
-	puo.mutation.ClearUser()
+// ClearJob clears the "job" edge to the Job entity.
+func (puo *PaymentUpdateOne) ClearJob() *PaymentUpdateOne {
+	puo.mutation.ClearJob()
 	return puo
 }
 
@@ -841,12 +700,6 @@ func (puo *PaymentUpdateOne) sqlSave(ctx context.Context) (_node *Payment, err e
 			Column: payment.FieldAmount,
 		})
 	}
-	if puo.mutation.AmountCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: payment.FieldAmount,
-		})
-	}
 	if value, ok := puo.mutation.Status(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
@@ -858,12 +711,6 @@ func (puo *PaymentUpdateOne) sqlSave(ctx context.Context) (_node *Payment, err e
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: payment.FieldRefID,
-		})
-	}
-	if puo.mutation.RefIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
 			Column: payment.FieldRefID,
 		})
 	}
@@ -881,36 +728,11 @@ func (puo *PaymentUpdateOne) sqlSave(ctx context.Context) (_node *Payment, err e
 			Column: payment.FieldCurrency,
 		})
 	}
-	if puo.mutation.CurrencyCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: payment.FieldCurrency,
-		})
-	}
 	if value, ok := puo.mutation.PaymentLink(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
 			Column: payment.FieldPaymentLink,
-		})
-	}
-	if puo.mutation.PaymentLinkCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: payment.FieldPaymentLink,
-		})
-	}
-	if value, ok := puo.mutation.JobCollectionID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: payment.FieldJobCollectionID,
-		})
-	}
-	if puo.mutation.JobCollectionIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Column: payment.FieldJobCollectionID,
 		})
 	}
 	if value, ok := puo.mutation.Payload(); ok {
@@ -926,33 +748,33 @@ func (puo *PaymentUpdateOne) sqlSave(ctx context.Context) (_node *Payment, err e
 			Column: payment.FieldPayload,
 		})
 	}
-	if puo.mutation.UserCleared() {
+	if puo.mutation.JobCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   payment.UserTable,
-			Columns: []string{payment.UserColumn},
+			Table:   payment.JobTable,
+			Columns: []string{payment.JobColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: user.FieldID,
+					Column: job.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := puo.mutation.UserIDs(); len(nodes) > 0 {
+	if nodes := puo.mutation.JobIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   payment.UserTable,
-			Columns: []string{payment.UserColumn},
+			Table:   payment.JobTable,
+			Columns: []string{payment.JobColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: user.FieldID,
+					Column: job.FieldID,
 				},
 			},
 		}

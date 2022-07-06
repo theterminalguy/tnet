@@ -13,6 +13,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/payment"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -233,6 +234,21 @@ func (jc *JobCreate) AddApplications(j ...*JobApplication) *JobCreate {
 		ids[i] = j[i].ID
 	}
 	return jc.AddApplicationIDs(ids...)
+}
+
+// AddPaymentIDs adds the "payments" edge to the Payment entity by IDs.
+func (jc *JobCreate) AddPaymentIDs(ids ...uuid.UUID) *JobCreate {
+	jc.mutation.AddPaymentIDs(ids...)
+	return jc
+}
+
+// AddPayments adds the "payments" edges to the Payment entity.
+func (jc *JobCreate) AddPayments(p ...*Payment) *JobCreate {
+	ids := make([]uuid.UUID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return jc.AddPaymentIDs(ids...)
 }
 
 // Mutation returns the JobMutation object of the builder.
@@ -589,6 +605,25 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: jobapplication.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := jc.mutation.PaymentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   job.PaymentsTable,
+			Columns: []string{job.PaymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: payment.FieldID,
 				},
 			},
 		}

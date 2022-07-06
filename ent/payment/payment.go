@@ -20,8 +20,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldUserID holds the string denoting the user_id field in the database.
-	FieldUserID = "user_id"
+	// FieldJobID holds the string denoting the job_id field in the database.
+	FieldJobID = "job_id"
 	// FieldAmount holds the string denoting the amount field in the database.
 	FieldAmount = "amount"
 	// FieldStatus holds the string denoting the status field in the database.
@@ -34,21 +34,19 @@ const (
 	FieldCurrency = "currency"
 	// FieldPaymentLink holds the string denoting the payment_link field in the database.
 	FieldPaymentLink = "payment_link"
-	// FieldJobCollectionID holds the string denoting the job_collection_id field in the database.
-	FieldJobCollectionID = "job_collection_id"
 	// FieldPayload holds the string denoting the payload field in the database.
 	FieldPayload = "payload"
-	// EdgeUser holds the string denoting the user edge name in mutations.
-	EdgeUser = "user"
+	// EdgeJob holds the string denoting the job edge name in mutations.
+	EdgeJob = "job"
 	// Table holds the table name of the payment in the database.
 	Table = "payments"
-	// UserTable is the table that holds the user relation/edge.
-	UserTable = "payments"
-	// UserInverseTable is the table name for the User entity.
-	// It exists in this package in order to avoid circular dependency with the "user" package.
-	UserInverseTable = "users"
-	// UserColumn is the table column denoting the user relation/edge.
-	UserColumn = "user_id"
+	// JobTable is the table that holds the job relation/edge.
+	JobTable = "payments"
+	// JobInverseTable is the table name for the Job entity.
+	// It exists in this package in order to avoid circular dependency with the "job" package.
+	JobInverseTable = "jobs"
+	// JobColumn is the table column denoting the job relation/edge.
+	JobColumn = "job_id"
 )
 
 // Columns holds all SQL columns for payment fields.
@@ -57,14 +55,13 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldUserID,
+	FieldJobID,
 	FieldAmount,
 	FieldStatus,
 	FieldRefID,
 	FieldMessage,
 	FieldCurrency,
 	FieldPaymentLink,
-	FieldJobCollectionID,
 	FieldPayload,
 }
 
@@ -85,6 +82,12 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultAmount holds the default value on creation for the "amount" field.
+	DefaultAmount float64
+	// DefaultRefID holds the default value on creation for the "ref_id" field.
+	DefaultRefID string
+	// DefaultCurrency holds the default value on creation for the "currency" field.
+	DefaultCurrency string
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

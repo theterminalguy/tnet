@@ -54,6 +54,8 @@ const (
 	EdgeFileUploads = "file_uploads"
 	// EdgeApplications holds the string denoting the applications edge name in mutations.
 	EdgeApplications = "applications"
+	// EdgePayments holds the string denoting the payments edge name in mutations.
+	EdgePayments = "payments"
 	// Table holds the table name of the job in the database.
 	Table = "jobs"
 	// UserTable is the table that holds the user relation/edge.
@@ -77,6 +79,13 @@ const (
 	ApplicationsInverseTable = "job_applications"
 	// ApplicationsColumn is the table column denoting the applications relation/edge.
 	ApplicationsColumn = "job_id"
+	// PaymentsTable is the table that holds the payments relation/edge.
+	PaymentsTable = "payments"
+	// PaymentsInverseTable is the table name for the Payment entity.
+	// It exists in this package in order to avoid circular dependency with the "payment" package.
+	PaymentsInverseTable = "payments"
+	// PaymentsColumn is the table column denoting the payments relation/edge.
+	PaymentsColumn = "job_id"
 )
 
 // Columns holds all SQL columns for job fields.

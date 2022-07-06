@@ -7,18 +7,18 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type IPayment interface {
+type PaymentManager interface {
 	Pay(c echo.Context) (string, error)
-	GenerateLink(jobcollectionID uuid.UUID, recruiterID uuid.UUID) (string, error)
+	GenerateLink(jobID uuid.UUID, recruiterID uuid.UUID) (string, error)
 }
 
 type PaymentService struct{}
 
-func NewPaymentService(payment_type string) IPayment {
+func NewPaymentService(payment_type string) PaymentManager {
 	if payment_type == "" {
 		log.Panic("Unable to process any payment driver")
 	}
-	payments := map[string]IPayment{
+	payments := map[string]PaymentManager{
 		"stripe": NewStripePayment(),
 	}
 	return payments[payment_type]

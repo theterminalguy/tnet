@@ -299,6 +299,18 @@ func init() {
 	payment.DefaultUpdatedAt = paymentDescUpdatedAt.Default.(func() time.Time)
 	// payment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	payment.UpdateDefaultUpdatedAt = paymentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// paymentDescAmount is the schema descriptor for amount field.
+	paymentDescAmount := paymentFields[0].Descriptor()
+	// payment.DefaultAmount holds the default value on creation for the amount field.
+	payment.DefaultAmount = paymentDescAmount.Default.(float64)
+	// paymentDescRefID is the schema descriptor for ref_id field.
+	paymentDescRefID := paymentFields[2].Descriptor()
+	// payment.DefaultRefID holds the default value on creation for the ref_id field.
+	payment.DefaultRefID = paymentDescRefID.Default.(string)
+	// paymentDescCurrency is the schema descriptor for currency field.
+	paymentDescCurrency := paymentFields[4].Descriptor()
+	// payment.DefaultCurrency holds the default value on creation for the currency field.
+	payment.DefaultCurrency = paymentDescCurrency.Default.(string)
 	// paymentDescID is the schema descriptor for id field.
 	paymentDescID := paymentMixinFields0[0].Descriptor()
 	// payment.DefaultID holds the default value on creation for the id field.

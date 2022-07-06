@@ -115,10 +115,10 @@ func DeletedAt(v time.Time) predicate.Payment {
 	})
 }
 
-// UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v uuid.UUID) predicate.Payment {
+// JobID applies equality check predicate on the "job_id" field. It's identical to JobIDEQ.
+func JobID(v uuid.UUID) predicate.Payment {
 	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUserID), v))
+		s.Where(sql.EQ(s.C(FieldJobID), v))
 	})
 }
 
@@ -154,13 +154,6 @@ func Currency(v string) predicate.Payment {
 func PaymentLink(v string) predicate.Payment {
 	return predicate.Payment(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldPaymentLink), v))
-	})
-}
-
-// JobCollectionID applies equality check predicate on the "job_collection_id" field. It's identical to JobCollectionIDEQ.
-func JobCollectionID(v uuid.UUID) predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldJobCollectionID), v))
 	})
 }
 
@@ -406,22 +399,22 @@ func DeletedAtNotNil() predicate.Payment {
 	})
 }
 
-// UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v uuid.UUID) predicate.Payment {
+// JobIDEQ applies the EQ predicate on the "job_id" field.
+func JobIDEQ(v uuid.UUID) predicate.Payment {
 	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUserID), v))
+		s.Where(sql.EQ(s.C(FieldJobID), v))
 	})
 }
 
-// UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v uuid.UUID) predicate.Payment {
+// JobIDNEQ applies the NEQ predicate on the "job_id" field.
+func JobIDNEQ(v uuid.UUID) predicate.Payment {
 	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUserID), v))
+		s.Where(sql.NEQ(s.C(FieldJobID), v))
 	})
 }
 
-// UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...uuid.UUID) predicate.Payment {
+// JobIDIn applies the In predicate on the "job_id" field.
+func JobIDIn(vs ...uuid.UUID) predicate.Payment {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -433,12 +426,12 @@ func UserIDIn(vs ...uuid.UUID) predicate.Payment {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldUserID), v...))
+		s.Where(sql.In(s.C(FieldJobID), v...))
 	})
 }
 
-// UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...uuid.UUID) predicate.Payment {
+// JobIDNotIn applies the NotIn predicate on the "job_id" field.
+func JobIDNotIn(vs ...uuid.UUID) predicate.Payment {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -450,21 +443,21 @@ func UserIDNotIn(vs ...uuid.UUID) predicate.Payment {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldUserID), v...))
+		s.Where(sql.NotIn(s.C(FieldJobID), v...))
 	})
 }
 
-// UserIDIsNil applies the IsNil predicate on the "user_id" field.
-func UserIDIsNil() predicate.Payment {
+// JobIDIsNil applies the IsNil predicate on the "job_id" field.
+func JobIDIsNil() predicate.Payment {
 	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldUserID)))
+		s.Where(sql.IsNull(s.C(FieldJobID)))
 	})
 }
 
-// UserIDNotNil applies the NotNil predicate on the "user_id" field.
-func UserIDNotNil() predicate.Payment {
+// JobIDNotNil applies the NotNil predicate on the "job_id" field.
+func JobIDNotNil() predicate.Payment {
 	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldUserID)))
+		s.Where(sql.NotNull(s.C(FieldJobID)))
 	})
 }
 
@@ -541,20 +534,6 @@ func AmountLT(v float64) predicate.Payment {
 func AmountLTE(v float64) predicate.Payment {
 	return predicate.Payment(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldAmount), v))
-	})
-}
-
-// AmountIsNil applies the IsNil predicate on the "amount" field.
-func AmountIsNil() predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldAmount)))
-	})
-}
-
-// AmountNotNil applies the NotNil predicate on the "amount" field.
-func AmountNotNil() predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldAmount)))
 	})
 }
 
@@ -700,20 +679,6 @@ func RefIDHasPrefix(v string) predicate.Payment {
 func RefIDHasSuffix(v string) predicate.Payment {
 	return predicate.Payment(func(s *sql.Selector) {
 		s.Where(sql.HasSuffix(s.C(FieldRefID), v))
-	})
-}
-
-// RefIDIsNil applies the IsNil predicate on the "ref_id" field.
-func RefIDIsNil() predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRefID)))
-	})
-}
-
-// RefIDNotNil applies the NotNil predicate on the "ref_id" field.
-func RefIDNotNil() predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRefID)))
 	})
 }
 
@@ -939,20 +904,6 @@ func CurrencyHasSuffix(v string) predicate.Payment {
 	})
 }
 
-// CurrencyIsNil applies the IsNil predicate on the "currency" field.
-func CurrencyIsNil() predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCurrency)))
-	})
-}
-
-// CurrencyNotNil applies the NotNil predicate on the "currency" field.
-func CurrencyNotNil() predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCurrency)))
-	})
-}
-
 // CurrencyEqualFold applies the EqualFold predicate on the "currency" field.
 func CurrencyEqualFold(v string) predicate.Payment {
 	return predicate.Payment(func(s *sql.Selector) {
@@ -1064,20 +1015,6 @@ func PaymentLinkHasSuffix(v string) predicate.Payment {
 	})
 }
 
-// PaymentLinkIsNil applies the IsNil predicate on the "payment_link" field.
-func PaymentLinkIsNil() predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldPaymentLink)))
-	})
-}
-
-// PaymentLinkNotNil applies the NotNil predicate on the "payment_link" field.
-func PaymentLinkNotNil() predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldPaymentLink)))
-	})
-}
-
 // PaymentLinkEqualFold applies the EqualFold predicate on the "payment_link" field.
 func PaymentLinkEqualFold(v string) predicate.Payment {
 	return predicate.Payment(func(s *sql.Selector) {
@@ -1089,96 +1026,6 @@ func PaymentLinkEqualFold(v string) predicate.Payment {
 func PaymentLinkContainsFold(v string) predicate.Payment {
 	return predicate.Payment(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldPaymentLink), v))
-	})
-}
-
-// JobCollectionIDEQ applies the EQ predicate on the "job_collection_id" field.
-func JobCollectionIDEQ(v uuid.UUID) predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldJobCollectionID), v))
-	})
-}
-
-// JobCollectionIDNEQ applies the NEQ predicate on the "job_collection_id" field.
-func JobCollectionIDNEQ(v uuid.UUID) predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldJobCollectionID), v))
-	})
-}
-
-// JobCollectionIDIn applies the In predicate on the "job_collection_id" field.
-func JobCollectionIDIn(vs ...uuid.UUID) predicate.Payment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Payment(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldJobCollectionID), v...))
-	})
-}
-
-// JobCollectionIDNotIn applies the NotIn predicate on the "job_collection_id" field.
-func JobCollectionIDNotIn(vs ...uuid.UUID) predicate.Payment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Payment(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldJobCollectionID), v...))
-	})
-}
-
-// JobCollectionIDGT applies the GT predicate on the "job_collection_id" field.
-func JobCollectionIDGT(v uuid.UUID) predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldJobCollectionID), v))
-	})
-}
-
-// JobCollectionIDGTE applies the GTE predicate on the "job_collection_id" field.
-func JobCollectionIDGTE(v uuid.UUID) predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldJobCollectionID), v))
-	})
-}
-
-// JobCollectionIDLT applies the LT predicate on the "job_collection_id" field.
-func JobCollectionIDLT(v uuid.UUID) predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldJobCollectionID), v))
-	})
-}
-
-// JobCollectionIDLTE applies the LTE predicate on the "job_collection_id" field.
-func JobCollectionIDLTE(v uuid.UUID) predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldJobCollectionID), v))
-	})
-}
-
-// JobCollectionIDIsNil applies the IsNil predicate on the "job_collection_id" field.
-func JobCollectionIDIsNil() predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldJobCollectionID)))
-	})
-}
-
-// JobCollectionIDNotNil applies the NotNil predicate on the "job_collection_id" field.
-func JobCollectionIDNotNil() predicate.Payment {
-	return predicate.Payment(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldJobCollectionID)))
 	})
 }
 
@@ -1196,25 +1043,25 @@ func PayloadNotNil() predicate.Payment {
 	})
 }
 
-// HasUser applies the HasEdge predicate on the "user" edge.
-func HasUser() predicate.Payment {
+// HasJob applies the HasEdge predicate on the "job" edge.
+func HasJob() predicate.Payment {
 	return predicate.Payment(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(UserTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
+			sqlgraph.To(JobTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, JobTable, JobColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasUserWith applies the HasEdge predicate on the "user" edge with a given conditions (other predicates).
-func HasUserWith(preds ...predicate.User) predicate.Payment {
+// HasJobWith applies the HasEdge predicate on the "job" edge with a given conditions (other predicates).
+func HasJobWith(preds ...predicate.Job) predicate.Payment {
 	return predicate.Payment(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(UserInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
+			sqlgraph.To(JobInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, JobTable, JobColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

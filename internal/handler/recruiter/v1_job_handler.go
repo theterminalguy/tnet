@@ -11,6 +11,7 @@ import (
 	"github.com/10hourlabs/tentn/internal/repository/scope"
 	"github.com/10hourlabs/tentn/internal/search"
 	"github.com/10hourlabs/tentn/internal/service/filestorage"
+	"github.com/10hourlabs/tentn/internal/service/payment"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/10hourlabs/tentn/util"
 	"github.com/google/uuid"
@@ -142,7 +143,14 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 		params.Category = "na"
 		params.UserID = recruiterID
 		params.AttachmentID = f.ID
-		_, err := h.JobRepository.Create(*params)
+		jd, err := h.JobRepository.Create(*params)
+		if err != nil {
+			return c.String(http.StatusBadGateway, err.Error())
+		}
+		// Generate payment link
+		driver := os.Getenv("PAYMENT_DRIVER")
+		pay := payment.NewPaymentService(driver)
+		_, err = pay.GenerateLink(jd.ID, recruiterID)
 		if err != nil {
 			return c.String(http.StatusBadGateway, err.Error())
 		}

@@ -3,7 +3,6 @@ package payment
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -13,41 +12,7 @@ import (
 	"github.com/10hourlabs/tentn/internal/repository"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"github.com/stripe/stripe-go/webhook"
 )
-
-type Data struct {
-	Object struct {
-		ID                 string   `json:"id"`
-		Object             string   `json:"object"`
-		AmountSubtotal     int      `json:"amount_subtotal"`
-		AmountTotal        int      `json:"amount_total"`
-		ClientReferenceID  string   `json:"client_reference_id"`
-		Currency           string   `json:"currency"`
-		ExpiresAt          int      `json:"expires_at"`
-		Livemode           bool     `json:"livemode"`
-		Locale             string   `json:"locale"`
-		Mode               string   `json:"mode"`
-		PaymentIntent      string   `json:"payment_intent"`
-		PaymentLink        string   `json:"payment_link"`
-		PaymentMethodTypes []string `json:"payment_method_types"`
-		PaymentStatus      string   `json:"payment_status"`
-		Metadata           struct {
-			RecruiterID string `json:"recruiterID,omitempty"`
-		} `json:"metadata,omitempty"`
-		Status     string `json:"status"`
-		SuccessURL string `json:"success_url"`
-	} `json:"object"`
-}
-
-type StripePaymentResponse struct {
-	ID       string `json:"id"`
-	Object   string `json:"object"`
-	Created  int    `json:"created"`
-	Data     Data   `json:"data"`
-	Livemode bool   `json:"livemode"`
-	Type     string `json:"type"`
-}
 
 type GeneratePaymentLinkResponse struct {
 	ID       string `json:"id,omitempty"`
@@ -73,7 +38,7 @@ func NewStripePayment() *StripePayment {
 	}
 }
 
-func (p *StripePayment) GenerateLink(jobcollectionID uuid.UUID, recruiterID uuid.UUID) (string, error) {
+func (p *StripePayment) GenerateLink(jobID uuid.UUID, recruiterID uuid.UUID) (string, error) {
 	url := "https://api.stripe.com/v1/payment_links"
 	priceKey := os.Getenv("STRIPE_PRODUCT_KEY")
 	apikey := os.Getenv("STRIPE_API_KEY")
@@ -104,11 +69,10 @@ func (p *StripePayment) GenerateLink(jobcollectionID uuid.UUID, recruiterID uuid
 	}
 
 	generateLink := repository.PaymentParams{
-		Status:          "not_paid",
-		UserId:          recruiterID,
-		Message:         "Pending",
-		PaymentLink:     g.URL,
-		JobCollectionID: jobcollectionID,
+		Status:      "not_paid",
+		Message:     "Pending",
+		PaymentLink: g.URL,
+		JobID:       jobID,
 	}
 
 	r, err := p.repo.Create(generateLink)
@@ -116,61 +80,9 @@ func (p *StripePayment) GenerateLink(jobcollectionID uuid.UUID, recruiterID uuid
 		return "", err
 	}
 
-	return *r.PaymentLink, nil
+	return r.PaymentLink, nil
 }
 
 func (p *StripePayment) Pay(req echo.Context) (string, error) {
-	const MaxBodyBytes = int64(65536)
-	req.Request().Body = http.MaxBytesReader(req.Response().Writer, req.Request().Body, MaxBodyBytes)
-	payload, err := ioutil.ReadAll(req.Request().Body)
-	if err != nil {
-		return "", err
-	}
-
-	endpointSecret := os.Getenv("STRIPE_ENDPOINT_SECRET")
-	if endpointSecret == "" {
-		return "", errors.New("invalid endpoint secret")
-	}
-	event, err := webhook.ConstructEvent(payload, req.Request().Header.Get("Stripe-Signature"),
-		endpointSecret)
-
-	if err != nil {
-		return "", err
-	}
-
-	var data repository.PaymentParams
-	var response = &StripePaymentResponse{}
-
-	if event.Type == "checkout.session.completed" {
-		j, err := json.Marshal(event)
-		if err != nil {
-			return "", err
-		}
-		err = json.Unmarshal(j, response)
-		if err != nil {
-			return "", err
-		}
-
-		data = repository.PaymentParams{
-			Amount:   float32(response.Data.Object.AmountTotal) / 100, // stripe amount is in cent
-			Status:   response.Data.Object.PaymentStatus,
-			RefId:    response.ID,
-			UserId:   uuid.MustParse(response.Data.Object.Metadata.RecruiterID),
-			Message:  "Successful",
-			Currency: response.Data.Object.Currency,
-		}
-
-		rID := uuid.MustParse(response.Data.Object.Metadata.RecruiterID)
-		_, err = p.repo.Update(rID, data)
-		if err != nil {
-			return "", err
-		}
-		return "successful", nil
-	} else {
-		// var session session.Metadata
-		// json, _ := json.Marshal()
-		//send mail to admin for successful payment.
-		// if event.Type == "charge.failed" {
-		return "payment failed", nil
-	}
+	return "", nil
 }

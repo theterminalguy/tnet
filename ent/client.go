@@ -918,6 +918,22 @@ func (c *JobClient) QueryApplications(j *Job) *JobApplicationQuery {
 	return query
 }
 
+// QueryPayments queries the payments edge of a Job.
+func (c *JobClient) QueryPayments(j *Job) *PaymentQuery {
+	query := &PaymentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := j.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(job.Table, job.FieldID, id),
+			sqlgraph.To(payment.Table, payment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, job.PaymentsTable, job.PaymentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(j.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *JobClient) Hooks() []Hook {
 	return c.hooks.Job
@@ -1602,15 +1618,15 @@ func (c *PaymentClient) GetX(ctx context.Context, id uuid.UUID) *Payment {
 	return obj
 }
 
-// QueryUser queries the user edge of a Payment.
-func (c *PaymentClient) QueryUser(pa *Payment) *UserQuery {
-	query := &UserQuery{config: c.config}
+// QueryJob queries the job edge of a Payment.
+func (c *PaymentClient) QueryJob(pa *Payment) *JobQuery {
+	query := &JobQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := pa.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(payment.Table, payment.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, payment.UserTable, payment.UserColumn),
+			sqlgraph.To(job.Table, job.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, payment.JobTable, payment.JobColumn),
 		)
 		fromV = sqlgraph.Neighbors(pa.driver.Dialect(), step)
 		return fromV, nil
@@ -2789,22 +2805,6 @@ func (c *UserClient) QuerySessions(u *User) *SessionQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(session.Table, session.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.SessionsTable, user.SessionsColumn),
-		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryPayments queries the payments edge of a User.
-func (c *UserClient) QueryPayments(u *User) *PaymentQuery {
-	query := &PaymentQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(payment.Table, payment.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.PaymentsTable, user.PaymentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

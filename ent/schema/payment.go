@@ -3,7 +3,6 @@ package schema
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 )
 
 // Payment holds the schema definition for the Payment entity.
@@ -16,10 +15,10 @@ func (Payment) Mixin() []ent.Mixin {
 		UUIDMixin{},
 		TimeStampMixin{},
 		BelongsToMixin{
-			ParentName: "user",
-			ParentType: User.Type,
+			ParentName: "job",
+			ParentType: Job.Type,
 			Ref:        "payments",
-			ForeignKey: "user_id",
+			ForeignKey: "job_id",
 		},
 	}
 }
@@ -34,14 +33,13 @@ func StatusTypes() []string {
 // Fields of the Payment.
 func (Payment) Fields() []ent.Field {
 	return []ent.Field{
-		field.Float("amount").Optional().Nillable(),
+		field.Float("amount").Default(0),
 		field.Enum("status").
 			Values(StatusTypes()...),
-		field.String("ref_id").Optional().Nillable(),
+		field.String("ref_id").Default(""),
 		field.String("message"),
-		field.String("currency").Optional().Nillable(),
-		field.Text("payment_link").Optional().Nillable(),
-		field.UUID("job_collection_id", uuid.UUID{}).Optional().Nillable(), // this should be foreign key to job_collections table
+		field.String("currency").Default(""),
+		field.Text("payment_link"),
 		field.JSON("payload", []string{}).Optional(),
 	}
 }

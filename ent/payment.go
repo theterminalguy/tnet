@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/payment"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -25,22 +25,20 @@ type Payment struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at"`
-	// UserID holds the value of the "user_id" field.
-	UserID uuid.UUID `json:"-"`
+	// JobID holds the value of the "job_id" field.
+	JobID uuid.UUID `json:"-"`
 	// Amount holds the value of the "amount" field.
-	Amount *float64 `json:"amount,omitempty"`
+	Amount float64 `json:"amount,omitempty"`
 	// Status holds the value of the "status" field.
 	Status payment.Status `json:"status,omitempty"`
 	// RefID holds the value of the "ref_id" field.
-	RefID *string `json:"ref_id,omitempty"`
+	RefID string `json:"ref_id,omitempty"`
 	// Message holds the value of the "message" field.
 	Message string `json:"message,omitempty"`
 	// Currency holds the value of the "currency" field.
-	Currency *string `json:"currency,omitempty"`
+	Currency string `json:"currency,omitempty"`
 	// PaymentLink holds the value of the "payment_link" field.
-	PaymentLink *string `json:"payment_link,omitempty"`
-	// JobCollectionID holds the value of the "job_collection_id" field.
-	JobCollectionID *uuid.UUID `json:"job_collection_id,omitempty"`
+	PaymentLink string `json:"payment_link,omitempty"`
 	// Payload holds the value of the "payload" field.
 	Payload []string `json:"payload,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -50,25 +48,25 @@ type Payment struct {
 
 // PaymentEdges holds the relations/edges for other nodes in the graph.
 type PaymentEdges struct {
-	// User holds the value of the user edge.
-	User *User `json:"user,omitempty"`
+	// Job holds the value of the job edge.
+	Job *Job `json:"job,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// UserOrErr returns the User value or an error if the edge
+// JobOrErr returns the Job value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e PaymentEdges) UserOrErr() (*User, error) {
+func (e PaymentEdges) JobOrErr() (*Job, error) {
 	if e.loadedTypes[0] {
-		if e.User == nil {
-			// The edge user was loaded in eager-loading,
+		if e.Job == nil {
+			// The edge job was loaded in eager-loading,
 			// but was not found.
-			return nil, &NotFoundError{label: user.Label}
+			return nil, &NotFoundError{label: job.Label}
 		}
-		return e.User, nil
+		return e.Job, nil
 	}
-	return nil, &NotLoadedError{edge: "user"}
+	return nil, &NotLoadedError{edge: "job"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -76,8 +74,6 @@ func (*Payment) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case payment.FieldJobCollectionID:
-			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		case payment.FieldPayload:
 			values[i] = new([]byte)
 		case payment.FieldAmount:
@@ -86,7 +82,7 @@ func (*Payment) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullString)
 		case payment.FieldCreatedAt, payment.FieldUpdatedAt, payment.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case payment.FieldID, payment.FieldUserID:
+		case payment.FieldID, payment.FieldJobID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Payment", columns[i])
@@ -128,18 +124,17 @@ func (pa *Payment) assignValues(columns []string, values []interface{}) error {
 				pa.DeletedAt = new(time.Time)
 				*pa.DeletedAt = value.Time
 			}
-		case payment.FieldUserID:
+		case payment.FieldJobID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+				return fmt.Errorf("unexpected type %T for field job_id", values[i])
 			} else if value != nil {
-				pa.UserID = *value
+				pa.JobID = *value
 			}
 		case payment.FieldAmount:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field amount", values[i])
 			} else if value.Valid {
-				pa.Amount = new(float64)
-				*pa.Amount = value.Float64
+				pa.Amount = value.Float64
 			}
 		case payment.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -151,8 +146,7 @@ func (pa *Payment) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field ref_id", values[i])
 			} else if value.Valid {
-				pa.RefID = new(string)
-				*pa.RefID = value.String
+				pa.RefID = value.String
 			}
 		case payment.FieldMessage:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -164,22 +158,13 @@ func (pa *Payment) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field currency", values[i])
 			} else if value.Valid {
-				pa.Currency = new(string)
-				*pa.Currency = value.String
+				pa.Currency = value.String
 			}
 		case payment.FieldPaymentLink:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field payment_link", values[i])
 			} else if value.Valid {
-				pa.PaymentLink = new(string)
-				*pa.PaymentLink = value.String
-			}
-		case payment.FieldJobCollectionID:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field job_collection_id", values[i])
-			} else if value.Valid {
-				pa.JobCollectionID = new(uuid.UUID)
-				*pa.JobCollectionID = *value.S.(*uuid.UUID)
+				pa.PaymentLink = value.String
 			}
 		case payment.FieldPayload:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -194,9 +179,9 @@ func (pa *Payment) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryUser queries the "user" edge of the Payment entity.
-func (pa *Payment) QueryUser() *UserQuery {
-	return (&PaymentClient{config: pa.config}).QueryUser(pa)
+// QueryJob queries the "job" edge of the Payment entity.
+func (pa *Payment) QueryJob() *JobQuery {
+	return (&PaymentClient{config: pa.config}).QueryJob(pa)
 }
 
 // Update returns a builder for updating this Payment.
@@ -230,32 +215,20 @@ func (pa *Payment) String() string {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	builder.WriteString(", user_id=")
-	builder.WriteString(fmt.Sprintf("%v", pa.UserID))
-	if v := pa.Amount; v != nil {
-		builder.WriteString(", amount=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
+	builder.WriteString(", job_id=")
+	builder.WriteString(fmt.Sprintf("%v", pa.JobID))
+	builder.WriteString(", amount=")
+	builder.WriteString(fmt.Sprintf("%v", pa.Amount))
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", pa.Status))
-	if v := pa.RefID; v != nil {
-		builder.WriteString(", ref_id=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString(", ref_id=")
+	builder.WriteString(pa.RefID)
 	builder.WriteString(", message=")
 	builder.WriteString(pa.Message)
-	if v := pa.Currency; v != nil {
-		builder.WriteString(", currency=")
-		builder.WriteString(*v)
-	}
-	if v := pa.PaymentLink; v != nil {
-		builder.WriteString(", payment_link=")
-		builder.WriteString(*v)
-	}
-	if v := pa.JobCollectionID; v != nil {
-		builder.WriteString(", job_collection_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
+	builder.WriteString(", currency=")
+	builder.WriteString(pa.Currency)
+	builder.WriteString(", payment_link=")
+	builder.WriteString(pa.PaymentLink)
 	builder.WriteString(", payload=")
 	builder.WriteString(fmt.Sprintf("%v", pa.Payload))
 	builder.WriteByte(')')

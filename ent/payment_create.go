@@ -10,8 +10,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/payment"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -64,16 +64,16 @@ func (pc *PaymentCreate) SetNillableDeletedAt(t *time.Time) *PaymentCreate {
 	return pc
 }
 
-// SetUserID sets the "user_id" field.
-func (pc *PaymentCreate) SetUserID(u uuid.UUID) *PaymentCreate {
-	pc.mutation.SetUserID(u)
+// SetJobID sets the "job_id" field.
+func (pc *PaymentCreate) SetJobID(u uuid.UUID) *PaymentCreate {
+	pc.mutation.SetJobID(u)
 	return pc
 }
 
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (pc *PaymentCreate) SetNillableUserID(u *uuid.UUID) *PaymentCreate {
+// SetNillableJobID sets the "job_id" field if the given value is not nil.
+func (pc *PaymentCreate) SetNillableJobID(u *uuid.UUID) *PaymentCreate {
 	if u != nil {
-		pc.SetUserID(*u)
+		pc.SetJobID(*u)
 	}
 	return pc
 }
@@ -138,28 +138,6 @@ func (pc *PaymentCreate) SetPaymentLink(s string) *PaymentCreate {
 	return pc
 }
 
-// SetNillablePaymentLink sets the "payment_link" field if the given value is not nil.
-func (pc *PaymentCreate) SetNillablePaymentLink(s *string) *PaymentCreate {
-	if s != nil {
-		pc.SetPaymentLink(*s)
-	}
-	return pc
-}
-
-// SetJobCollectionID sets the "job_collection_id" field.
-func (pc *PaymentCreate) SetJobCollectionID(u uuid.UUID) *PaymentCreate {
-	pc.mutation.SetJobCollectionID(u)
-	return pc
-}
-
-// SetNillableJobCollectionID sets the "job_collection_id" field if the given value is not nil.
-func (pc *PaymentCreate) SetNillableJobCollectionID(u *uuid.UUID) *PaymentCreate {
-	if u != nil {
-		pc.SetJobCollectionID(*u)
-	}
-	return pc
-}
-
 // SetPayload sets the "payload" field.
 func (pc *PaymentCreate) SetPayload(s []string) *PaymentCreate {
 	pc.mutation.SetPayload(s)
@@ -180,9 +158,9 @@ func (pc *PaymentCreate) SetNillableID(u *uuid.UUID) *PaymentCreate {
 	return pc
 }
 
-// SetUser sets the "user" edge to the User entity.
-func (pc *PaymentCreate) SetUser(u *User) *PaymentCreate {
-	return pc.SetUserID(u.ID)
+// SetJob sets the "job" edge to the Job entity.
+func (pc *PaymentCreate) SetJob(j *Job) *PaymentCreate {
+	return pc.SetJobID(j.ID)
 }
 
 // Mutation returns the PaymentMutation object of the builder.
@@ -264,6 +242,18 @@ func (pc *PaymentCreate) defaults() {
 		v := payment.DefaultUpdatedAt()
 		pc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := pc.mutation.Amount(); !ok {
+		v := payment.DefaultAmount
+		pc.mutation.SetAmount(v)
+	}
+	if _, ok := pc.mutation.RefID(); !ok {
+		v := payment.DefaultRefID
+		pc.mutation.SetRefID(v)
+	}
+	if _, ok := pc.mutation.Currency(); !ok {
+		v := payment.DefaultCurrency
+		pc.mutation.SetCurrency(v)
+	}
 	if _, ok := pc.mutation.ID(); !ok {
 		v := payment.DefaultID()
 		pc.mutation.SetID(v)
@@ -278,6 +268,9 @@ func (pc *PaymentCreate) check() error {
 	if _, ok := pc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Payment.updated_at"`)}
 	}
+	if _, ok := pc.mutation.Amount(); !ok {
+		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "Payment.amount"`)}
+	}
 	if _, ok := pc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Payment.status"`)}
 	}
@@ -286,8 +279,17 @@ func (pc *PaymentCreate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Payment.status": %w`, err)}
 		}
 	}
+	if _, ok := pc.mutation.RefID(); !ok {
+		return &ValidationError{Name: "ref_id", err: errors.New(`ent: missing required field "Payment.ref_id"`)}
+	}
 	if _, ok := pc.mutation.Message(); !ok {
 		return &ValidationError{Name: "message", err: errors.New(`ent: missing required field "Payment.message"`)}
+	}
+	if _, ok := pc.mutation.Currency(); !ok {
+		return &ValidationError{Name: "currency", err: errors.New(`ent: missing required field "Payment.currency"`)}
+	}
+	if _, ok := pc.mutation.PaymentLink(); !ok {
+		return &ValidationError{Name: "payment_link", err: errors.New(`ent: missing required field "Payment.payment_link"`)}
 	}
 	return nil
 }
@@ -355,7 +357,7 @@ func (pc *PaymentCreate) createSpec() (*Payment, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: payment.FieldAmount,
 		})
-		_node.Amount = &value
+		_node.Amount = value
 	}
 	if value, ok := pc.mutation.Status(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -371,7 +373,7 @@ func (pc *PaymentCreate) createSpec() (*Payment, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: payment.FieldRefID,
 		})
-		_node.RefID = &value
+		_node.RefID = value
 	}
 	if value, ok := pc.mutation.Message(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -387,7 +389,7 @@ func (pc *PaymentCreate) createSpec() (*Payment, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: payment.FieldCurrency,
 		})
-		_node.Currency = &value
+		_node.Currency = value
 	}
 	if value, ok := pc.mutation.PaymentLink(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -395,15 +397,7 @@ func (pc *PaymentCreate) createSpec() (*Payment, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: payment.FieldPaymentLink,
 		})
-		_node.PaymentLink = &value
-	}
-	if value, ok := pc.mutation.JobCollectionID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: payment.FieldJobCollectionID,
-		})
-		_node.JobCollectionID = &value
+		_node.PaymentLink = value
 	}
 	if value, ok := pc.mutation.Payload(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -413,24 +407,24 @@ func (pc *PaymentCreate) createSpec() (*Payment, *sqlgraph.CreateSpec) {
 		})
 		_node.Payload = value
 	}
-	if nodes := pc.mutation.UserIDs(); len(nodes) > 0 {
+	if nodes := pc.mutation.JobIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   payment.UserTable,
-			Columns: []string{payment.UserColumn},
+			Table:   payment.JobTable,
+			Columns: []string{payment.JobColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: user.FieldID,
+					Column: job.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.UserID = nodes[0]
+		_node.JobID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

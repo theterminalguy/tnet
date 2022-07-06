@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/payment"
 	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -27,7 +27,7 @@ type PaymentQuery struct {
 	fields     []string
 	predicates []predicate.Payment
 	// eager-loading edges.
-	withUser *UserQuery
+	withJob *JobQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -64,9 +64,9 @@ func (pq *PaymentQuery) Order(o ...OrderFunc) *PaymentQuery {
 	return pq
 }
 
-// QueryUser chains the current query on the "user" edge.
-func (pq *PaymentQuery) QueryUser() *UserQuery {
-	query := &UserQuery{config: pq.config}
+// QueryJob chains the current query on the "job" edge.
+func (pq *PaymentQuery) QueryJob() *JobQuery {
+	query := &JobQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -77,8 +77,8 @@ func (pq *PaymentQuery) QueryUser() *UserQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(payment.Table, payment.FieldID, selector),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, payment.UserTable, payment.UserColumn),
+			sqlgraph.To(job.Table, job.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, payment.JobTable, payment.JobColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -267,7 +267,7 @@ func (pq *PaymentQuery) Clone() *PaymentQuery {
 		offset:     pq.offset,
 		order:      append([]OrderFunc{}, pq.order...),
 		predicates: append([]predicate.Payment{}, pq.predicates...),
-		withUser:   pq.withUser.Clone(),
+		withJob:    pq.withJob.Clone(),
 		// clone intermediate query.
 		sql:    pq.sql.Clone(),
 		path:   pq.path,
@@ -275,14 +275,14 @@ func (pq *PaymentQuery) Clone() *PaymentQuery {
 	}
 }
 
-// WithUser tells the query-builder to eager-load the nodes that are connected to
-// the "user" edge. The optional arguments are used to configure the query builder of the edge.
-func (pq *PaymentQuery) WithUser(opts ...func(*UserQuery)) *PaymentQuery {
-	query := &UserQuery{config: pq.config}
+// WithJob tells the query-builder to eager-load the nodes that are connected to
+// the "job" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PaymentQuery) WithJob(opts ...func(*JobQuery)) *PaymentQuery {
+	query := &JobQuery{config: pq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	pq.withUser = query
+	pq.withJob = query
 	return pq
 }
 
@@ -352,7 +352,7 @@ func (pq *PaymentQuery) sqlAll(ctx context.Context) ([]*Payment, error) {
 		nodes       = []*Payment{}
 		_spec       = pq.querySpec()
 		loadedTypes = [1]bool{
-			pq.withUser != nil,
+			pq.withJob != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -375,17 +375,17 @@ func (pq *PaymentQuery) sqlAll(ctx context.Context) ([]*Payment, error) {
 		return nodes, nil
 	}
 
-	if query := pq.withUser; query != nil {
+	if query := pq.withJob; query != nil {
 		ids := make([]uuid.UUID, 0, len(nodes))
 		nodeids := make(map[uuid.UUID][]*Payment)
 		for i := range nodes {
-			fk := nodes[i].UserID
+			fk := nodes[i].JobID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
 			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		query.Where(user.IDIn(ids...))
+		query.Where(job.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
@@ -393,10 +393,10 @@ func (pq *PaymentQuery) sqlAll(ctx context.Context) ([]*Payment, error) {
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "user_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "job_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.User = n
+				nodes[i].Edges.Job = n
 			}
 		}
 	}
