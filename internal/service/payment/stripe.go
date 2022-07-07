@@ -46,20 +46,6 @@ type StripePaymentResponse struct {
 	Type     string `json:"type"`
 }
 
-type GeneratePaymentLinkResponse struct {
-	ID       string `json:"id,omitempty"`
-	Object   string `json:"object,omitempty"`
-	Active   bool   `json:"active,omitempty"`
-	Livemode bool   `json:"livemode,omitempty"`
-	Metadata struct {
-	} `json:"metadata,omitempty"`
-	OnBehalfOf         interface{} `json:"on_behalf_of,omitempty"`
-	PaymentIntentData  interface{} `json:"payment_intent_data,omitempty"`
-	PaymentMethodTypes interface{} `json:"payment_method_types,omitempty"`
-	SubscriptionData   interface{} `json:"subscription_data,omitempty"`
-	URL                string      `json:"url"`
-}
-
 type StripePayment struct {
 	repo *repository.PaymentRepository
 }
