@@ -150,9 +150,9 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 		// Generate payment link
 		driver := os.Getenv("PAYMENT_DRIVER")
 		pay := payment.NewPaymentService(driver)
-		_, err = pay.GenerateLink(jd.ID, recruiterID)
+		_, err = pay.GenerateLink(jd.ID)
 		if err != nil {
-			return c.String(http.StatusBadGateway, err.Error())
+			return c.String(http.StatusBadGateway, "error occured while generate payment link")
 		}
 	}
 

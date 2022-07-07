@@ -9,7 +9,7 @@ import (
 
 type PaymentManager interface {
 	Pay(c echo.Context) (string, error)
-	GenerateLink(jobID uuid.UUID, recruiterID uuid.UUID) (string, error)
+	GenerateLink(jobID uuid.UUID) (string, error)
 }
 
 type PaymentService struct{}

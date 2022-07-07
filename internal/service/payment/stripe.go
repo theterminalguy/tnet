@@ -15,17 +15,7 @@ import (
 )
 
 type GeneratePaymentLinkResponse struct {
-	ID       string `json:"id,omitempty"`
-	Object   string `json:"object,omitempty"`
-	Active   bool   `json:"active,omitempty"`
-	Livemode bool   `json:"livemode,omitempty"`
-	Metadata struct {
-	} `json:"metadata,omitempty"`
-	OnBehalfOf         interface{} `json:"on_behalf_of,omitempty"`
-	PaymentIntentData  interface{} `json:"payment_intent_data,omitempty"`
-	PaymentMethodTypes interface{} `json:"payment_method_types,omitempty"`
-	SubscriptionData   interface{} `json:"subscription_data,omitempty"`
-	URL                string      `json:"url"`
+	URL string `json:"url"`
 }
 
 type StripePayment struct {
@@ -38,7 +28,7 @@ func NewStripePayment() *StripePayment {
 	}
 }
 
-func (p *StripePayment) GenerateLink(jobID uuid.UUID, recruiterID uuid.UUID) (string, error) {
+func (p *StripePayment) GenerateLink(jobID uuid.UUID) (string, error) {
 	url := "https://api.stripe.com/v1/payment_links"
 	priceKey := os.Getenv("STRIPE_PRODUCT_KEY")
 	apikey := os.Getenv("STRIPE_API_KEY")
@@ -47,7 +37,7 @@ func (p *StripePayment) GenerateLink(jobID uuid.UUID, recruiterID uuid.UUID) (st
 		log.Panic("Stripe product key is required")
 	}
 
-	data := []byte(fmt.Sprintf("line_items[0][price]=%s&line_items[0][quantity]=1&metadata[recruiterID]=%s", priceKey, recruiterID))
+	data := []byte(fmt.Sprintf("line_items[0][price]=%s&line_items[0][quantity]=1&metadata[jobID]=%s", priceKey, jobID))
 	responseBody := bytes.NewBuffer(data)
 	req, err := http.NewRequest("POST", url, responseBody)
 	if err != nil {
