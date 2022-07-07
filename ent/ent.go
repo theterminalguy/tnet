@@ -18,7 +18,6 @@ import (
 	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/oauth2token"
 	"github.com/10hourlabs/tentn/ent/partner"
-	"github.com/10hourlabs/tentn/ent/payment"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/searchlog"
 	"github.com/10hourlabs/tentn/ent/session"
@@ -59,7 +58,6 @@ func columnChecker(table string) func(string) error {
 		oauth2client.Table:     oauth2client.ValidColumn,
 		oauth2token.Table:      oauth2token.ValidColumn,
 		partner.Table:          partner.ValidColumn,
-		payment.Table:          payment.ValidColumn,
 		portfoliolink.Table:    portfoliolink.ValidColumn,
 		searchlog.Table:        searchlog.ValidColumn,
 		session.Table:          session.ValidColumn,

@@ -139,19 +139,6 @@ func (f PartnerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return f(ctx, mv)
 }
 
-// The PaymentFunc type is an adapter to allow the use of ordinary
-// function as Payment mutator.
-type PaymentFunc func(context.Context, *ent.PaymentMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f PaymentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.PaymentMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PaymentMutation", m)
-	}
-	return f(ctx, mv)
-}
-
 // The PortfolioLinkFunc type is an adapter to allow the use of ordinary
 // function as PortfolioLink mutator.
 type PortfolioLinkFunc func(context.Context, *ent.PortfolioLinkMutation) (ent.Value, error)
