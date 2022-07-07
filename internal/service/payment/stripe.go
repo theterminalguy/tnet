@@ -30,8 +30,8 @@ type Data struct {
 		PaymentMethodTypes []string `json:"payment_method_types"`
 		PaymentStatus      string   `json:"payment_status"`
 		Metadata           struct {
-			RecruiterID string `json:"recruiterID,omitempty"`
-		} `json:"metadata,omitempty"`
+			JobID string `json:"jobID"`
+		} `json:"metadata"`
 		Status     string `json:"status"`
 		SuccessURL string `json:"success_url"`
 	} `json:"object"`
@@ -109,14 +109,14 @@ func (p *StripePayment) Pay(req echo.Context) (string, error) {
 		data = repository.PaymentParams{
 			Amount:   float32(response.Data.Object.AmountTotal) / 100, // stripe amount is in cent
 			Status:   response.Data.Object.PaymentStatus,
-			RefId:    response.ID,
+			RefId:    response.Data.Object.ID,
 			Message:  "Successful",
 			Currency: response.Data.Object.Currency,
-			JobID:    uuid.MustParse(response.Data.Object.Metadata.RecruiterID),
+			JobID:    uuid.MustParse(response.Data.Object.Metadata.JobID),
 			Payload:  []string{string(j)},
 		}
 
-		rID := uuid.MustParse(response.Data.Object.Metadata.RecruiterID)
+		rID := uuid.MustParse(response.Data.Object.Metadata.JobID)
 		_, err = p.repo.Update(rID, data)
 		if err != nil {
 			return "", err
