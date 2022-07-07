@@ -148,11 +148,11 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 
 	paymentV1Router := &Router{
 		group: e.Group("/v1/payment"),
-		// middlewares: []echo.MiddlewareFunc{
-		// 	middleware.ExtractJWTTokenFromWebSession(),
-		// 	middleware.JWTAuthenticate(),
-		// 	middleware.AuthorizieUser(),
-		// },
+		middlewares: []echo.MiddlewareFunc{
+			middleware.ExtractJWTTokenFromWebSession(),
+			middleware.JWTAuthenticate(),
+			middleware.AuthorizieUser(),
+		},
 		handlers: []RouteHandler{
 			{
 				Path:        "webhook",
