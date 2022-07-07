@@ -2,7 +2,6 @@ package repository
 
 import (
 	"errors"
-	"fmt"
 	"log"
 
 	"github.com/10hourlabs/tentn/ent"
@@ -13,15 +12,14 @@ import (
 type PaymentRepository struct{}
 
 type PaymentParams struct {
-	Amount          float32 `json:"amount,omitempty"`
-	Status          string  `json:"status,omitempty"`
-	RefId           string  `json:"ref_id,omitempty"`
-	UserId          uuid.UUID
-	Message         string    `json:"message" validate:"required"`
-	Currency        string    `json:"currency,omitempty"`
-	PaymentLink     string    `json:"payment_link,omitempty"`
-	JobCollectionID uuid.UUID // this is a relationship to job collection entity
-	Payload         []string  `json:"payload,omitempty"`
+	Amount      float32   `json:"amount,omitempty"`
+	Status      string    `json:"status,omitempty"`
+	RefId       string    `json:"ref_id,omitempty"`
+	Message     string    `json:"message" validate:"required"`
+	Currency    string    `json:"currency,omitempty"`
+	PaymentLink string    `json:"payment_link,omitempty"`
+	JobID       uuid.UUID // this is a relationship to job collection entity
+	Payload     []string  `json:"payload,omitempty"`
 }
 
 func NewPaymentRepository() *PaymentRepository {
@@ -32,9 +30,18 @@ func (*PaymentRepository) GetAll() ([]*ent.Payment, error) {
 	return nil, nil
 }
 
+func (*PaymentRepository) HasPaid(refID string) bool {
+	record := dBConn.Payment.Query().
+		Where(payment.RefID(refID)).
+		Where(payment.And(payment.StatusEQ("paid"))).
+		CountX(dBContext)
+
+	return record != 0
+}
+
 func (*PaymentRepository) GetByUserID(id uuid.UUID) (*ent.Payment, error) {
 	record, err := dBConn.Payment.Query().
-		Where(payment.UserID(id)).
+		Where(payment.JobID(id)).
 		Only(dBContext)
 
 	if err != nil {
@@ -57,7 +64,6 @@ func (*PaymentRepository) Create(p PaymentParams) (*ent.Payment, error) {
 		record, err := dBConn.Payment.
 			Create().
 			SetPaymentLink(p.PaymentLink).
-			SetUserID(p.UserId).
 			SetStatus(payment.Status(p.Status)).
 			SetMessage(p.Message).
 			Save(dBContext)
@@ -73,12 +79,15 @@ func (*PaymentRepository) Create(p PaymentParams) (*ent.Payment, error) {
 }
 
 func (px *PaymentRepository) Update(id uuid.UUID, p PaymentParams) (*ent.Payment, error) {
-	if p.UserId == uuid.Nil {
-		return nil, errors.New("recruiterID is missing in the payload")
+	if id == uuid.Nil {
+		return nil, errors.New("JobID is missing in the payload")
 	}
-	client, err := px.GetByUserID(p.UserId)
+	if px.HasPaid(p.RefId) {
+		return nil, errors.New("duplicate transaction")
+	}
+
+	client, err := px.GetByUserID(id)
 	if err != nil {
-		fmt.Println(client)
 		return nil, err
 	}
 

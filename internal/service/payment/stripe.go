@@ -1,12 +1,9 @@
 package payment
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 
@@ -74,49 +71,7 @@ func NewStripePayment() *StripePayment {
 }
 
 func (p *StripePayment) GenerateLink(jobcollectionID uuid.UUID, recruiterID uuid.UUID) (string, error) {
-	url := "https://api.stripe.com/v1/payment_links"
-	priceKey := os.Getenv("STRIPE_PRODUCT_KEY")
-	apikey := os.Getenv("STRIPE_API_KEY")
-
-	if priceKey == "" {
-		log.Panic("Stripe product key is required")
-	}
-
-	data := []byte(fmt.Sprintf("line_items[0][price]=%s&line_items[0][quantity]=1&metadata[recruiterID]=%s", priceKey, recruiterID))
-	responseBody := bytes.NewBuffer(data)
-	req, err := http.NewRequest("POST", url, responseBody)
-	if err != nil {
-		return "", err
-	}
-	req.SetBasicAuth(apikey, "")
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return "", err
-	}
-
-	result, _ := ioutil.ReadAll(resp.Body)
-	defer req.Body.Close()
-	var g GeneratePaymentLinkResponse
-	err = json.Unmarshal(result, &g)
-	if err != nil {
-		return "", nil
-	}
-
-	generateLink := repository.PaymentParams{
-		Status:          "not_paid",
-		UserId:          recruiterID,
-		Message:         "Pending",
-		PaymentLink:     g.URL,
-		JobCollectionID: jobcollectionID,
-	}
-
-	r, err := p.repo.Create(generateLink)
-	if err != nil {
-		return "", err
-	}
-
-	return *r.PaymentLink, nil
+	return "", nil
 }
 
 func (p *StripePayment) Pay(req echo.Context) (string, error) {
@@ -155,9 +110,10 @@ func (p *StripePayment) Pay(req echo.Context) (string, error) {
 			Amount:   float32(response.Data.Object.AmountTotal) / 100, // stripe amount is in cent
 			Status:   response.Data.Object.PaymentStatus,
 			RefId:    response.ID,
-			UserId:   uuid.MustParse(response.Data.Object.Metadata.RecruiterID),
 			Message:  "Successful",
 			Currency: response.Data.Object.Currency,
+			JobID:    uuid.MustParse(response.Data.Object.Metadata.RecruiterID),
+			Payload:  []string{string(j)},
 		}
 
 		rID := uuid.MustParse(response.Data.Object.Metadata.RecruiterID)
@@ -166,11 +122,6 @@ func (p *StripePayment) Pay(req echo.Context) (string, error) {
 			return "", err
 		}
 		return "successful", nil
-	} else {
-		// var session session.Metadata
-		// json, _ := json.Marshal()
-		//send mail to admin for successful payment.
-		// if event.Type == "charge.failed" {
-		return "payment failed", nil
 	}
+	return "payment failed", nil
 }
