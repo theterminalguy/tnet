@@ -106,6 +106,10 @@ func (p *StripePayment) Pay(req echo.Context) (string, error) {
 			return "", err
 		}
 
+		if response.Data.Object.Metadata.JobID == "" {
+			return "error occured while processing payment", nil
+		}
+
 		data = repository.PaymentParams{
 			Amount:   float32(response.Data.Object.AmountTotal) / 100, // stripe amount is in cent
 			Status:   response.Data.Object.PaymentStatus,
