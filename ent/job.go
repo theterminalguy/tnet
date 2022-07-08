@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
+	"github.com/10hourlabs/tentn/ent/jobfileupload"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -63,12 +63,12 @@ type Job struct {
 type JobEdges struct {
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
-	// FileUploads holds the value of the file_uploads edge.
-	FileUploads *FileUpload `json:"file_uploads,omitempty"`
+	// JobFileUpload holds the value of the job_file_upload edge.
+	JobFileUpload *JobFileUpload `json:"job_file_upload,omitempty"`
 	// Applications holds the value of the applications edge.
 	Applications []*JobApplication `json:"applications,omitempty"`
-	// Jobpayments holds the value of the jobpayments edge.
-	Jobpayments []*JobPayment `json:"jobpayments,omitempty"`
+	// JobPayments holds the value of the job_payments edge.
+	JobPayments []*JobPayment `json:"job_payments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [4]bool
@@ -88,18 +88,18 @@ func (e JobEdges) UserOrErr() (*User, error) {
 	return nil, &NotLoadedError{edge: "user"}
 }
 
-// FileUploadsOrErr returns the FileUploads value or an error if the edge
+// JobFileUploadOrErr returns the JobFileUpload value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e JobEdges) FileUploadsOrErr() (*FileUpload, error) {
+func (e JobEdges) JobFileUploadOrErr() (*JobFileUpload, error) {
 	if e.loadedTypes[1] {
-		if e.FileUploads == nil {
-			// The edge file_uploads was loaded in eager-loading,
+		if e.JobFileUpload == nil {
+			// The edge job_file_upload was loaded in eager-loading,
 			// but was not found.
-			return nil, &NotFoundError{label: fileupload.Label}
+			return nil, &NotFoundError{label: jobfileupload.Label}
 		}
-		return e.FileUploads, nil
+		return e.JobFileUpload, nil
 	}
-	return nil, &NotLoadedError{edge: "file_uploads"}
+	return nil, &NotLoadedError{edge: "job_file_upload"}
 }
 
 // ApplicationsOrErr returns the Applications value or an error if the edge
@@ -111,13 +111,13 @@ func (e JobEdges) ApplicationsOrErr() ([]*JobApplication, error) {
 	return nil, &NotLoadedError{edge: "applications"}
 }
 
-// JobpaymentsOrErr returns the Jobpayments value or an error if the edge
+// JobPaymentsOrErr returns the JobPayments value or an error if the edge
 // was not loaded in eager-loading.
-func (e JobEdges) JobpaymentsOrErr() ([]*JobPayment, error) {
+func (e JobEdges) JobPaymentsOrErr() ([]*JobPayment, error) {
 	if e.loadedTypes[3] {
-		return e.Jobpayments, nil
+		return e.JobPayments, nil
 	}
-	return nil, &NotLoadedError{edge: "jobpayments"}
+	return nil, &NotLoadedError{edge: "job_payments"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -275,9 +275,9 @@ func (j *Job) QueryUser() *UserQuery {
 	return (&JobClient{config: j.config}).QueryUser(j)
 }
 
-// QueryFileUploads queries the "file_uploads" edge of the Job entity.
-func (j *Job) QueryFileUploads() *FileUploadQuery {
-	return (&JobClient{config: j.config}).QueryFileUploads(j)
+// QueryJobFileUpload queries the "job_file_upload" edge of the Job entity.
+func (j *Job) QueryJobFileUpload() *JobFileUploadQuery {
+	return (&JobClient{config: j.config}).QueryJobFileUpload(j)
 }
 
 // QueryApplications queries the "applications" edge of the Job entity.
@@ -285,9 +285,9 @@ func (j *Job) QueryApplications() *JobApplicationQuery {
 	return (&JobClient{config: j.config}).QueryApplications(j)
 }
 
-// QueryJobpayments queries the "jobpayments" edge of the Job entity.
-func (j *Job) QueryJobpayments() *JobPaymentQuery {
-	return (&JobClient{config: j.config}).QueryJobpayments(j)
+// QueryJobPayments queries the "job_payments" edge of the Job entity.
+func (j *Job) QueryJobPayments() *JobPaymentQuery {
+	return (&JobClient{config: j.config}).QueryJobPayments(j)
 }
 
 // Update returns a builder for updating this Job.

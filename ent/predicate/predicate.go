@@ -15,9 +15,6 @@ type EmailTemplate func(*sql.Selector)
 // EmergencyContact is the predicate function for emergencycontact builders.
 type EmergencyContact func(*sql.Selector)
 
-// FileUpload is the predicate function for fileupload builders.
-type FileUpload func(*sql.Selector)
-
 // InternalTask is the predicate function for internaltask builders.
 type InternalTask func(*sql.Selector)
 
@@ -26,6 +23,9 @@ type Job func(*sql.Selector)
 
 // JobApplication is the predicate function for jobapplication builders.
 type JobApplication func(*sql.Selector)
+
+// JobFileUpload is the predicate function for jobfileupload builders.
+type JobFileUpload func(*sql.Selector)
 
 // JobPayment is the predicate function for jobpayment builders.
 type JobPayment func(*sql.Selector)

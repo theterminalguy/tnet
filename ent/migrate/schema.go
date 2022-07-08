@@ -113,20 +113,6 @@ var (
 			},
 		},
 	}
-	// FileUploadsColumns holds the columns for the "file_uploads" table.
-	FileUploadsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "file_url", Type: field.TypeString},
-	}
-	// FileUploadsTable holds the schema information for the "file_uploads" table.
-	FileUploadsTable = &schema.Table{
-		Name:       "file_uploads",
-		Columns:    FileUploadsColumns,
-		PrimaryKey: []*schema.Column{FileUploadsColumns[0]},
-	}
 	// InternalTasksColumns holds the columns for the "internal_tasks" table.
 	InternalTasksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -180,9 +166,9 @@ var (
 		PrimaryKey: []*schema.Column{JobsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "jobs_file_uploads_jobs",
+				Symbol:     "jobs_job_file_uploads_jobs",
 				Columns:    []*schema.Column{JobsColumns[16]},
-				RefColumns: []*schema.Column{FileUploadsColumns[0]},
+				RefColumns: []*schema.Column{JobFileUploadsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
@@ -264,6 +250,20 @@ var (
 			},
 		},
 	}
+	// JobFileUploadsColumns holds the columns for the "job_file_uploads" table.
+	JobFileUploadsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "file_url", Type: field.TypeString},
+	}
+	// JobFileUploadsTable holds the schema information for the "job_file_uploads" table.
+	JobFileUploadsTable = &schema.Table{
+		Name:       "job_file_uploads",
+		Columns:    JobFileUploadsColumns,
+		PrimaryKey: []*schema.Column{JobFileUploadsColumns[0]},
+	}
 	// JobPaymentsColumns holds the columns for the "job_payments" table.
 	JobPaymentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -286,7 +286,7 @@ var (
 		PrimaryKey: []*schema.Column{JobPaymentsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "job_payments_jobs_jobpayments",
+				Symbol:     "job_payments_jobs_job_payments",
 				Columns:    []*schema.Column{JobPaymentsColumns[11]},
 				RefColumns: []*schema.Column{JobsColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -844,10 +844,10 @@ var (
 		EducationsTable,
 		EmailTemplatesTable,
 		EmergencyContactsTable,
-		FileUploadsTable,
 		InternalTasksTable,
 		JobsTable,
 		JobApplicationsTable,
+		JobFileUploadsTable,
 		JobPaymentsTable,
 		MissionsTable,
 		Oauth2clientsTable,
@@ -870,7 +870,7 @@ func init() {
 	EducationsTable.ForeignKeys[0].RefTable = TalentsTable
 	EmailTemplatesTable.ForeignKeys[0].RefTable = UsersTable
 	EmergencyContactsTable.ForeignKeys[0].RefTable = TalentsTable
-	JobsTable.ForeignKeys[0].RefTable = FileUploadsTable
+	JobsTable.ForeignKeys[0].RefTable = JobFileUploadsTable
 	JobsTable.ForeignKeys[1].RefTable = UsersTable
 	JobApplicationsTable.ForeignKeys[0].RefTable = JobsTable
 	JobApplicationsTable.ForeignKeys[1].RefTable = TalentsTable

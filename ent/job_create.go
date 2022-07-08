@@ -10,9 +10,9 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/jobfileupload"
 	"github.com/10hourlabs/tentn/ent/jobpayment"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
@@ -202,23 +202,23 @@ func (jc *JobCreate) SetUser(u *User) *JobCreate {
 	return jc.SetUserID(u.ID)
 }
 
-// SetFileUploadsID sets the "file_uploads" edge to the FileUpload entity by ID.
-func (jc *JobCreate) SetFileUploadsID(id uuid.UUID) *JobCreate {
-	jc.mutation.SetFileUploadsID(id)
+// SetJobFileUploadID sets the "job_file_upload" edge to the JobFileUpload entity by ID.
+func (jc *JobCreate) SetJobFileUploadID(id uuid.UUID) *JobCreate {
+	jc.mutation.SetJobFileUploadID(id)
 	return jc
 }
 
-// SetNillableFileUploadsID sets the "file_uploads" edge to the FileUpload entity by ID if the given value is not nil.
-func (jc *JobCreate) SetNillableFileUploadsID(id *uuid.UUID) *JobCreate {
+// SetNillableJobFileUploadID sets the "job_file_upload" edge to the JobFileUpload entity by ID if the given value is not nil.
+func (jc *JobCreate) SetNillableJobFileUploadID(id *uuid.UUID) *JobCreate {
 	if id != nil {
-		jc = jc.SetFileUploadsID(*id)
+		jc = jc.SetJobFileUploadID(*id)
 	}
 	return jc
 }
 
-// SetFileUploads sets the "file_uploads" edge to the FileUpload entity.
-func (jc *JobCreate) SetFileUploads(f *FileUpload) *JobCreate {
-	return jc.SetFileUploadsID(f.ID)
+// SetJobFileUpload sets the "job_file_upload" edge to the JobFileUpload entity.
+func (jc *JobCreate) SetJobFileUpload(j *JobFileUpload) *JobCreate {
+	return jc.SetJobFileUploadID(j.ID)
 }
 
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
@@ -236,19 +236,19 @@ func (jc *JobCreate) AddApplications(j ...*JobApplication) *JobCreate {
 	return jc.AddApplicationIDs(ids...)
 }
 
-// AddJobpaymentIDs adds the "jobpayments" edge to the JobPayment entity by IDs.
-func (jc *JobCreate) AddJobpaymentIDs(ids ...uuid.UUID) *JobCreate {
-	jc.mutation.AddJobpaymentIDs(ids...)
+// AddJobPaymentIDs adds the "job_payments" edge to the JobPayment entity by IDs.
+func (jc *JobCreate) AddJobPaymentIDs(ids ...uuid.UUID) *JobCreate {
+	jc.mutation.AddJobPaymentIDs(ids...)
 	return jc
 }
 
-// AddJobpayments adds the "jobpayments" edges to the JobPayment entity.
-func (jc *JobCreate) AddJobpayments(j ...*JobPayment) *JobCreate {
+// AddJobPayments adds the "job_payments" edges to the JobPayment entity.
+func (jc *JobCreate) AddJobPayments(j ...*JobPayment) *JobCreate {
 	ids := make([]uuid.UUID, len(j))
 	for i := range j {
 		ids[i] = j[i].ID
 	}
-	return jc.AddJobpaymentIDs(ids...)
+	return jc.AddJobPaymentIDs(ids...)
 }
 
 // Mutation returns the JobMutation object of the builder.
@@ -574,17 +574,17 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 		_node.UserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := jc.mutation.FileUploadsIDs(); len(nodes) > 0 {
+	if nodes := jc.mutation.JobFileUploadIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   job.FileUploadsTable,
-			Columns: []string{job.FileUploadsColumn},
+			Table:   job.JobFileUploadTable,
+			Columns: []string{job.JobFileUploadColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: fileupload.FieldID,
+					Column: jobfileupload.FieldID,
 				},
 			},
 		}
@@ -613,12 +613,12 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := jc.mutation.JobpaymentsIDs(); len(nodes) > 0 {
+	if nodes := jc.mutation.JobPaymentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   job.JobpaymentsTable,
-			Columns: []string{job.JobpaymentsColumn},
+			Table:   job.JobPaymentsTable,
+			Columns: []string{job.JobPaymentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

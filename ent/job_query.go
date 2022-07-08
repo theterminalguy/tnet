@@ -12,9 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/jobfileupload"
 	"github.com/10hourlabs/tentn/ent/jobpayment"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/user"
@@ -31,10 +31,10 @@ type JobQuery struct {
 	fields     []string
 	predicates []predicate.Job
 	// eager-loading edges.
-	withUser         *UserQuery
-	withFileUploads  *FileUploadQuery
-	withApplications *JobApplicationQuery
-	withJobpayments  *JobPaymentQuery
+	withUser          *UserQuery
+	withJobFileUpload *JobFileUploadQuery
+	withApplications  *JobApplicationQuery
+	withJobPayments   *JobPaymentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -93,9 +93,9 @@ func (jq *JobQuery) QueryUser() *UserQuery {
 	return query
 }
 
-// QueryFileUploads chains the current query on the "file_uploads" edge.
-func (jq *JobQuery) QueryFileUploads() *FileUploadQuery {
-	query := &FileUploadQuery{config: jq.config}
+// QueryJobFileUpload chains the current query on the "job_file_upload" edge.
+func (jq *JobQuery) QueryJobFileUpload() *JobFileUploadQuery {
+	query := &JobFileUploadQuery{config: jq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := jq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -106,8 +106,8 @@ func (jq *JobQuery) QueryFileUploads() *FileUploadQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(job.Table, job.FieldID, selector),
-			sqlgraph.To(fileupload.Table, fileupload.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, job.FileUploadsTable, job.FileUploadsColumn),
+			sqlgraph.To(jobfileupload.Table, jobfileupload.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, job.JobFileUploadTable, job.JobFileUploadColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(jq.driver.Dialect(), step)
 		return fromU, nil
@@ -137,8 +137,8 @@ func (jq *JobQuery) QueryApplications() *JobApplicationQuery {
 	return query
 }
 
-// QueryJobpayments chains the current query on the "jobpayments" edge.
-func (jq *JobQuery) QueryJobpayments() *JobPaymentQuery {
+// QueryJobPayments chains the current query on the "job_payments" edge.
+func (jq *JobQuery) QueryJobPayments() *JobPaymentQuery {
 	query := &JobPaymentQuery{config: jq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := jq.prepareQuery(ctx); err != nil {
@@ -151,7 +151,7 @@ func (jq *JobQuery) QueryJobpayments() *JobPaymentQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(job.Table, job.FieldID, selector),
 			sqlgraph.To(jobpayment.Table, jobpayment.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, job.JobpaymentsTable, job.JobpaymentsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, job.JobPaymentsTable, job.JobPaymentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(jq.driver.Dialect(), step)
 		return fromU, nil
@@ -335,15 +335,15 @@ func (jq *JobQuery) Clone() *JobQuery {
 		return nil
 	}
 	return &JobQuery{
-		config:           jq.config,
-		limit:            jq.limit,
-		offset:           jq.offset,
-		order:            append([]OrderFunc{}, jq.order...),
-		predicates:       append([]predicate.Job{}, jq.predicates...),
-		withUser:         jq.withUser.Clone(),
-		withFileUploads:  jq.withFileUploads.Clone(),
-		withApplications: jq.withApplications.Clone(),
-		withJobpayments:  jq.withJobpayments.Clone(),
+		config:            jq.config,
+		limit:             jq.limit,
+		offset:            jq.offset,
+		order:             append([]OrderFunc{}, jq.order...),
+		predicates:        append([]predicate.Job{}, jq.predicates...),
+		withUser:          jq.withUser.Clone(),
+		withJobFileUpload: jq.withJobFileUpload.Clone(),
+		withApplications:  jq.withApplications.Clone(),
+		withJobPayments:   jq.withJobPayments.Clone(),
 		// clone intermediate query.
 		sql:    jq.sql.Clone(),
 		path:   jq.path,
@@ -362,14 +362,14 @@ func (jq *JobQuery) WithUser(opts ...func(*UserQuery)) *JobQuery {
 	return jq
 }
 
-// WithFileUploads tells the query-builder to eager-load the nodes that are connected to
-// the "file_uploads" edge. The optional arguments are used to configure the query builder of the edge.
-func (jq *JobQuery) WithFileUploads(opts ...func(*FileUploadQuery)) *JobQuery {
-	query := &FileUploadQuery{config: jq.config}
+// WithJobFileUpload tells the query-builder to eager-load the nodes that are connected to
+// the "job_file_upload" edge. The optional arguments are used to configure the query builder of the edge.
+func (jq *JobQuery) WithJobFileUpload(opts ...func(*JobFileUploadQuery)) *JobQuery {
+	query := &JobFileUploadQuery{config: jq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	jq.withFileUploads = query
+	jq.withJobFileUpload = query
 	return jq
 }
 
@@ -384,14 +384,14 @@ func (jq *JobQuery) WithApplications(opts ...func(*JobApplicationQuery)) *JobQue
 	return jq
 }
 
-// WithJobpayments tells the query-builder to eager-load the nodes that are connected to
-// the "jobpayments" edge. The optional arguments are used to configure the query builder of the edge.
-func (jq *JobQuery) WithJobpayments(opts ...func(*JobPaymentQuery)) *JobQuery {
+// WithJobPayments tells the query-builder to eager-load the nodes that are connected to
+// the "job_payments" edge. The optional arguments are used to configure the query builder of the edge.
+func (jq *JobQuery) WithJobPayments(opts ...func(*JobPaymentQuery)) *JobQuery {
 	query := &JobPaymentQuery{config: jq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	jq.withJobpayments = query
+	jq.withJobPayments = query
 	return jq
 }
 
@@ -462,9 +462,9 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 		_spec       = jq.querySpec()
 		loadedTypes = [4]bool{
 			jq.withUser != nil,
-			jq.withFileUploads != nil,
+			jq.withJobFileUpload != nil,
 			jq.withApplications != nil,
-			jq.withJobpayments != nil,
+			jq.withJobPayments != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -513,7 +513,7 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 		}
 	}
 
-	if query := jq.withFileUploads; query != nil {
+	if query := jq.withJobFileUpload; query != nil {
 		ids := make([]uuid.UUID, 0, len(nodes))
 		nodeids := make(map[uuid.UUID][]*Job)
 		for i := range nodes {
@@ -523,7 +523,7 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 			}
 			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		query.Where(fileupload.IDIn(ids...))
+		query.Where(jobfileupload.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
@@ -534,7 +534,7 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "attachment_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.FileUploads = n
+				nodes[i].Edges.JobFileUpload = n
 			}
 		}
 	}
@@ -564,16 +564,16 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 		}
 	}
 
-	if query := jq.withJobpayments; query != nil {
+	if query := jq.withJobPayments; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
 		nodeids := make(map[uuid.UUID]*Job)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Jobpayments = []*JobPayment{}
+			nodes[i].Edges.JobPayments = []*JobPayment{}
 		}
 		query.Where(predicate.JobPayment(func(s *sql.Selector) {
-			s.Where(sql.InValues(job.JobpaymentsColumn, fks...))
+			s.Where(sql.InValues(job.JobPaymentsColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)
 		if err != nil {
@@ -585,7 +585,7 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 			if !ok {
 				return nil, fmt.Errorf(`unexpected foreign-key "job_id" returned %v for node %v`, fk, n.ID)
 			}
-			node.Edges.Jobpayments = append(node.Edges.Jobpayments, n)
+			node.Edges.JobPayments = append(node.Edges.JobPayments, n)
 		}
 	}
 

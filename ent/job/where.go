@@ -1348,25 +1348,25 @@ func HasUserWith(preds ...predicate.User) predicate.Job {
 	})
 }
 
-// HasFileUploads applies the HasEdge predicate on the "file_uploads" edge.
-func HasFileUploads() predicate.Job {
+// HasJobFileUpload applies the HasEdge predicate on the "job_file_upload" edge.
+func HasJobFileUpload() predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(FileUploadsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, FileUploadsTable, FileUploadsColumn),
+			sqlgraph.To(JobFileUploadTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, JobFileUploadTable, JobFileUploadColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasFileUploadsWith applies the HasEdge predicate on the "file_uploads" edge with a given conditions (other predicates).
-func HasFileUploadsWith(preds ...predicate.FileUpload) predicate.Job {
+// HasJobFileUploadWith applies the HasEdge predicate on the "job_file_upload" edge with a given conditions (other predicates).
+func HasJobFileUploadWith(preds ...predicate.JobFileUpload) predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(FileUploadsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, FileUploadsTable, FileUploadsColumn),
+			sqlgraph.To(JobFileUploadInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, JobFileUploadTable, JobFileUploadColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -1404,25 +1404,25 @@ func HasApplicationsWith(preds ...predicate.JobApplication) predicate.Job {
 	})
 }
 
-// HasJobpayments applies the HasEdge predicate on the "jobpayments" edge.
-func HasJobpayments() predicate.Job {
+// HasJobPayments applies the HasEdge predicate on the "job_payments" edge.
+func HasJobPayments() predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(JobpaymentsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, JobpaymentsTable, JobpaymentsColumn),
+			sqlgraph.To(JobPaymentsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, JobPaymentsTable, JobPaymentsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasJobpaymentsWith applies the HasEdge predicate on the "jobpayments" edge with a given conditions (other predicates).
-func HasJobpaymentsWith(preds ...predicate.JobPayment) predicate.Job {
+// HasJobPaymentsWith applies the HasEdge predicate on the "job_payments" edge with a given conditions (other predicates).
+func HasJobPaymentsWith(preds ...predicate.JobPayment) predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(JobpaymentsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, JobpaymentsTable, JobpaymentsColumn),
+			sqlgraph.To(JobPaymentsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, JobPaymentsTable, JobPaymentsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

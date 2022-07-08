@@ -17,7 +17,7 @@ func (JobPayment) Mixin() []ent.Mixin {
 		BelongsToMixin{
 			ParentName: "job",
 			ParentType: Job.Type,
-			Ref:        "jobpayments",
+			Ref:        "job_payments",
 			ForeignKey: "job_id",
 		},
 	}

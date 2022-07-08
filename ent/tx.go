@@ -18,14 +18,14 @@ type Tx struct {
 	EmailTemplate *EmailTemplateClient
 	// EmergencyContact is the client for interacting with the EmergencyContact builders.
 	EmergencyContact *EmergencyContactClient
-	// FileUpload is the client for interacting with the FileUpload builders.
-	FileUpload *FileUploadClient
 	// InternalTask is the client for interacting with the InternalTask builders.
 	InternalTask *InternalTaskClient
 	// Job is the client for interacting with the Job builders.
 	Job *JobClient
 	// JobApplication is the client for interacting with the JobApplication builders.
 	JobApplication *JobApplicationClient
+	// JobFileUpload is the client for interacting with the JobFileUpload builders.
+	JobFileUpload *JobFileUploadClient
 	// JobPayment is the client for interacting with the JobPayment builders.
 	JobPayment *JobPaymentClient
 	// Mission is the client for interacting with the Mission builders.
@@ -194,10 +194,10 @@ func (tx *Tx) init() {
 	tx.Education = NewEducationClient(tx.config)
 	tx.EmailTemplate = NewEmailTemplateClient(tx.config)
 	tx.EmergencyContact = NewEmergencyContactClient(tx.config)
-	tx.FileUpload = NewFileUploadClient(tx.config)
 	tx.InternalTask = NewInternalTaskClient(tx.config)
 	tx.Job = NewJobClient(tx.config)
 	tx.JobApplication = NewJobApplicationClient(tx.config)
+	tx.JobFileUpload = NewJobFileUploadClient(tx.config)
 	tx.JobPayment = NewJobPaymentClient(tx.config)
 	tx.Mission = NewMissionClient(tx.config)
 	tx.Oauth2Client = NewOauth2ClientClient(tx.config)

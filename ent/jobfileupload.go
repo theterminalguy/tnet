@@ -8,12 +8,12 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/fileupload"
+	"github.com/10hourlabs/tentn/ent/jobfileupload"
 	"github.com/google/uuid"
 )
 
-// FileUpload is the model entity for the FileUpload schema.
-type FileUpload struct {
+// JobFileUpload is the model entity for the JobFileUpload schema.
+type JobFileUpload struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uuid.UUID `json:"id,omitempty"`
@@ -26,12 +26,12 @@ type FileUpload struct {
 	// FileURL holds the value of the "file_url" field.
 	FileURL string `json:"file_url,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the FileUploadQuery when eager-loading is set.
-	Edges FileUploadEdges `json:"edges"`
+	// The values are being populated by the JobFileUploadQuery when eager-loading is set.
+	Edges JobFileUploadEdges `json:"edges"`
 }
 
-// FileUploadEdges holds the relations/edges for other nodes in the graph.
-type FileUploadEdges struct {
+// JobFileUploadEdges holds the relations/edges for other nodes in the graph.
+type JobFileUploadEdges struct {
 	// Jobs holds the value of the jobs edge.
 	Jobs []*Job `json:"jobs,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -41,7 +41,7 @@ type FileUploadEdges struct {
 
 // JobsOrErr returns the Jobs value or an error if the edge
 // was not loaded in eager-loading.
-func (e FileUploadEdges) JobsOrErr() ([]*Job, error) {
+func (e JobFileUploadEdges) JobsOrErr() ([]*Job, error) {
 	if e.loadedTypes[0] {
 		return e.Jobs, nil
 	}
@@ -49,114 +49,114 @@ func (e FileUploadEdges) JobsOrErr() ([]*Job, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*FileUpload) scanValues(columns []string) ([]interface{}, error) {
+func (*JobFileUpload) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case fileupload.FieldFileURL:
+		case jobfileupload.FieldFileURL:
 			values[i] = new(sql.NullString)
-		case fileupload.FieldCreatedAt, fileupload.FieldUpdatedAt, fileupload.FieldDeletedAt:
+		case jobfileupload.FieldCreatedAt, jobfileupload.FieldUpdatedAt, jobfileupload.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case fileupload.FieldID:
+		case jobfileupload.FieldID:
 			values[i] = new(uuid.UUID)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type FileUpload", columns[i])
+			return nil, fmt.Errorf("unexpected column %q for type JobFileUpload", columns[i])
 		}
 	}
 	return values, nil
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the FileUpload fields.
-func (fu *FileUpload) assignValues(columns []string, values []interface{}) error {
+// to the JobFileUpload fields.
+func (jfu *JobFileUpload) assignValues(columns []string, values []interface{}) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case fileupload.FieldID:
+		case jobfileupload.FieldID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				fu.ID = *value
+				jfu.ID = *value
 			}
-		case fileupload.FieldCreatedAt:
+		case jobfileupload.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				fu.CreatedAt = value.Time
+				jfu.CreatedAt = value.Time
 			}
-		case fileupload.FieldUpdatedAt:
+		case jobfileupload.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				fu.UpdatedAt = value.Time
+				jfu.UpdatedAt = value.Time
 			}
-		case fileupload.FieldDeletedAt:
+		case jobfileupload.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				fu.DeletedAt = new(time.Time)
-				*fu.DeletedAt = value.Time
+				jfu.DeletedAt = new(time.Time)
+				*jfu.DeletedAt = value.Time
 			}
-		case fileupload.FieldFileURL:
+		case jobfileupload.FieldFileURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field file_url", values[i])
 			} else if value.Valid {
-				fu.FileURL = value.String
+				jfu.FileURL = value.String
 			}
 		}
 	}
 	return nil
 }
 
-// QueryJobs queries the "jobs" edge of the FileUpload entity.
-func (fu *FileUpload) QueryJobs() *JobQuery {
-	return (&FileUploadClient{config: fu.config}).QueryJobs(fu)
+// QueryJobs queries the "jobs" edge of the JobFileUpload entity.
+func (jfu *JobFileUpload) QueryJobs() *JobQuery {
+	return (&JobFileUploadClient{config: jfu.config}).QueryJobs(jfu)
 }
 
-// Update returns a builder for updating this FileUpload.
-// Note that you need to call FileUpload.Unwrap() before calling this method if this FileUpload
+// Update returns a builder for updating this JobFileUpload.
+// Note that you need to call JobFileUpload.Unwrap() before calling this method if this JobFileUpload
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (fu *FileUpload) Update() *FileUploadUpdateOne {
-	return (&FileUploadClient{config: fu.config}).UpdateOne(fu)
+func (jfu *JobFileUpload) Update() *JobFileUploadUpdateOne {
+	return (&JobFileUploadClient{config: jfu.config}).UpdateOne(jfu)
 }
 
-// Unwrap unwraps the FileUpload entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the JobFileUpload entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (fu *FileUpload) Unwrap() *FileUpload {
-	tx, ok := fu.config.driver.(*txDriver)
+func (jfu *JobFileUpload) Unwrap() *JobFileUpload {
+	tx, ok := jfu.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: FileUpload is not a transactional entity")
+		panic("ent: JobFileUpload is not a transactional entity")
 	}
-	fu.config.driver = tx.drv
-	return fu
+	jfu.config.driver = tx.drv
+	return jfu
 }
 
 // String implements the fmt.Stringer.
-func (fu *FileUpload) String() string {
+func (jfu *JobFileUpload) String() string {
 	var builder strings.Builder
-	builder.WriteString("FileUpload(")
-	builder.WriteString(fmt.Sprintf("id=%v", fu.ID))
+	builder.WriteString("JobFileUpload(")
+	builder.WriteString(fmt.Sprintf("id=%v", jfu.ID))
 	builder.WriteString(", created_at=")
-	builder.WriteString(fu.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(jfu.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
-	builder.WriteString(fu.UpdatedAt.Format(time.ANSIC))
-	if v := fu.DeletedAt; v != nil {
+	builder.WriteString(jfu.UpdatedAt.Format(time.ANSIC))
+	if v := jfu.DeletedAt; v != nil {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", file_url=")
-	builder.WriteString(fu.FileURL)
+	builder.WriteString(jfu.FileURL)
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// FileUploads is a parsable slice of FileUpload.
-type FileUploads []*FileUpload
+// JobFileUploads is a parsable slice of JobFileUpload.
+type JobFileUploads []*JobFileUpload
 
-func (fu FileUploads) config(cfg config) {
-	for _i := range fu {
-		fu[_i].config = cfg
+func (jfu JobFileUploads) config(cfg config) {
+	for _i := range jfu {
+		jfu[_i].config = cfg
 	}
 }

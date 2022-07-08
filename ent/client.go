@@ -13,10 +13,10 @@ import (
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
-	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/internaltask"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/jobfileupload"
 	"github.com/10hourlabs/tentn/ent/jobpayment"
 	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
@@ -49,14 +49,14 @@ type Client struct {
 	EmailTemplate *EmailTemplateClient
 	// EmergencyContact is the client for interacting with the EmergencyContact builders.
 	EmergencyContact *EmergencyContactClient
-	// FileUpload is the client for interacting with the FileUpload builders.
-	FileUpload *FileUploadClient
 	// InternalTask is the client for interacting with the InternalTask builders.
 	InternalTask *InternalTaskClient
 	// Job is the client for interacting with the Job builders.
 	Job *JobClient
 	// JobApplication is the client for interacting with the JobApplication builders.
 	JobApplication *JobApplicationClient
+	// JobFileUpload is the client for interacting with the JobFileUpload builders.
+	JobFileUpload *JobFileUploadClient
 	// JobPayment is the client for interacting with the JobPayment builders.
 	JobPayment *JobPaymentClient
 	// Mission is the client for interacting with the Mission builders.
@@ -103,10 +103,10 @@ func (c *Client) init() {
 	c.Education = NewEducationClient(c.config)
 	c.EmailTemplate = NewEmailTemplateClient(c.config)
 	c.EmergencyContact = NewEmergencyContactClient(c.config)
-	c.FileUpload = NewFileUploadClient(c.config)
 	c.InternalTask = NewInternalTaskClient(c.config)
 	c.Job = NewJobClient(c.config)
 	c.JobApplication = NewJobApplicationClient(c.config)
+	c.JobFileUpload = NewJobFileUploadClient(c.config)
 	c.JobPayment = NewJobPaymentClient(c.config)
 	c.Mission = NewMissionClient(c.config)
 	c.Oauth2Client = NewOauth2ClientClient(c.config)
@@ -158,10 +158,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Education:        NewEducationClient(cfg),
 		EmailTemplate:    NewEmailTemplateClient(cfg),
 		EmergencyContact: NewEmergencyContactClient(cfg),
-		FileUpload:       NewFileUploadClient(cfg),
 		InternalTask:     NewInternalTaskClient(cfg),
 		Job:              NewJobClient(cfg),
 		JobApplication:   NewJobApplicationClient(cfg),
+		JobFileUpload:    NewJobFileUploadClient(cfg),
 		JobPayment:       NewJobPaymentClient(cfg),
 		Mission:          NewMissionClient(cfg),
 		Oauth2Client:     NewOauth2ClientClient(cfg),
@@ -199,10 +199,10 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Education:        NewEducationClient(cfg),
 		EmailTemplate:    NewEmailTemplateClient(cfg),
 		EmergencyContact: NewEmergencyContactClient(cfg),
-		FileUpload:       NewFileUploadClient(cfg),
 		InternalTask:     NewInternalTaskClient(cfg),
 		Job:              NewJobClient(cfg),
 		JobApplication:   NewJobApplicationClient(cfg),
+		JobFileUpload:    NewJobFileUploadClient(cfg),
 		JobPayment:       NewJobPaymentClient(cfg),
 		Mission:          NewMissionClient(cfg),
 		Oauth2Client:     NewOauth2ClientClient(cfg),
@@ -250,10 +250,10 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Education.Use(hooks...)
 	c.EmailTemplate.Use(hooks...)
 	c.EmergencyContact.Use(hooks...)
-	c.FileUpload.Use(hooks...)
 	c.InternalTask.Use(hooks...)
 	c.Job.Use(hooks...)
 	c.JobApplication.Use(hooks...)
+	c.JobFileUpload.Use(hooks...)
 	c.JobPayment.Use(hooks...)
 	c.Mission.Use(hooks...)
 	c.Oauth2Client.Use(hooks...)
@@ -589,112 +589,6 @@ func (c *EmergencyContactClient) Hooks() []Hook {
 	return c.hooks.EmergencyContact
 }
 
-// FileUploadClient is a client for the FileUpload schema.
-type FileUploadClient struct {
-	config
-}
-
-// NewFileUploadClient returns a client for the FileUpload from the given config.
-func NewFileUploadClient(c config) *FileUploadClient {
-	return &FileUploadClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `fileupload.Hooks(f(g(h())))`.
-func (c *FileUploadClient) Use(hooks ...Hook) {
-	c.hooks.FileUpload = append(c.hooks.FileUpload, hooks...)
-}
-
-// Create returns a create builder for FileUpload.
-func (c *FileUploadClient) Create() *FileUploadCreate {
-	mutation := newFileUploadMutation(c.config, OpCreate)
-	return &FileUploadCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of FileUpload entities.
-func (c *FileUploadClient) CreateBulk(builders ...*FileUploadCreate) *FileUploadCreateBulk {
-	return &FileUploadCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for FileUpload.
-func (c *FileUploadClient) Update() *FileUploadUpdate {
-	mutation := newFileUploadMutation(c.config, OpUpdate)
-	return &FileUploadUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *FileUploadClient) UpdateOne(fu *FileUpload) *FileUploadUpdateOne {
-	mutation := newFileUploadMutation(c.config, OpUpdateOne, withFileUpload(fu))
-	return &FileUploadUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *FileUploadClient) UpdateOneID(id uuid.UUID) *FileUploadUpdateOne {
-	mutation := newFileUploadMutation(c.config, OpUpdateOne, withFileUploadID(id))
-	return &FileUploadUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for FileUpload.
-func (c *FileUploadClient) Delete() *FileUploadDelete {
-	mutation := newFileUploadMutation(c.config, OpDelete)
-	return &FileUploadDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a delete builder for the given entity.
-func (c *FileUploadClient) DeleteOne(fu *FileUpload) *FileUploadDeleteOne {
-	return c.DeleteOneID(fu.ID)
-}
-
-// DeleteOneID returns a delete builder for the given id.
-func (c *FileUploadClient) DeleteOneID(id uuid.UUID) *FileUploadDeleteOne {
-	builder := c.Delete().Where(fileupload.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &FileUploadDeleteOne{builder}
-}
-
-// Query returns a query builder for FileUpload.
-func (c *FileUploadClient) Query() *FileUploadQuery {
-	return &FileUploadQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a FileUpload entity by its id.
-func (c *FileUploadClient) Get(ctx context.Context, id uuid.UUID) (*FileUpload, error) {
-	return c.Query().Where(fileupload.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *FileUploadClient) GetX(ctx context.Context, id uuid.UUID) *FileUpload {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryJobs queries the jobs edge of a FileUpload.
-func (c *FileUploadClient) QueryJobs(fu *FileUpload) *JobQuery {
-	query := &JobQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := fu.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(fileupload.Table, fileupload.FieldID, id),
-			sqlgraph.To(job.Table, job.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, fileupload.JobsTable, fileupload.JobsColumn),
-		)
-		fromV = sqlgraph.Neighbors(fu.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *FileUploadClient) Hooks() []Hook {
-	return c.hooks.FileUpload
-}
-
 // InternalTaskClient is a client for the InternalTask schema.
 type InternalTaskClient struct {
 	config
@@ -886,15 +780,15 @@ func (c *JobClient) QueryUser(j *Job) *UserQuery {
 	return query
 }
 
-// QueryFileUploads queries the file_uploads edge of a Job.
-func (c *JobClient) QueryFileUploads(j *Job) *FileUploadQuery {
-	query := &FileUploadQuery{config: c.config}
+// QueryJobFileUpload queries the job_file_upload edge of a Job.
+func (c *JobClient) QueryJobFileUpload(j *Job) *JobFileUploadQuery {
+	query := &JobFileUploadQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := j.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(job.Table, job.FieldID, id),
-			sqlgraph.To(fileupload.Table, fileupload.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, job.FileUploadsTable, job.FileUploadsColumn),
+			sqlgraph.To(jobfileupload.Table, jobfileupload.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, job.JobFileUploadTable, job.JobFileUploadColumn),
 		)
 		fromV = sqlgraph.Neighbors(j.driver.Dialect(), step)
 		return fromV, nil
@@ -918,15 +812,15 @@ func (c *JobClient) QueryApplications(j *Job) *JobApplicationQuery {
 	return query
 }
 
-// QueryJobpayments queries the jobpayments edge of a Job.
-func (c *JobClient) QueryJobpayments(j *Job) *JobPaymentQuery {
+// QueryJobPayments queries the job_payments edge of a Job.
+func (c *JobClient) QueryJobPayments(j *Job) *JobPaymentQuery {
 	query := &JobPaymentQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := j.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(job.Table, job.FieldID, id),
 			sqlgraph.To(jobpayment.Table, jobpayment.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, job.JobpaymentsTable, job.JobpaymentsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, job.JobPaymentsTable, job.JobPaymentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(j.driver.Dialect(), step)
 		return fromV, nil
@@ -1059,6 +953,112 @@ func (c *JobApplicationClient) QueryJob(ja *JobApplication) *JobQuery {
 // Hooks returns the client hooks.
 func (c *JobApplicationClient) Hooks() []Hook {
 	return c.hooks.JobApplication
+}
+
+// JobFileUploadClient is a client for the JobFileUpload schema.
+type JobFileUploadClient struct {
+	config
+}
+
+// NewJobFileUploadClient returns a client for the JobFileUpload from the given config.
+func NewJobFileUploadClient(c config) *JobFileUploadClient {
+	return &JobFileUploadClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `jobfileupload.Hooks(f(g(h())))`.
+func (c *JobFileUploadClient) Use(hooks ...Hook) {
+	c.hooks.JobFileUpload = append(c.hooks.JobFileUpload, hooks...)
+}
+
+// Create returns a create builder for JobFileUpload.
+func (c *JobFileUploadClient) Create() *JobFileUploadCreate {
+	mutation := newJobFileUploadMutation(c.config, OpCreate)
+	return &JobFileUploadCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of JobFileUpload entities.
+func (c *JobFileUploadClient) CreateBulk(builders ...*JobFileUploadCreate) *JobFileUploadCreateBulk {
+	return &JobFileUploadCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for JobFileUpload.
+func (c *JobFileUploadClient) Update() *JobFileUploadUpdate {
+	mutation := newJobFileUploadMutation(c.config, OpUpdate)
+	return &JobFileUploadUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *JobFileUploadClient) UpdateOne(jfu *JobFileUpload) *JobFileUploadUpdateOne {
+	mutation := newJobFileUploadMutation(c.config, OpUpdateOne, withJobFileUpload(jfu))
+	return &JobFileUploadUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *JobFileUploadClient) UpdateOneID(id uuid.UUID) *JobFileUploadUpdateOne {
+	mutation := newJobFileUploadMutation(c.config, OpUpdateOne, withJobFileUploadID(id))
+	return &JobFileUploadUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for JobFileUpload.
+func (c *JobFileUploadClient) Delete() *JobFileUploadDelete {
+	mutation := newJobFileUploadMutation(c.config, OpDelete)
+	return &JobFileUploadDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *JobFileUploadClient) DeleteOne(jfu *JobFileUpload) *JobFileUploadDeleteOne {
+	return c.DeleteOneID(jfu.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *JobFileUploadClient) DeleteOneID(id uuid.UUID) *JobFileUploadDeleteOne {
+	builder := c.Delete().Where(jobfileupload.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &JobFileUploadDeleteOne{builder}
+}
+
+// Query returns a query builder for JobFileUpload.
+func (c *JobFileUploadClient) Query() *JobFileUploadQuery {
+	return &JobFileUploadQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a JobFileUpload entity by its id.
+func (c *JobFileUploadClient) Get(ctx context.Context, id uuid.UUID) (*JobFileUpload, error) {
+	return c.Query().Where(jobfileupload.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *JobFileUploadClient) GetX(ctx context.Context, id uuid.UUID) *JobFileUpload {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryJobs queries the jobs edge of a JobFileUpload.
+func (c *JobFileUploadClient) QueryJobs(jfu *JobFileUpload) *JobQuery {
+	query := &JobQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := jfu.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(jobfileupload.Table, jobfileupload.FieldID, id),
+			sqlgraph.To(job.Table, job.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, jobfileupload.JobsTable, jobfileupload.JobsColumn),
+		)
+		fromV = sqlgraph.Neighbors(jfu.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *JobFileUploadClient) Hooks() []Hook {
+	return c.hooks.JobFileUpload
 }
 
 // JobPaymentClient is a client for the JobPayment schema.

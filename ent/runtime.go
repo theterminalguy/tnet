@@ -8,10 +8,10 @@ import (
 	"github.com/10hourlabs/tentn/ent/education"
 	"github.com/10hourlabs/tentn/ent/emailtemplate"
 	"github.com/10hourlabs/tentn/ent/emergencycontact"
-	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/internaltask"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/jobfileupload"
 	"github.com/10hourlabs/tentn/ent/jobpayment"
 	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
@@ -98,27 +98,6 @@ func init() {
 	emergencycontactDescID := emergencycontactMixinFields0[0].Descriptor()
 	// emergencycontact.DefaultID holds the default value on creation for the id field.
 	emergencycontact.DefaultID = emergencycontactDescID.Default.(func() uuid.UUID)
-	fileuploadMixin := schema.FileUpload{}.Mixin()
-	fileuploadMixinFields0 := fileuploadMixin[0].Fields()
-	_ = fileuploadMixinFields0
-	fileuploadMixinFields1 := fileuploadMixin[1].Fields()
-	_ = fileuploadMixinFields1
-	fileuploadFields := schema.FileUpload{}.Fields()
-	_ = fileuploadFields
-	// fileuploadDescCreatedAt is the schema descriptor for created_at field.
-	fileuploadDescCreatedAt := fileuploadMixinFields1[0].Descriptor()
-	// fileupload.DefaultCreatedAt holds the default value on creation for the created_at field.
-	fileupload.DefaultCreatedAt = fileuploadDescCreatedAt.Default.(func() time.Time)
-	// fileuploadDescUpdatedAt is the schema descriptor for updated_at field.
-	fileuploadDescUpdatedAt := fileuploadMixinFields1[1].Descriptor()
-	// fileupload.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	fileupload.DefaultUpdatedAt = fileuploadDescUpdatedAt.Default.(func() time.Time)
-	// fileupload.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	fileupload.UpdateDefaultUpdatedAt = fileuploadDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// fileuploadDescID is the schema descriptor for id field.
-	fileuploadDescID := fileuploadMixinFields0[0].Descriptor()
-	// fileupload.DefaultID holds the default value on creation for the id field.
-	fileupload.DefaultID = fileuploadDescID.Default.(func() uuid.UUID)
 	internaltaskMixin := schema.InternalTask{}.Mixin()
 	internaltaskMixinFields0 := internaltaskMixin[0].Fields()
 	_ = internaltaskMixinFields0
@@ -190,6 +169,27 @@ func init() {
 	jobapplicationDescID := jobapplicationMixinFields0[0].Descriptor()
 	// jobapplication.DefaultID holds the default value on creation for the id field.
 	jobapplication.DefaultID = jobapplicationDescID.Default.(func() uuid.UUID)
+	jobfileuploadMixin := schema.JobFileUpload{}.Mixin()
+	jobfileuploadMixinFields0 := jobfileuploadMixin[0].Fields()
+	_ = jobfileuploadMixinFields0
+	jobfileuploadMixinFields1 := jobfileuploadMixin[1].Fields()
+	_ = jobfileuploadMixinFields1
+	jobfileuploadFields := schema.JobFileUpload{}.Fields()
+	_ = jobfileuploadFields
+	// jobfileuploadDescCreatedAt is the schema descriptor for created_at field.
+	jobfileuploadDescCreatedAt := jobfileuploadMixinFields1[0].Descriptor()
+	// jobfileupload.DefaultCreatedAt holds the default value on creation for the created_at field.
+	jobfileupload.DefaultCreatedAt = jobfileuploadDescCreatedAt.Default.(func() time.Time)
+	// jobfileuploadDescUpdatedAt is the schema descriptor for updated_at field.
+	jobfileuploadDescUpdatedAt := jobfileuploadMixinFields1[1].Descriptor()
+	// jobfileupload.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	jobfileupload.DefaultUpdatedAt = jobfileuploadDescUpdatedAt.Default.(func() time.Time)
+	// jobfileupload.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	jobfileupload.UpdateDefaultUpdatedAt = jobfileuploadDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// jobfileuploadDescID is the schema descriptor for id field.
+	jobfileuploadDescID := jobfileuploadMixinFields0[0].Descriptor()
+	// jobfileupload.DefaultID holds the default value on creation for the id field.
+	jobfileupload.DefaultID = jobfileuploadDescID.Default.(func() uuid.UUID)
 	jobpaymentMixin := schema.JobPayment{}.Mixin()
 	jobpaymentMixinFields0 := jobpaymentMixin[0].Fields()
 	_ = jobpaymentMixinFields0

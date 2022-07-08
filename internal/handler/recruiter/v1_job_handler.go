@@ -22,15 +22,15 @@ import (
 type V1RecruiterJobHandler struct {
 	JobRepository           repo.JobQuerier
 	JobSearch               *search.JobSearch
-	JobCollectionRepository *repo.JobRepository
-	FileUploadRepository    *repo.FileUploadRepository
+	JobRepo                 *repo.JobRepository
+	JobFileUploadRepository *repo.JobFileUploadRepository
 }
 
 func NewV1RecruiterJobHandler(jobQuerier repo.JobQuerier) *V1RecruiterJobHandler {
 	return &V1RecruiterJobHandler{
 		JobRepository:           jobQuerier,
-		FileUploadRepository:    repo.NewFileUploadRepository(),
-		JobCollectionRepository: repo.NewJobRepository(),
+		JobFileUploadRepository: repo.NewJobFileUploadRepository(),
+		JobRepo:                 repo.NewJobRepository(),
 	}
 }
 
@@ -115,10 +115,10 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	// create DB transaction
 	// TODO: Wrap the query in a Transaction (Tx)
 	//create a file upload
-	fileuploadParams := new(repo.FileUploadParams)
+	fileuploadParams := new(repo.JobFileUploadParams)
 	fileuploadParams.FileUrl = path
 
-	f, err := h.FileUploadRepository.Create(*fileuploadParams)
+	f, err := h.JobFileUploadRepository.Create(*fileuploadParams)
 
 	if err != nil {
 		return err
@@ -140,7 +140,7 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 		params.Category = "na"
 		params.UserID = recruiterID
 		params.AttachmentID = f.ID
-		jd, err := h.JobRepository.Create(*params)
+		jd, err := h.JobRepo.Create(*params)
 		if err != nil {
 			return c.String(http.StatusBadGateway, err.Error())
 		}
