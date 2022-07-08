@@ -1,8 +1,7 @@
 package payment
 
 import (
-	"log"
-
+	"github.com/10hourlabs/tenlog"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -16,7 +15,7 @@ type PaymentService struct{}
 
 func NewPaymentService(payment_type string) PaymentManager {
 	if payment_type == "" {
-		log.Panic("Unable to process any payment driver")
+		tenlog.Error("Unable to process any payment driver")
 	}
 	payments := map[string]PaymentManager{
 		"stripe": NewStripePayment(),

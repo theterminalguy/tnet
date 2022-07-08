@@ -5,19 +5,19 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// Payment holds the schema definition for the Payment entity.
-type Payment struct {
+// Payment holds the schema definition for the JobPayment entity.
+type JobPayment struct {
 	ent.Schema
 }
 
-func (Payment) Mixin() []ent.Mixin {
+func (JobPayment) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		UUIDMixin{},
 		TimeStampMixin{},
 		BelongsToMixin{
 			ParentName: "job",
 			ParentType: Job.Type,
-			Ref:        "payments",
+			Ref:        "jobpayments",
 			ForeignKey: "job_id",
 		},
 	}
@@ -30,8 +30,8 @@ func StatusTypes() []string {
 	}
 }
 
-// Fields of the Payment.
-func (Payment) Fields() []ent.Field {
+// Fields of the JobPayment.
+func (JobPayment) Fields() []ent.Field {
 	return []ent.Field{
 		field.Float("amount").Default(0),
 		field.Enum("status").
@@ -44,7 +44,7 @@ func (Payment) Fields() []ent.Field {
 	}
 }
 
-// Edges of the Payment.
-func (Payment) Edges() []ent.Edge {
+// Edges of the JobPayment.
+func (JobPayment) Edges() []ent.Edge {
 	return nil
 }

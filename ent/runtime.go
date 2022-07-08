@@ -12,11 +12,11 @@ import (
 	"github.com/10hourlabs/tentn/ent/internaltask"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/jobpayment"
 	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/oauth2token"
 	"github.com/10hourlabs/tentn/ent/partner"
-	"github.com/10hourlabs/tentn/ent/payment"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/schema"
 	"github.com/10hourlabs/tentn/ent/searchlog"
@@ -190,6 +190,39 @@ func init() {
 	jobapplicationDescID := jobapplicationMixinFields0[0].Descriptor()
 	// jobapplication.DefaultID holds the default value on creation for the id field.
 	jobapplication.DefaultID = jobapplicationDescID.Default.(func() uuid.UUID)
+	jobpaymentMixin := schema.JobPayment{}.Mixin()
+	jobpaymentMixinFields0 := jobpaymentMixin[0].Fields()
+	_ = jobpaymentMixinFields0
+	jobpaymentMixinFields1 := jobpaymentMixin[1].Fields()
+	_ = jobpaymentMixinFields1
+	jobpaymentFields := schema.JobPayment{}.Fields()
+	_ = jobpaymentFields
+	// jobpaymentDescCreatedAt is the schema descriptor for created_at field.
+	jobpaymentDescCreatedAt := jobpaymentMixinFields1[0].Descriptor()
+	// jobpayment.DefaultCreatedAt holds the default value on creation for the created_at field.
+	jobpayment.DefaultCreatedAt = jobpaymentDescCreatedAt.Default.(func() time.Time)
+	// jobpaymentDescUpdatedAt is the schema descriptor for updated_at field.
+	jobpaymentDescUpdatedAt := jobpaymentMixinFields1[1].Descriptor()
+	// jobpayment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	jobpayment.DefaultUpdatedAt = jobpaymentDescUpdatedAt.Default.(func() time.Time)
+	// jobpayment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	jobpayment.UpdateDefaultUpdatedAt = jobpaymentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// jobpaymentDescAmount is the schema descriptor for amount field.
+	jobpaymentDescAmount := jobpaymentFields[0].Descriptor()
+	// jobpayment.DefaultAmount holds the default value on creation for the amount field.
+	jobpayment.DefaultAmount = jobpaymentDescAmount.Default.(float64)
+	// jobpaymentDescRefID is the schema descriptor for ref_id field.
+	jobpaymentDescRefID := jobpaymentFields[2].Descriptor()
+	// jobpayment.DefaultRefID holds the default value on creation for the ref_id field.
+	jobpayment.DefaultRefID = jobpaymentDescRefID.Default.(string)
+	// jobpaymentDescCurrency is the schema descriptor for currency field.
+	jobpaymentDescCurrency := jobpaymentFields[4].Descriptor()
+	// jobpayment.DefaultCurrency holds the default value on creation for the currency field.
+	jobpayment.DefaultCurrency = jobpaymentDescCurrency.Default.(string)
+	// jobpaymentDescID is the schema descriptor for id field.
+	jobpaymentDescID := jobpaymentMixinFields0[0].Descriptor()
+	// jobpayment.DefaultID holds the default value on creation for the id field.
+	jobpayment.DefaultID = jobpaymentDescID.Default.(func() uuid.UUID)
 	missionMixin := schema.Mission{}.Mixin()
 	missionMixinFields0 := missionMixin[0].Fields()
 	_ = missionMixinFields0
@@ -282,39 +315,6 @@ func init() {
 	partnerDescID := partnerMixinFields0[0].Descriptor()
 	// partner.DefaultID holds the default value on creation for the id field.
 	partner.DefaultID = partnerDescID.Default.(func() uuid.UUID)
-	paymentMixin := schema.Payment{}.Mixin()
-	paymentMixinFields0 := paymentMixin[0].Fields()
-	_ = paymentMixinFields0
-	paymentMixinFields1 := paymentMixin[1].Fields()
-	_ = paymentMixinFields1
-	paymentFields := schema.Payment{}.Fields()
-	_ = paymentFields
-	// paymentDescCreatedAt is the schema descriptor for created_at field.
-	paymentDescCreatedAt := paymentMixinFields1[0].Descriptor()
-	// payment.DefaultCreatedAt holds the default value on creation for the created_at field.
-	payment.DefaultCreatedAt = paymentDescCreatedAt.Default.(func() time.Time)
-	// paymentDescUpdatedAt is the schema descriptor for updated_at field.
-	paymentDescUpdatedAt := paymentMixinFields1[1].Descriptor()
-	// payment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	payment.DefaultUpdatedAt = paymentDescUpdatedAt.Default.(func() time.Time)
-	// payment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	payment.UpdateDefaultUpdatedAt = paymentDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// paymentDescAmount is the schema descriptor for amount field.
-	paymentDescAmount := paymentFields[0].Descriptor()
-	// payment.DefaultAmount holds the default value on creation for the amount field.
-	payment.DefaultAmount = paymentDescAmount.Default.(float64)
-	// paymentDescRefID is the schema descriptor for ref_id field.
-	paymentDescRefID := paymentFields[2].Descriptor()
-	// payment.DefaultRefID holds the default value on creation for the ref_id field.
-	payment.DefaultRefID = paymentDescRefID.Default.(string)
-	// paymentDescCurrency is the schema descriptor for currency field.
-	paymentDescCurrency := paymentFields[4].Descriptor()
-	// payment.DefaultCurrency holds the default value on creation for the currency field.
-	payment.DefaultCurrency = paymentDescCurrency.Default.(string)
-	// paymentDescID is the schema descriptor for id field.
-	paymentDescID := paymentMixinFields0[0].Descriptor()
-	// payment.DefaultID holds the default value on creation for the id field.
-	payment.DefaultID = paymentDescID.Default.(func() uuid.UUID)
 	portfoliolinkMixin := schema.PortfolioLink{}.Mixin()
 	portfoliolinkMixinFields0 := portfoliolinkMixin[0].Fields()
 	_ = portfoliolinkMixinFields0

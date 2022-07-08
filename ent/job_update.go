@@ -14,7 +14,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
-	"github.com/10hourlabs/tentn/ent/payment"
+	"github.com/10hourlabs/tentn/ent/jobpayment"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
@@ -220,19 +220,19 @@ func (ju *JobUpdate) AddApplications(j ...*JobApplication) *JobUpdate {
 	return ju.AddApplicationIDs(ids...)
 }
 
-// AddPaymentIDs adds the "payments" edge to the Payment entity by IDs.
-func (ju *JobUpdate) AddPaymentIDs(ids ...uuid.UUID) *JobUpdate {
-	ju.mutation.AddPaymentIDs(ids...)
+// AddJobpaymentIDs adds the "jobpayments" edge to the JobPayment entity by IDs.
+func (ju *JobUpdate) AddJobpaymentIDs(ids ...uuid.UUID) *JobUpdate {
+	ju.mutation.AddJobpaymentIDs(ids...)
 	return ju
 }
 
-// AddPayments adds the "payments" edges to the Payment entity.
-func (ju *JobUpdate) AddPayments(p ...*Payment) *JobUpdate {
-	ids := make([]uuid.UUID, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
+// AddJobpayments adds the "jobpayments" edges to the JobPayment entity.
+func (ju *JobUpdate) AddJobpayments(j ...*JobPayment) *JobUpdate {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
 	}
-	return ju.AddPaymentIDs(ids...)
+	return ju.AddJobpaymentIDs(ids...)
 }
 
 // Mutation returns the JobMutation object of the builder.
@@ -273,25 +273,25 @@ func (ju *JobUpdate) RemoveApplications(j ...*JobApplication) *JobUpdate {
 	return ju.RemoveApplicationIDs(ids...)
 }
 
-// ClearPayments clears all "payments" edges to the Payment entity.
-func (ju *JobUpdate) ClearPayments() *JobUpdate {
-	ju.mutation.ClearPayments()
+// ClearJobpayments clears all "jobpayments" edges to the JobPayment entity.
+func (ju *JobUpdate) ClearJobpayments() *JobUpdate {
+	ju.mutation.ClearJobpayments()
 	return ju
 }
 
-// RemovePaymentIDs removes the "payments" edge to Payment entities by IDs.
-func (ju *JobUpdate) RemovePaymentIDs(ids ...uuid.UUID) *JobUpdate {
-	ju.mutation.RemovePaymentIDs(ids...)
+// RemoveJobpaymentIDs removes the "jobpayments" edge to JobPayment entities by IDs.
+func (ju *JobUpdate) RemoveJobpaymentIDs(ids ...uuid.UUID) *JobUpdate {
+	ju.mutation.RemoveJobpaymentIDs(ids...)
 	return ju
 }
 
-// RemovePayments removes "payments" edges to Payment entities.
-func (ju *JobUpdate) RemovePayments(p ...*Payment) *JobUpdate {
-	ids := make([]uuid.UUID, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
+// RemoveJobpayments removes "jobpayments" edges to JobPayment entities.
+func (ju *JobUpdate) RemoveJobpayments(j ...*JobPayment) *JobUpdate {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
 	}
-	return ju.RemovePaymentIDs(ids...)
+	return ju.RemoveJobpaymentIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -617,33 +617,33 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ju.mutation.PaymentsCleared() {
+	if ju.mutation.JobpaymentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   job.PaymentsTable,
-			Columns: []string{job.PaymentsColumn},
+			Table:   job.JobpaymentsTable,
+			Columns: []string{job.JobpaymentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: payment.FieldID,
+					Column: jobpayment.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ju.mutation.RemovedPaymentsIDs(); len(nodes) > 0 && !ju.mutation.PaymentsCleared() {
+	if nodes := ju.mutation.RemovedJobpaymentsIDs(); len(nodes) > 0 && !ju.mutation.JobpaymentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   job.PaymentsTable,
-			Columns: []string{job.PaymentsColumn},
+			Table:   job.JobpaymentsTable,
+			Columns: []string{job.JobpaymentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: payment.FieldID,
+					Column: jobpayment.FieldID,
 				},
 			},
 		}
@@ -652,17 +652,17 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ju.mutation.PaymentsIDs(); len(nodes) > 0 {
+	if nodes := ju.mutation.JobpaymentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   job.PaymentsTable,
-			Columns: []string{job.PaymentsColumn},
+			Table:   job.JobpaymentsTable,
+			Columns: []string{job.JobpaymentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: payment.FieldID,
+					Column: jobpayment.FieldID,
 				},
 			},
 		}
@@ -877,19 +877,19 @@ func (juo *JobUpdateOne) AddApplications(j ...*JobApplication) *JobUpdateOne {
 	return juo.AddApplicationIDs(ids...)
 }
 
-// AddPaymentIDs adds the "payments" edge to the Payment entity by IDs.
-func (juo *JobUpdateOne) AddPaymentIDs(ids ...uuid.UUID) *JobUpdateOne {
-	juo.mutation.AddPaymentIDs(ids...)
+// AddJobpaymentIDs adds the "jobpayments" edge to the JobPayment entity by IDs.
+func (juo *JobUpdateOne) AddJobpaymentIDs(ids ...uuid.UUID) *JobUpdateOne {
+	juo.mutation.AddJobpaymentIDs(ids...)
 	return juo
 }
 
-// AddPayments adds the "payments" edges to the Payment entity.
-func (juo *JobUpdateOne) AddPayments(p ...*Payment) *JobUpdateOne {
-	ids := make([]uuid.UUID, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
+// AddJobpayments adds the "jobpayments" edges to the JobPayment entity.
+func (juo *JobUpdateOne) AddJobpayments(j ...*JobPayment) *JobUpdateOne {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
 	}
-	return juo.AddPaymentIDs(ids...)
+	return juo.AddJobpaymentIDs(ids...)
 }
 
 // Mutation returns the JobMutation object of the builder.
@@ -930,25 +930,25 @@ func (juo *JobUpdateOne) RemoveApplications(j ...*JobApplication) *JobUpdateOne 
 	return juo.RemoveApplicationIDs(ids...)
 }
 
-// ClearPayments clears all "payments" edges to the Payment entity.
-func (juo *JobUpdateOne) ClearPayments() *JobUpdateOne {
-	juo.mutation.ClearPayments()
+// ClearJobpayments clears all "jobpayments" edges to the JobPayment entity.
+func (juo *JobUpdateOne) ClearJobpayments() *JobUpdateOne {
+	juo.mutation.ClearJobpayments()
 	return juo
 }
 
-// RemovePaymentIDs removes the "payments" edge to Payment entities by IDs.
-func (juo *JobUpdateOne) RemovePaymentIDs(ids ...uuid.UUID) *JobUpdateOne {
-	juo.mutation.RemovePaymentIDs(ids...)
+// RemoveJobpaymentIDs removes the "jobpayments" edge to JobPayment entities by IDs.
+func (juo *JobUpdateOne) RemoveJobpaymentIDs(ids ...uuid.UUID) *JobUpdateOne {
+	juo.mutation.RemoveJobpaymentIDs(ids...)
 	return juo
 }
 
-// RemovePayments removes "payments" edges to Payment entities.
-func (juo *JobUpdateOne) RemovePayments(p ...*Payment) *JobUpdateOne {
-	ids := make([]uuid.UUID, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
+// RemoveJobpayments removes "jobpayments" edges to JobPayment entities.
+func (juo *JobUpdateOne) RemoveJobpayments(j ...*JobPayment) *JobUpdateOne {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
 	}
-	return juo.RemovePaymentIDs(ids...)
+	return juo.RemoveJobpaymentIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1298,33 +1298,33 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if juo.mutation.PaymentsCleared() {
+	if juo.mutation.JobpaymentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   job.PaymentsTable,
-			Columns: []string{job.PaymentsColumn},
+			Table:   job.JobpaymentsTable,
+			Columns: []string{job.JobpaymentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: payment.FieldID,
+					Column: jobpayment.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := juo.mutation.RemovedPaymentsIDs(); len(nodes) > 0 && !juo.mutation.PaymentsCleared() {
+	if nodes := juo.mutation.RemovedJobpaymentsIDs(); len(nodes) > 0 && !juo.mutation.JobpaymentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   job.PaymentsTable,
-			Columns: []string{job.PaymentsColumn},
+			Table:   job.JobpaymentsTable,
+			Columns: []string{job.JobpaymentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: payment.FieldID,
+					Column: jobpayment.FieldID,
 				},
 			},
 		}
@@ -1333,17 +1333,17 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := juo.mutation.PaymentsIDs(); len(nodes) > 0 {
+	if nodes := juo.mutation.JobpaymentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   job.PaymentsTable,
-			Columns: []string{job.PaymentsColumn},
+			Table:   job.JobpaymentsTable,
+			Columns: []string{job.JobpaymentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: payment.FieldID,
+					Column: jobpayment.FieldID,
 				},
 			},
 		}

@@ -10,12 +10,12 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/payment"
+	"github.com/10hourlabs/tentn/ent/jobpayment"
 	"github.com/google/uuid"
 )
 
-// Payment is the model entity for the Payment schema.
-type Payment struct {
+// JobPayment is the model entity for the JobPayment schema.
+type JobPayment struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uuid.UUID `json:"id,omitempty"`
@@ -30,7 +30,7 @@ type Payment struct {
 	// Amount holds the value of the "amount" field.
 	Amount float64 `json:"amount,omitempty"`
 	// Status holds the value of the "status" field.
-	Status payment.Status `json:"status,omitempty"`
+	Status jobpayment.Status `json:"status,omitempty"`
 	// RefID holds the value of the "ref_id" field.
 	RefID string `json:"ref_id,omitempty"`
 	// Message holds the value of the "message" field.
@@ -42,12 +42,12 @@ type Payment struct {
 	// Payload holds the value of the "payload" field.
 	Payload []string `json:"payload,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the PaymentQuery when eager-loading is set.
-	Edges PaymentEdges `json:"edges"`
+	// The values are being populated by the JobPaymentQuery when eager-loading is set.
+	Edges JobPaymentEdges `json:"edges"`
 }
 
-// PaymentEdges holds the relations/edges for other nodes in the graph.
-type PaymentEdges struct {
+// JobPaymentEdges holds the relations/edges for other nodes in the graph.
+type JobPaymentEdges struct {
 	// Job holds the value of the job edge.
 	Job *Job `json:"job,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -57,7 +57,7 @@ type PaymentEdges struct {
 
 // JobOrErr returns the Job value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e PaymentEdges) JobOrErr() (*Job, error) {
+func (e JobPaymentEdges) JobOrErr() (*Job, error) {
 	if e.loadedTypes[0] {
 		if e.Job == nil {
 			// The edge job was loaded in eager-loading,
@@ -70,107 +70,107 @@ func (e PaymentEdges) JobOrErr() (*Job, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Payment) scanValues(columns []string) ([]interface{}, error) {
+func (*JobPayment) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case payment.FieldPayload:
+		case jobpayment.FieldPayload:
 			values[i] = new([]byte)
-		case payment.FieldAmount:
+		case jobpayment.FieldAmount:
 			values[i] = new(sql.NullFloat64)
-		case payment.FieldStatus, payment.FieldRefID, payment.FieldMessage, payment.FieldCurrency, payment.FieldPaymentLink:
+		case jobpayment.FieldStatus, jobpayment.FieldRefID, jobpayment.FieldMessage, jobpayment.FieldCurrency, jobpayment.FieldPaymentLink:
 			values[i] = new(sql.NullString)
-		case payment.FieldCreatedAt, payment.FieldUpdatedAt, payment.FieldDeletedAt:
+		case jobpayment.FieldCreatedAt, jobpayment.FieldUpdatedAt, jobpayment.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case payment.FieldID, payment.FieldJobID:
+		case jobpayment.FieldID, jobpayment.FieldJobID:
 			values[i] = new(uuid.UUID)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Payment", columns[i])
+			return nil, fmt.Errorf("unexpected column %q for type JobPayment", columns[i])
 		}
 	}
 	return values, nil
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Payment fields.
-func (pa *Payment) assignValues(columns []string, values []interface{}) error {
+// to the JobPayment fields.
+func (jp *JobPayment) assignValues(columns []string, values []interface{}) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case payment.FieldID:
+		case jobpayment.FieldID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				pa.ID = *value
+				jp.ID = *value
 			}
-		case payment.FieldCreatedAt:
+		case jobpayment.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				pa.CreatedAt = value.Time
+				jp.CreatedAt = value.Time
 			}
-		case payment.FieldUpdatedAt:
+		case jobpayment.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				pa.UpdatedAt = value.Time
+				jp.UpdatedAt = value.Time
 			}
-		case payment.FieldDeletedAt:
+		case jobpayment.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				pa.DeletedAt = new(time.Time)
-				*pa.DeletedAt = value.Time
+				jp.DeletedAt = new(time.Time)
+				*jp.DeletedAt = value.Time
 			}
-		case payment.FieldJobID:
+		case jobpayment.FieldJobID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field job_id", values[i])
 			} else if value != nil {
-				pa.JobID = *value
+				jp.JobID = *value
 			}
-		case payment.FieldAmount:
+		case jobpayment.FieldAmount:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field amount", values[i])
 			} else if value.Valid {
-				pa.Amount = value.Float64
+				jp.Amount = value.Float64
 			}
-		case payment.FieldStatus:
+		case jobpayment.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				pa.Status = payment.Status(value.String)
+				jp.Status = jobpayment.Status(value.String)
 			}
-		case payment.FieldRefID:
+		case jobpayment.FieldRefID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field ref_id", values[i])
 			} else if value.Valid {
-				pa.RefID = value.String
+				jp.RefID = value.String
 			}
-		case payment.FieldMessage:
+		case jobpayment.FieldMessage:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field message", values[i])
 			} else if value.Valid {
-				pa.Message = value.String
+				jp.Message = value.String
 			}
-		case payment.FieldCurrency:
+		case jobpayment.FieldCurrency:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field currency", values[i])
 			} else if value.Valid {
-				pa.Currency = value.String
+				jp.Currency = value.String
 			}
-		case payment.FieldPaymentLink:
+		case jobpayment.FieldPaymentLink:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field payment_link", values[i])
 			} else if value.Valid {
-				pa.PaymentLink = value.String
+				jp.PaymentLink = value.String
 			}
-		case payment.FieldPayload:
+		case jobpayment.FieldPayload:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field payload", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &pa.Payload); err != nil {
+				if err := json.Unmarshal(*value, &jp.Payload); err != nil {
 					return fmt.Errorf("unmarshal field payload: %w", err)
 				}
 			}
@@ -179,67 +179,67 @@ func (pa *Payment) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryJob queries the "job" edge of the Payment entity.
-func (pa *Payment) QueryJob() *JobQuery {
-	return (&PaymentClient{config: pa.config}).QueryJob(pa)
+// QueryJob queries the "job" edge of the JobPayment entity.
+func (jp *JobPayment) QueryJob() *JobQuery {
+	return (&JobPaymentClient{config: jp.config}).QueryJob(jp)
 }
 
-// Update returns a builder for updating this Payment.
-// Note that you need to call Payment.Unwrap() before calling this method if this Payment
+// Update returns a builder for updating this JobPayment.
+// Note that you need to call JobPayment.Unwrap() before calling this method if this JobPayment
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (pa *Payment) Update() *PaymentUpdateOne {
-	return (&PaymentClient{config: pa.config}).UpdateOne(pa)
+func (jp *JobPayment) Update() *JobPaymentUpdateOne {
+	return (&JobPaymentClient{config: jp.config}).UpdateOne(jp)
 }
 
-// Unwrap unwraps the Payment entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the JobPayment entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (pa *Payment) Unwrap() *Payment {
-	tx, ok := pa.config.driver.(*txDriver)
+func (jp *JobPayment) Unwrap() *JobPayment {
+	tx, ok := jp.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Payment is not a transactional entity")
+		panic("ent: JobPayment is not a transactional entity")
 	}
-	pa.config.driver = tx.drv
-	return pa
+	jp.config.driver = tx.drv
+	return jp
 }
 
 // String implements the fmt.Stringer.
-func (pa *Payment) String() string {
+func (jp *JobPayment) String() string {
 	var builder strings.Builder
-	builder.WriteString("Payment(")
-	builder.WriteString(fmt.Sprintf("id=%v", pa.ID))
+	builder.WriteString("JobPayment(")
+	builder.WriteString(fmt.Sprintf("id=%v", jp.ID))
 	builder.WriteString(", created_at=")
-	builder.WriteString(pa.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(jp.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
-	builder.WriteString(pa.UpdatedAt.Format(time.ANSIC))
-	if v := pa.DeletedAt; v != nil {
+	builder.WriteString(jp.UpdatedAt.Format(time.ANSIC))
+	if v := jp.DeletedAt; v != nil {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", job_id=")
-	builder.WriteString(fmt.Sprintf("%v", pa.JobID))
+	builder.WriteString(fmt.Sprintf("%v", jp.JobID))
 	builder.WriteString(", amount=")
-	builder.WriteString(fmt.Sprintf("%v", pa.Amount))
+	builder.WriteString(fmt.Sprintf("%v", jp.Amount))
 	builder.WriteString(", status=")
-	builder.WriteString(fmt.Sprintf("%v", pa.Status))
+	builder.WriteString(fmt.Sprintf("%v", jp.Status))
 	builder.WriteString(", ref_id=")
-	builder.WriteString(pa.RefID)
+	builder.WriteString(jp.RefID)
 	builder.WriteString(", message=")
-	builder.WriteString(pa.Message)
+	builder.WriteString(jp.Message)
 	builder.WriteString(", currency=")
-	builder.WriteString(pa.Currency)
+	builder.WriteString(jp.Currency)
 	builder.WriteString(", payment_link=")
-	builder.WriteString(pa.PaymentLink)
+	builder.WriteString(jp.PaymentLink)
 	builder.WriteString(", payload=")
-	builder.WriteString(fmt.Sprintf("%v", pa.Payload))
+	builder.WriteString(fmt.Sprintf("%v", jp.Payload))
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// Payments is a parsable slice of Payment.
-type Payments []*Payment
+// JobPayments is a parsable slice of JobPayment.
+type JobPayments []*JobPayment
 
-func (pa Payments) config(cfg config) {
-	for _i := range pa {
-		pa[_i].config = cfg
+func (jp JobPayments) config(cfg config) {
+	for _i := range jp {
+		jp[_i].config = cfg
 	}
 }

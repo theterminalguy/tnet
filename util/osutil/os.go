@@ -24,6 +24,11 @@ var requiredRuntimeEnvForDev = []string{
 
 	"GOOGLE_OAUTH_CLIENT_ID",
 	"GOOGLE_OAUTH_CLIENT_SECRET",
+
+	"PAYMENT_DRIVER",
+	"STRIPE_API_KEY",
+	"STRIPE_PRODUCT_KEY",
+	"STRIPE_ENDPOINT_SECRET",
 }
 
 var requiredRuntimeEnvForProd = []string{
@@ -32,6 +37,9 @@ var requiredRuntimeEnvForProd = []string{
 	"CLOUDSQL_PG_DBNAME",
 	"CLOUDSQL_PG_SOCKET_DIR",
 	"CLOUDSQL_PG_INSTANCE",
+
+	"FILESYSTEM_DRIVER",
+	"GOOGLE_APPLICATION_CREDENTIALS",
 }
 
 func CheckEnv() {

@@ -67,8 +67,8 @@ type JobEdges struct {
 	FileUploads *FileUpload `json:"file_uploads,omitempty"`
 	// Applications holds the value of the applications edge.
 	Applications []*JobApplication `json:"applications,omitempty"`
-	// Payments holds the value of the payments edge.
-	Payments []*Payment `json:"payments,omitempty"`
+	// Jobpayments holds the value of the jobpayments edge.
+	Jobpayments []*JobPayment `json:"jobpayments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [4]bool
@@ -111,13 +111,13 @@ func (e JobEdges) ApplicationsOrErr() ([]*JobApplication, error) {
 	return nil, &NotLoadedError{edge: "applications"}
 }
 
-// PaymentsOrErr returns the Payments value or an error if the edge
+// JobpaymentsOrErr returns the Jobpayments value or an error if the edge
 // was not loaded in eager-loading.
-func (e JobEdges) PaymentsOrErr() ([]*Payment, error) {
+func (e JobEdges) JobpaymentsOrErr() ([]*JobPayment, error) {
 	if e.loadedTypes[3] {
-		return e.Payments, nil
+		return e.Jobpayments, nil
 	}
-	return nil, &NotLoadedError{edge: "payments"}
+	return nil, &NotLoadedError{edge: "jobpayments"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -285,9 +285,9 @@ func (j *Job) QueryApplications() *JobApplicationQuery {
 	return (&JobClient{config: j.config}).QueryApplications(j)
 }
 
-// QueryPayments queries the "payments" edge of the Job entity.
-func (j *Job) QueryPayments() *PaymentQuery {
-	return (&JobClient{config: j.config}).QueryPayments(j)
+// QueryJobpayments queries the "jobpayments" edge of the Job entity.
+func (j *Job) QueryJobpayments() *JobPaymentQuery {
+	return (&JobClient{config: j.config}).QueryJobpayments(j)
 }
 
 // Update returns a builder for updating this Job.

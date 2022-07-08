@@ -1,45 +1,48 @@
 package payment
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
 
+	"github.com/10hourlabs/tenlog"
 	"github.com/10hourlabs/tentn/internal/repository"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
-type GeneratePaymentLinkResponse struct {
+type PaymentLinkResponse struct {
 	URL string `json:"url"`
 }
 
 type StripePayment struct {
-	repo *repository.PaymentRepository
+	repo *repository.JobPaymentRepository
 }
 
 func NewStripePayment() *StripePayment {
 	return &StripePayment{
-		repo: repository.NewPaymentRepository(),
+		repo: repository.NewJobPaymentRepository(),
 	}
 }
 
 func (p *StripePayment) GenerateLink(jobID uuid.UUID) (string, error) {
-	url := "https://api.stripe.com/v1/payment_links"
+	endpointUrl := "https://api.stripe.com/v1/payment_links"
 	priceKey := os.Getenv("STRIPE_PRODUCT_KEY")
 	apikey := os.Getenv("STRIPE_API_KEY")
 
 	if priceKey == "" {
-		log.Panic("Stripe product key is required")
+		tenlog.Error("Stripe product key is required")
 	}
 
-	data := []byte(fmt.Sprintf("line_items[0][price]=%s&line_items[0][quantity]=1&metadata[jobID]=%s", priceKey, jobID))
-	responseBody := bytes.NewBuffer(data)
-	req, err := http.NewRequest("POST", url, responseBody)
+	params := url.Values{}
+	params.Add("line_items[0][price]", priceKey)
+	params.Add("line_items[0][quantity]", "1")
+	params.Add("metadata[jobID]", jobID.String())
+	body := strings.NewReader(params.Encode())
+	req, err := http.NewRequest("POST", endpointUrl, body)
 	if err != nil {
 		return "", err
 	}
@@ -52,13 +55,13 @@ func (p *StripePayment) GenerateLink(jobID uuid.UUID) (string, error) {
 
 	result, _ := ioutil.ReadAll(resp.Body)
 	defer req.Body.Close()
-	var g GeneratePaymentLinkResponse
+	var g PaymentLinkResponse
 	err = json.Unmarshal(result, &g)
 	if err != nil {
 		return "", nil
 	}
 
-	generateLink := repository.PaymentParams{
+	generateLink := repository.JobPaymentParams{
 		Status:      "not_paid",
 		Message:     "Pending",
 		PaymentLink: g.URL,

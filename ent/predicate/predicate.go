@@ -27,6 +27,9 @@ type Job func(*sql.Selector)
 // JobApplication is the predicate function for jobapplication builders.
 type JobApplication func(*sql.Selector)
 
+// JobPayment is the predicate function for jobpayment builders.
+type JobPayment func(*sql.Selector)
+
 // Mission is the predicate function for mission builders.
 type Mission func(*sql.Selector)
 
@@ -38,9 +41,6 @@ type Oauth2Token func(*sql.Selector)
 
 // Partner is the predicate function for partner builders.
 type Partner func(*sql.Selector)
-
-// Payment is the predicate function for payment builders.
-type Payment func(*sql.Selector)
 
 // PortfolioLink is the predicate function for portfoliolink builders.
 type PortfolioLink func(*sql.Selector)

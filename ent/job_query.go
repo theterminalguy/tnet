@@ -15,7 +15,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
-	"github.com/10hourlabs/tentn/ent/payment"
+	"github.com/10hourlabs/tentn/ent/jobpayment"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
@@ -34,7 +34,7 @@ type JobQuery struct {
 	withUser         *UserQuery
 	withFileUploads  *FileUploadQuery
 	withApplications *JobApplicationQuery
-	withPayments     *PaymentQuery
+	withJobpayments  *JobPaymentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -137,9 +137,9 @@ func (jq *JobQuery) QueryApplications() *JobApplicationQuery {
 	return query
 }
 
-// QueryPayments chains the current query on the "payments" edge.
-func (jq *JobQuery) QueryPayments() *PaymentQuery {
-	query := &PaymentQuery{config: jq.config}
+// QueryJobpayments chains the current query on the "jobpayments" edge.
+func (jq *JobQuery) QueryJobpayments() *JobPaymentQuery {
+	query := &JobPaymentQuery{config: jq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := jq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -150,8 +150,8 @@ func (jq *JobQuery) QueryPayments() *PaymentQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(job.Table, job.FieldID, selector),
-			sqlgraph.To(payment.Table, payment.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, job.PaymentsTable, job.PaymentsColumn),
+			sqlgraph.To(jobpayment.Table, jobpayment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, job.JobpaymentsTable, job.JobpaymentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(jq.driver.Dialect(), step)
 		return fromU, nil
@@ -343,7 +343,7 @@ func (jq *JobQuery) Clone() *JobQuery {
 		withUser:         jq.withUser.Clone(),
 		withFileUploads:  jq.withFileUploads.Clone(),
 		withApplications: jq.withApplications.Clone(),
-		withPayments:     jq.withPayments.Clone(),
+		withJobpayments:  jq.withJobpayments.Clone(),
 		// clone intermediate query.
 		sql:    jq.sql.Clone(),
 		path:   jq.path,
@@ -384,14 +384,14 @@ func (jq *JobQuery) WithApplications(opts ...func(*JobApplicationQuery)) *JobQue
 	return jq
 }
 
-// WithPayments tells the query-builder to eager-load the nodes that are connected to
-// the "payments" edge. The optional arguments are used to configure the query builder of the edge.
-func (jq *JobQuery) WithPayments(opts ...func(*PaymentQuery)) *JobQuery {
-	query := &PaymentQuery{config: jq.config}
+// WithJobpayments tells the query-builder to eager-load the nodes that are connected to
+// the "jobpayments" edge. The optional arguments are used to configure the query builder of the edge.
+func (jq *JobQuery) WithJobpayments(opts ...func(*JobPaymentQuery)) *JobQuery {
+	query := &JobPaymentQuery{config: jq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	jq.withPayments = query
+	jq.withJobpayments = query
 	return jq
 }
 
@@ -464,7 +464,7 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 			jq.withUser != nil,
 			jq.withFileUploads != nil,
 			jq.withApplications != nil,
-			jq.withPayments != nil,
+			jq.withJobpayments != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -564,16 +564,16 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 		}
 	}
 
-	if query := jq.withPayments; query != nil {
+	if query := jq.withJobpayments; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
 		nodeids := make(map[uuid.UUID]*Job)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Payments = []*Payment{}
+			nodes[i].Edges.Jobpayments = []*JobPayment{}
 		}
-		query.Where(predicate.Payment(func(s *sql.Selector) {
-			s.Where(sql.InValues(job.PaymentsColumn, fks...))
+		query.Where(predicate.JobPayment(func(s *sql.Selector) {
+			s.Where(sql.InValues(job.JobpaymentsColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)
 		if err != nil {
@@ -585,7 +585,7 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 			if !ok {
 				return nil, fmt.Errorf(`unexpected foreign-key "job_id" returned %v for node %v`, fk, n.ID)
 			}
-			node.Edges.Payments = append(node.Edges.Payments, n)
+			node.Edges.Jobpayments = append(node.Edges.Jobpayments, n)
 		}
 	}
 

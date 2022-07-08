@@ -31,11 +31,11 @@ type hooks struct {
 	InternalTask     []ent.Hook
 	Job              []ent.Hook
 	JobApplication   []ent.Hook
+	JobPayment       []ent.Hook
 	Mission          []ent.Hook
 	Oauth2Client     []ent.Hook
 	Oauth2Token      []ent.Hook
 	Partner          []ent.Hook
-	Payment          []ent.Hook
 	PortfolioLink    []ent.Hook
 	SearchLog        []ent.Hook
 	Session          []ent.Hook

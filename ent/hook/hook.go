@@ -100,6 +100,19 @@ func (f JobApplicationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 	return f(ctx, mv)
 }
 
+// The JobPaymentFunc type is an adapter to allow the use of ordinary
+// function as JobPayment mutator.
+type JobPaymentFunc func(context.Context, *ent.JobPaymentMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f JobPaymentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.JobPaymentMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.JobPaymentMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The MissionFunc type is an adapter to allow the use of ordinary
 // function as Mission mutator.
 type MissionFunc func(context.Context, *ent.MissionMutation) (ent.Value, error)
@@ -148,19 +161,6 @@ func (f PartnerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	mv, ok := m.(*ent.PartnerMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PartnerMutation", m)
-	}
-	return f(ctx, mv)
-}
-
-// The PaymentFunc type is an adapter to allow the use of ordinary
-// function as Payment mutator.
-type PaymentFunc func(context.Context, *ent.PaymentMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f PaymentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.PaymentMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PaymentMutation", m)
 	}
 	return f(ctx, mv)
 }

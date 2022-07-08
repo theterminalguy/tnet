@@ -14,6 +14,7 @@ import (
 	"github.com/10hourlabs/tentn/internal/service/payment"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/10hourlabs/tentn/util"
+	"github.com/10hourlabs/tentn/util/osutil"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -93,14 +94,9 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	}
 
 	// store to selected file storage
-	var driver string
-	driver = os.Getenv("FILESYSTEM_DRIVER")
-
-	if driver == "" {
-		driver = "local"
-	}
+	driver := os.Getenv("FILESYSTEM_DRIVER")
 	// Create directory for local storage
-	if os.Getenv("ENV") == "dev" {
+	if osutil.InDevMode() {
 		err := os.MkdirAll(directory, os.ModePerm)
 		if err != nil {
 			return err
@@ -130,7 +126,8 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 
 	if f != nil {
 		//create a Job Collection
-		title := fmt.Sprintf("job-title-%s", util.RandStringBytes(10)) //TODO: change this later
+		g, _ := util.SecureRandomHex(5)
+		title := fmt.Sprintf("job-title-%s", g) //TODO: change this later
 		params := new(repo.JobParams)
 		params.Title = title
 		params.Summary = "N/A"

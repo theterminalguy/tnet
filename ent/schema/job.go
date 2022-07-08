@@ -106,6 +106,6 @@ func (Job) Indexes() []ent.Index {
 func (Job) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To(oneword.Applications, JobApplication.Type),
-		edge.To("payments", Payment.Type),
+		edge.To("jobpayments", JobPayment.Type),
 	}
 }

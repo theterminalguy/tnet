@@ -15,11 +15,11 @@ import (
 	"github.com/10hourlabs/tentn/ent/internaltask"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/jobpayment"
 	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
 	"github.com/10hourlabs/tentn/ent/oauth2token"
 	"github.com/10hourlabs/tentn/ent/partner"
-	"github.com/10hourlabs/tentn/ent/payment"
 	"github.com/10hourlabs/tentn/ent/portfoliolink"
 	"github.com/10hourlabs/tentn/ent/searchlog"
 	"github.com/10hourlabs/tentn/ent/session"
@@ -57,11 +57,11 @@ func columnChecker(table string) func(string) error {
 		internaltask.Table:     internaltask.ValidColumn,
 		job.Table:              job.ValidColumn,
 		jobapplication.Table:   jobapplication.ValidColumn,
+		jobpayment.Table:       jobpayment.ValidColumn,
 		mission.Table:          mission.ValidColumn,
 		oauth2client.Table:     oauth2client.ValidColumn,
 		oauth2token.Table:      oauth2token.ValidColumn,
 		partner.Table:          partner.ValidColumn,
-		payment.Table:          payment.ValidColumn,
 		portfoliolink.Table:    portfoliolink.ValidColumn,
 		searchlog.Table:        searchlog.ValidColumn,
 		session.Table:          session.ValidColumn,

@@ -13,7 +13,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/fileupload"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
-	"github.com/10hourlabs/tentn/ent/payment"
+	"github.com/10hourlabs/tentn/ent/jobpayment"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -236,19 +236,19 @@ func (jc *JobCreate) AddApplications(j ...*JobApplication) *JobCreate {
 	return jc.AddApplicationIDs(ids...)
 }
 
-// AddPaymentIDs adds the "payments" edge to the Payment entity by IDs.
-func (jc *JobCreate) AddPaymentIDs(ids ...uuid.UUID) *JobCreate {
-	jc.mutation.AddPaymentIDs(ids...)
+// AddJobpaymentIDs adds the "jobpayments" edge to the JobPayment entity by IDs.
+func (jc *JobCreate) AddJobpaymentIDs(ids ...uuid.UUID) *JobCreate {
+	jc.mutation.AddJobpaymentIDs(ids...)
 	return jc
 }
 
-// AddPayments adds the "payments" edges to the Payment entity.
-func (jc *JobCreate) AddPayments(p ...*Payment) *JobCreate {
-	ids := make([]uuid.UUID, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
+// AddJobpayments adds the "jobpayments" edges to the JobPayment entity.
+func (jc *JobCreate) AddJobpayments(j ...*JobPayment) *JobCreate {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
 	}
-	return jc.AddPaymentIDs(ids...)
+	return jc.AddJobpaymentIDs(ids...)
 }
 
 // Mutation returns the JobMutation object of the builder.
@@ -613,17 +613,17 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := jc.mutation.PaymentsIDs(); len(nodes) > 0 {
+	if nodes := jc.mutation.JobpaymentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   job.PaymentsTable,
-			Columns: []string{job.PaymentsColumn},
+			Table:   job.JobpaymentsTable,
+			Columns: []string{job.JobpaymentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
-					Column: payment.FieldID,
+					Column: jobpayment.FieldID,
 				},
 			},
 		}

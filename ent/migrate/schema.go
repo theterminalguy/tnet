@@ -264,6 +264,42 @@ var (
 			},
 		},
 	}
+	// JobPaymentsColumns holds the columns for the "job_payments" table.
+	JobPaymentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "amount", Type: field.TypeFloat64, Default: 0},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"paid", "not_paid"}},
+		{Name: "ref_id", Type: field.TypeString, Default: ""},
+		{Name: "message", Type: field.TypeString},
+		{Name: "currency", Type: field.TypeString, Default: ""},
+		{Name: "payment_link", Type: field.TypeString, Size: 2147483647},
+		{Name: "payload", Type: field.TypeJSON, Nullable: true},
+		{Name: "job_id", Type: field.TypeUUID, Nullable: true},
+	}
+	// JobPaymentsTable holds the schema information for the "job_payments" table.
+	JobPaymentsTable = &schema.Table{
+		Name:       "job_payments",
+		Columns:    JobPaymentsColumns,
+		PrimaryKey: []*schema.Column{JobPaymentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "job_payments_jobs_jobpayments",
+				Columns:    []*schema.Column{JobPaymentsColumns[11]},
+				RefColumns: []*schema.Column{JobsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "jobpayment_job_id",
+				Unique:  false,
+				Columns: []*schema.Column{JobPaymentsColumns[11]},
+			},
+		},
+	}
 	// MissionsColumns holds the columns for the "missions" table.
 	MissionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -425,42 +461,6 @@ var (
 		Name:       "partners",
 		Columns:    PartnersColumns,
 		PrimaryKey: []*schema.Column{PartnersColumns[0]},
-	}
-	// PaymentsColumns holds the columns for the "payments" table.
-	PaymentsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "amount", Type: field.TypeFloat64, Default: 0},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"paid", "not_paid"}},
-		{Name: "ref_id", Type: field.TypeString, Default: ""},
-		{Name: "message", Type: field.TypeString},
-		{Name: "currency", Type: field.TypeString, Default: ""},
-		{Name: "payment_link", Type: field.TypeString, Size: 2147483647},
-		{Name: "payload", Type: field.TypeJSON, Nullable: true},
-		{Name: "job_id", Type: field.TypeUUID, Nullable: true},
-	}
-	// PaymentsTable holds the schema information for the "payments" table.
-	PaymentsTable = &schema.Table{
-		Name:       "payments",
-		Columns:    PaymentsColumns,
-		PrimaryKey: []*schema.Column{PaymentsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "payments_jobs_payments",
-				Columns:    []*schema.Column{PaymentsColumns[11]},
-				RefColumns: []*schema.Column{JobsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "payment_job_id",
-				Unique:  false,
-				Columns: []*schema.Column{PaymentsColumns[11]},
-			},
-		},
 	}
 	// PortfolioLinksColumns holds the columns for the "portfolio_links" table.
 	PortfolioLinksColumns = []*schema.Column{
@@ -848,11 +848,11 @@ var (
 		InternalTasksTable,
 		JobsTable,
 		JobApplicationsTable,
+		JobPaymentsTable,
 		MissionsTable,
 		Oauth2clientsTable,
 		Oauth2tokensTable,
 		PartnersTable,
-		PaymentsTable,
 		PortfolioLinksTable,
 		SearchLogsTable,
 		SessionsTable,
@@ -874,12 +874,12 @@ func init() {
 	JobsTable.ForeignKeys[1].RefTable = UsersTable
 	JobApplicationsTable.ForeignKeys[0].RefTable = JobsTable
 	JobApplicationsTable.ForeignKeys[1].RefTable = TalentsTable
+	JobPaymentsTable.ForeignKeys[0].RefTable = JobsTable
 	MissionsTable.ForeignKeys[0].RefTable = PartnersTable
 	MissionsTable.ForeignKeys[1].RefTable = TalentsTable
 	Oauth2clientsTable.ForeignKeys[0].RefTable = UsersTable
 	Oauth2tokensTable.ForeignKeys[0].RefTable = Oauth2clientsTable
 	Oauth2tokensTable.ForeignKeys[1].RefTable = UsersTable
-	PaymentsTable.ForeignKeys[0].RefTable = JobsTable
 	PortfolioLinksTable.ForeignKeys[0].RefTable = TalentsTable
 	SessionsTable.ForeignKeys[0].RefTable = UsersTable
 	SkillsTable.ForeignKeys[0].RefTable = TalentsTable
