@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/10hourlabs/tenlog"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/repository/scope"
 	"github.com/10hourlabs/tentn/internal/search"
@@ -142,13 +143,15 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 		params.AttachmentID = f.ID
 		jd, err := h.JobRepo.Create(*params)
 		if err != nil {
-			return c.String(http.StatusBadGateway, err.Error())
+			tenlog.Error(err)
+			return c.String(http.StatusBadGateway, "error occured while processing job")
 		}
 		// Generate payment link
 		driver := os.Getenv("PAYMENT_DRIVER")
 		pay := payment.NewPaymentService(driver)
 		_, err = pay.GenerateLink(jd.ID)
 		if err != nil {
+			tenlog.Error(err)
 			return c.String(http.StatusBadGateway, "error occured while generate payment link")
 		}
 	}
