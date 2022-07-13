@@ -29,8 +29,8 @@ type JobPayment struct {
 	JobID uuid.UUID `json:"-"`
 	// Amount holds the value of the "amount" field.
 	Amount float64 `json:"amount,omitempty"`
-	// Status holds the value of the "status" field.
-	Status jobpayment.Status `json:"status,omitempty"`
+	// PaidTo holds the value of the "paid_to" field.
+	PaidTo *time.Time `json:"paid_to,omitempty"`
 	// RefID holds the value of the "ref_id" field.
 	RefID string `json:"ref_id,omitempty"`
 	// Message holds the value of the "message" field.
@@ -78,9 +78,9 @@ func (*JobPayment) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case jobpayment.FieldAmount:
 			values[i] = new(sql.NullFloat64)
-		case jobpayment.FieldStatus, jobpayment.FieldRefID, jobpayment.FieldMessage, jobpayment.FieldCurrency, jobpayment.FieldPaymentLink:
+		case jobpayment.FieldRefID, jobpayment.FieldMessage, jobpayment.FieldCurrency, jobpayment.FieldPaymentLink:
 			values[i] = new(sql.NullString)
-		case jobpayment.FieldCreatedAt, jobpayment.FieldUpdatedAt, jobpayment.FieldDeletedAt:
+		case jobpayment.FieldCreatedAt, jobpayment.FieldUpdatedAt, jobpayment.FieldDeletedAt, jobpayment.FieldPaidTo:
 			values[i] = new(sql.NullTime)
 		case jobpayment.FieldID, jobpayment.FieldJobID:
 			values[i] = new(uuid.UUID)
@@ -136,11 +136,12 @@ func (jp *JobPayment) assignValues(columns []string, values []interface{}) error
 			} else if value.Valid {
 				jp.Amount = value.Float64
 			}
-		case jobpayment.FieldStatus:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field status", values[i])
+		case jobpayment.FieldPaidTo:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field paid_to", values[i])
 			} else if value.Valid {
-				jp.Status = jobpayment.Status(value.String)
+				jp.PaidTo = new(time.Time)
+				*jp.PaidTo = value.Time
 			}
 		case jobpayment.FieldRefID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -219,8 +220,10 @@ func (jp *JobPayment) String() string {
 	builder.WriteString(fmt.Sprintf("%v", jp.JobID))
 	builder.WriteString(", amount=")
 	builder.WriteString(fmt.Sprintf("%v", jp.Amount))
-	builder.WriteString(", status=")
-	builder.WriteString(fmt.Sprintf("%v", jp.Status))
+	if v := jp.PaidTo; v != nil {
+		builder.WriteString(", paid_to=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ref_id=")
 	builder.WriteString(jp.RefID)
 	builder.WriteString(", message=")

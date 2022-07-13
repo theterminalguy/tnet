@@ -97,9 +97,23 @@ func (jpu *JobPaymentUpdate) AddAmount(f float64) *JobPaymentUpdate {
 	return jpu
 }
 
-// SetStatus sets the "status" field.
-func (jpu *JobPaymentUpdate) SetStatus(j jobpayment.Status) *JobPaymentUpdate {
-	jpu.mutation.SetStatus(j)
+// SetPaidTo sets the "paid_to" field.
+func (jpu *JobPaymentUpdate) SetPaidTo(t time.Time) *JobPaymentUpdate {
+	jpu.mutation.SetPaidTo(t)
+	return jpu
+}
+
+// SetNillablePaidTo sets the "paid_to" field if the given value is not nil.
+func (jpu *JobPaymentUpdate) SetNillablePaidTo(t *time.Time) *JobPaymentUpdate {
+	if t != nil {
+		jpu.SetPaidTo(*t)
+	}
+	return jpu
+}
+
+// ClearPaidTo clears the value of the "paid_to" field.
+func (jpu *JobPaymentUpdate) ClearPaidTo() *JobPaymentUpdate {
+	jpu.mutation.ClearPaidTo()
 	return jpu
 }
 
@@ -179,18 +193,12 @@ func (jpu *JobPaymentUpdate) Save(ctx context.Context) (int, error) {
 	)
 	jpu.defaults()
 	if len(jpu.hooks) == 0 {
-		if err = jpu.check(); err != nil {
-			return 0, err
-		}
 		affected, err = jpu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*JobPaymentMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = jpu.check(); err != nil {
-				return 0, err
 			}
 			jpu.mutation = mutation
 			affected, err = jpu.sqlSave(ctx)
@@ -238,16 +246,6 @@ func (jpu *JobPaymentUpdate) defaults() {
 		v := jobpayment.UpdateDefaultUpdatedAt()
 		jpu.mutation.SetUpdatedAt(v)
 	}
-}
-
-// check runs all checks and user-defined validators on the builder.
-func (jpu *JobPaymentUpdate) check() error {
-	if v, ok := jpu.mutation.Status(); ok {
-		if err := jobpayment.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "JobPayment.status": %w`, err)}
-		}
-	}
-	return nil
 }
 
 func (jpu *JobPaymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -302,11 +300,17 @@ func (jpu *JobPaymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: jobpayment.FieldAmount,
 		})
 	}
-	if value, ok := jpu.mutation.Status(); ok {
+	if value, ok := jpu.mutation.PaidTo(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
+			Type:   field.TypeTime,
 			Value:  value,
-			Column: jobpayment.FieldStatus,
+			Column: jobpayment.FieldPaidTo,
+		})
+	}
+	if jpu.mutation.PaidToCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: jobpayment.FieldPaidTo,
 		})
 	}
 	if value, ok := jpu.mutation.RefID(); ok {
@@ -471,9 +475,23 @@ func (jpuo *JobPaymentUpdateOne) AddAmount(f float64) *JobPaymentUpdateOne {
 	return jpuo
 }
 
-// SetStatus sets the "status" field.
-func (jpuo *JobPaymentUpdateOne) SetStatus(j jobpayment.Status) *JobPaymentUpdateOne {
-	jpuo.mutation.SetStatus(j)
+// SetPaidTo sets the "paid_to" field.
+func (jpuo *JobPaymentUpdateOne) SetPaidTo(t time.Time) *JobPaymentUpdateOne {
+	jpuo.mutation.SetPaidTo(t)
+	return jpuo
+}
+
+// SetNillablePaidTo sets the "paid_to" field if the given value is not nil.
+func (jpuo *JobPaymentUpdateOne) SetNillablePaidTo(t *time.Time) *JobPaymentUpdateOne {
+	if t != nil {
+		jpuo.SetPaidTo(*t)
+	}
+	return jpuo
+}
+
+// ClearPaidTo clears the value of the "paid_to" field.
+func (jpuo *JobPaymentUpdateOne) ClearPaidTo() *JobPaymentUpdateOne {
+	jpuo.mutation.ClearPaidTo()
 	return jpuo
 }
 
@@ -560,18 +578,12 @@ func (jpuo *JobPaymentUpdateOne) Save(ctx context.Context) (*JobPayment, error) 
 	)
 	jpuo.defaults()
 	if len(jpuo.hooks) == 0 {
-		if err = jpuo.check(); err != nil {
-			return nil, err
-		}
 		node, err = jpuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*JobPaymentMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = jpuo.check(); err != nil {
-				return nil, err
 			}
 			jpuo.mutation = mutation
 			node, err = jpuo.sqlSave(ctx)
@@ -619,16 +631,6 @@ func (jpuo *JobPaymentUpdateOne) defaults() {
 		v := jobpayment.UpdateDefaultUpdatedAt()
 		jpuo.mutation.SetUpdatedAt(v)
 	}
-}
-
-// check runs all checks and user-defined validators on the builder.
-func (jpuo *JobPaymentUpdateOne) check() error {
-	if v, ok := jpuo.mutation.Status(); ok {
-		if err := jobpayment.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "JobPayment.status": %w`, err)}
-		}
-	}
-	return nil
 }
 
 func (jpuo *JobPaymentUpdateOne) sqlSave(ctx context.Context) (_node *JobPayment, err error) {
@@ -700,11 +702,17 @@ func (jpuo *JobPaymentUpdateOne) sqlSave(ctx context.Context) (_node *JobPayment
 			Column: jobpayment.FieldAmount,
 		})
 	}
-	if value, ok := jpuo.mutation.Status(); ok {
+	if value, ok := jpuo.mutation.PaidTo(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
+			Type:   field.TypeTime,
 			Value:  value,
-			Column: jobpayment.FieldStatus,
+			Column: jobpayment.FieldPaidTo,
+		})
+	}
+	if jpuo.mutation.PaidToCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: jobpayment.FieldPaidTo,
 		})
 	}
 	if value, ok := jpuo.mutation.RefID(); ok {

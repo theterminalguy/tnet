@@ -129,6 +129,13 @@ func Amount(v float64) predicate.JobPayment {
 	})
 }
 
+// PaidTo applies equality check predicate on the "paid_to" field. It's identical to PaidToEQ.
+func PaidTo(v time.Time) predicate.JobPayment {
+	return predicate.JobPayment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPaidTo), v))
+	})
+}
+
 // RefID applies equality check predicate on the "ref_id" field. It's identical to RefIDEQ.
 func RefID(v string) predicate.JobPayment {
 	return predicate.JobPayment(func(s *sql.Selector) {
@@ -537,22 +544,22 @@ func AmountLTE(v float64) predicate.JobPayment {
 	})
 }
 
-// StatusEQ applies the EQ predicate on the "status" field.
-func StatusEQ(v Status) predicate.JobPayment {
+// PaidToEQ applies the EQ predicate on the "paid_to" field.
+func PaidToEQ(v time.Time) predicate.JobPayment {
 	return predicate.JobPayment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
+		s.Where(sql.EQ(s.C(FieldPaidTo), v))
 	})
 }
 
-// StatusNEQ applies the NEQ predicate on the "status" field.
-func StatusNEQ(v Status) predicate.JobPayment {
+// PaidToNEQ applies the NEQ predicate on the "paid_to" field.
+func PaidToNEQ(v time.Time) predicate.JobPayment {
 	return predicate.JobPayment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStatus), v))
+		s.Where(sql.NEQ(s.C(FieldPaidTo), v))
 	})
 }
 
-// StatusIn applies the In predicate on the "status" field.
-func StatusIn(vs ...Status) predicate.JobPayment {
+// PaidToIn applies the In predicate on the "paid_to" field.
+func PaidToIn(vs ...time.Time) predicate.JobPayment {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -564,12 +571,12 @@ func StatusIn(vs ...Status) predicate.JobPayment {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldStatus), v...))
+		s.Where(sql.In(s.C(FieldPaidTo), v...))
 	})
 }
 
-// StatusNotIn applies the NotIn predicate on the "status" field.
-func StatusNotIn(vs ...Status) predicate.JobPayment {
+// PaidToNotIn applies the NotIn predicate on the "paid_to" field.
+func PaidToNotIn(vs ...time.Time) predicate.JobPayment {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -581,7 +588,49 @@ func StatusNotIn(vs ...Status) predicate.JobPayment {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldStatus), v...))
+		s.Where(sql.NotIn(s.C(FieldPaidTo), v...))
+	})
+}
+
+// PaidToGT applies the GT predicate on the "paid_to" field.
+func PaidToGT(v time.Time) predicate.JobPayment {
+	return predicate.JobPayment(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPaidTo), v))
+	})
+}
+
+// PaidToGTE applies the GTE predicate on the "paid_to" field.
+func PaidToGTE(v time.Time) predicate.JobPayment {
+	return predicate.JobPayment(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPaidTo), v))
+	})
+}
+
+// PaidToLT applies the LT predicate on the "paid_to" field.
+func PaidToLT(v time.Time) predicate.JobPayment {
+	return predicate.JobPayment(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPaidTo), v))
+	})
+}
+
+// PaidToLTE applies the LTE predicate on the "paid_to" field.
+func PaidToLTE(v time.Time) predicate.JobPayment {
+	return predicate.JobPayment(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPaidTo), v))
+	})
+}
+
+// PaidToIsNil applies the IsNil predicate on the "paid_to" field.
+func PaidToIsNil() predicate.JobPayment {
+	return predicate.JobPayment(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPaidTo)))
+	})
+}
+
+// PaidToNotNil applies the NotNil predicate on the "paid_to" field.
+func PaidToNotNil() predicate.JobPayment {
+	return predicate.JobPayment(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPaidTo)))
 	})
 }
 

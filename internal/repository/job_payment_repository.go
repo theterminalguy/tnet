@@ -55,7 +55,6 @@ func (*JobPaymentRepository) Create(p JobPaymentParams) (*ent.JobPayment, error)
 		record, err := dBConn.JobPayment.
 			Create().
 			SetPaymentLink(p.PaymentLink).
-			SetStatus(jobpayment.Status(p.Status)).
 			SetMessage(p.Message).
 			SetJobID(p.JobID).
 			Save(dBContext)

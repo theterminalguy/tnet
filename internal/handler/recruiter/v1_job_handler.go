@@ -134,11 +134,11 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 		params.Summary = "N/A"
 		params.Thumbnail = "https://"
 		params.WeHave = []string{""}
-		params.TimeZone = "NA"
-		params.Employment = "na"
+		params.TimeZone = "GMT"
+		params.Employment = "full_time"
 		params.YouHave = []string{""}
 		params.Requirements = []string{""}
-		params.Category = "na"
+		params.Category = "engineering"
 		params.UserID = recruiterID
 		params.AttachmentID = f.ID
 		jd, err := h.JobRepo.Create(*params)

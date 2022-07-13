@@ -6504,7 +6504,7 @@ type JobPaymentMutation struct {
 	deleted_at    *time.Time
 	amount        *float64
 	addamount     *float64
-	status        *jobpayment.Status
+	paid_to       *time.Time
 	ref_id        *string
 	message       *string
 	currency      *string
@@ -6848,40 +6848,53 @@ func (m *JobPaymentMutation) ResetAmount() {
 	m.addamount = nil
 }
 
-// SetStatus sets the "status" field.
-func (m *JobPaymentMutation) SetStatus(j jobpayment.Status) {
-	m.status = &j
+// SetPaidTo sets the "paid_to" field.
+func (m *JobPaymentMutation) SetPaidTo(t time.Time) {
+	m.paid_to = &t
 }
 
-// Status returns the value of the "status" field in the mutation.
-func (m *JobPaymentMutation) Status() (r jobpayment.Status, exists bool) {
-	v := m.status
+// PaidTo returns the value of the "paid_to" field in the mutation.
+func (m *JobPaymentMutation) PaidTo() (r time.Time, exists bool) {
+	v := m.paid_to
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldStatus returns the old "status" field's value of the JobPayment entity.
+// OldPaidTo returns the old "paid_to" field's value of the JobPayment entity.
 // If the JobPayment object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *JobPaymentMutation) OldStatus(ctx context.Context) (v jobpayment.Status, err error) {
+func (m *JobPaymentMutation) OldPaidTo(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+		return v, errors.New("OldPaidTo is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldStatus requires an ID field in the mutation")
+		return v, errors.New("OldPaidTo requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+		return v, fmt.Errorf("querying old value for OldPaidTo: %w", err)
 	}
-	return oldValue.Status, nil
+	return oldValue.PaidTo, nil
 }
 
-// ResetStatus resets all changes to the "status" field.
-func (m *JobPaymentMutation) ResetStatus() {
-	m.status = nil
+// ClearPaidTo clears the value of the "paid_to" field.
+func (m *JobPaymentMutation) ClearPaidTo() {
+	m.paid_to = nil
+	m.clearedFields[jobpayment.FieldPaidTo] = struct{}{}
+}
+
+// PaidToCleared returns if the "paid_to" field was cleared in this mutation.
+func (m *JobPaymentMutation) PaidToCleared() bool {
+	_, ok := m.clearedFields[jobpayment.FieldPaidTo]
+	return ok
+}
+
+// ResetPaidTo resets all changes to the "paid_to" field.
+func (m *JobPaymentMutation) ResetPaidTo() {
+	m.paid_to = nil
+	delete(m.clearedFields, jobpayment.FieldPaidTo)
 }
 
 // SetRefID sets the "ref_id" field.
@@ -7138,8 +7151,8 @@ func (m *JobPaymentMutation) Fields() []string {
 	if m.amount != nil {
 		fields = append(fields, jobpayment.FieldAmount)
 	}
-	if m.status != nil {
-		fields = append(fields, jobpayment.FieldStatus)
+	if m.paid_to != nil {
+		fields = append(fields, jobpayment.FieldPaidTo)
 	}
 	if m.ref_id != nil {
 		fields = append(fields, jobpayment.FieldRefID)
@@ -7174,8 +7187,8 @@ func (m *JobPaymentMutation) Field(name string) (ent.Value, bool) {
 		return m.JobID()
 	case jobpayment.FieldAmount:
 		return m.Amount()
-	case jobpayment.FieldStatus:
-		return m.Status()
+	case jobpayment.FieldPaidTo:
+		return m.PaidTo()
 	case jobpayment.FieldRefID:
 		return m.RefID()
 	case jobpayment.FieldMessage:
@@ -7205,8 +7218,8 @@ func (m *JobPaymentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldJobID(ctx)
 	case jobpayment.FieldAmount:
 		return m.OldAmount(ctx)
-	case jobpayment.FieldStatus:
-		return m.OldStatus(ctx)
+	case jobpayment.FieldPaidTo:
+		return m.OldPaidTo(ctx)
 	case jobpayment.FieldRefID:
 		return m.OldRefID(ctx)
 	case jobpayment.FieldMessage:
@@ -7261,12 +7274,12 @@ func (m *JobPaymentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAmount(v)
 		return nil
-	case jobpayment.FieldStatus:
-		v, ok := value.(jobpayment.Status)
+	case jobpayment.FieldPaidTo:
+		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetStatus(v)
+		m.SetPaidTo(v)
 		return nil
 	case jobpayment.FieldRefID:
 		v, ok := value.(string)
@@ -7354,6 +7367,9 @@ func (m *JobPaymentMutation) ClearedFields() []string {
 	if m.FieldCleared(jobpayment.FieldJobID) {
 		fields = append(fields, jobpayment.FieldJobID)
 	}
+	if m.FieldCleared(jobpayment.FieldPaidTo) {
+		fields = append(fields, jobpayment.FieldPaidTo)
+	}
 	if m.FieldCleared(jobpayment.FieldPayload) {
 		fields = append(fields, jobpayment.FieldPayload)
 	}
@@ -7376,6 +7392,9 @@ func (m *JobPaymentMutation) ClearField(name string) error {
 		return nil
 	case jobpayment.FieldJobID:
 		m.ClearJobID()
+		return nil
+	case jobpayment.FieldPaidTo:
+		m.ClearPaidTo()
 		return nil
 	case jobpayment.FieldPayload:
 		m.ClearPayload()
@@ -7403,8 +7422,8 @@ func (m *JobPaymentMutation) ResetField(name string) error {
 	case jobpayment.FieldAmount:
 		m.ResetAmount()
 		return nil
-	case jobpayment.FieldStatus:
-		m.ResetStatus()
+	case jobpayment.FieldPaidTo:
+		m.ResetPaidTo()
 		return nil
 	case jobpayment.FieldRefID:
 		m.ResetRefID()

@@ -28,3 +28,7 @@ routes.json
 data/emails.cache
 data/reachout-emails.cache
 cert*
+ent/**/.DS_Store
+internal/**/.DS_Store
+node_modules
+.idea/

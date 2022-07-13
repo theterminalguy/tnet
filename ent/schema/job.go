@@ -38,7 +38,6 @@ func EmploymentTypes() []string {
 		"part_time",
 		"full_time",
 		"contract",
-		"na",
 	}
 }
 
@@ -48,7 +47,6 @@ func JobCategories() []string {
 		"product_design",
 		"sales",
 		"marketing",
-		"na",
 	}
 }
 

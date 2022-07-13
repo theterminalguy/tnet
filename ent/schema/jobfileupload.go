@@ -6,7 +6,7 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// FileUpload holds the schema definition for the FileUpload entity.
+// JobFileUpload holds the schema definition for the FileUpload entity.
 type JobFileUpload struct {
 	ent.Schema
 }
@@ -18,14 +18,14 @@ func (JobFileUpload) Mixin() []ent.Mixin {
 	}
 }
 
-// Fields of the FileUpload.
+// Fields of the JobFileUpload.
 func (JobFileUpload) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("file_url"),
 	}
 }
 
-// Edges of the FileUpload.
+// Edges of the JobFileUpload.
 func (JobFileUpload) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("jobs", Job.Type),

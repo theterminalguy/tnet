@@ -5,7 +5,7 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// Payment holds the schema definition for the JobPayment entity.
+// JobPayment holds the schema definition for the JobPayment entity.
 type JobPayment struct {
 	ent.Schema
 }
@@ -23,19 +23,11 @@ func (JobPayment) Mixin() []ent.Mixin {
 	}
 }
 
-func StatusTypes() []string {
-	return []string{
-		"paid",
-		"not_paid",
-	}
-}
-
 // Fields of the JobPayment.
 func (JobPayment) Fields() []ent.Field {
 	return []ent.Field{
 		field.Float("amount").Default(0),
-		field.Enum("status").
-			Values(StatusTypes()...),
+		field.Time("paid_to").Nillable().Optional(),
 		field.String("ref_id").Default(""),
 		field.String("message"),
 		field.String("currency").Default(""),

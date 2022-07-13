@@ -143,7 +143,6 @@ const (
 	EmploymentPartTime Employment = "part_time"
 	EmploymentFullTime Employment = "full_time"
 	EmploymentContract Employment = "contract"
-	EmploymentNa       Employment = "na"
 )
 
 func (e Employment) String() string {
@@ -153,7 +152,7 @@ func (e Employment) String() string {
 // EmploymentValidator is a validator for the "employment" field enum values. It is called by the builders before save.
 func EmploymentValidator(e Employment) error {
 	switch e {
-	case EmploymentPartTime, EmploymentFullTime, EmploymentContract, EmploymentNa:
+	case EmploymentPartTime, EmploymentFullTime, EmploymentContract:
 		return nil
 	default:
 		return fmt.Errorf("job: invalid enum value for employment field: %q", e)
@@ -169,7 +168,6 @@ const (
 	CategoryProductDesign Category = "product_design"
 	CategorySales         Category = "sales"
 	CategoryMarketing     Category = "marketing"
-	CategoryNa            Category = "na"
 )
 
 func (c Category) String() string {
@@ -179,7 +177,7 @@ func (c Category) String() string {
 // CategoryValidator is a validator for the "category" field enum values. It is called by the builders before save.
 func CategoryValidator(c Category) error {
 	switch c {
-	case CategoryEngineering, CategoryProductDesign, CategorySales, CategoryMarketing, CategoryNa:
+	case CategoryEngineering, CategoryProductDesign, CategorySales, CategoryMarketing:
 		return nil
 	default:
 		return fmt.Errorf("job: invalid enum value for category field: %q", c)

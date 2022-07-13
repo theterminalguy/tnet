@@ -92,9 +92,17 @@ func (jpc *JobPaymentCreate) SetNillableAmount(f *float64) *JobPaymentCreate {
 	return jpc
 }
 
-// SetStatus sets the "status" field.
-func (jpc *JobPaymentCreate) SetStatus(j jobpayment.Status) *JobPaymentCreate {
-	jpc.mutation.SetStatus(j)
+// SetPaidTo sets the "paid_to" field.
+func (jpc *JobPaymentCreate) SetPaidTo(t time.Time) *JobPaymentCreate {
+	jpc.mutation.SetPaidTo(t)
+	return jpc
+}
+
+// SetNillablePaidTo sets the "paid_to" field if the given value is not nil.
+func (jpc *JobPaymentCreate) SetNillablePaidTo(t *time.Time) *JobPaymentCreate {
+	if t != nil {
+		jpc.SetPaidTo(*t)
+	}
 	return jpc
 }
 
@@ -271,14 +279,6 @@ func (jpc *JobPaymentCreate) check() error {
 	if _, ok := jpc.mutation.Amount(); !ok {
 		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "JobPayment.amount"`)}
 	}
-	if _, ok := jpc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "JobPayment.status"`)}
-	}
-	if v, ok := jpc.mutation.Status(); ok {
-		if err := jobpayment.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "JobPayment.status": %w`, err)}
-		}
-	}
 	if _, ok := jpc.mutation.RefID(); !ok {
 		return &ValidationError{Name: "ref_id", err: errors.New(`ent: missing required field "JobPayment.ref_id"`)}
 	}
@@ -359,13 +359,13 @@ func (jpc *JobPaymentCreate) createSpec() (*JobPayment, *sqlgraph.CreateSpec) {
 		})
 		_node.Amount = value
 	}
-	if value, ok := jpc.mutation.Status(); ok {
+	if value, ok := jpc.mutation.PaidTo(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
+			Type:   field.TypeTime,
 			Value:  value,
-			Column: jobpayment.FieldStatus,
+			Column: jobpayment.FieldPaidTo,
 		})
-		_node.Status = value
+		_node.PaidTo = &value
 	}
 	if value, ok := jpc.mutation.RefID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
