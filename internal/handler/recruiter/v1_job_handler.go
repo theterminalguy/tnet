@@ -111,7 +111,7 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	path, err := file_storage.Upload(src)
 
 	if err != nil {
-		return c.String(http.StatusOK, fmt.Sprintf("Error occured %v", err))
+		return c.String(http.StatusBadGateway, fmt.Sprintf("Error occured %v", err))
 	}
 	// create DB transaction
 	// TODO: Wrap the query in a Transaction (Tx)
