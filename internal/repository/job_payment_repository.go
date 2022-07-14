@@ -2,8 +2,9 @@ package repository
 
 import (
 	"errors"
-	"log"
+	"time"
 
+	"github.com/10hourlabs/tenlog"
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/jobpayment"
 	"github.com/google/uuid"
@@ -13,7 +14,7 @@ type JobPaymentRepository struct{}
 
 type JobPaymentParams struct {
 	Amount      float32   `json:"amount,omitempty"`
-	Status      string    `json:"status,omitempty"`
+	PaidTo      time.Time `json:"paid_to,omitempty"`
 	RefId       string    `json:"ref_id,omitempty"`
 	Message     string    `json:"message" validate:"required"`
 	Currency    string    `json:"currency,omitempty"`
@@ -48,7 +49,7 @@ func (*JobPaymentRepository) Create(p JobPaymentParams) (*ent.JobPayment, error)
 	// var record *ent.Client
 	err := ValidateParams(p)
 	if err != nil {
-		log.Panic(err)
+		tenlog.Error(err)
 	}
 	// Store Generated payment link
 	if p.PaymentLink != "" {

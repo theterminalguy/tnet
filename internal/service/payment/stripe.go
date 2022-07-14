@@ -62,7 +62,6 @@ func (p *StripePayment) GenerateLink(jobID uuid.UUID) (string, error) {
 	}
 
 	generateLink := repository.JobPaymentParams{
-		Status:      "not_paid",
 		Message:     "Pending",
 		PaymentLink: g.URL,
 		JobID:       jobID,
