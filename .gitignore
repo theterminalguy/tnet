@@ -28,3 +28,5 @@ routes.json
 data/emails.cache
 data/reachout-emails.cache
 cert*
+node_modules
+.idea/

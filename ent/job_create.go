@@ -12,6 +12,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
+	"github.com/10hourlabs/tentn/ent/jobfileupload"
+	"github.com/10hourlabs/tentn/ent/jobpayment"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -75,6 +77,20 @@ func (jc *JobCreate) SetUserID(u uuid.UUID) *JobCreate {
 func (jc *JobCreate) SetNillableUserID(u *uuid.UUID) *JobCreate {
 	if u != nil {
 		jc.SetUserID(*u)
+	}
+	return jc
+}
+
+// SetAttachmentID sets the "attachment_id" field.
+func (jc *JobCreate) SetAttachmentID(u uuid.UUID) *JobCreate {
+	jc.mutation.SetAttachmentID(u)
+	return jc
+}
+
+// SetNillableAttachmentID sets the "attachment_id" field if the given value is not nil.
+func (jc *JobCreate) SetNillableAttachmentID(u *uuid.UUID) *JobCreate {
+	if u != nil {
+		jc.SetAttachmentID(*u)
 	}
 	return jc
 }
@@ -186,6 +202,25 @@ func (jc *JobCreate) SetUser(u *User) *JobCreate {
 	return jc.SetUserID(u.ID)
 }
 
+// SetJobFileUploadID sets the "job_file_upload" edge to the JobFileUpload entity by ID.
+func (jc *JobCreate) SetJobFileUploadID(id uuid.UUID) *JobCreate {
+	jc.mutation.SetJobFileUploadID(id)
+	return jc
+}
+
+// SetNillableJobFileUploadID sets the "job_file_upload" edge to the JobFileUpload entity by ID if the given value is not nil.
+func (jc *JobCreate) SetNillableJobFileUploadID(id *uuid.UUID) *JobCreate {
+	if id != nil {
+		jc = jc.SetJobFileUploadID(*id)
+	}
+	return jc
+}
+
+// SetJobFileUpload sets the "job_file_upload" edge to the JobFileUpload entity.
+func (jc *JobCreate) SetJobFileUpload(j *JobFileUpload) *JobCreate {
+	return jc.SetJobFileUploadID(j.ID)
+}
+
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
 func (jc *JobCreate) AddApplicationIDs(ids ...uuid.UUID) *JobCreate {
 	jc.mutation.AddApplicationIDs(ids...)
@@ -199,6 +234,21 @@ func (jc *JobCreate) AddApplications(j ...*JobApplication) *JobCreate {
 		ids[i] = j[i].ID
 	}
 	return jc.AddApplicationIDs(ids...)
+}
+
+// AddJobPaymentIDs adds the "job_payments" edge to the JobPayment entity by IDs.
+func (jc *JobCreate) AddJobPaymentIDs(ids ...uuid.UUID) *JobCreate {
+	jc.mutation.AddJobPaymentIDs(ids...)
+	return jc
+}
+
+// AddJobPayments adds the "job_payments" edges to the JobPayment entity.
+func (jc *JobCreate) AddJobPayments(j ...*JobPayment) *JobCreate {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return jc.AddJobPaymentIDs(ids...)
 }
 
 // Mutation returns the JobMutation object of the builder.
@@ -524,6 +574,26 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 		_node.UserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := jc.mutation.JobFileUploadIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   job.JobFileUploadTable,
+			Columns: []string{job.JobFileUploadColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: jobfileupload.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AttachmentID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := jc.mutation.ApplicationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -535,6 +605,25 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: jobapplication.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := jc.mutation.JobPaymentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   job.JobPaymentsTable,
+			Columns: []string{job.JobPaymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: jobpayment.FieldID,
 				},
 			},
 		}

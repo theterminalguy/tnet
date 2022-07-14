@@ -156,6 +156,7 @@ var (
 		{Name: "requirements", Type: field.TypeJSON},
 		{Name: "you_have", Type: field.TypeJSON},
 		{Name: "timezone", Type: field.TypeString},
+		{Name: "attachment_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// JobsTable holds the schema information for the "jobs" table.
@@ -165,8 +166,14 @@ var (
 		PrimaryKey: []*schema.Column{JobsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "jobs_users_jobs",
+				Symbol:     "jobs_job_file_uploads_jobs",
 				Columns:    []*schema.Column{JobsColumns[16]},
+				RefColumns: []*schema.Column{JobFileUploadsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "jobs_users_jobs",
+				Columns:    []*schema.Column{JobsColumns[17]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -174,6 +181,11 @@ var (
 		Indexes: []*schema.Index{
 			{
 				Name:    "job_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{JobsColumns[17]},
+			},
+			{
+				Name:    "job_attachment_id",
 				Unique:  false,
 				Columns: []*schema.Column{JobsColumns[16]},
 			},
@@ -235,6 +247,56 @@ var (
 				Name:    "jobapplication_job_id",
 				Unique:  false,
 				Columns: []*schema.Column{JobApplicationsColumns[7]},
+			},
+		},
+	}
+	// JobFileUploadsColumns holds the columns for the "job_file_uploads" table.
+	JobFileUploadsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "file_url", Type: field.TypeString},
+	}
+	// JobFileUploadsTable holds the schema information for the "job_file_uploads" table.
+	JobFileUploadsTable = &schema.Table{
+		Name:       "job_file_uploads",
+		Columns:    JobFileUploadsColumns,
+		PrimaryKey: []*schema.Column{JobFileUploadsColumns[0]},
+	}
+	// JobPaymentsColumns holds the columns for the "job_payments" table.
+	JobPaymentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "amount", Type: field.TypeFloat64, Default: 0},
+		{Name: "paid_to", Type: field.TypeTime, Nullable: true},
+		{Name: "ref_id", Type: field.TypeString, Default: ""},
+		{Name: "message", Type: field.TypeString},
+		{Name: "currency", Type: field.TypeString, Default: ""},
+		{Name: "payment_link", Type: field.TypeString, Size: 2147483647},
+		{Name: "payload", Type: field.TypeJSON, Nullable: true},
+		{Name: "job_id", Type: field.TypeUUID, Nullable: true},
+	}
+	// JobPaymentsTable holds the schema information for the "job_payments" table.
+	JobPaymentsTable = &schema.Table{
+		Name:       "job_payments",
+		Columns:    JobPaymentsColumns,
+		PrimaryKey: []*schema.Column{JobPaymentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "job_payments_jobs_job_payments",
+				Columns:    []*schema.Column{JobPaymentsColumns[11]},
+				RefColumns: []*schema.Column{JobsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "jobpayment_job_id",
+				Unique:  false,
+				Columns: []*schema.Column{JobPaymentsColumns[11]},
 			},
 		},
 	}
@@ -785,6 +847,8 @@ var (
 		InternalTasksTable,
 		JobsTable,
 		JobApplicationsTable,
+		JobFileUploadsTable,
+		JobPaymentsTable,
 		MissionsTable,
 		Oauth2clientsTable,
 		Oauth2tokensTable,
@@ -806,9 +870,11 @@ func init() {
 	EducationsTable.ForeignKeys[0].RefTable = TalentsTable
 	EmailTemplatesTable.ForeignKeys[0].RefTable = UsersTable
 	EmergencyContactsTable.ForeignKeys[0].RefTable = TalentsTable
-	JobsTable.ForeignKeys[0].RefTable = UsersTable
+	JobsTable.ForeignKeys[0].RefTable = JobFileUploadsTable
+	JobsTable.ForeignKeys[1].RefTable = UsersTable
 	JobApplicationsTable.ForeignKeys[0].RefTable = JobsTable
 	JobApplicationsTable.ForeignKeys[1].RefTable = TalentsTable
+	JobPaymentsTable.ForeignKeys[0].RefTable = JobsTable
 	MissionsTable.ForeignKeys[0].RefTable = PartnersTable
 	MissionsTable.ForeignKeys[1].RefTable = TalentsTable
 	Oauth2clientsTable.ForeignKeys[0].RefTable = UsersTable

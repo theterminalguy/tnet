@@ -24,6 +24,12 @@ func (Job) Mixin() []ent.Mixin {
 			Ref:        "jobs",
 			ForeignKey: "user_id",
 		},
+		BelongsToMixin{
+			ParentName: "job_file_upload",
+			ParentType: JobFileUpload.Type,
+			Ref:        "jobs",
+			ForeignKey: "attachment_id",
+		},
 	}
 }
 
@@ -98,5 +104,6 @@ func (Job) Indexes() []ent.Index {
 func (Job) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To(oneword.Applications, JobApplication.Type),
+		edge.To("job_payments", JobPayment.Type),
 	}
 }
