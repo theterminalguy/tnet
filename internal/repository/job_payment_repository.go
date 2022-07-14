@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/10hourlabs/tenlog"
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/jobpayment"
 	"github.com/google/uuid"
@@ -49,7 +48,7 @@ func (*JobPaymentRepository) Create(p JobPaymentParams) (*ent.JobPayment, error)
 	// var record *ent.Client
 	err := ValidateParams(p)
 	if err != nil {
-		tenlog.Error(err)
+		return nil, err
 	}
 	// Store Generated payment link
 	if p.PaymentLink != "" {
