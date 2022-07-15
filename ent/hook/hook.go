@@ -87,6 +87,32 @@ func (f JobApplicationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 	return f(ctx, mv)
 }
 
+// The JobFileUploadFunc type is an adapter to allow the use of ordinary
+// function as JobFileUpload mutator.
+type JobFileUploadFunc func(context.Context, *ent.JobFileUploadMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f JobFileUploadFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.JobFileUploadMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.JobFileUploadMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The JobPaymentFunc type is an adapter to allow the use of ordinary
+// function as JobPayment mutator.
+type JobPaymentFunc func(context.Context, *ent.JobPaymentMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f JobPaymentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.JobPaymentMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.JobPaymentMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The MissionFunc type is an adapter to allow the use of ordinary
 // function as Mission mutator.
 type MissionFunc func(context.Context, *ent.MissionMutation) (ent.Value, error)

@@ -22,6 +22,8 @@ const (
 	FieldDeletedAt = "deleted_at"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
+	// FieldAttachmentID holds the string denoting the attachment_id field in the database.
+	FieldAttachmentID = "attachment_id"
 	// FieldHiring holds the string denoting the hiring field in the database.
 	FieldHiring = "hiring"
 	// FieldTitle holds the string denoting the title field in the database.
@@ -48,8 +50,12 @@ const (
 	FieldTimezone = "timezone"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
+	// EdgeJobFileUpload holds the string denoting the job_file_upload edge name in mutations.
+	EdgeJobFileUpload = "job_file_upload"
 	// EdgeApplications holds the string denoting the applications edge name in mutations.
 	EdgeApplications = "applications"
+	// EdgeJobPayments holds the string denoting the job_payments edge name in mutations.
+	EdgeJobPayments = "job_payments"
 	// Table holds the table name of the job in the database.
 	Table = "jobs"
 	// UserTable is the table that holds the user relation/edge.
@@ -59,6 +65,13 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
+	// JobFileUploadTable is the table that holds the job_file_upload relation/edge.
+	JobFileUploadTable = "jobs"
+	// JobFileUploadInverseTable is the table name for the JobFileUpload entity.
+	// It exists in this package in order to avoid circular dependency with the "jobfileupload" package.
+	JobFileUploadInverseTable = "job_file_uploads"
+	// JobFileUploadColumn is the table column denoting the job_file_upload relation/edge.
+	JobFileUploadColumn = "attachment_id"
 	// ApplicationsTable is the table that holds the applications relation/edge.
 	ApplicationsTable = "job_applications"
 	// ApplicationsInverseTable is the table name for the JobApplication entity.
@@ -66,6 +79,13 @@ const (
 	ApplicationsInverseTable = "job_applications"
 	// ApplicationsColumn is the table column denoting the applications relation/edge.
 	ApplicationsColumn = "job_id"
+	// JobPaymentsTable is the table that holds the job_payments relation/edge.
+	JobPaymentsTable = "job_payments"
+	// JobPaymentsInverseTable is the table name for the JobPayment entity.
+	// It exists in this package in order to avoid circular dependency with the "jobpayment" package.
+	JobPaymentsInverseTable = "job_payments"
+	// JobPaymentsColumn is the table column denoting the job_payments relation/edge.
+	JobPaymentsColumn = "job_id"
 )
 
 // Columns holds all SQL columns for job fields.
@@ -75,6 +95,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldDeletedAt,
 	FieldUserID,
+	FieldAttachmentID,
 	FieldHiring,
 	FieldTitle,
 	FieldSlug,

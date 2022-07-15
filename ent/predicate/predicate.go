@@ -24,6 +24,12 @@ type Job func(*sql.Selector)
 // JobApplication is the predicate function for jobapplication builders.
 type JobApplication func(*sql.Selector)
 
+// JobFileUpload is the predicate function for jobfileupload builders.
+type JobFileUpload func(*sql.Selector)
+
+// JobPayment is the predicate function for jobpayment builders.
+type JobPayment func(*sql.Selector)
+
 // Mission is the predicate function for mission builders.
 type Mission func(*sql.Selector)
 
