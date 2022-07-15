@@ -30,9 +30,10 @@ func (*JobPaymentRepository) GetAll() ([]*ent.JobPayment, error) {
 	return nil, nil
 }
 
-func (*JobPaymentRepository) HasPaid(refID string) bool {
+func (*JobPaymentRepository) HasPaid(refID string, jobID uuid.UUID) bool {
 	record := dBConn.JobPayment.Query().
 		Where(jobpayment.RefID(refID)).
+		Where(jobpayment.And(jobpayment.JobIDEQ(jobID))).
 		Where(jobpayment.And(jobpayment.PaidToNEQ(time.Time{}))).
 		CountX(dBContext)
 
@@ -81,7 +82,7 @@ func (px *JobPaymentRepository) Update(id uuid.UUID, p JobPaymentParams) (*ent.J
 	if id == uuid.Nil {
 		return nil, errors.New("jobID is missing in the payload")
 	}
-	if px.HasPaid(p.RefId) {
+	if px.HasPaid(p.RefId, id) {
 		return nil, errors.New("duplicate transaction")
 	}
 
