@@ -96,7 +96,7 @@ func (p *StripePayment) Pay(req echo.Context) (string, error) {
 		}
 
 		if response.Data.Object.Metadata.JobID == "" {
-			tenlog.Error("error occured while processing payment")
+			tenlog.Error("jobID not found in metadata")
 		}
 
 		data = repository.JobPaymentParams{
