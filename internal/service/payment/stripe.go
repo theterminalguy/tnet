@@ -72,9 +72,6 @@ func (p *StripePayment) Pay(req echo.Context) (string, error) {
 	}
 
 	endpointSecret := os.Getenv("STRIPE_ENDPOINT_SECRET")
-	if endpointSecret == "" {
-		tenlog.Error("invalid endpoint secret")
-	}
 	event, err := webhook.ConstructEvent(payload, req.Request().Header.Get("Stripe-Signature"),
 		endpointSecret)
 
