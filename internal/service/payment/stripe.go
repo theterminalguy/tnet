@@ -16,8 +16,8 @@ import (
 	"github.com/stripe/stripe-go/webhook"
 )
 
-type Data struct {
-	Object struct {
+type ResponseDataHandler struct {
+	ResponseObjectHandler struct {
 		ID                 string   `json:"id"`
 		Object             string   `json:"object"`
 		AmountSubtotal     int      `json:"amount_subtotal"`
@@ -41,12 +41,12 @@ type Data struct {
 }
 
 type StripePaymentResponse struct {
-	ID       string `json:"id"`
-	Object   string `json:"object"`
-	Created  int    `json:"created"`
-	Data     Data   `json:"data"`
-	Livemode bool   `json:"livemode"`
-	Type     string `json:"type"`
+	ID       string              `json:"id"`
+	Object   string              `json:"object"`
+	Created  int                 `json:"created"`
+	Data     ResponseDataHandler `json:"data"`
+	Livemode bool                `json:"livemode"`
+	Type     string              `json:"type"`
 }
 
 type PaymentLinkResponse struct {
@@ -64,11 +64,11 @@ func NewStripePayment() *StripePayment {
 }
 
 func (p *StripePayment) Pay(req echo.Context) (string, error) {
-	const MaxBodyBytes = int64(65536)
-	req.Request().Body = http.MaxBytesReader(req.Response().Writer, req.Request().Body, MaxBodyBytes)
+	maxBodyBytes := int64(65536)
+	req.Request().Body = http.MaxBytesReader(req.Response().Writer, req.Request().Body, maxBodyBytes)
 	payload, err := ioutil.ReadAll(req.Request().Body)
 	if err != nil {
-		return "", err
+		tenlog.Error(err)
 	}
 
 	endpointSecret := os.Getenv("STRIPE_ENDPOINT_SECRET")
@@ -95,21 +95,21 @@ func (p *StripePayment) Pay(req echo.Context) (string, error) {
 			tenlog.Error(err)
 		}
 
-		if response.Data.Object.Metadata.JobID == "" {
+		if response.Data.ResponseObjectHandler.Metadata.JobID == "" {
 			tenlog.Error("jobID not found in metadata")
 		}
 
 		data = repository.JobPaymentParams{
-			Amount:   float32(response.Data.Object.AmountTotal) / 100, // stripe amount is in cent
+			Amount:   float32(response.Data.ResponseObjectHandler.AmountTotal) / 100, // stripe amount is in cent
 			PaidTo:   time.Now(),
-			RefId:    response.Data.Object.ID,
+			RefId:    response.Data.ResponseObjectHandler.ID,
 			Message:  "Successful",
-			Currency: response.Data.Object.Currency,
-			JobID:    uuid.MustParse(response.Data.Object.Metadata.JobID),
+			Currency: response.Data.ResponseObjectHandler.Currency,
+			JobID:    uuid.MustParse(response.Data.ResponseObjectHandler.Metadata.JobID),
 			Payload:  []string{string(j)},
 		}
 
-		rID := uuid.MustParse(response.Data.Object.Metadata.JobID)
+		rID := uuid.MustParse(response.Data.ResponseObjectHandler.Metadata.JobID)
 		_, err = p.repo.Update(rID, data)
 		if err != nil {
 			tenlog.Error(err)
