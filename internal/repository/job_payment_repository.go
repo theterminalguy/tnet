@@ -30,6 +30,16 @@ func (*JobPaymentRepository) GetAll() ([]*ent.JobPayment, error) {
 	return nil, nil
 }
 
+func (*JobPaymentRepository) HasPaid(refID string, jobID uuid.UUID) bool {
+	record := dBConn.JobPayment.Query().
+		Where(jobpayment.RefID(refID)).
+		Where(jobpayment.And(jobpayment.JobIDEQ(jobID))).
+		Where(jobpayment.And(jobpayment.PaidToNEQ(time.Time{}))).
+		CountX(dBContext)
+
+	return record != 0
+}
+
 func (*JobPaymentRepository) GetByJobID(id uuid.UUID) (*ent.JobPayment, error) {
 	record, err := dBConn.JobPayment.Query().
 		Where(jobpayment.JobID(id)).
@@ -45,7 +55,6 @@ func (*JobPaymentRepository) GetByJobID(id uuid.UUID) (*ent.JobPayment, error) {
 }
 
 func (*JobPaymentRepository) Create(p JobPaymentParams) (*ent.JobPayment, error) {
-	// var record *ent.Client
 	err := ValidateParams(p)
 	if err != nil {
 		return nil, err
@@ -70,7 +79,31 @@ func (*JobPaymentRepository) Create(p JobPaymentParams) (*ent.JobPayment, error)
 }
 
 func (px *JobPaymentRepository) Update(id uuid.UUID, p JobPaymentParams) (*ent.JobPayment, error) {
-	return nil, nil
+	if id == uuid.Nil {
+		return nil, errors.New("jobID is missing in the payload")
+	}
+	if px.HasPaid(p.RefId, id) {
+		return nil, errors.New("duplicate transaction")
+	}
+
+	client, err := px.GetByJobID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	record, err := client.Update().
+		SetRefID(p.RefId).
+		SetMessage(p.Message).
+		SetCurrency(p.Currency).
+		SetPayload(p.Payload).
+		SetAmount(float64(p.Amount)).
+		SetPaidTo(p.PaidTo).
+		Save(dBContext)
+
+	if err != nil {
+		return nil, err
+	}
+	return record, nil
 }
 
 func (*JobPaymentRepository) DeleteByID(id uuid.UUID) error {

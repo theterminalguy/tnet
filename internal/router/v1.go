@@ -146,5 +146,23 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 	}
 	internalV1Router.BuildRoutes()
 
+	paymentV1Router := &Router{
+		group: e.Group("/v1/payment"),
+		middlewares: []echo.MiddlewareFunc{
+			middleware.ExtractJWTTokenFromWebSession(),
+			middleware.JWTAuthenticate(),
+			middleware.AuthorizieUser(),
+		},
+		handlers: []RouteHandler{
+			{
+				Path:        "webhook",
+				Handler:     recruiter_handler.NewV1PaymentHandler(),
+				Middlewares: nil,
+				Only:        []Request{CREATE_ONE},
+			},
+		},
+	}
+	paymentV1Router.BuildRoutes()
+
 	return e
 }

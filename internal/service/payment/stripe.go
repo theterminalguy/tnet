@@ -7,12 +7,47 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/10hourlabs/tenlog"
 	"github.com/10hourlabs/tentn/internal/repository"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/stripe/stripe-go/webhook"
 )
+
+type ResponseDataHandler struct {
+	ResponseObjectHandler struct {
+		ID                 string   `json:"id"`
+		Object             string   `json:"object"`
+		AmountSubtotal     int      `json:"amount_subtotal"`
+		AmountTotal        int      `json:"amount_total"`
+		ClientReferenceID  string   `json:"client_reference_id"`
+		Currency           string   `json:"currency"`
+		ExpiresAt          int      `json:"expires_at"`
+		Livemode           bool     `json:"livemode"`
+		Locale             string   `json:"locale"`
+		Mode               string   `json:"mode"`
+		PaymentIntent      string   `json:"payment_intent"`
+		PaymentLink        string   `json:"payment_link"`
+		PaymentMethodTypes []string `json:"payment_method_types"`
+		PaymentStatus      string   `json:"payment_status"`
+		Metadata           struct {
+			JobID string `json:"jobID"`
+		} `json:"metadata"`
+		Status     string `json:"status"`
+		SuccessURL string `json:"success_url"`
+	} `json:"object"`
+}
+
+type StripePaymentResponse struct {
+	ID       string              `json:"id"`
+	Object   string              `json:"object"`
+	Created  int                 `json:"created"`
+	Data     ResponseDataHandler `json:"data"`
+	Livemode bool                `json:"livemode"`
+	Type     string              `json:"type"`
+}
 
 type PaymentLinkResponse struct {
 	URL string `json:"url"`
@@ -26,6 +61,59 @@ func NewStripePayment() *StripePayment {
 	return &StripePayment{
 		repo: repository.NewJobPaymentRepository(),
 	}
+}
+
+func (p *StripePayment) Pay(req echo.Context) (string, error) {
+	maxBodyBytes := int64(65536)
+	req.Request().Body = http.MaxBytesReader(req.Response().Writer, req.Request().Body, maxBodyBytes)
+	payload, err := ioutil.ReadAll(req.Request().Body)
+	if err != nil {
+		tenlog.Error(err)
+	}
+
+	endpointSecret := os.Getenv("STRIPE_ENDPOINT_SECRET")
+	event, err := webhook.ConstructEvent(payload, req.Request().Header.Get("Stripe-Signature"),
+		endpointSecret)
+
+	if err != nil {
+		tenlog.Error(err)
+	}
+
+	var data repository.JobPaymentParams
+	var response = &StripePaymentResponse{}
+
+	if event.Type == "checkout.session.completed" {
+		j, err := json.Marshal(event)
+		if err != nil {
+			tenlog.Error(err)
+		}
+		err = json.Unmarshal(j, response)
+		if err != nil {
+			tenlog.Error(err)
+		}
+
+		if response.Data.ResponseObjectHandler.Metadata.JobID == "" {
+			tenlog.Error("jobID not found in metadata")
+		}
+
+		data = repository.JobPaymentParams{
+			Amount:   float32(response.Data.ResponseObjectHandler.AmountTotal) / 100, // stripe amount is in cent
+			PaidTo:   time.Now(),
+			RefId:    response.Data.ResponseObjectHandler.ID,
+			Message:  "Successful",
+			Currency: response.Data.ResponseObjectHandler.Currency,
+			JobID:    uuid.MustParse(response.Data.ResponseObjectHandler.Metadata.JobID),
+			Payload:  []string{string(j)},
+		}
+
+		rID := uuid.MustParse(response.Data.ResponseObjectHandler.Metadata.JobID)
+		_, err = p.repo.Update(rID, data)
+		if err != nil {
+			tenlog.Error(err)
+		}
+		return "successful", nil
+	}
+	return "payment failed", nil
 }
 
 func (p *StripePayment) GenerateLink(jobID uuid.UUID) (string, error) {
@@ -50,7 +138,7 @@ func (p *StripePayment) GenerateLink(jobID uuid.UUID) (string, error) {
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return "", err
+		tenlog.Error(err)
 	}
 
 	result, _ := ioutil.ReadAll(resp.Body)
@@ -58,7 +146,7 @@ func (p *StripePayment) GenerateLink(jobID uuid.UUID) (string, error) {
 	var g PaymentLinkResponse
 	err = json.Unmarshal(result, &g)
 	if err != nil {
-		return "", nil
+		tenlog.Error(err)
 	}
 
 	generateLink := repository.JobPaymentParams{
@@ -69,12 +157,8 @@ func (p *StripePayment) GenerateLink(jobID uuid.UUID) (string, error) {
 
 	r, err := p.repo.Create(generateLink)
 	if err != nil {
-		return "", err
+		tenlog.Error(err)
 	}
 
 	return r.PaymentLink, nil
-}
-
-func (p *StripePayment) Pay(req echo.Context) (string, error) {
-	return "", nil
 }
