@@ -28,7 +28,13 @@ var (
 func init() {
 	// TODO: should we have this here or in main?
 	osutil.CheckEnv()
-
+	service := "dev"
+	dsn := "tenlog.log"
+	if os.Getenv("ENV") == "production" || os.Getenv("ENV") == "staging" {
+		service = "sentry"
+		dsn = os.Getenv("SENTRY_DSN")
+	}
+	tenlog.SetLogger(service, dsn)
 	tenlog.SetAppName("tentn")
 	tenlog.SetEnvName(os.Getenv("ENV"))
 

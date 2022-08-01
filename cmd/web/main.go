@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	"github.com/10hourlabs/tentn/internal/router"
+	"github.com/10hourlabs/tentn/util"
 	"github.com/10hourlabs/tentn/util/osutil"
 	"github.com/labstack/echo/v4"
 )
@@ -26,9 +27,10 @@ func main() {
 	e.Static("/public/views/css", "public/views/css")
 	e.Static("/public/views/img", "public/views/img")
 	renderer := &TemplateRenderer{
-		templates: template.Must(template.ParseGlob("public/views/index.html")),
+		templates: template.Must(template.ParseGlob("public/views/*.html")),
 	}
 	e.Renderer = renderer
+	e.HTTPErrorHandler = util.CustomHTTPErrorHandler
 
 	httpPort := fmt.Sprintf(":%v", os.Getenv("PORT"))
 	if osutil.InDevMode() && os.Getenv("SSL") == "" {

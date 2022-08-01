@@ -5,7 +5,7 @@ go 1.17
 require (
 	entgo.io/ent v0.10.1
 	github.com/10hourlabs/rql v0.0.1
-	github.com/10hourlabs/tenlog v0.0.0-20220120192329-cae27c6b7caa
+	github.com/10hourlabs/tenlog v0.0.0-20220801122950-7a05f864f4ab
 	github.com/SebastiaanKlippert/go-wkhtmltopdf v1.7.2
 	github.com/brianvoe/gofakeit/v6 v6.15.0
 	github.com/go-oauth2/oauth2/v4 v4.4.3
@@ -29,6 +29,7 @@ require (
 require (
 	cloud.google.com/go/compute v1.6.0 // indirect
 	cloud.google.com/go/iam v0.3.0 // indirect
+	github.com/getsentry/sentry-go v0.13.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/googleapis/gax-go/v2 v2.3.0 // indirect
 	github.com/googleapis/go-type-adapters v1.0.0 // indirect
@@ -66,7 +67,7 @@ require (
 	github.com/zclconf/go-cty v1.8.0 // indirect
 	golang.org/x/mod v0.5.1 // indirect
 	golang.org/x/net v0.0.0-20220325170049-de3da57026de // indirect
-	golang.org/x/sys v0.0.0-20220328115105-d36c6a25d886 // indirect
+	golang.org/x/sys v0.0.0-20220731174439-a90be440212d // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
