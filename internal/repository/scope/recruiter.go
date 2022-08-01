@@ -33,6 +33,7 @@ func (r *RecruiterScope) GetJobs() ([]*ent.Job, error) {
 func (r *RecruiterScope) GetJobByID(id uuid.UUID) (*ent.Job, error) {
 	return r.Recruiter.QueryJobs().
 		Where(job.ID(id)).
+		WithJobPayments().
 		WithApplications(func(jaq *ent.JobApplicationQuery) {
 			jaq.WithTalent()
 		}).
