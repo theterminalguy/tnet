@@ -110,6 +110,10 @@ steps:
         "SLACK_BOT_TOKEN=${_SLACK_BOT_TOKEN}",
         "--set-env-vars",
         "INTERNAL_API_KEY=${_INTERNAL_API_KEY}",
+        "--set-env-vars",
+        "FILESYSTEM_DRIVER=${_FILESYSTEM_DRIVER}",
+        "--set-env-vars",
+        "GOOGLE_APPLICATION_CREDENTIALS=${_GOOGLE_APPLICATION_CREDENTIALS}",
       ]
 
 images:
