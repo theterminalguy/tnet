@@ -112,37 +112,36 @@ func (*JobRepository) GetByID(id uuid.UUID) (*ent.Job, error) {
 }
 
 func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
-	return nil, nil
-	// err := ValidateParams(p)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// timeZoneName := TimeZoneRepo[p.TimeZone]
-	// if timeZoneName[1] == "" {
-	// 	return nil, errors.New("timezone not allowed")
-	// }
-	// jobUUID := uuid.New()
-	// j, err := dBConn.Job.
-	// 	Create().
-	// 	SetID(jobUUID).
-	// 	SetHiring(p.Hiring).
-	// 	SetTitle(p.Title).
-	// 	SetSummary(p.Summary).
-	// 	SetSlug(slugify(p.Title, jobUUID)).
-	// 	SetEmployment(job.Employment(p.Employment)).
-	// 	SetCategory(job.Category(p.Category)).
-	// 	SetThumbnail(p.Thumbnail).
-	// 	SetWeHave(p.WeHave).
-	// 	SetRequirements(p.Requirements).
-	// 	SetYouHave(p.YouHave).
-	// 	SetUserID(p.UserID).
-	// 	SetTimezone(timeZoneName[1]).
-	// 	SetAttachmentID(p.AttachmentID).
-	// 	Save(dBContext)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// return j, err
+	err := ValidateParams(p)
+	if err != nil {
+		return nil, err
+	}
+	timeZoneName := TimeZoneRepo[p.TimeZone]
+	if timeZoneName[1] == "" {
+		return nil, errors.New("timezone not allowed")
+	}
+	jobUUID := uuid.New()
+	j, err := dBConn.Job.
+		Create().
+		SetID(jobUUID).
+		SetHiring(p.Hiring).
+		SetTitle(p.Title).
+		SetSummary(p.Summary).
+		SetSlug(slugify(p.Title, jobUUID)).
+		SetEmployment(job.Employment(p.Employment)).
+		SetCategory(job.Category(p.Category)).
+		SetThumbnail(p.Thumbnail).
+		SetWeHave(p.WeHave).
+		SetRequirements(p.Requirements).
+		SetYouHave(p.YouHave).
+		SetUserID(p.UserID).
+		SetTimezone(timeZoneName[1]).
+		SetAttachmentID(p.AttachmentID).
+		Save(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return j, err
 }
 
 func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
