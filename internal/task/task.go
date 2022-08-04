@@ -43,3 +43,7 @@ func Run(name, params, executor string) error {
 	tenlog.Error(fmt.Sprintf("Task %s not found", name))
 	return fmt.Errorf("task %s not found", name)
 }
+
+func Lafamilia() error {
+	return nil
+}
