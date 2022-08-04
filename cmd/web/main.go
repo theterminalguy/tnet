@@ -39,5 +39,4 @@ func main() {
 		// Cloud Run automatically enforces TLS
 		e.Logger.Fatal(e.Start(httpPort))
 	}
-	fmt.Println("Loading...")
 }
