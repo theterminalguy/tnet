@@ -110,6 +110,14 @@ steps:
         "SLACK_BOT_TOKEN=${_SLACK_BOT_TOKEN}",
         "--set-env-vars",
         "INTERNAL_API_KEY=${_INTERNAL_API_KEY}",
+        "--set-env-vars",
+        "STRIPE_SECRET_KEY=${_STRIPE_SECRET_KEY}",
+        "--set-env-vars",
+        "STRIPE_PUBLISHABLE_KEY=${_STRIPE_PUBLISHABLE_KEY}",
+        "--set-env-vars",
+        "STRIPE_WEBHOOK_SECRET=${_STRIPE_WEBHOOK_SECRET}",
+        "--set-env-vars",
+        "STRIPE_PRODUCT_ID=${_STRIPE_PRODUCT_ID}",
       ]
 
 images:
