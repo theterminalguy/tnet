@@ -40,6 +40,11 @@ var requiredRuntimeEnvForProd = []string{
 
 	"FILESYSTEM_DRIVER",
 	"GOOGLE_APPLICATION_CREDENTIALS",
+
+	"PAYMENT_DRIVER",
+	"STRIPE_SECRET_KEY",
+	"STRIPE_PRODUCT_ID",
+	"STRIPE_WEBHOOK_SECRET",
 }
 
 func CheckEnv() {
