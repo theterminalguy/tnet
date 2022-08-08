@@ -12,6 +12,7 @@ import (
 var allowedUsers = []string{
 	"sp@10hourlabs.com",
 	"dotun.oyelakin@10hourlabs.com",
+	"abiodun.solomon@10hourlabs.com",
 }
 
 func AuthInternalRequest() echo.MiddlewareFunc {
