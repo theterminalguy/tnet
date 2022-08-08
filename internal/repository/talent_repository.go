@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
@@ -433,4 +434,22 @@ func (*TalentRepository) UpsertMany(params []*TalentParams) error {
 	}
 	return dBConn.Talent.CreateBulk(builders...).
 		Exec(dBContext)
+}
+
+// FetchAllEmails returns all the emails of all the talents.
+// TODO: remove this after migration is done.
+func (*TalentRepository) FetchAllEmails() (map[string]bool, error) {
+	emails, err := dBConn.Talent.Query().
+		Select(talent.FieldEmail).
+		Strings(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	emailIndex := make(map[string]bool)
+	for _, email := range emails {
+		email = strings.TrimSpace(email)
+		email = strings.ToLower(email)
+		emailIndex[email] = true
+	}
+	return emailIndex, nil
 }

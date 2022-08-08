@@ -83,6 +83,12 @@ func (t *ImportTalents) Run(_ string) error {
 		csvReader = csv.NewReader(f)
 	}
 
+	// Global Email Index
+	globalEmailIndex, err := t.TalentRepo.FetchAllEmails()
+	if err != nil {
+		return err
+	}
+
 	emailCache := make(map[string]bool)
 	var emailFile *os.File
 	var emailFileErr error
@@ -99,6 +105,7 @@ func (t *ImportTalents) Run(_ string) error {
 			emailCache[scanner.Text()] = true
 		}
 	}
+
 	for {
 		record, err := csvReader.Read()
 		if err == io.EOF {
@@ -115,7 +122,13 @@ func (t *ImportTalents) Run(_ string) error {
 			panic("something bad happened")
 		}
 		talentsEmail := strings.ToLower(td.User.Email)
+		talentsEmail = strings.TrimSpace(talentsEmail)
+		talentsEmail = strings.ToLower(talentsEmail)
 		if ok := emailCache[talentsEmail]; ok {
+			log.Printf("skipping duplicate email: %s", talentsEmail)
+			continue
+		}
+		if _, ok := globalEmailIndex[talentsEmail]; ok {
 			log.Printf("skipping duplicate email: %s", talentsEmail)
 			continue
 		}
@@ -209,16 +222,6 @@ func extractTalentData(record []byte) (*TalentData, error) {
 		Approved:  true,
 	}
 
-	/*fmt.Println(user.FirstName + " " + user.LastName)
-	fmt.Println("\tID: ", user.ID)
-	fmt.Println("\tFirst Name: ", user.FirstName)
-	fmt.Println("\tLast Name: ", user.LastName)
-	fmt.Println("\tPhoto URL: ", user.PhotoURL)
-	fmt.Println("\tEmail: ", user.Email)
-	fmt.Println("\tRole: ", user.Role)
-	fmt.Println("\tApproved: ", user.Approved)
-	fmt.Print("\t==========================\n\n")*/
-
 	talent := &repo.TalentParams{
 		ID:                    uuid.New(),
 		UserID:                user.ID,
@@ -238,28 +241,6 @@ func extractTalentData(record []byte) (*TalentData, error) {
 		State:                 uup.City,
 		ProfessionalSummary:   fmt.Sprintf("An experienced %s", uup.PreferredJobTitle),
 	}
-
-	/*
-		fmt.Println("\tTalent: ")
-		fmt.Println("\t\tID: ", talent.ID)
-		fmt.Println("\t\tUserID: ", talent.UserID)
-		fmt.Println("\t\tFirst Name: ", talent.FirstName)
-		fmt.Println("\t\tLast Name: ", talent.LastName)
-		fmt.Println("\t\tEmail: ", talent.Email)
-		fmt.Println("\t\tPreferred Name: ", talent.PreferredName)
-		fmt.Println("\t\tPronoun: ", talent.Pronoun)
-		fmt.Println("\t\tPreferred Job Title: ", talent.PreferredJobTitle)
-		fmt.Println("\t\tPhone: ", talent.Phone)
-		fmt.Println("\t\tCountry Code: ", talent.CountryCode)
-		fmt.Println("\t\tCity: ", talent.City)
-		fmt.Println("\t\tState: ", talent.State)
-		fmt.Println("\t\tTimeZone: ", talent.TimeZone)
-		fmt.Println("\t\tJob Preference: ", talent.JobPreference)
-		fmt.Println("\t\tAvailable: ", talent.Available)
-		fmt.Println("\t\tProfessional Summary: ", talent.ProfessionalSummary)
-
-		fmt.Println("\tSkills: ")
-	*/
 	var skillYears []float64
 	for _, skill := range uup.Skills {
 		// update skill IDs
@@ -270,36 +251,14 @@ func extractTalentData(record []byte) (*TalentData, error) {
 			skill.YearsOfExperience = 1.0
 		}
 		skillYears = append(skillYears, float64(skill.YearsOfExperience))
-		/*
-			fmt.Println("\t\tID: ", skill.ID)
-			fmt.Println("\t\tTalentID: ", skill.TalentID)
-			fmt.Println("\t\tYears Of Experience: ", skill.YearsOfExperience)
-			fmt.Println("\t\tPreferred: ", skill.Preferred)
-			fmt.Println("\t\tNote: ", skill.Note)
-			fmt.Println("\t\tName: ", skill.Name)
-			fmt.Print("\t\t==========================\n\n")
-		*/
 	}
 	var wrkExpStartDates []string
 
-	//fmt.Println("\tWork Experiences: ")
 	for _, we := range uup.WorkExperiences {
 		// update work experience IDs
 		we.ID = uuid.New()
 		we.TalentID = talent.ID
-
 		wrkExpStartDates = append(wrkExpStartDates, we.StartDate)
-		/*
-			fmt.Println("\t\tID: ", we.ID)
-			fmt.Println("\t\tTalentID: ", we.TalentID)
-			fmt.Println("\t\tCompany: ", we.CompanyName)
-			fmt.Println("\t\tJob Title: ", we.JobTitle)
-			fmt.Println("\t\tPrimary Technologies: ", we.PrimaryTechnologies)
-			fmt.Println("\t\tDescription: ", we.Description)
-			fmt.Println("\t\tStartDate: ", we.StartDate)
-			fmt.Println("\t\tEndDate: ", we.EndDate)
-			fmt.Print("\t\t==========================\n\n")
-		*/
 	}
 
 	// sort an array of date strings
@@ -336,18 +295,6 @@ func extractTalentData(record []byte) (*TalentData, error) {
 		// update education IDs
 		ed.ID = uuid.New()
 		ed.TalentID = talent.ID
-		/*
-			fmt.Println("\t\tID: ", ed.ID)
-			fmt.Println("\t\tTalentID: ", ed.TalentID)
-			fmt.Println("\t\tInstitution Name: ", ed.InstitutionName)
-			fmt.Println("\t\tLocation: ", ed.Location)
-			fmt.Println("\t\tDegree: ", ed.Degree)
-			fmt.Println("\t\tProgram: ", ed.Program)
-			fmt.Println("\t\tOverview: ", ed.Overview)
-			fmt.Println("\t\tStartDate: ", ed.StartDate)
-			fmt.Println("\t\tEndDate: ", ed.EndDate)
-			fmt.Print("\t\t==========================\n\n")
-		*/
 	}
 
 	// fmt.Println("\tPortfolios: ")
@@ -355,12 +302,6 @@ func extractTalentData(record []byte) (*TalentData, error) {
 		// update portfolio IDs
 		p.ID = uuid.New()
 		p.TalentID = talent.ID
-		/*fmt.Println("\t\tID: ", p.ID)
-		fmt.Println("\t\tTalentID: ", p.TalentID)
-		fmt.Println("\t\tName: ", p.Name)
-		fmt.Println("\t\tURL: ", p.URL)
-		fmt.Print("\t\t==========================\n\n")
-		*/
 	}
 
 	//fmt.Println("")
