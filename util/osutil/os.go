@@ -43,8 +43,8 @@ var requiredRuntimeEnvForProd = []string{
 
 	"PAYMENT_DRIVER",
 	"STRIPE_SECRET_KEY",
-	"STRIPE_PRODUCT_KEY",
-	"STRIPE_ENDPOINT_SECRET",
+	"STRIPE_PRODUCT_ID",
+	"STRIPE_WEBHOOK_SECRET",
 }
 
 func CheckEnv() {
