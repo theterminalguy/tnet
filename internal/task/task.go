@@ -16,6 +16,7 @@ type Tasker interface {
 var AllowedExecutors = []string{
 	"sp@10hourlabs.com",
 	"abiodun.solomon@10hourlabs.com",
+	"therealfortune1@gmail.com",
 	"onwunmanuli@gmail.com",
 }
 
