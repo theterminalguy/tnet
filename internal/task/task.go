@@ -17,6 +17,7 @@ var AllowedExecutors = []string{
 	"sp@10hourlabs.com",
 	"abiodun.solomon@10hourlabs.com",
 	"therealfortune1@gmail.com",
+	"onwunmanuli@gmail.com",
 }
 
 func Run(name, params, executor string) error {
