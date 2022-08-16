@@ -28,7 +28,7 @@ type JobParams struct {
 
 	// TODO: automatically expire job
 	Hiring     bool   `json:"hiring"`
-	Title      string `json:"title" validate:"required"`
+	Title      string `json:"job_title" validate:"required"`
 	Summary    string `json:"summary" validate:"required"`
 	Employment string `json:"employment" validate:"required"`
 	Category   string `json:"category" validate:"required"`
@@ -41,8 +41,7 @@ type JobParams struct {
 	Requirements []string `json:"requirements" validate:"required"`
 	YouHave      []string `json:"you_have" validate:"required"`
 	TimeZone     string   `json:"timezone_id" validate:"required"`
-
-	AttachmentID uuid.UUID `json:"attachment_id" validate:"required"`
+	Location     string   `json:"location"`
 
 	/*
 		TODO: Add support for slary range
@@ -136,7 +135,6 @@ func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
 		SetYouHave(p.YouHave).
 		SetUserID(p.UserID).
 		SetTimezone(timeZoneName[1]).
-		SetAttachmentID(p.AttachmentID).
 		Save(dBContext)
 	if err != nil {
 		return nil, err

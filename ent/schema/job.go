@@ -24,12 +24,6 @@ func (Job) Mixin() []ent.Mixin {
 			Ref:        "jobs",
 			ForeignKey: "user_id",
 		},
-		BelongsToMixin{
-			ParentName: "job_file_upload",
-			ParentType: JobFileUpload.Type,
-			Ref:        "jobs",
-			ForeignKey: "attachment_id",
-		},
 	}
 }
 

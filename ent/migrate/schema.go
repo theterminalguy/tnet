@@ -156,7 +156,6 @@ var (
 		{Name: "requirements", Type: field.TypeJSON},
 		{Name: "you_have", Type: field.TypeJSON},
 		{Name: "timezone", Type: field.TypeString},
-		{Name: "attachment_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// JobsTable holds the schema information for the "jobs" table.
@@ -166,14 +165,8 @@ var (
 		PrimaryKey: []*schema.Column{JobsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "jobs_job_file_uploads_jobs",
-				Columns:    []*schema.Column{JobsColumns[16]},
-				RefColumns: []*schema.Column{JobFileUploadsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "jobs_users_jobs",
-				Columns:    []*schema.Column{JobsColumns[17]},
+				Columns:    []*schema.Column{JobsColumns[16]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -181,11 +174,6 @@ var (
 		Indexes: []*schema.Index{
 			{
 				Name:    "job_user_id",
-				Unique:  false,
-				Columns: []*schema.Column{JobsColumns[17]},
-			},
-			{
-				Name:    "job_attachment_id",
 				Unique:  false,
 				Columns: []*schema.Column{JobsColumns[16]},
 			},
@@ -249,20 +237,6 @@ var (
 				Columns: []*schema.Column{JobApplicationsColumns[7]},
 			},
 		},
-	}
-	// JobFileUploadsColumns holds the columns for the "job_file_uploads" table.
-	JobFileUploadsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "file_url", Type: field.TypeString},
-	}
-	// JobFileUploadsTable holds the schema information for the "job_file_uploads" table.
-	JobFileUploadsTable = &schema.Table{
-		Name:       "job_file_uploads",
-		Columns:    JobFileUploadsColumns,
-		PrimaryKey: []*schema.Column{JobFileUploadsColumns[0]},
 	}
 	// JobPaymentsColumns holds the columns for the "job_payments" table.
 	JobPaymentsColumns = []*schema.Column{
@@ -847,7 +821,6 @@ var (
 		InternalTasksTable,
 		JobsTable,
 		JobApplicationsTable,
-		JobFileUploadsTable,
 		JobPaymentsTable,
 		MissionsTable,
 		Oauth2clientsTable,
@@ -870,8 +843,7 @@ func init() {
 	EducationsTable.ForeignKeys[0].RefTable = TalentsTable
 	EmailTemplatesTable.ForeignKeys[0].RefTable = UsersTable
 	EmergencyContactsTable.ForeignKeys[0].RefTable = TalentsTable
-	JobsTable.ForeignKeys[0].RefTable = JobFileUploadsTable
-	JobsTable.ForeignKeys[1].RefTable = UsersTable
+	JobsTable.ForeignKeys[0].RefTable = UsersTable
 	JobApplicationsTable.ForeignKeys[0].RefTable = JobsTable
 	JobApplicationsTable.ForeignKeys[1].RefTable = TalentsTable
 	JobPaymentsTable.ForeignKeys[0].RefTable = JobsTable

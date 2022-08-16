@@ -30,7 +30,6 @@ type hooks struct {
 	InternalTask     []ent.Hook
 	Job              []ent.Hook
 	JobApplication   []ent.Hook
-	JobFileUpload    []ent.Hook
 	JobPayment       []ent.Hook
 	Mission          []ent.Hook
 	Oauth2Client     []ent.Hook

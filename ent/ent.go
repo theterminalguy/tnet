@@ -14,7 +14,6 @@ import (
 	"github.com/10hourlabs/tentn/ent/internaltask"
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
-	"github.com/10hourlabs/tentn/ent/jobfileupload"
 	"github.com/10hourlabs/tentn/ent/jobpayment"
 	"github.com/10hourlabs/tentn/ent/mission"
 	"github.com/10hourlabs/tentn/ent/oauth2client"
@@ -56,7 +55,6 @@ func columnChecker(table string) func(string) error {
 		internaltask.Table:     internaltask.ValidColumn,
 		job.Table:              job.ValidColumn,
 		jobapplication.Table:   jobapplication.ValidColumn,
-		jobfileupload.Table:    jobfileupload.ValidColumn,
 		jobpayment.Table:       jobpayment.ValidColumn,
 		mission.Table:          mission.ValidColumn,
 		oauth2client.Table:     oauth2client.ValidColumn,
