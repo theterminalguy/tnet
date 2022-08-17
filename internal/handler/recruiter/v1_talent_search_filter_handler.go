@@ -1,6 +1,7 @@
 package recruiter
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/http"
 
@@ -89,6 +90,13 @@ func (v *V1TalentSearchFilterHandler) ReadByID(c echo.Context) error {
 			return c.String(http.StatusBadRequest, err.Error())
 		}
 		return c.Blob(http.StatusOK, "application/pdf", pdf)
+	}
+	if format == "base64" {
+		pdf, err := v.PDFService.Generate(record)
+		if err != nil {
+			return c.String(http.StatusBadRequest, err.Error())
+		}
+		return c.JSON(http.StatusOK, map[string]string{"data": base64.StdEncoding.EncodeToString(pdf)})
 	}
 	return c.JSON(http.StatusOK, record)
 }
