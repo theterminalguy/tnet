@@ -118,6 +118,8 @@ steps:
         "STRIPE_WEBHOOK_SECRET=${_STRIPE_WEBHOOK_SECRET}",
         "--set-env-vars",
         "STRIPE_PRODUCT_ID=${_STRIPE_PRODUCT_ID}",
+        "--set-env-vars",
+        "PAYMENT_DRIVER=${_PAYMENT_DRIVER}",
       ]
 
 images:
