@@ -21,6 +21,12 @@ func (TalentCollection) Mixin() []ent.Mixin {
 			Ref:        "talent_collections",
 			ForeignKey: "user_id",
 		},
+		BelongsToMixin{
+			ParentName: "job",
+			ParentType: Job.Type,
+			Ref:        "talent_collections",
+			ForeignKey: "job_id",
+		},
 	}
 }
 

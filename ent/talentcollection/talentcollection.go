@@ -21,12 +21,16 @@ const (
 	FieldDeletedAt = "deleted_at"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
+	// FieldJobID holds the string denoting the job_id field in the database.
+	FieldJobID = "job_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldTalentUuids holds the string denoting the talent_uuids field in the database.
 	FieldTalentUuids = "talent_uuids"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
+	// EdgeJob holds the string denoting the job edge name in mutations.
+	EdgeJob = "job"
 	// Table holds the table name of the talentcollection in the database.
 	Table = "talent_collections"
 	// UserTable is the table that holds the user relation/edge.
@@ -36,6 +40,13 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
+	// JobTable is the table that holds the job relation/edge.
+	JobTable = "talent_collections"
+	// JobInverseTable is the table name for the Job entity.
+	// It exists in this package in order to avoid circular dependency with the "job" package.
+	JobInverseTable = "jobs"
+	// JobColumn is the table column denoting the job relation/edge.
+	JobColumn = "job_id"
 )
 
 // Columns holds all SQL columns for talentcollection fields.
@@ -45,6 +56,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldDeletedAt,
 	FieldUserID,
+	FieldJobID,
 	FieldName,
 	FieldTalentUuids,
 }

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/talentcollection"
 	"github.com/10hourlabs/tentn/ent/user"
@@ -28,6 +29,7 @@ type TalentCollectionQuery struct {
 	predicates []predicate.TalentCollection
 	// eager-loading edges.
 	withUser *UserQuery
+	withJob  *JobQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -79,6 +81,28 @@ func (tcq *TalentCollectionQuery) QueryUser() *UserQuery {
 			sqlgraph.From(talentcollection.Table, talentcollection.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, talentcollection.UserTable, talentcollection.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tcq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryJob chains the current query on the "job" edge.
+func (tcq *TalentCollectionQuery) QueryJob() *JobQuery {
+	query := &JobQuery{config: tcq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tcq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tcq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(talentcollection.Table, talentcollection.FieldID, selector),
+			sqlgraph.To(job.Table, job.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, talentcollection.JobTable, talentcollection.JobColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tcq.driver.Dialect(), step)
 		return fromU, nil
@@ -268,6 +292,7 @@ func (tcq *TalentCollectionQuery) Clone() *TalentCollectionQuery {
 		order:      append([]OrderFunc{}, tcq.order...),
 		predicates: append([]predicate.TalentCollection{}, tcq.predicates...),
 		withUser:   tcq.withUser.Clone(),
+		withJob:    tcq.withJob.Clone(),
 		// clone intermediate query.
 		sql:    tcq.sql.Clone(),
 		path:   tcq.path,
@@ -283,6 +308,17 @@ func (tcq *TalentCollectionQuery) WithUser(opts ...func(*UserQuery)) *TalentColl
 		opt(query)
 	}
 	tcq.withUser = query
+	return tcq
+}
+
+// WithJob tells the query-builder to eager-load the nodes that are connected to
+// the "job" edge. The optional arguments are used to configure the query builder of the edge.
+func (tcq *TalentCollectionQuery) WithJob(opts ...func(*JobQuery)) *TalentCollectionQuery {
+	query := &JobQuery{config: tcq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tcq.withJob = query
 	return tcq
 }
 
@@ -351,8 +387,9 @@ func (tcq *TalentCollectionQuery) sqlAll(ctx context.Context) ([]*TalentCollecti
 	var (
 		nodes       = []*TalentCollection{}
 		_spec       = tcq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			tcq.withUser != nil,
+			tcq.withJob != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -397,6 +434,32 @@ func (tcq *TalentCollectionQuery) sqlAll(ctx context.Context) ([]*TalentCollecti
 			}
 			for i := range nodes {
 				nodes[i].Edges.User = n
+			}
+		}
+	}
+
+	if query := tcq.withJob; query != nil {
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*TalentCollection)
+		for i := range nodes {
+			fk := nodes[i].JobID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(job.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "job_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Job = n
 			}
 		}
 	}

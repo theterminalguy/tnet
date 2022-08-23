@@ -13,6 +13,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/jobpayment"
+	"github.com/10hourlabs/tentn/ent/talentcollection"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -97,6 +98,20 @@ func (jc *JobCreate) SetNillableHiring(b *bool) *JobCreate {
 // SetTitle sets the "title" field.
 func (jc *JobCreate) SetTitle(s string) *JobCreate {
 	jc.mutation.SetTitle(s)
+	return jc
+}
+
+// SetAtsJobID sets the "ats_job_id" field.
+func (jc *JobCreate) SetAtsJobID(s string) *JobCreate {
+	jc.mutation.SetAtsJobID(s)
+	return jc
+}
+
+// SetNillableAtsJobID sets the "ats_job_id" field if the given value is not nil.
+func (jc *JobCreate) SetNillableAtsJobID(s *string) *JobCreate {
+	if s != nil {
+		jc.SetAtsJobID(*s)
+	}
 	return jc
 }
 
@@ -215,6 +230,21 @@ func (jc *JobCreate) AddJobPayments(j ...*JobPayment) *JobCreate {
 		ids[i] = j[i].ID
 	}
 	return jc.AddJobPaymentIDs(ids...)
+}
+
+// AddTalentCollectionIDs adds the "talent_collections" edge to the TalentCollection entity by IDs.
+func (jc *JobCreate) AddTalentCollectionIDs(ids ...uuid.UUID) *JobCreate {
+	jc.mutation.AddTalentCollectionIDs(ids...)
+	return jc
+}
+
+// AddTalentCollections adds the "talent_collections" edges to the TalentCollection entity.
+func (jc *JobCreate) AddTalentCollections(t ...*TalentCollection) *JobCreate {
+	ids := make([]uuid.UUID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return jc.AddTalentCollectionIDs(ids...)
 }
 
 // Mutation returns the JobMutation object of the builder.
@@ -440,6 +470,14 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 		})
 		_node.Title = value
 	}
+	if value, ok := jc.mutation.AtsJobID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: job.FieldAtsJobID,
+		})
+		_node.AtsJobID = value
+	}
 	if value, ok := jc.mutation.Slug(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -570,6 +608,25 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: jobpayment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := jc.mutation.TalentCollectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   job.TalentCollectionsTable,
+			Columns: []string{job.TalentCollectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: talentcollection.FieldID,
 				},
 			},
 		}

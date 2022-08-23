@@ -16,15 +16,17 @@ import (
 )
 
 type V1RecruiterJobHandler struct {
-	JobRepository repo.JobQuerier
-	JobSearch     *search.JobSearch
-	JobRepo       *repo.JobRepository
+	JobRepository        repo.JobQuerier
+	JobSearch            *search.JobSearch
+	JobRepo              *repo.JobRepository
+	TalentCollectionRepo repo.TalentCollectionRepository
 }
 
 func NewV1RecruiterJobHandler(jobQuerier repo.JobQuerier) *V1RecruiterJobHandler {
 	return &V1RecruiterJobHandler{
-		JobRepository: jobQuerier,
-		JobRepo:       repo.NewJobRepository(),
+		JobRepository:        jobQuerier,
+		JobRepo:              repo.NewJobRepository(),
+		TalentCollectionRepo: *repo.NewTalentCollectionRepository(),
 	}
 }
 
@@ -99,6 +101,21 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	if err != nil {
 		tenlog.Error(err.Error())
 		return c.String(http.StatusBadGateway, "error occured while generate payment link")
+	}
+
+	// Create collection
+	collectionParams := new(repo.TalentCollectionParams)
+	collectionParams.JobId = jd.ID
+	collectionParams.UserID = recruiterID
+	atsJobId := params.AtsJobID
+	if params.AtsJobID == "" {
+		atsJobId = jd.ID.String()
+	}
+	collectionParams.Name = fmt.Sprintf("%s-%s", jd.Title, atsJobId)
+	_, err = h.TalentCollectionRepo.Create(*collectionParams)
+	if err != nil {
+		tenlog.Error(err.Error())
+		return c.String(http.StatusBadGateway, "error occured while creating job")
 	}
 
 	response, err := currentRecruiter.GetJobByID(jd.ID)

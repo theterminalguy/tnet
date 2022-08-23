@@ -53,6 +53,8 @@ func (Job) Fields() []ent.Field {
 
 		field.String(oneword.Title),
 
+		field.String(oneword.AtsJobId).Optional(),
+
 		// Todo, add a default title for this
 		field.String(oneword.Slug).
 			Unique().
@@ -99,5 +101,6 @@ func (Job) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To(oneword.Applications, JobApplication.Type),
 		edge.To("job_payments", JobPayment.Type),
+		edge.To("talent_collections", TalentCollection.Type),
 	}
 }

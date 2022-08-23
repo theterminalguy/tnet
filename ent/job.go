@@ -31,6 +31,8 @@ type Job struct {
 	Hiring bool `json:"hiring"`
 	// Title holds the value of the "title" field.
 	Title string `json:"title,omitempty"`
+	// AtsJobID holds the value of the "ats_job_id" field.
+	AtsJobID string `json:"ats_job_id,omitempty"`
 	// Slug holds the value of the "slug" field.
 	Slug string `json:"slug,omitempty"`
 	// Location holds the value of the "location" field.
@@ -64,9 +66,11 @@ type JobEdges struct {
 	Applications []*JobApplication `json:"applications,omitempty"`
 	// JobPayments holds the value of the job_payments edge.
 	JobPayments []*JobPayment `json:"job_payments,omitempty"`
+	// TalentCollections holds the value of the talent_collections edge.
+	TalentCollections []*TalentCollection `json:"talent_collections,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -101,6 +105,15 @@ func (e JobEdges) JobPaymentsOrErr() ([]*JobPayment, error) {
 	return nil, &NotLoadedError{edge: "job_payments"}
 }
 
+// TalentCollectionsOrErr returns the TalentCollections value or an error if the edge
+// was not loaded in eager-loading.
+func (e JobEdges) TalentCollectionsOrErr() ([]*TalentCollection, error) {
+	if e.loadedTypes[3] {
+		return e.TalentCollections, nil
+	}
+	return nil, &NotLoadedError{edge: "talent_collections"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Job) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -110,7 +123,7 @@ func (*Job) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case job.FieldHiring:
 			values[i] = new(sql.NullBool)
-		case job.FieldTitle, job.FieldSlug, job.FieldLocation, job.FieldSummary, job.FieldEmployment, job.FieldCategory, job.FieldThumbnail, job.FieldTimezone:
+		case job.FieldTitle, job.FieldAtsJobID, job.FieldSlug, job.FieldLocation, job.FieldSummary, job.FieldEmployment, job.FieldCategory, job.FieldThumbnail, job.FieldTimezone:
 			values[i] = new(sql.NullString)
 		case job.FieldCreatedAt, job.FieldUpdatedAt, job.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -173,6 +186,12 @@ func (j *Job) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field title", values[i])
 			} else if value.Valid {
 				j.Title = value.String
+			}
+		case job.FieldAtsJobID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field ats_job_id", values[i])
+			} else if value.Valid {
+				j.AtsJobID = value.String
 			}
 		case job.FieldSlug:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -260,6 +279,11 @@ func (j *Job) QueryJobPayments() *JobPaymentQuery {
 	return (&JobClient{config: j.config}).QueryJobPayments(j)
 }
 
+// QueryTalentCollections queries the "talent_collections" edge of the Job entity.
+func (j *Job) QueryTalentCollections() *TalentCollectionQuery {
+	return (&JobClient{config: j.config}).QueryTalentCollections(j)
+}
+
 // Update returns a builder for updating this Job.
 // Note that you need to call Job.Unwrap() before calling this method if this Job
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -297,6 +321,8 @@ func (j *Job) String() string {
 	builder.WriteString(fmt.Sprintf("%v", j.Hiring))
 	builder.WriteString(", title=")
 	builder.WriteString(j.Title)
+	builder.WriteString(", ats_job_id=")
+	builder.WriteString(j.AtsJobID)
 	builder.WriteString(", slug=")
 	builder.WriteString(j.Slug)
 	builder.WriteString(", location=")

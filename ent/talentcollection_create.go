@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/talentcollection"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
@@ -78,6 +79,20 @@ func (tcc *TalentCollectionCreate) SetNillableUserID(u *uuid.UUID) *TalentCollec
 	return tcc
 }
 
+// SetJobID sets the "job_id" field.
+func (tcc *TalentCollectionCreate) SetJobID(u uuid.UUID) *TalentCollectionCreate {
+	tcc.mutation.SetJobID(u)
+	return tcc
+}
+
+// SetNillableJobID sets the "job_id" field if the given value is not nil.
+func (tcc *TalentCollectionCreate) SetNillableJobID(u *uuid.UUID) *TalentCollectionCreate {
+	if u != nil {
+		tcc.SetJobID(*u)
+	}
+	return tcc
+}
+
 // SetName sets the "name" field.
 func (tcc *TalentCollectionCreate) SetName(s string) *TalentCollectionCreate {
 	tcc.mutation.SetName(s)
@@ -107,6 +122,11 @@ func (tcc *TalentCollectionCreate) SetNillableID(u *uuid.UUID) *TalentCollection
 // SetUser sets the "user" edge to the User entity.
 func (tcc *TalentCollectionCreate) SetUser(u *User) *TalentCollectionCreate {
 	return tcc.SetUserID(u.ID)
+}
+
+// SetJob sets the "job" edge to the Job entity.
+func (tcc *TalentCollectionCreate) SetJob(j *Job) *TalentCollectionCreate {
+	return tcc.SetJobID(j.ID)
 }
 
 // Mutation returns the TalentCollectionMutation object of the builder.
@@ -302,6 +322,26 @@ func (tcc *TalentCollectionCreate) createSpec() (*TalentCollection, *sqlgraph.Cr
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.UserID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tcc.mutation.JobIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   talentcollection.JobTable,
+			Columns: []string{talentcollection.JobColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: job.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.JobID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

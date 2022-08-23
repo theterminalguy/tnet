@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/talentcollection"
 	"github.com/10hourlabs/tentn/ent/user"
@@ -76,6 +77,26 @@ func (tcu *TalentCollectionUpdate) ClearUserID() *TalentCollectionUpdate {
 	return tcu
 }
 
+// SetJobID sets the "job_id" field.
+func (tcu *TalentCollectionUpdate) SetJobID(u uuid.UUID) *TalentCollectionUpdate {
+	tcu.mutation.SetJobID(u)
+	return tcu
+}
+
+// SetNillableJobID sets the "job_id" field if the given value is not nil.
+func (tcu *TalentCollectionUpdate) SetNillableJobID(u *uuid.UUID) *TalentCollectionUpdate {
+	if u != nil {
+		tcu.SetJobID(*u)
+	}
+	return tcu
+}
+
+// ClearJobID clears the value of the "job_id" field.
+func (tcu *TalentCollectionUpdate) ClearJobID() *TalentCollectionUpdate {
+	tcu.mutation.ClearJobID()
+	return tcu
+}
+
 // SetName sets the "name" field.
 func (tcu *TalentCollectionUpdate) SetName(s string) *TalentCollectionUpdate {
 	tcu.mutation.SetName(s)
@@ -93,6 +114,11 @@ func (tcu *TalentCollectionUpdate) SetUser(u *User) *TalentCollectionUpdate {
 	return tcu.SetUserID(u.ID)
 }
 
+// SetJob sets the "job" edge to the Job entity.
+func (tcu *TalentCollectionUpdate) SetJob(j *Job) *TalentCollectionUpdate {
+	return tcu.SetJobID(j.ID)
+}
+
 // Mutation returns the TalentCollectionMutation object of the builder.
 func (tcu *TalentCollectionUpdate) Mutation() *TalentCollectionMutation {
 	return tcu.mutation
@@ -101,6 +127,12 @@ func (tcu *TalentCollectionUpdate) Mutation() *TalentCollectionMutation {
 // ClearUser clears the "user" edge to the User entity.
 func (tcu *TalentCollectionUpdate) ClearUser() *TalentCollectionUpdate {
 	tcu.mutation.ClearUser()
+	return tcu
+}
+
+// ClearJob clears the "job" edge to the Job entity.
+func (tcu *TalentCollectionUpdate) ClearJob() *TalentCollectionUpdate {
+	tcu.mutation.ClearJob()
 	return tcu
 }
 
@@ -254,6 +286,41 @@ func (tcu *TalentCollectionUpdate) sqlSave(ctx context.Context) (n int, err erro
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tcu.mutation.JobCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   talentcollection.JobTable,
+			Columns: []string{talentcollection.JobColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: job.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tcu.mutation.JobIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   talentcollection.JobTable,
+			Columns: []string{talentcollection.JobColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: job.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tcu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{talentcollection.Label}
@@ -319,6 +386,26 @@ func (tcuo *TalentCollectionUpdateOne) ClearUserID() *TalentCollectionUpdateOne 
 	return tcuo
 }
 
+// SetJobID sets the "job_id" field.
+func (tcuo *TalentCollectionUpdateOne) SetJobID(u uuid.UUID) *TalentCollectionUpdateOne {
+	tcuo.mutation.SetJobID(u)
+	return tcuo
+}
+
+// SetNillableJobID sets the "job_id" field if the given value is not nil.
+func (tcuo *TalentCollectionUpdateOne) SetNillableJobID(u *uuid.UUID) *TalentCollectionUpdateOne {
+	if u != nil {
+		tcuo.SetJobID(*u)
+	}
+	return tcuo
+}
+
+// ClearJobID clears the value of the "job_id" field.
+func (tcuo *TalentCollectionUpdateOne) ClearJobID() *TalentCollectionUpdateOne {
+	tcuo.mutation.ClearJobID()
+	return tcuo
+}
+
 // SetName sets the "name" field.
 func (tcuo *TalentCollectionUpdateOne) SetName(s string) *TalentCollectionUpdateOne {
 	tcuo.mutation.SetName(s)
@@ -336,6 +423,11 @@ func (tcuo *TalentCollectionUpdateOne) SetUser(u *User) *TalentCollectionUpdateO
 	return tcuo.SetUserID(u.ID)
 }
 
+// SetJob sets the "job" edge to the Job entity.
+func (tcuo *TalentCollectionUpdateOne) SetJob(j *Job) *TalentCollectionUpdateOne {
+	return tcuo.SetJobID(j.ID)
+}
+
 // Mutation returns the TalentCollectionMutation object of the builder.
 func (tcuo *TalentCollectionUpdateOne) Mutation() *TalentCollectionMutation {
 	return tcuo.mutation
@@ -344,6 +436,12 @@ func (tcuo *TalentCollectionUpdateOne) Mutation() *TalentCollectionMutation {
 // ClearUser clears the "user" edge to the User entity.
 func (tcuo *TalentCollectionUpdateOne) ClearUser() *TalentCollectionUpdateOne {
 	tcuo.mutation.ClearUser()
+	return tcuo
+}
+
+// ClearJob clears the "job" edge to the Job entity.
+func (tcuo *TalentCollectionUpdateOne) ClearJob() *TalentCollectionUpdateOne {
+	tcuo.mutation.ClearJob()
 	return tcuo
 }
 
@@ -513,6 +611,41 @@ func (tcuo *TalentCollectionUpdateOne) sqlSave(ctx context.Context) (_node *Tale
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tcuo.mutation.JobCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   talentcollection.JobTable,
+			Columns: []string{talentcollection.JobColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: job.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tcuo.mutation.JobIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   talentcollection.JobTable,
+			Columns: []string{talentcollection.JobColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: job.FieldID,
 				},
 			},
 		}

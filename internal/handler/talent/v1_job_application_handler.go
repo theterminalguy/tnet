@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/10hourlabs/tenlog"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/repository/scope"
 	"github.com/10hourlabs/tentn/internal/search"
@@ -14,14 +15,16 @@ import (
 )
 
 type V1JobApplicationHandler struct {
-	JobApplicationService    *service.JobApplicationService
-	JobApplicationRepository repo.JobApplicationQuerier
+	JobApplicationService      *service.JobApplicationService
+	JobApplicationRepository   repo.JobApplicationQuerier
+	TalentCollectionRepository repo.TalentCollectionRepository
 }
 
 func NewV1JobApplicationHandler(jobAppQuerier repo.JobApplicationQuerier) *V1JobApplicationHandler {
 	return &V1JobApplicationHandler{
-		JobApplicationService:    service.NewJobApplicationService(),
-		JobApplicationRepository: jobAppQuerier,
+		JobApplicationService:      service.NewJobApplicationService(),
+		JobApplicationRepository:   jobAppQuerier,
+		TalentCollectionRepository: *repo.NewTalentCollectionRepository(),
 	}
 }
 
@@ -67,6 +70,27 @@ func (h *V1JobApplicationHandler) CreateOne(c echo.Context) error {
 	record, err := h.JobApplicationRepository.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
+	}
+	// add talent id to job collection associated
+	collection, err := h.TalentCollectionRepository.GetByJobID(params.JobUUID)
+	if err != nil {
+		tenlog.Error(err.Error())
+		return c.String(http.StatusBadRequest, "Error occurred while processing job application")
+	}
+	// append new talent to collection
+	talentsUuids := collection.TalentUuids
+	talentsUuids = append(talentsUuids, params.TalentID.String())
+	ctId := make([]uuid.UUID, 0)
+	for _, tid := range talentsUuids {
+		ctId = append(ctId, uuid.MustParse(tid))
+	}
+	collectionParams := new(repo.TalentCollectionParams)
+	collectionParams.Name = collection.Name
+	collectionParams.TalentIDS = ctId
+	_, err = h.TalentCollectionRepository.Update(collection.ID, *collectionParams)
+	if err != nil {
+		tenlog.Error(err.Error())
+		return c.String(http.StatusBadRequest, "Error occurred while processing job application")
 	}
 	return c.JSON(http.StatusCreated, record)
 }

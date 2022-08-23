@@ -136,6 +136,13 @@ func Title(v string) predicate.Job {
 	})
 }
 
+// AtsJobID applies equality check predicate on the "ats_job_id" field. It's identical to AtsJobIDEQ.
+func AtsJobID(v string) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAtsJobID), v))
+	})
+}
+
 // Slug applies equality check predicate on the "slug" field. It's identical to SlugEQ.
 func Slug(v string) predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
@@ -597,6 +604,131 @@ func TitleEqualFold(v string) predicate.Job {
 func TitleContainsFold(v string) predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldTitle), v))
+	})
+}
+
+// AtsJobIDEQ applies the EQ predicate on the "ats_job_id" field.
+func AtsJobIDEQ(v string) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAtsJobID), v))
+	})
+}
+
+// AtsJobIDNEQ applies the NEQ predicate on the "ats_job_id" field.
+func AtsJobIDNEQ(v string) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAtsJobID), v))
+	})
+}
+
+// AtsJobIDIn applies the In predicate on the "ats_job_id" field.
+func AtsJobIDIn(vs ...string) predicate.Job {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Job(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAtsJobID), v...))
+	})
+}
+
+// AtsJobIDNotIn applies the NotIn predicate on the "ats_job_id" field.
+func AtsJobIDNotIn(vs ...string) predicate.Job {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Job(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAtsJobID), v...))
+	})
+}
+
+// AtsJobIDGT applies the GT predicate on the "ats_job_id" field.
+func AtsJobIDGT(v string) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAtsJobID), v))
+	})
+}
+
+// AtsJobIDGTE applies the GTE predicate on the "ats_job_id" field.
+func AtsJobIDGTE(v string) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAtsJobID), v))
+	})
+}
+
+// AtsJobIDLT applies the LT predicate on the "ats_job_id" field.
+func AtsJobIDLT(v string) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAtsJobID), v))
+	})
+}
+
+// AtsJobIDLTE applies the LTE predicate on the "ats_job_id" field.
+func AtsJobIDLTE(v string) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAtsJobID), v))
+	})
+}
+
+// AtsJobIDContains applies the Contains predicate on the "ats_job_id" field.
+func AtsJobIDContains(v string) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldAtsJobID), v))
+	})
+}
+
+// AtsJobIDHasPrefix applies the HasPrefix predicate on the "ats_job_id" field.
+func AtsJobIDHasPrefix(v string) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldAtsJobID), v))
+	})
+}
+
+// AtsJobIDHasSuffix applies the HasSuffix predicate on the "ats_job_id" field.
+func AtsJobIDHasSuffix(v string) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldAtsJobID), v))
+	})
+}
+
+// AtsJobIDIsNil applies the IsNil predicate on the "ats_job_id" field.
+func AtsJobIDIsNil() predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAtsJobID)))
+	})
+}
+
+// AtsJobIDNotNil applies the NotNil predicate on the "ats_job_id" field.
+func AtsJobIDNotNil() predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAtsJobID)))
+	})
+}
+
+// AtsJobIDEqualFold applies the EqualFold predicate on the "ats_job_id" field.
+func AtsJobIDEqualFold(v string) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldAtsJobID), v))
+	})
+}
+
+// AtsJobIDContainsFold applies the ContainsFold predicate on the "ats_job_id" field.
+func AtsJobIDContainsFold(v string) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldAtsJobID), v))
 	})
 }
 
@@ -1326,6 +1458,34 @@ func HasJobPaymentsWith(preds ...predicate.JobPayment) predicate.Job {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(JobPaymentsInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, JobPaymentsTable, JobPaymentsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasTalentCollections applies the HasEdge predicate on the "talent_collections" edge.
+func HasTalentCollections() predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TalentCollectionsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TalentCollectionsTable, TalentCollectionsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTalentCollectionsWith applies the HasEdge predicate on the "talent_collections" edge with a given conditions (other predicates).
+func HasTalentCollectionsWith(preds ...predicate.TalentCollection) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TalentCollectionsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TalentCollectionsTable, TalentCollectionsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

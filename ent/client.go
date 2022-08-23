@@ -805,6 +805,22 @@ func (c *JobClient) QueryJobPayments(j *Job) *JobPaymentQuery {
 	return query
 }
 
+// QueryTalentCollections queries the talent_collections edge of a Job.
+func (c *JobClient) QueryTalentCollections(j *Job) *TalentCollectionQuery {
+	query := &TalentCollectionQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := j.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(job.Table, job.FieldID, id),
+			sqlgraph.To(talentcollection.Table, talentcollection.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, job.TalentCollectionsTable, job.TalentCollectionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(j.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *JobClient) Hooks() []Hook {
 	return c.hooks.Job
@@ -2458,6 +2474,22 @@ func (c *TalentCollectionClient) QueryUser(tc *TalentCollection) *UserQuery {
 			sqlgraph.From(talentcollection.Table, talentcollection.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, talentcollection.UserTable, talentcollection.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(tc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryJob queries the job edge of a TalentCollection.
+func (c *TalentCollectionClient) QueryJob(tc *TalentCollection) *JobQuery {
+	query := &JobQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(talentcollection.Table, talentcollection.FieldID, id),
+			sqlgraph.To(job.Table, job.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, talentcollection.JobTable, talentcollection.JobColumn),
 		)
 		fromV = sqlgraph.Neighbors(tc.driver.Dialect(), step)
 		return fromV, nil

@@ -26,6 +26,8 @@ const (
 	FieldHiring = "hiring"
 	// FieldTitle holds the string denoting the title field in the database.
 	FieldTitle = "title"
+	// FieldAtsJobID holds the string denoting the ats_job_id field in the database.
+	FieldAtsJobID = "ats_job_id"
 	// FieldSlug holds the string denoting the slug field in the database.
 	FieldSlug = "slug"
 	// FieldLocation holds the string denoting the location field in the database.
@@ -52,6 +54,8 @@ const (
 	EdgeApplications = "applications"
 	// EdgeJobPayments holds the string denoting the job_payments edge name in mutations.
 	EdgeJobPayments = "job_payments"
+	// EdgeTalentCollections holds the string denoting the talent_collections edge name in mutations.
+	EdgeTalentCollections = "talent_collections"
 	// Table holds the table name of the job in the database.
 	Table = "jobs"
 	// UserTable is the table that holds the user relation/edge.
@@ -75,6 +79,13 @@ const (
 	JobPaymentsInverseTable = "job_payments"
 	// JobPaymentsColumn is the table column denoting the job_payments relation/edge.
 	JobPaymentsColumn = "job_id"
+	// TalentCollectionsTable is the table that holds the talent_collections relation/edge.
+	TalentCollectionsTable = "talent_collections"
+	// TalentCollectionsInverseTable is the table name for the TalentCollection entity.
+	// It exists in this package in order to avoid circular dependency with the "talentcollection" package.
+	TalentCollectionsInverseTable = "talent_collections"
+	// TalentCollectionsColumn is the table column denoting the talent_collections relation/edge.
+	TalentCollectionsColumn = "job_id"
 )
 
 // Columns holds all SQL columns for job fields.
@@ -86,6 +97,7 @@ var Columns = []string{
 	FieldUserID,
 	FieldHiring,
 	FieldTitle,
+	FieldAtsJobID,
 	FieldSlug,
 	FieldLocation,
 	FieldSummary,

@@ -34,6 +34,7 @@ func (r *RecruiterScope) GetJobByID(id uuid.UUID) (*ent.Job, error) {
 	return r.Recruiter.QueryJobs().
 		Where(job.ID(id)).
 		WithJobPayments().
+		WithTalentCollections().
 		WithApplications(func(jaq *ent.JobApplicationQuery) {
 			jaq.WithTalent()
 		}).

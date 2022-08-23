@@ -16,6 +16,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/jobpayment"
 	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/10hourlabs/tentn/ent/talentcollection"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -30,9 +31,10 @@ type JobQuery struct {
 	fields     []string
 	predicates []predicate.Job
 	// eager-loading edges.
-	withUser         *UserQuery
-	withApplications *JobApplicationQuery
-	withJobPayments  *JobPaymentQuery
+	withUser              *UserQuery
+	withApplications      *JobApplicationQuery
+	withJobPayments       *JobPaymentQuery
+	withTalentCollections *TalentCollectionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -128,6 +130,28 @@ func (jq *JobQuery) QueryJobPayments() *JobPaymentQuery {
 			sqlgraph.From(job.Table, job.FieldID, selector),
 			sqlgraph.To(jobpayment.Table, jobpayment.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, job.JobPaymentsTable, job.JobPaymentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(jq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTalentCollections chains the current query on the "talent_collections" edge.
+func (jq *JobQuery) QueryTalentCollections() *TalentCollectionQuery {
+	query := &TalentCollectionQuery{config: jq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := jq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := jq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(job.Table, job.FieldID, selector),
+			sqlgraph.To(talentcollection.Table, talentcollection.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, job.TalentCollectionsTable, job.TalentCollectionsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(jq.driver.Dialect(), step)
 		return fromU, nil
@@ -311,14 +335,15 @@ func (jq *JobQuery) Clone() *JobQuery {
 		return nil
 	}
 	return &JobQuery{
-		config:           jq.config,
-		limit:            jq.limit,
-		offset:           jq.offset,
-		order:            append([]OrderFunc{}, jq.order...),
-		predicates:       append([]predicate.Job{}, jq.predicates...),
-		withUser:         jq.withUser.Clone(),
-		withApplications: jq.withApplications.Clone(),
-		withJobPayments:  jq.withJobPayments.Clone(),
+		config:                jq.config,
+		limit:                 jq.limit,
+		offset:                jq.offset,
+		order:                 append([]OrderFunc{}, jq.order...),
+		predicates:            append([]predicate.Job{}, jq.predicates...),
+		withUser:              jq.withUser.Clone(),
+		withApplications:      jq.withApplications.Clone(),
+		withJobPayments:       jq.withJobPayments.Clone(),
+		withTalentCollections: jq.withTalentCollections.Clone(),
 		// clone intermediate query.
 		sql:    jq.sql.Clone(),
 		path:   jq.path,
@@ -356,6 +381,17 @@ func (jq *JobQuery) WithJobPayments(opts ...func(*JobPaymentQuery)) *JobQuery {
 		opt(query)
 	}
 	jq.withJobPayments = query
+	return jq
+}
+
+// WithTalentCollections tells the query-builder to eager-load the nodes that are connected to
+// the "talent_collections" edge. The optional arguments are used to configure the query builder of the edge.
+func (jq *JobQuery) WithTalentCollections(opts ...func(*TalentCollectionQuery)) *JobQuery {
+	query := &TalentCollectionQuery{config: jq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	jq.withTalentCollections = query
 	return jq
 }
 
@@ -424,10 +460,11 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 	var (
 		nodes       = []*Job{}
 		_spec       = jq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			jq.withUser != nil,
 			jq.withApplications != nil,
 			jq.withJobPayments != nil,
+			jq.withTalentCollections != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -523,6 +560,31 @@ func (jq *JobQuery) sqlAll(ctx context.Context) ([]*Job, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "job_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.JobPayments = append(node.Edges.JobPayments, n)
+		}
+	}
+
+	if query := jq.withTalentCollections; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uuid.UUID]*Job)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TalentCollections = []*TalentCollection{}
+		}
+		query.Where(predicate.TalentCollection(func(s *sql.Selector) {
+			s.Where(sql.InValues(job.TalentCollectionsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.JobID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "job_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TalentCollections = append(node.Edges.TalentCollections, n)
 		}
 	}
 
