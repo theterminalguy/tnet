@@ -86,16 +86,12 @@ func (h *V1JobApplicationHandler) CreateOne(c echo.Context) error {
 		tenlog.Error(err.Error())
 		return c.String(http.StatusBadRequest, "Error occurred while processing job application")
 	}
-	// append new talent to collection
-	talentsUuids := collection.TalentUuids
-	talentsUuids = append(talentsUuids, params.TalentID.String())
-	ctId := make([]uuid.UUID, 0)
-	for _, tid := range talentsUuids {
-		ctId = append(ctId, uuid.MustParse(tid))
-	}
+	// the update requires slice of talent
+	talentsUuids := make([]uuid.UUID, 0)
+	talentsUuids = append(talentsUuids, params.TalentID)
 	collectionParams := new(repo.TalentCollectionParams)
 	collectionParams.Name = collection.Name
-	collectionParams.TalentIDS = ctId
+	collectionParams.TalentIDS = talentsUuids
 	_, err = h.TalentCollectionRepository.Update(collection.ID, *collectionParams)
 	if err != nil {
 		tenlog.Error(err.Error())
