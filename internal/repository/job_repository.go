@@ -43,7 +43,8 @@ type JobParams struct {
 	TimeZone     string   `json:"timezone_id" validate:"required"`
 	Location     string   `json:"location"`
 
-	AtsJobID string `json:"ats_job_id"`
+	AtsJobID           string    `json:"ats_job_id"`
+	TalentCollectionId uuid.UUID `json:"talent_collection_id"`
 
 	/*
 		TODO: Add support for slary range
@@ -137,6 +138,7 @@ func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
 		SetRequirements(p.Requirements).
 		SetYouHave(p.YouHave).
 		SetUserID(p.UserID).
+		SetTalentCollectionID(p.TalentCollectionId).
 		SetTimezone(timeZoneName[1]).
 		Save(dBContext)
 	if err != nil {

@@ -18,6 +18,7 @@ type V1JobApplicationHandler struct {
 	JobApplicationService      *service.JobApplicationService
 	JobApplicationRepository   repo.JobApplicationQuerier
 	TalentCollectionRepository repo.TalentCollectionRepository
+	JobRepo                    repo.JobRepository
 }
 
 func NewV1JobApplicationHandler(jobAppQuerier repo.JobApplicationQuerier) *V1JobApplicationHandler {
@@ -25,6 +26,7 @@ func NewV1JobApplicationHandler(jobAppQuerier repo.JobApplicationQuerier) *V1Job
 		JobApplicationService:      service.NewJobApplicationService(),
 		JobApplicationRepository:   jobAppQuerier,
 		TalentCollectionRepository: *repo.NewTalentCollectionRepository(),
+		JobRepo:                    *repo.NewJobRepository(),
 	}
 }
 
@@ -71,8 +73,15 @@ func (h *V1JobApplicationHandler) CreateOne(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
+
+	// Get Job
+	job, err := h.JobRepo.GetByID(params.JobUUID)
+	if err != nil {
+		tenlog.Error(err.Error())
+		return c.String(http.StatusBadGateway, "Error occured while creating application")
+	}
 	// add talent id to job collection associated
-	collection, err := h.TalentCollectionRepository.GetByJobID(params.JobUUID)
+	collection, err := h.TalentCollectionRepository.GetByID(job.TalentCollectionID)
 	if err != nil {
 		tenlog.Error(err.Error())
 		return c.String(http.StatusBadRequest, "Error occurred while processing job application")

@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
 
@@ -21,12 +22,6 @@ func (TalentCollection) Mixin() []ent.Mixin {
 			Ref:        "talent_collections",
 			ForeignKey: "user_id",
 		},
-		BelongsToMixin{
-			ParentName: "job",
-			ParentType: Job.Type,
-			Ref:        "talent_collections",
-			ForeignKey: "job_id",
-		},
 	}
 }
 
@@ -41,5 +36,7 @@ func (TalentCollection) Fields() []ent.Field {
 
 // Edges of the TalentCollection.
 func (TalentCollection) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.To("jobs", Job.Type),
+	}
 }

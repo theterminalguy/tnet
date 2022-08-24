@@ -22,6 +22,8 @@ const (
 	FieldDeletedAt = "deleted_at"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
+	// FieldTalentCollectionID holds the string denoting the talent_collection_id field in the database.
+	FieldTalentCollectionID = "talent_collection_id"
 	// FieldHiring holds the string denoting the hiring field in the database.
 	FieldHiring = "hiring"
 	// FieldTitle holds the string denoting the title field in the database.
@@ -50,12 +52,12 @@ const (
 	FieldTimezone = "timezone"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
+	// EdgeTalentCollection holds the string denoting the talent_collection edge name in mutations.
+	EdgeTalentCollection = "talent_collection"
 	// EdgeApplications holds the string denoting the applications edge name in mutations.
 	EdgeApplications = "applications"
 	// EdgeJobPayments holds the string denoting the job_payments edge name in mutations.
 	EdgeJobPayments = "job_payments"
-	// EdgeTalentCollections holds the string denoting the talent_collections edge name in mutations.
-	EdgeTalentCollections = "talent_collections"
 	// Table holds the table name of the job in the database.
 	Table = "jobs"
 	// UserTable is the table that holds the user relation/edge.
@@ -65,6 +67,13 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
+	// TalentCollectionTable is the table that holds the talent_collection relation/edge.
+	TalentCollectionTable = "jobs"
+	// TalentCollectionInverseTable is the table name for the TalentCollection entity.
+	// It exists in this package in order to avoid circular dependency with the "talentcollection" package.
+	TalentCollectionInverseTable = "talent_collections"
+	// TalentCollectionColumn is the table column denoting the talent_collection relation/edge.
+	TalentCollectionColumn = "talent_collection_id"
 	// ApplicationsTable is the table that holds the applications relation/edge.
 	ApplicationsTable = "job_applications"
 	// ApplicationsInverseTable is the table name for the JobApplication entity.
@@ -79,13 +88,6 @@ const (
 	JobPaymentsInverseTable = "job_payments"
 	// JobPaymentsColumn is the table column denoting the job_payments relation/edge.
 	JobPaymentsColumn = "job_id"
-	// TalentCollectionsTable is the table that holds the talent_collections relation/edge.
-	TalentCollectionsTable = "talent_collections"
-	// TalentCollectionsInverseTable is the table name for the TalentCollection entity.
-	// It exists in this package in order to avoid circular dependency with the "talentcollection" package.
-	TalentCollectionsInverseTable = "talent_collections"
-	// TalentCollectionsColumn is the table column denoting the talent_collections relation/edge.
-	TalentCollectionsColumn = "job_id"
 )
 
 // Columns holds all SQL columns for job fields.
@@ -95,6 +97,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldDeletedAt,
 	FieldUserID,
+	FieldTalentCollectionID,
 	FieldHiring,
 	FieldTitle,
 	FieldAtsJobID,

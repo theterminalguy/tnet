@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/talentcollection"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
@@ -28,8 +27,6 @@ type TalentCollection struct {
 	DeletedAt *time.Time `json:"deleted_at"`
 	// UserID holds the value of the "user_id" field.
 	UserID uuid.UUID `json:"-"`
-	// JobID holds the value of the "job_id" field.
-	JobID uuid.UUID `json:"-"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// TalentUuids holds the value of the "talent_uuids" field.
@@ -43,8 +40,8 @@ type TalentCollection struct {
 type TalentCollectionEdges struct {
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
-	// Job holds the value of the job edge.
-	Job *Job `json:"job,omitempty"`
+	// Jobs holds the value of the jobs edge.
+	Jobs []*Job `json:"jobs,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -64,18 +61,13 @@ func (e TalentCollectionEdges) UserOrErr() (*User, error) {
 	return nil, &NotLoadedError{edge: "user"}
 }
 
-// JobOrErr returns the Job value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e TalentCollectionEdges) JobOrErr() (*Job, error) {
+// JobsOrErr returns the Jobs value or an error if the edge
+// was not loaded in eager-loading.
+func (e TalentCollectionEdges) JobsOrErr() ([]*Job, error) {
 	if e.loadedTypes[1] {
-		if e.Job == nil {
-			// The edge job was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: job.Label}
-		}
-		return e.Job, nil
+		return e.Jobs, nil
 	}
-	return nil, &NotLoadedError{edge: "job"}
+	return nil, &NotLoadedError{edge: "jobs"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -89,7 +81,7 @@ func (*TalentCollection) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullString)
 		case talentcollection.FieldCreatedAt, talentcollection.FieldUpdatedAt, talentcollection.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case talentcollection.FieldID, talentcollection.FieldUserID, talentcollection.FieldJobID:
+		case talentcollection.FieldID, talentcollection.FieldUserID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type TalentCollection", columns[i])
@@ -137,12 +129,6 @@ func (tc *TalentCollection) assignValues(columns []string, values []interface{})
 			} else if value != nil {
 				tc.UserID = *value
 			}
-		case talentcollection.FieldJobID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field job_id", values[i])
-			} else if value != nil {
-				tc.JobID = *value
-			}
 		case talentcollection.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -167,9 +153,9 @@ func (tc *TalentCollection) QueryUser() *UserQuery {
 	return (&TalentCollectionClient{config: tc.config}).QueryUser(tc)
 }
 
-// QueryJob queries the "job" edge of the TalentCollection entity.
-func (tc *TalentCollection) QueryJob() *JobQuery {
-	return (&TalentCollectionClient{config: tc.config}).QueryJob(tc)
+// QueryJobs queries the "jobs" edge of the TalentCollection entity.
+func (tc *TalentCollection) QueryJobs() *JobQuery {
+	return (&TalentCollectionClient{config: tc.config}).QueryJobs(tc)
 }
 
 // Update returns a builder for updating this TalentCollection.
@@ -205,8 +191,6 @@ func (tc *TalentCollection) String() string {
 	}
 	builder.WriteString(", user_id=")
 	builder.WriteString(fmt.Sprintf("%v", tc.UserID))
-	builder.WriteString(", job_id=")
-	builder.WriteString(fmt.Sprintf("%v", tc.JobID))
 	builder.WriteString(", name=")
 	builder.WriteString(tc.Name)
 	builder.WriteString(", talent_uuids=")

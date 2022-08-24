@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -29,7 +30,7 @@ type TalentCollectionQuery struct {
 	predicates []predicate.TalentCollection
 	// eager-loading edges.
 	withUser *UserQuery
-	withJob  *JobQuery
+	withJobs *JobQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -88,8 +89,8 @@ func (tcq *TalentCollectionQuery) QueryUser() *UserQuery {
 	return query
 }
 
-// QueryJob chains the current query on the "job" edge.
-func (tcq *TalentCollectionQuery) QueryJob() *JobQuery {
+// QueryJobs chains the current query on the "jobs" edge.
+func (tcq *TalentCollectionQuery) QueryJobs() *JobQuery {
 	query := &JobQuery{config: tcq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := tcq.prepareQuery(ctx); err != nil {
@@ -102,7 +103,7 @@ func (tcq *TalentCollectionQuery) QueryJob() *JobQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(talentcollection.Table, talentcollection.FieldID, selector),
 			sqlgraph.To(job.Table, job.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, talentcollection.JobTable, talentcollection.JobColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, talentcollection.JobsTable, talentcollection.JobsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tcq.driver.Dialect(), step)
 		return fromU, nil
@@ -292,7 +293,7 @@ func (tcq *TalentCollectionQuery) Clone() *TalentCollectionQuery {
 		order:      append([]OrderFunc{}, tcq.order...),
 		predicates: append([]predicate.TalentCollection{}, tcq.predicates...),
 		withUser:   tcq.withUser.Clone(),
-		withJob:    tcq.withJob.Clone(),
+		withJobs:   tcq.withJobs.Clone(),
 		// clone intermediate query.
 		sql:    tcq.sql.Clone(),
 		path:   tcq.path,
@@ -311,14 +312,14 @@ func (tcq *TalentCollectionQuery) WithUser(opts ...func(*UserQuery)) *TalentColl
 	return tcq
 }
 
-// WithJob tells the query-builder to eager-load the nodes that are connected to
-// the "job" edge. The optional arguments are used to configure the query builder of the edge.
-func (tcq *TalentCollectionQuery) WithJob(opts ...func(*JobQuery)) *TalentCollectionQuery {
+// WithJobs tells the query-builder to eager-load the nodes that are connected to
+// the "jobs" edge. The optional arguments are used to configure the query builder of the edge.
+func (tcq *TalentCollectionQuery) WithJobs(opts ...func(*JobQuery)) *TalentCollectionQuery {
 	query := &JobQuery{config: tcq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	tcq.withJob = query
+	tcq.withJobs = query
 	return tcq
 }
 
@@ -389,7 +390,7 @@ func (tcq *TalentCollectionQuery) sqlAll(ctx context.Context) ([]*TalentCollecti
 		_spec       = tcq.querySpec()
 		loadedTypes = [2]bool{
 			tcq.withUser != nil,
-			tcq.withJob != nil,
+			tcq.withJobs != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -438,29 +439,28 @@ func (tcq *TalentCollectionQuery) sqlAll(ctx context.Context) ([]*TalentCollecti
 		}
 	}
 
-	if query := tcq.withJob; query != nil {
-		ids := make([]uuid.UUID, 0, len(nodes))
-		nodeids := make(map[uuid.UUID][]*TalentCollection)
+	if query := tcq.withJobs; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uuid.UUID]*TalentCollection)
 		for i := range nodes {
-			fk := nodes[i].JobID
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Jobs = []*Job{}
 		}
-		query.Where(job.IDIn(ids...))
+		query.Where(predicate.Job(func(s *sql.Selector) {
+			s.Where(sql.InValues(talentcollection.JobsColumn, fks...))
+		}))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
 		}
 		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
+			fk := n.TalentCollectionID
+			node, ok := nodeids[fk]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "job_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "talent_collection_id" returned %v for node %v`, fk, n.ID)
 			}
-			for i := range nodes {
-				nodes[i].Edges.Job = n
-			}
+			node.Edges.Jobs = append(node.Edges.Jobs, n)
 		}
 	}
 

@@ -157,6 +157,7 @@ var (
 		{Name: "requirements", Type: field.TypeJSON},
 		{Name: "you_have", Type: field.TypeJSON},
 		{Name: "timezone", Type: field.TypeString},
+		{Name: "talent_collection_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// JobsTable holds the schema information for the "jobs" table.
@@ -166,8 +167,14 @@ var (
 		PrimaryKey: []*schema.Column{JobsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "jobs_users_jobs",
+				Symbol:     "jobs_talent_collections_jobs",
 				Columns:    []*schema.Column{JobsColumns[17]},
+				RefColumns: []*schema.Column{TalentCollectionsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "jobs_users_jobs",
+				Columns:    []*schema.Column{JobsColumns[18]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -175,6 +182,11 @@ var (
 		Indexes: []*schema.Index{
 			{
 				Name:    "job_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{JobsColumns[18]},
+			},
+			{
+				Name:    "job_talent_collection_id",
 				Unique:  false,
 				Columns: []*schema.Column{JobsColumns[17]},
 			},
@@ -724,7 +736,6 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "talent_uuids", Type: field.TypeJSON},
-		{Name: "job_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// TalentCollectionsTable holds the schema information for the "talent_collections" table.
@@ -734,14 +745,8 @@ var (
 		PrimaryKey: []*schema.Column{TalentCollectionsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "talent_collections_jobs_talent_collections",
-				Columns:    []*schema.Column{TalentCollectionsColumns[6]},
-				RefColumns: []*schema.Column{JobsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "talent_collections_users_talent_collections",
-				Columns:    []*schema.Column{TalentCollectionsColumns[7]},
+				Columns:    []*schema.Column{TalentCollectionsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -749,11 +754,6 @@ var (
 		Indexes: []*schema.Index{
 			{
 				Name:    "talentcollection_user_id",
-				Unique:  false,
-				Columns: []*schema.Column{TalentCollectionsColumns[7]},
-			},
-			{
-				Name:    "talentcollection_job_id",
 				Unique:  false,
 				Columns: []*schema.Column{TalentCollectionsColumns[6]},
 			},
@@ -856,7 +856,8 @@ func init() {
 	EducationsTable.ForeignKeys[0].RefTable = TalentsTable
 	EmailTemplatesTable.ForeignKeys[0].RefTable = UsersTable
 	EmergencyContactsTable.ForeignKeys[0].RefTable = TalentsTable
-	JobsTable.ForeignKeys[0].RefTable = UsersTable
+	JobsTable.ForeignKeys[0].RefTable = TalentCollectionsTable
+	JobsTable.ForeignKeys[1].RefTable = UsersTable
 	JobApplicationsTable.ForeignKeys[0].RefTable = JobsTable
 	JobApplicationsTable.ForeignKeys[1].RefTable = TalentsTable
 	JobPaymentsTable.ForeignKeys[0].RefTable = JobsTable
@@ -871,7 +872,6 @@ func init() {
 	SlackAppInstallsTable.ForeignKeys[0].RefTable = UsersTable
 	SlackAppUsersTable.ForeignKeys[0].RefTable = SlackAppInstallsTable
 	TalentsTable.ForeignKeys[0].RefTable = UsersTable
-	TalentCollectionsTable.ForeignKeys[0].RefTable = JobsTable
-	TalentCollectionsTable.ForeignKeys[1].RefTable = UsersTable
+	TalentCollectionsTable.ForeignKeys[0].RefTable = UsersTable
 	WorkExperiencesTable.ForeignKeys[0].RefTable = TalentsTable
 }

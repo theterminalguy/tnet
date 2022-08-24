@@ -122,13 +122,6 @@ func UserID(v uuid.UUID) predicate.TalentCollection {
 	})
 }
 
-// JobID applies equality check predicate on the "job_id" field. It's identical to JobIDEQ.
-func JobID(v uuid.UUID) predicate.TalentCollection {
-	return predicate.TalentCollection(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldJobID), v))
-	})
-}
-
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.TalentCollection {
 	return predicate.TalentCollection(func(s *sql.Selector) {
@@ -440,68 +433,6 @@ func UserIDNotNil() predicate.TalentCollection {
 	})
 }
 
-// JobIDEQ applies the EQ predicate on the "job_id" field.
-func JobIDEQ(v uuid.UUID) predicate.TalentCollection {
-	return predicate.TalentCollection(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldJobID), v))
-	})
-}
-
-// JobIDNEQ applies the NEQ predicate on the "job_id" field.
-func JobIDNEQ(v uuid.UUID) predicate.TalentCollection {
-	return predicate.TalentCollection(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldJobID), v))
-	})
-}
-
-// JobIDIn applies the In predicate on the "job_id" field.
-func JobIDIn(vs ...uuid.UUID) predicate.TalentCollection {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.TalentCollection(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldJobID), v...))
-	})
-}
-
-// JobIDNotIn applies the NotIn predicate on the "job_id" field.
-func JobIDNotIn(vs ...uuid.UUID) predicate.TalentCollection {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.TalentCollection(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldJobID), v...))
-	})
-}
-
-// JobIDIsNil applies the IsNil predicate on the "job_id" field.
-func JobIDIsNil() predicate.TalentCollection {
-	return predicate.TalentCollection(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldJobID)))
-	})
-}
-
-// JobIDNotNil applies the NotNil predicate on the "job_id" field.
-func JobIDNotNil() predicate.TalentCollection {
-	return predicate.TalentCollection(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldJobID)))
-	})
-}
-
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.TalentCollection {
 	return predicate.TalentCollection(func(s *sql.Selector) {
@@ -641,25 +572,25 @@ func HasUserWith(preds ...predicate.User) predicate.TalentCollection {
 	})
 }
 
-// HasJob applies the HasEdge predicate on the "job" edge.
-func HasJob() predicate.TalentCollection {
+// HasJobs applies the HasEdge predicate on the "jobs" edge.
+func HasJobs() predicate.TalentCollection {
 	return predicate.TalentCollection(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(JobTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, JobTable, JobColumn),
+			sqlgraph.To(JobsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, JobsTable, JobsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasJobWith applies the HasEdge predicate on the "job" edge with a given conditions (other predicates).
-func HasJobWith(preds ...predicate.Job) predicate.TalentCollection {
+// HasJobsWith applies the HasEdge predicate on the "jobs" edge with a given conditions (other predicates).
+func HasJobsWith(preds ...predicate.Job) predicate.TalentCollection {
 	return predicate.TalentCollection(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(JobInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, JobTable, JobColumn),
+			sqlgraph.To(JobsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, JobsTable, JobsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

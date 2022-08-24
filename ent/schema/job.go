@@ -24,6 +24,12 @@ func (Job) Mixin() []ent.Mixin {
 			Ref:        "jobs",
 			ForeignKey: "user_id",
 		},
+		BelongsToMixin{
+			ParentName: "talent_collection",
+			ParentType: TalentCollection.Type,
+			Ref:        "jobs",
+			ForeignKey: "talent_collection_id",
+		},
 	}
 }
 
@@ -101,6 +107,5 @@ func (Job) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To(oneword.Applications, JobApplication.Type),
 		edge.To("job_payments", JobPayment.Type),
-		edge.To("talent_collections", TalentCollection.Type),
 	}
 }

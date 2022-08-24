@@ -17,7 +17,6 @@ type TalentCollectionParams struct {
 	UserID    uuid.UUID
 	Name      string      `json:"name"`
 	TalentIDS []uuid.UUID `json:"talent_ids"`
-	JobId     uuid.UUID   `json:"job_id"`
 }
 
 func NewTalentCollectionRepository() *TalentCollectionRepository {
@@ -47,19 +46,6 @@ func (*TalentCollectionRepository) GetByID(id uuid.UUID) (*ent.TalentCollection,
 	return record, nil
 }
 
-func (*TalentCollectionRepository) GetByJobID(id uuid.UUID) (*ent.TalentCollection, error) {
-	record, err := dBConn.TalentCollection.Query().
-		Where(talentcollection.JobID(id)).
-		Only(dBContext)
-	if err != nil {
-		return nil, err
-	}
-	if record.DeletedAt != nil {
-		return nil, ErrRecordDeleted
-	}
-	return record, nil
-}
-
 func (t *TalentCollectionRepository) Create(p TalentCollectionParams) (*ent.TalentCollection, error) {
 	err := ValidateParams(p)
 	if err != nil {
@@ -79,7 +65,6 @@ func (t *TalentCollectionRepository) Create(p TalentCollectionParams) (*ent.Tale
 		Create().
 		SetName(p.Name).
 		SetUserID(p.UserID).
-		SetJobID(p.JobId).
 		SetTalentUuids(TalentIDs).
 		Save(dBContext)
 	if err != nil {

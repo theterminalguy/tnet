@@ -81,6 +81,20 @@ func (jc *JobCreate) SetNillableUserID(u *uuid.UUID) *JobCreate {
 	return jc
 }
 
+// SetTalentCollectionID sets the "talent_collection_id" field.
+func (jc *JobCreate) SetTalentCollectionID(u uuid.UUID) *JobCreate {
+	jc.mutation.SetTalentCollectionID(u)
+	return jc
+}
+
+// SetNillableTalentCollectionID sets the "talent_collection_id" field if the given value is not nil.
+func (jc *JobCreate) SetNillableTalentCollectionID(u *uuid.UUID) *JobCreate {
+	if u != nil {
+		jc.SetTalentCollectionID(*u)
+	}
+	return jc
+}
+
 // SetHiring sets the "hiring" field.
 func (jc *JobCreate) SetHiring(b bool) *JobCreate {
 	jc.mutation.SetHiring(b)
@@ -202,6 +216,11 @@ func (jc *JobCreate) SetUser(u *User) *JobCreate {
 	return jc.SetUserID(u.ID)
 }
 
+// SetTalentCollection sets the "talent_collection" edge to the TalentCollection entity.
+func (jc *JobCreate) SetTalentCollection(t *TalentCollection) *JobCreate {
+	return jc.SetTalentCollectionID(t.ID)
+}
+
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
 func (jc *JobCreate) AddApplicationIDs(ids ...uuid.UUID) *JobCreate {
 	jc.mutation.AddApplicationIDs(ids...)
@@ -230,21 +249,6 @@ func (jc *JobCreate) AddJobPayments(j ...*JobPayment) *JobCreate {
 		ids[i] = j[i].ID
 	}
 	return jc.AddJobPaymentIDs(ids...)
-}
-
-// AddTalentCollectionIDs adds the "talent_collections" edge to the TalentCollection entity by IDs.
-func (jc *JobCreate) AddTalentCollectionIDs(ids ...uuid.UUID) *JobCreate {
-	jc.mutation.AddTalentCollectionIDs(ids...)
-	return jc
-}
-
-// AddTalentCollections adds the "talent_collections" edges to the TalentCollection entity.
-func (jc *JobCreate) AddTalentCollections(t ...*TalentCollection) *JobCreate {
-	ids := make([]uuid.UUID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return jc.AddTalentCollectionIDs(ids...)
 }
 
 // Mutation returns the JobMutation object of the builder.
@@ -578,6 +582,26 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 		_node.UserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := jc.mutation.TalentCollectionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   job.TalentCollectionTable,
+			Columns: []string{job.TalentCollectionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: talentcollection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.TalentCollectionID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := jc.mutation.ApplicationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -608,25 +632,6 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: jobpayment.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := jc.mutation.TalentCollectionsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   job.TalentCollectionsTable,
-			Columns: []string{job.TalentCollectionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: talentcollection.FieldID,
 				},
 			},
 		}

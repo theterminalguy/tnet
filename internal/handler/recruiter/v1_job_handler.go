@@ -88,6 +88,18 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 		params.Category = "engineering"
 	}
 	params.UserID = recruiterID
+
+	// Create collection
+	collectionParams := new(repo.TalentCollectionParams)
+	collectionParams.UserID = recruiterID
+	atsJobId := params.AtsJobID
+	collectionParams.Name = fmt.Sprintf("%s-%s", params.Title, atsJobId)
+	resp, err := h.TalentCollectionRepo.Create(*collectionParams)
+	if err != nil {
+		tenlog.Error(err.Error())
+		return c.String(http.StatusBadGateway, "error occured while creating job")
+	}
+	params.TalentCollectionId = resp.ID
 	jd, err := h.JobRepo.Create(*params)
 	if err != nil {
 		tenlog.Error(err.Error())
@@ -101,21 +113,6 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	if err != nil {
 		tenlog.Error(err.Error())
 		return c.String(http.StatusBadGateway, "error occured while generate payment link")
-	}
-
-	// Create collection
-	collectionParams := new(repo.TalentCollectionParams)
-	collectionParams.JobId = jd.ID
-	collectionParams.UserID = recruiterID
-	atsJobId := params.AtsJobID
-	if params.AtsJobID == "" {
-		atsJobId = jd.ID.String()
-	}
-	collectionParams.Name = fmt.Sprintf("%s-%s", jd.Title, atsJobId)
-	_, err = h.TalentCollectionRepo.Create(*collectionParams)
-	if err != nil {
-		tenlog.Error(err.Error())
-		return c.String(http.StatusBadGateway, "error occured while creating job")
 	}
 
 	response, err := currentRecruiter.GetJobByID(jd.ID)

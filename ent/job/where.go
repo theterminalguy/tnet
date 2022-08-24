@@ -122,6 +122,13 @@ func UserID(v uuid.UUID) predicate.Job {
 	})
 }
 
+// TalentCollectionID applies equality check predicate on the "talent_collection_id" field. It's identical to TalentCollectionIDEQ.
+func TalentCollectionID(v uuid.UUID) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTalentCollectionID), v))
+	})
+}
+
 // Hiring applies equality check predicate on the "hiring" field. It's identical to HiringEQ.
 func Hiring(v bool) predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
@@ -479,6 +486,68 @@ func UserIDIsNil() predicate.Job {
 func UserIDNotNil() predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldUserID)))
+	})
+}
+
+// TalentCollectionIDEQ applies the EQ predicate on the "talent_collection_id" field.
+func TalentCollectionIDEQ(v uuid.UUID) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTalentCollectionID), v))
+	})
+}
+
+// TalentCollectionIDNEQ applies the NEQ predicate on the "talent_collection_id" field.
+func TalentCollectionIDNEQ(v uuid.UUID) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTalentCollectionID), v))
+	})
+}
+
+// TalentCollectionIDIn applies the In predicate on the "talent_collection_id" field.
+func TalentCollectionIDIn(vs ...uuid.UUID) predicate.Job {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Job(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldTalentCollectionID), v...))
+	})
+}
+
+// TalentCollectionIDNotIn applies the NotIn predicate on the "talent_collection_id" field.
+func TalentCollectionIDNotIn(vs ...uuid.UUID) predicate.Job {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Job(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldTalentCollectionID), v...))
+	})
+}
+
+// TalentCollectionIDIsNil applies the IsNil predicate on the "talent_collection_id" field.
+func TalentCollectionIDIsNil() predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldTalentCollectionID)))
+	})
+}
+
+// TalentCollectionIDNotNil applies the NotNil predicate on the "talent_collection_id" field.
+func TalentCollectionIDNotNil() predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldTalentCollectionID)))
 	})
 }
 
@@ -1411,6 +1480,34 @@ func HasUserWith(preds ...predicate.User) predicate.Job {
 	})
 }
 
+// HasTalentCollection applies the HasEdge predicate on the "talent_collection" edge.
+func HasTalentCollection() predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TalentCollectionTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, TalentCollectionTable, TalentCollectionColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTalentCollectionWith applies the HasEdge predicate on the "talent_collection" edge with a given conditions (other predicates).
+func HasTalentCollectionWith(preds ...predicate.TalentCollection) predicate.Job {
+	return predicate.Job(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TalentCollectionInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, TalentCollectionTable, TalentCollectionColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasApplications applies the HasEdge predicate on the "applications" edge.
 func HasApplications() predicate.Job {
 	return predicate.Job(func(s *sql.Selector) {
@@ -1458,34 +1555,6 @@ func HasJobPaymentsWith(preds ...predicate.JobPayment) predicate.Job {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(JobPaymentsInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, JobPaymentsTable, JobPaymentsColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasTalentCollections applies the HasEdge predicate on the "talent_collections" edge.
-func HasTalentCollections() predicate.Job {
-	return predicate.Job(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TalentCollectionsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, TalentCollectionsTable, TalentCollectionsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasTalentCollectionsWith applies the HasEdge predicate on the "talent_collections" edge with a given conditions (other predicates).
-func HasTalentCollectionsWith(preds ...predicate.TalentCollection) predicate.Job {
-	return predicate.Job(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TalentCollectionsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, TalentCollectionsTable, TalentCollectionsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

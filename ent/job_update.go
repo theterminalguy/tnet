@@ -79,6 +79,26 @@ func (ju *JobUpdate) ClearUserID() *JobUpdate {
 	return ju
 }
 
+// SetTalentCollectionID sets the "talent_collection_id" field.
+func (ju *JobUpdate) SetTalentCollectionID(u uuid.UUID) *JobUpdate {
+	ju.mutation.SetTalentCollectionID(u)
+	return ju
+}
+
+// SetNillableTalentCollectionID sets the "talent_collection_id" field if the given value is not nil.
+func (ju *JobUpdate) SetNillableTalentCollectionID(u *uuid.UUID) *JobUpdate {
+	if u != nil {
+		ju.SetTalentCollectionID(*u)
+	}
+	return ju
+}
+
+// ClearTalentCollectionID clears the value of the "talent_collection_id" field.
+func (ju *JobUpdate) ClearTalentCollectionID() *JobUpdate {
+	ju.mutation.ClearTalentCollectionID()
+	return ju
+}
+
 // SetHiring sets the "hiring" field.
 func (ju *JobUpdate) SetHiring(b bool) *JobUpdate {
 	ju.mutation.SetHiring(b)
@@ -186,6 +206,11 @@ func (ju *JobUpdate) SetUser(u *User) *JobUpdate {
 	return ju.SetUserID(u.ID)
 }
 
+// SetTalentCollection sets the "talent_collection" edge to the TalentCollection entity.
+func (ju *JobUpdate) SetTalentCollection(t *TalentCollection) *JobUpdate {
+	return ju.SetTalentCollectionID(t.ID)
+}
+
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
 func (ju *JobUpdate) AddApplicationIDs(ids ...uuid.UUID) *JobUpdate {
 	ju.mutation.AddApplicationIDs(ids...)
@@ -216,21 +241,6 @@ func (ju *JobUpdate) AddJobPayments(j ...*JobPayment) *JobUpdate {
 	return ju.AddJobPaymentIDs(ids...)
 }
 
-// AddTalentCollectionIDs adds the "talent_collections" edge to the TalentCollection entity by IDs.
-func (ju *JobUpdate) AddTalentCollectionIDs(ids ...uuid.UUID) *JobUpdate {
-	ju.mutation.AddTalentCollectionIDs(ids...)
-	return ju
-}
-
-// AddTalentCollections adds the "talent_collections" edges to the TalentCollection entity.
-func (ju *JobUpdate) AddTalentCollections(t ...*TalentCollection) *JobUpdate {
-	ids := make([]uuid.UUID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return ju.AddTalentCollectionIDs(ids...)
-}
-
 // Mutation returns the JobMutation object of the builder.
 func (ju *JobUpdate) Mutation() *JobMutation {
 	return ju.mutation
@@ -239,6 +249,12 @@ func (ju *JobUpdate) Mutation() *JobMutation {
 // ClearUser clears the "user" edge to the User entity.
 func (ju *JobUpdate) ClearUser() *JobUpdate {
 	ju.mutation.ClearUser()
+	return ju
+}
+
+// ClearTalentCollection clears the "talent_collection" edge to the TalentCollection entity.
+func (ju *JobUpdate) ClearTalentCollection() *JobUpdate {
+	ju.mutation.ClearTalentCollection()
 	return ju
 }
 
@@ -282,27 +298,6 @@ func (ju *JobUpdate) RemoveJobPayments(j ...*JobPayment) *JobUpdate {
 		ids[i] = j[i].ID
 	}
 	return ju.RemoveJobPaymentIDs(ids...)
-}
-
-// ClearTalentCollections clears all "talent_collections" edges to the TalentCollection entity.
-func (ju *JobUpdate) ClearTalentCollections() *JobUpdate {
-	ju.mutation.ClearTalentCollections()
-	return ju
-}
-
-// RemoveTalentCollectionIDs removes the "talent_collections" edge to TalentCollection entities by IDs.
-func (ju *JobUpdate) RemoveTalentCollectionIDs(ids ...uuid.UUID) *JobUpdate {
-	ju.mutation.RemoveTalentCollectionIDs(ids...)
-	return ju
-}
-
-// RemoveTalentCollections removes "talent_collections" edges to TalentCollection entities.
-func (ju *JobUpdate) RemoveTalentCollections(t ...*TalentCollection) *JobUpdate {
-	ids := make([]uuid.UUID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return ju.RemoveTalentCollectionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -552,6 +547,41 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ju.mutation.TalentCollectionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   job.TalentCollectionTable,
+			Columns: []string{job.TalentCollectionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: talentcollection.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ju.mutation.TalentCollectionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   job.TalentCollectionTable,
+			Columns: []string{job.TalentCollectionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: talentcollection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if ju.mutation.ApplicationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -660,60 +690,6 @@ func (ju *JobUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ju.mutation.TalentCollectionsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   job.TalentCollectionsTable,
-			Columns: []string{job.TalentCollectionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: talentcollection.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ju.mutation.RemovedTalentCollectionsIDs(); len(nodes) > 0 && !ju.mutation.TalentCollectionsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   job.TalentCollectionsTable,
-			Columns: []string{job.TalentCollectionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: talentcollection.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ju.mutation.TalentCollectionsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   job.TalentCollectionsTable,
-			Columns: []string{job.TalentCollectionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: talentcollection.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ju.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{job.Label}
@@ -776,6 +752,26 @@ func (juo *JobUpdateOne) SetNillableUserID(u *uuid.UUID) *JobUpdateOne {
 // ClearUserID clears the value of the "user_id" field.
 func (juo *JobUpdateOne) ClearUserID() *JobUpdateOne {
 	juo.mutation.ClearUserID()
+	return juo
+}
+
+// SetTalentCollectionID sets the "talent_collection_id" field.
+func (juo *JobUpdateOne) SetTalentCollectionID(u uuid.UUID) *JobUpdateOne {
+	juo.mutation.SetTalentCollectionID(u)
+	return juo
+}
+
+// SetNillableTalentCollectionID sets the "talent_collection_id" field if the given value is not nil.
+func (juo *JobUpdateOne) SetNillableTalentCollectionID(u *uuid.UUID) *JobUpdateOne {
+	if u != nil {
+		juo.SetTalentCollectionID(*u)
+	}
+	return juo
+}
+
+// ClearTalentCollectionID clears the value of the "talent_collection_id" field.
+func (juo *JobUpdateOne) ClearTalentCollectionID() *JobUpdateOne {
+	juo.mutation.ClearTalentCollectionID()
 	return juo
 }
 
@@ -886,6 +882,11 @@ func (juo *JobUpdateOne) SetUser(u *User) *JobUpdateOne {
 	return juo.SetUserID(u.ID)
 }
 
+// SetTalentCollection sets the "talent_collection" edge to the TalentCollection entity.
+func (juo *JobUpdateOne) SetTalentCollection(t *TalentCollection) *JobUpdateOne {
+	return juo.SetTalentCollectionID(t.ID)
+}
+
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
 func (juo *JobUpdateOne) AddApplicationIDs(ids ...uuid.UUID) *JobUpdateOne {
 	juo.mutation.AddApplicationIDs(ids...)
@@ -916,21 +917,6 @@ func (juo *JobUpdateOne) AddJobPayments(j ...*JobPayment) *JobUpdateOne {
 	return juo.AddJobPaymentIDs(ids...)
 }
 
-// AddTalentCollectionIDs adds the "talent_collections" edge to the TalentCollection entity by IDs.
-func (juo *JobUpdateOne) AddTalentCollectionIDs(ids ...uuid.UUID) *JobUpdateOne {
-	juo.mutation.AddTalentCollectionIDs(ids...)
-	return juo
-}
-
-// AddTalentCollections adds the "talent_collections" edges to the TalentCollection entity.
-func (juo *JobUpdateOne) AddTalentCollections(t ...*TalentCollection) *JobUpdateOne {
-	ids := make([]uuid.UUID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return juo.AddTalentCollectionIDs(ids...)
-}
-
 // Mutation returns the JobMutation object of the builder.
 func (juo *JobUpdateOne) Mutation() *JobMutation {
 	return juo.mutation
@@ -939,6 +925,12 @@ func (juo *JobUpdateOne) Mutation() *JobMutation {
 // ClearUser clears the "user" edge to the User entity.
 func (juo *JobUpdateOne) ClearUser() *JobUpdateOne {
 	juo.mutation.ClearUser()
+	return juo
+}
+
+// ClearTalentCollection clears the "talent_collection" edge to the TalentCollection entity.
+func (juo *JobUpdateOne) ClearTalentCollection() *JobUpdateOne {
+	juo.mutation.ClearTalentCollection()
 	return juo
 }
 
@@ -982,27 +974,6 @@ func (juo *JobUpdateOne) RemoveJobPayments(j ...*JobPayment) *JobUpdateOne {
 		ids[i] = j[i].ID
 	}
 	return juo.RemoveJobPaymentIDs(ids...)
-}
-
-// ClearTalentCollections clears all "talent_collections" edges to the TalentCollection entity.
-func (juo *JobUpdateOne) ClearTalentCollections() *JobUpdateOne {
-	juo.mutation.ClearTalentCollections()
-	return juo
-}
-
-// RemoveTalentCollectionIDs removes the "talent_collections" edge to TalentCollection entities by IDs.
-func (juo *JobUpdateOne) RemoveTalentCollectionIDs(ids ...uuid.UUID) *JobUpdateOne {
-	juo.mutation.RemoveTalentCollectionIDs(ids...)
-	return juo
-}
-
-// RemoveTalentCollections removes "talent_collections" edges to TalentCollection entities.
-func (juo *JobUpdateOne) RemoveTalentCollections(t ...*TalentCollection) *JobUpdateOne {
-	ids := make([]uuid.UUID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return juo.RemoveTalentCollectionIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1276,6 +1247,41 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if juo.mutation.TalentCollectionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   job.TalentCollectionTable,
+			Columns: []string{job.TalentCollectionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: talentcollection.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := juo.mutation.TalentCollectionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   job.TalentCollectionTable,
+			Columns: []string{job.TalentCollectionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: talentcollection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if juo.mutation.ApplicationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -1376,60 +1382,6 @@ func (juo *JobUpdateOne) sqlSave(ctx context.Context) (_node *Job, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: jobpayment.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if juo.mutation.TalentCollectionsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   job.TalentCollectionsTable,
-			Columns: []string{job.TalentCollectionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: talentcollection.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := juo.mutation.RemovedTalentCollectionsIDs(); len(nodes) > 0 && !juo.mutation.TalentCollectionsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   job.TalentCollectionsTable,
-			Columns: []string{job.TalentCollectionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: talentcollection.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := juo.mutation.TalentCollectionsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   job.TalentCollectionsTable,
-			Columns: []string{job.TalentCollectionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: talentcollection.FieldID,
 				},
 			},
 		}

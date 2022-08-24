@@ -79,20 +79,6 @@ func (tcc *TalentCollectionCreate) SetNillableUserID(u *uuid.UUID) *TalentCollec
 	return tcc
 }
 
-// SetJobID sets the "job_id" field.
-func (tcc *TalentCollectionCreate) SetJobID(u uuid.UUID) *TalentCollectionCreate {
-	tcc.mutation.SetJobID(u)
-	return tcc
-}
-
-// SetNillableJobID sets the "job_id" field if the given value is not nil.
-func (tcc *TalentCollectionCreate) SetNillableJobID(u *uuid.UUID) *TalentCollectionCreate {
-	if u != nil {
-		tcc.SetJobID(*u)
-	}
-	return tcc
-}
-
 // SetName sets the "name" field.
 func (tcc *TalentCollectionCreate) SetName(s string) *TalentCollectionCreate {
 	tcc.mutation.SetName(s)
@@ -124,9 +110,19 @@ func (tcc *TalentCollectionCreate) SetUser(u *User) *TalentCollectionCreate {
 	return tcc.SetUserID(u.ID)
 }
 
-// SetJob sets the "job" edge to the Job entity.
-func (tcc *TalentCollectionCreate) SetJob(j *Job) *TalentCollectionCreate {
-	return tcc.SetJobID(j.ID)
+// AddJobIDs adds the "jobs" edge to the Job entity by IDs.
+func (tcc *TalentCollectionCreate) AddJobIDs(ids ...uuid.UUID) *TalentCollectionCreate {
+	tcc.mutation.AddJobIDs(ids...)
+	return tcc
+}
+
+// AddJobs adds the "jobs" edges to the Job entity.
+func (tcc *TalentCollectionCreate) AddJobs(j ...*Job) *TalentCollectionCreate {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return tcc.AddJobIDs(ids...)
 }
 
 // Mutation returns the TalentCollectionMutation object of the builder.
@@ -324,12 +320,12 @@ func (tcc *TalentCollectionCreate) createSpec() (*TalentCollection, *sqlgraph.Cr
 		_node.UserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := tcc.mutation.JobIDs(); len(nodes) > 0 {
+	if nodes := tcc.mutation.JobsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   talentcollection.JobTable,
-			Columns: []string{talentcollection.JobColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   talentcollection.JobsTable,
+			Columns: []string{talentcollection.JobsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -341,7 +337,6 @@ func (tcc *TalentCollectionCreate) createSpec() (*TalentCollection, *sqlgraph.Cr
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.JobID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
