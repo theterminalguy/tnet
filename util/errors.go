@@ -22,8 +22,10 @@ func CustomHTTPErrorHandler(err error, c echo.Context) {
 		tenlog.Error(string(er.Error()))
 		var pcode string
 		switch er.Code {
-		case 404:
+		case http.StatusNotFound:
 			pcode = "404"
+		case http.StatusUnauthorized:
+			c.String(http.StatusUnauthorized, er.Message.(string))
 		}
 		c.Render(http.StatusOK, fmt.Sprintf("%s.html", pcode), nil)
 	}
