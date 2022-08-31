@@ -157,6 +157,16 @@ func (t *TalentCollectionRepository) validateScopedUniquenessOfName(name string,
 	return nil
 }
 
+func (c *TalentCollectionRepository) AddTalentToCollection(t *ent.TalentCollection, id uuid.UUID) (*ent.TalentCollection, error) {
+	uuid := []uuid.UUID{id}
+	setUUIDsForUpdate(t, uuid)
+	res, err := t.Update().Save(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 func setUUIDsForUpdate(t *ent.TalentCollection, newUUIDs []uuid.UUID) {
 	// convert uuids to strings
 	oldUUIDs := make([]uuid.UUID, len(t.TalentUuids))

@@ -86,13 +86,8 @@ func (h *V1JobApplicationHandler) CreateOne(c echo.Context) error {
 		tenlog.Error(err.Error())
 		return c.String(http.StatusBadRequest, "Error occurred while processing job application")
 	}
-	// the update requires slice of talent
-	talentsUuids := make([]uuid.UUID, 0)
-	talentsUuids = append(talentsUuids, params.TalentID)
-	collectionParams := new(repo.TalentCollectionParams)
-	collectionParams.Name = collection.Name
-	collectionParams.TalentIDS = talentsUuids
-	_, err = h.TalentCollectionRepository.Update(collection.ID, *collectionParams)
+	_, err = h.TalentCollectionRepository.AddTalentToCollection(collection, params.TalentID)
+
 	if err != nil {
 		tenlog.Error(err.Error())
 		return c.String(http.StatusBadRequest, "Error occurred while processing job application")
