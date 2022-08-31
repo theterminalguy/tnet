@@ -26,6 +26,7 @@ const (
 	Thumbnail             string = "thumbnail"
 	Screening             string = "screening"
 	Preferred             string = "preferred"
+	AtsJobId              string = "ats_job_id"
 	FirstName             string = "first_name"
 	TenTNCode             string = "tentn_code"
 	Employment            string = "employment"

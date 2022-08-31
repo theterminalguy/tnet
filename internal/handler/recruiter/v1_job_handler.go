@@ -16,15 +16,17 @@ import (
 )
 
 type V1RecruiterJobHandler struct {
-	JobRepository repo.JobQuerier
-	JobSearch     *search.JobSearch
-	JobRepo       *repo.JobRepository
+	JobRepository        repo.JobQuerier
+	JobSearch            *search.JobSearch
+	JobRepo              *repo.JobRepository
+	TalentCollectionRepo repo.TalentCollectionRepository
 }
 
 func NewV1RecruiterJobHandler(jobQuerier repo.JobQuerier) *V1RecruiterJobHandler {
 	return &V1RecruiterJobHandler{
-		JobRepository: jobQuerier,
-		JobRepo:       repo.NewJobRepository(),
+		JobRepository:        jobQuerier,
+		JobRepo:              repo.NewJobRepository(),
+		TalentCollectionRepo: *repo.NewTalentCollectionRepository(),
 	}
 }
 
@@ -86,6 +88,18 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 		params.Category = "engineering"
 	}
 	params.UserID = recruiterID
+
+	// Create collection
+	collectionParams := new(repo.TalentCollectionParams)
+	collectionParams.UserID = recruiterID
+	atsJobId := params.AtsJobID
+	collectionParams.Name = fmt.Sprintf("%s-%s", params.Title, atsJobId)
+	resp, err := h.TalentCollectionRepo.Create(*collectionParams)
+	if err != nil {
+		tenlog.Error(err.Error())
+		return c.String(http.StatusBadGateway, "error occured while creating job")
+	}
+	params.TalentCollectionId = resp.ID
 	jd, err := h.JobRepo.Create(*params)
 	if err != nil {
 		tenlog.Error(err.Error())

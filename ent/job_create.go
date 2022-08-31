@@ -13,6 +13,7 @@ import (
 	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/jobapplication"
 	"github.com/10hourlabs/tentn/ent/jobpayment"
+	"github.com/10hourlabs/tentn/ent/talentcollection"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
 )
@@ -80,6 +81,20 @@ func (jc *JobCreate) SetNillableUserID(u *uuid.UUID) *JobCreate {
 	return jc
 }
 
+// SetTalentCollectionID sets the "talent_collection_id" field.
+func (jc *JobCreate) SetTalentCollectionID(u uuid.UUID) *JobCreate {
+	jc.mutation.SetTalentCollectionID(u)
+	return jc
+}
+
+// SetNillableTalentCollectionID sets the "talent_collection_id" field if the given value is not nil.
+func (jc *JobCreate) SetNillableTalentCollectionID(u *uuid.UUID) *JobCreate {
+	if u != nil {
+		jc.SetTalentCollectionID(*u)
+	}
+	return jc
+}
+
 // SetHiring sets the "hiring" field.
 func (jc *JobCreate) SetHiring(b bool) *JobCreate {
 	jc.mutation.SetHiring(b)
@@ -97,6 +112,20 @@ func (jc *JobCreate) SetNillableHiring(b *bool) *JobCreate {
 // SetTitle sets the "title" field.
 func (jc *JobCreate) SetTitle(s string) *JobCreate {
 	jc.mutation.SetTitle(s)
+	return jc
+}
+
+// SetAtsJobID sets the "ats_job_id" field.
+func (jc *JobCreate) SetAtsJobID(s string) *JobCreate {
+	jc.mutation.SetAtsJobID(s)
+	return jc
+}
+
+// SetNillableAtsJobID sets the "ats_job_id" field if the given value is not nil.
+func (jc *JobCreate) SetNillableAtsJobID(s *string) *JobCreate {
+	if s != nil {
+		jc.SetAtsJobID(*s)
+	}
 	return jc
 }
 
@@ -185,6 +214,11 @@ func (jc *JobCreate) SetNillableID(u *uuid.UUID) *JobCreate {
 // SetUser sets the "user" edge to the User entity.
 func (jc *JobCreate) SetUser(u *User) *JobCreate {
 	return jc.SetUserID(u.ID)
+}
+
+// SetTalentCollection sets the "talent_collection" edge to the TalentCollection entity.
+func (jc *JobCreate) SetTalentCollection(t *TalentCollection) *JobCreate {
+	return jc.SetTalentCollectionID(t.ID)
 }
 
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by IDs.
@@ -440,6 +474,14 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 		})
 		_node.Title = value
 	}
+	if value, ok := jc.mutation.AtsJobID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: job.FieldAtsJobID,
+		})
+		_node.AtsJobID = value
+	}
 	if value, ok := jc.mutation.Slug(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -538,6 +580,26 @@ func (jc *JobCreate) createSpec() (*Job, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.UserID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := jc.mutation.TalentCollectionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   job.TalentCollectionTable,
+			Columns: []string{job.TalentCollectionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: talentcollection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.TalentCollectionID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := jc.mutation.ApplicationsIDs(); len(nodes) > 0 {

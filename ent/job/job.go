@@ -22,10 +22,14 @@ const (
 	FieldDeletedAt = "deleted_at"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
+	// FieldTalentCollectionID holds the string denoting the talent_collection_id field in the database.
+	FieldTalentCollectionID = "talent_collection_id"
 	// FieldHiring holds the string denoting the hiring field in the database.
 	FieldHiring = "hiring"
 	// FieldTitle holds the string denoting the title field in the database.
 	FieldTitle = "title"
+	// FieldAtsJobID holds the string denoting the ats_job_id field in the database.
+	FieldAtsJobID = "ats_job_id"
 	// FieldSlug holds the string denoting the slug field in the database.
 	FieldSlug = "slug"
 	// FieldLocation holds the string denoting the location field in the database.
@@ -48,6 +52,8 @@ const (
 	FieldTimezone = "timezone"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
+	// EdgeTalentCollection holds the string denoting the talent_collection edge name in mutations.
+	EdgeTalentCollection = "talent_collection"
 	// EdgeApplications holds the string denoting the applications edge name in mutations.
 	EdgeApplications = "applications"
 	// EdgeJobPayments holds the string denoting the job_payments edge name in mutations.
@@ -61,6 +67,13 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
+	// TalentCollectionTable is the table that holds the talent_collection relation/edge.
+	TalentCollectionTable = "jobs"
+	// TalentCollectionInverseTable is the table name for the TalentCollection entity.
+	// It exists in this package in order to avoid circular dependency with the "talentcollection" package.
+	TalentCollectionInverseTable = "talent_collections"
+	// TalentCollectionColumn is the table column denoting the talent_collection relation/edge.
+	TalentCollectionColumn = "talent_collection_id"
 	// ApplicationsTable is the table that holds the applications relation/edge.
 	ApplicationsTable = "job_applications"
 	// ApplicationsInverseTable is the table name for the JobApplication entity.
@@ -84,8 +97,10 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldDeletedAt,
 	FieldUserID,
+	FieldTalentCollectionID,
 	FieldHiring,
 	FieldTitle,
+	FieldAtsJobID,
 	FieldSlug,
 	FieldLocation,
 	FieldSummary,

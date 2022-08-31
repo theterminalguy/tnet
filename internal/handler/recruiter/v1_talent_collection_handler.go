@@ -89,16 +89,8 @@ func (h *V1TalentCollectionHandler) UpdateByID(c echo.Context) error {
 		}
 		return c.JSON(http.StatusOK, record)
 	}
-	// TODO: Add support for adding talents to the collection
-	//record, err := currentRecruiter.UpdateTalentCollection(id, *params)
-	record, err := currentRecruiter.GetTalentCollectionByID(id)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
-	if record.Name != oneword.Favorite {
-		return c.String(http.StatusBadRequest, "Only favorite collection can be updated")
-	}
-	record, err = h.TalentCollectionService.AddToFavorite(id, *params)
+
+	record, err := h.TalentCollectionService.AddToFavorite(id, *params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

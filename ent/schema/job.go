@@ -24,6 +24,12 @@ func (Job) Mixin() []ent.Mixin {
 			Ref:        "jobs",
 			ForeignKey: "user_id",
 		},
+		BelongsToMixin{
+			ParentName: "talent_collection",
+			ParentType: TalentCollection.Type,
+			Ref:        "jobs",
+			ForeignKey: "talent_collection_id",
+		},
 	}
 }
 
@@ -52,6 +58,8 @@ func (Job) Fields() []ent.Field {
 			StructTag(`json:"hiring"`),
 
 		field.String(oneword.Title),
+
+		field.String(oneword.AtsJobId).Optional(),
 
 		// Todo, add a default title for this
 		field.String(oneword.Slug).

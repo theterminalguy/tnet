@@ -3506,36 +3506,39 @@ func (m *InternalTaskMutation) ResetEdge(name string) error {
 // JobMutation represents an operation that mutates the Job nodes in the graph.
 type JobMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *uuid.UUID
-	created_at          *time.Time
-	updated_at          *time.Time
-	deleted_at          *time.Time
-	hiring              *bool
-	title               *string
-	slug                *string
-	location            *string
-	summary             *string
-	employment          *job.Employment
-	category            *job.Category
-	thumbnail           *string
-	we_have             *[]string
-	requirements        *[]string
-	you_have            *[]string
-	timezone            *string
-	clearedFields       map[string]struct{}
-	user                *uuid.UUID
-	cleareduser         bool
-	applications        map[uuid.UUID]struct{}
-	removedapplications map[uuid.UUID]struct{}
-	clearedapplications bool
-	job_payments        map[uuid.UUID]struct{}
-	removedjob_payments map[uuid.UUID]struct{}
-	clearedjob_payments bool
-	done                bool
-	oldValue            func(context.Context) (*Job, error)
-	predicates          []predicate.Job
+	op                       Op
+	typ                      string
+	id                       *uuid.UUID
+	created_at               *time.Time
+	updated_at               *time.Time
+	deleted_at               *time.Time
+	hiring                   *bool
+	title                    *string
+	ats_job_id               *string
+	slug                     *string
+	location                 *string
+	summary                  *string
+	employment               *job.Employment
+	category                 *job.Category
+	thumbnail                *string
+	we_have                  *[]string
+	requirements             *[]string
+	you_have                 *[]string
+	timezone                 *string
+	clearedFields            map[string]struct{}
+	user                     *uuid.UUID
+	cleareduser              bool
+	talent_collection        *uuid.UUID
+	clearedtalent_collection bool
+	applications             map[uuid.UUID]struct{}
+	removedapplications      map[uuid.UUID]struct{}
+	clearedapplications      bool
+	job_payments             map[uuid.UUID]struct{}
+	removedjob_payments      map[uuid.UUID]struct{}
+	clearedjob_payments      bool
+	done                     bool
+	oldValue                 func(context.Context) (*Job, error)
+	predicates               []predicate.Job
 }
 
 var _ ent.Mutation = (*JobMutation)(nil)
@@ -3812,6 +3815,55 @@ func (m *JobMutation) ResetUserID() {
 	delete(m.clearedFields, job.FieldUserID)
 }
 
+// SetTalentCollectionID sets the "talent_collection_id" field.
+func (m *JobMutation) SetTalentCollectionID(u uuid.UUID) {
+	m.talent_collection = &u
+}
+
+// TalentCollectionID returns the value of the "talent_collection_id" field in the mutation.
+func (m *JobMutation) TalentCollectionID() (r uuid.UUID, exists bool) {
+	v := m.talent_collection
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTalentCollectionID returns the old "talent_collection_id" field's value of the Job entity.
+// If the Job object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobMutation) OldTalentCollectionID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTalentCollectionID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTalentCollectionID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTalentCollectionID: %w", err)
+	}
+	return oldValue.TalentCollectionID, nil
+}
+
+// ClearTalentCollectionID clears the value of the "talent_collection_id" field.
+func (m *JobMutation) ClearTalentCollectionID() {
+	m.talent_collection = nil
+	m.clearedFields[job.FieldTalentCollectionID] = struct{}{}
+}
+
+// TalentCollectionIDCleared returns if the "talent_collection_id" field was cleared in this mutation.
+func (m *JobMutation) TalentCollectionIDCleared() bool {
+	_, ok := m.clearedFields[job.FieldTalentCollectionID]
+	return ok
+}
+
+// ResetTalentCollectionID resets all changes to the "talent_collection_id" field.
+func (m *JobMutation) ResetTalentCollectionID() {
+	m.talent_collection = nil
+	delete(m.clearedFields, job.FieldTalentCollectionID)
+}
+
 // SetHiring sets the "hiring" field.
 func (m *JobMutation) SetHiring(b bool) {
 	m.hiring = &b
@@ -3882,6 +3934,55 @@ func (m *JobMutation) OldTitle(ctx context.Context) (v string, err error) {
 // ResetTitle resets all changes to the "title" field.
 func (m *JobMutation) ResetTitle() {
 	m.title = nil
+}
+
+// SetAtsJobID sets the "ats_job_id" field.
+func (m *JobMutation) SetAtsJobID(s string) {
+	m.ats_job_id = &s
+}
+
+// AtsJobID returns the value of the "ats_job_id" field in the mutation.
+func (m *JobMutation) AtsJobID() (r string, exists bool) {
+	v := m.ats_job_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAtsJobID returns the old "ats_job_id" field's value of the Job entity.
+// If the Job object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobMutation) OldAtsJobID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAtsJobID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAtsJobID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAtsJobID: %w", err)
+	}
+	return oldValue.AtsJobID, nil
+}
+
+// ClearAtsJobID clears the value of the "ats_job_id" field.
+func (m *JobMutation) ClearAtsJobID() {
+	m.ats_job_id = nil
+	m.clearedFields[job.FieldAtsJobID] = struct{}{}
+}
+
+// AtsJobIDCleared returns if the "ats_job_id" field was cleared in this mutation.
+func (m *JobMutation) AtsJobIDCleared() bool {
+	_, ok := m.clearedFields[job.FieldAtsJobID]
+	return ok
+}
+
+// ResetAtsJobID resets all changes to the "ats_job_id" field.
+func (m *JobMutation) ResetAtsJobID() {
+	m.ats_job_id = nil
+	delete(m.clearedFields, job.FieldAtsJobID)
 }
 
 // SetSlug sets the "slug" field.
@@ -4270,6 +4371,32 @@ func (m *JobMutation) ResetUser() {
 	m.cleareduser = false
 }
 
+// ClearTalentCollection clears the "talent_collection" edge to the TalentCollection entity.
+func (m *JobMutation) ClearTalentCollection() {
+	m.clearedtalent_collection = true
+}
+
+// TalentCollectionCleared reports if the "talent_collection" edge to the TalentCollection entity was cleared.
+func (m *JobMutation) TalentCollectionCleared() bool {
+	return m.TalentCollectionIDCleared() || m.clearedtalent_collection
+}
+
+// TalentCollectionIDs returns the "talent_collection" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TalentCollectionID instead. It exists only for internal usage by the builders.
+func (m *JobMutation) TalentCollectionIDs() (ids []uuid.UUID) {
+	if id := m.talent_collection; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTalentCollection resets all changes to the "talent_collection" edge.
+func (m *JobMutation) ResetTalentCollection() {
+	m.talent_collection = nil
+	m.clearedtalent_collection = false
+}
+
 // AddApplicationIDs adds the "applications" edge to the JobApplication entity by ids.
 func (m *JobMutation) AddApplicationIDs(ids ...uuid.UUID) {
 	if m.applications == nil {
@@ -4397,7 +4524,7 @@ func (m *JobMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *JobMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, job.FieldCreatedAt)
 	}
@@ -4410,11 +4537,17 @@ func (m *JobMutation) Fields() []string {
 	if m.user != nil {
 		fields = append(fields, job.FieldUserID)
 	}
+	if m.talent_collection != nil {
+		fields = append(fields, job.FieldTalentCollectionID)
+	}
 	if m.hiring != nil {
 		fields = append(fields, job.FieldHiring)
 	}
 	if m.title != nil {
 		fields = append(fields, job.FieldTitle)
+	}
+	if m.ats_job_id != nil {
+		fields = append(fields, job.FieldAtsJobID)
 	}
 	if m.slug != nil {
 		fields = append(fields, job.FieldSlug)
@@ -4462,10 +4595,14 @@ func (m *JobMutation) Field(name string) (ent.Value, bool) {
 		return m.DeletedAt()
 	case job.FieldUserID:
 		return m.UserID()
+	case job.FieldTalentCollectionID:
+		return m.TalentCollectionID()
 	case job.FieldHiring:
 		return m.Hiring()
 	case job.FieldTitle:
 		return m.Title()
+	case job.FieldAtsJobID:
+		return m.AtsJobID()
 	case job.FieldSlug:
 		return m.Slug()
 	case job.FieldLocation:
@@ -4503,10 +4640,14 @@ func (m *JobMutation) OldField(ctx context.Context, name string) (ent.Value, err
 		return m.OldDeletedAt(ctx)
 	case job.FieldUserID:
 		return m.OldUserID(ctx)
+	case job.FieldTalentCollectionID:
+		return m.OldTalentCollectionID(ctx)
 	case job.FieldHiring:
 		return m.OldHiring(ctx)
 	case job.FieldTitle:
 		return m.OldTitle(ctx)
+	case job.FieldAtsJobID:
+		return m.OldAtsJobID(ctx)
 	case job.FieldSlug:
 		return m.OldSlug(ctx)
 	case job.FieldLocation:
@@ -4564,6 +4705,13 @@ func (m *JobMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUserID(v)
 		return nil
+	case job.FieldTalentCollectionID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTalentCollectionID(v)
+		return nil
 	case job.FieldHiring:
 		v, ok := value.(bool)
 		if !ok {
@@ -4577,6 +4725,13 @@ func (m *JobMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTitle(v)
+		return nil
+	case job.FieldAtsJobID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAtsJobID(v)
 		return nil
 	case job.FieldSlug:
 		v, ok := value.(string)
@@ -4684,6 +4839,12 @@ func (m *JobMutation) ClearedFields() []string {
 	if m.FieldCleared(job.FieldUserID) {
 		fields = append(fields, job.FieldUserID)
 	}
+	if m.FieldCleared(job.FieldTalentCollectionID) {
+		fields = append(fields, job.FieldTalentCollectionID)
+	}
+	if m.FieldCleared(job.FieldAtsJobID) {
+		fields = append(fields, job.FieldAtsJobID)
+	}
 	return fields
 }
 
@@ -4703,6 +4864,12 @@ func (m *JobMutation) ClearField(name string) error {
 		return nil
 	case job.FieldUserID:
 		m.ClearUserID()
+		return nil
+	case job.FieldTalentCollectionID:
+		m.ClearTalentCollectionID()
+		return nil
+	case job.FieldAtsJobID:
+		m.ClearAtsJobID()
 		return nil
 	}
 	return fmt.Errorf("unknown Job nullable field %s", name)
@@ -4724,11 +4891,17 @@ func (m *JobMutation) ResetField(name string) error {
 	case job.FieldUserID:
 		m.ResetUserID()
 		return nil
+	case job.FieldTalentCollectionID:
+		m.ResetTalentCollectionID()
+		return nil
 	case job.FieldHiring:
 		m.ResetHiring()
 		return nil
 	case job.FieldTitle:
 		m.ResetTitle()
+		return nil
+	case job.FieldAtsJobID:
+		m.ResetAtsJobID()
 		return nil
 	case job.FieldSlug:
 		m.ResetSlug()
@@ -4766,9 +4939,12 @@ func (m *JobMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *JobMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.user != nil {
 		edges = append(edges, job.EdgeUser)
+	}
+	if m.talent_collection != nil {
+		edges = append(edges, job.EdgeTalentCollection)
 	}
 	if m.applications != nil {
 		edges = append(edges, job.EdgeApplications)
@@ -4785,6 +4961,10 @@ func (m *JobMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case job.EdgeUser:
 		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	case job.EdgeTalentCollection:
+		if id := m.talent_collection; id != nil {
 			return []ent.Value{*id}
 		}
 	case job.EdgeApplications:
@@ -4805,7 +4985,7 @@ func (m *JobMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *JobMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedapplications != nil {
 		edges = append(edges, job.EdgeApplications)
 	}
@@ -4837,9 +5017,12 @@ func (m *JobMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *JobMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.cleareduser {
 		edges = append(edges, job.EdgeUser)
+	}
+	if m.clearedtalent_collection {
+		edges = append(edges, job.EdgeTalentCollection)
 	}
 	if m.clearedapplications {
 		edges = append(edges, job.EdgeApplications)
@@ -4856,6 +5039,8 @@ func (m *JobMutation) EdgeCleared(name string) bool {
 	switch name {
 	case job.EdgeUser:
 		return m.cleareduser
+	case job.EdgeTalentCollection:
+		return m.clearedtalent_collection
 	case job.EdgeApplications:
 		return m.clearedapplications
 	case job.EdgeJobPayments:
@@ -4871,6 +5056,9 @@ func (m *JobMutation) ClearEdge(name string) error {
 	case job.EdgeUser:
 		m.ClearUser()
 		return nil
+	case job.EdgeTalentCollection:
+		m.ClearTalentCollection()
+		return nil
 	}
 	return fmt.Errorf("unknown Job unique edge %s", name)
 }
@@ -4881,6 +5069,9 @@ func (m *JobMutation) ResetEdge(name string) error {
 	switch name {
 	case job.EdgeUser:
 		m.ResetUser()
+		return nil
+	case job.EdgeTalentCollection:
+		m.ResetTalentCollection()
 		return nil
 	case job.EdgeApplications:
 		m.ResetApplications()
@@ -19081,6 +19272,9 @@ type TalentCollectionMutation struct {
 	clearedFields map[string]struct{}
 	user          *uuid.UUID
 	cleareduser   bool
+	jobs          map[uuid.UUID]struct{}
+	removedjobs   map[uuid.UUID]struct{}
+	clearedjobs   bool
 	done          bool
 	oldValue      func(context.Context) (*TalentCollection, error)
 	predicates    []predicate.TalentCollection
@@ -19458,6 +19652,60 @@ func (m *TalentCollectionMutation) ResetUser() {
 	m.cleareduser = false
 }
 
+// AddJobIDs adds the "jobs" edge to the Job entity by ids.
+func (m *TalentCollectionMutation) AddJobIDs(ids ...uuid.UUID) {
+	if m.jobs == nil {
+		m.jobs = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.jobs[ids[i]] = struct{}{}
+	}
+}
+
+// ClearJobs clears the "jobs" edge to the Job entity.
+func (m *TalentCollectionMutation) ClearJobs() {
+	m.clearedjobs = true
+}
+
+// JobsCleared reports if the "jobs" edge to the Job entity was cleared.
+func (m *TalentCollectionMutation) JobsCleared() bool {
+	return m.clearedjobs
+}
+
+// RemoveJobIDs removes the "jobs" edge to the Job entity by IDs.
+func (m *TalentCollectionMutation) RemoveJobIDs(ids ...uuid.UUID) {
+	if m.removedjobs == nil {
+		m.removedjobs = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.jobs, ids[i])
+		m.removedjobs[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedJobs returns the removed IDs of the "jobs" edge to the Job entity.
+func (m *TalentCollectionMutation) RemovedJobsIDs() (ids []uuid.UUID) {
+	for id := range m.removedjobs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// JobsIDs returns the "jobs" edge IDs in the mutation.
+func (m *TalentCollectionMutation) JobsIDs() (ids []uuid.UUID) {
+	for id := range m.jobs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetJobs resets all changes to the "jobs" edge.
+func (m *TalentCollectionMutation) ResetJobs() {
+	m.jobs = nil
+	m.clearedjobs = false
+	m.removedjobs = nil
+}
+
 // Where appends a list predicates to the TalentCollectionMutation builder.
 func (m *TalentCollectionMutation) Where(ps ...predicate.TalentCollection) {
 	m.predicates = append(m.predicates, ps...)
@@ -19676,9 +19924,12 @@ func (m *TalentCollectionMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TalentCollectionMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.user != nil {
 		edges = append(edges, talentcollection.EdgeUser)
+	}
+	if m.jobs != nil {
+		edges = append(edges, talentcollection.EdgeJobs)
 	}
 	return edges
 }
@@ -19691,13 +19942,22 @@ func (m *TalentCollectionMutation) AddedIDs(name string) []ent.Value {
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
 		}
+	case talentcollection.EdgeJobs:
+		ids := make([]ent.Value, 0, len(m.jobs))
+		for id := range m.jobs {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TalentCollectionMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.removedjobs != nil {
+		edges = append(edges, talentcollection.EdgeJobs)
+	}
 	return edges
 }
 
@@ -19705,15 +19965,24 @@ func (m *TalentCollectionMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *TalentCollectionMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case talentcollection.EdgeJobs:
+		ids := make([]ent.Value, 0, len(m.removedjobs))
+		for id := range m.removedjobs {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TalentCollectionMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.cleareduser {
 		edges = append(edges, talentcollection.EdgeUser)
+	}
+	if m.clearedjobs {
+		edges = append(edges, talentcollection.EdgeJobs)
 	}
 	return edges
 }
@@ -19724,6 +19993,8 @@ func (m *TalentCollectionMutation) EdgeCleared(name string) bool {
 	switch name {
 	case talentcollection.EdgeUser:
 		return m.cleareduser
+	case talentcollection.EdgeJobs:
+		return m.clearedjobs
 	}
 	return false
 }
@@ -19745,6 +20016,9 @@ func (m *TalentCollectionMutation) ResetEdge(name string) error {
 	switch name {
 	case talentcollection.EdgeUser:
 		m.ResetUser()
+		return nil
+	case talentcollection.EdgeJobs:
+		m.ResetJobs()
 		return nil
 	}
 	return fmt.Errorf("unknown TalentCollection edge %s", name)

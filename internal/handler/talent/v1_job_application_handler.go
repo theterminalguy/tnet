@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/10hourlabs/tenlog"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/repository/scope"
 	"github.com/10hourlabs/tentn/internal/search"
@@ -14,14 +15,18 @@ import (
 )
 
 type V1JobApplicationHandler struct {
-	JobApplicationService    *service.JobApplicationService
-	JobApplicationRepository repo.JobApplicationQuerier
+	JobApplicationService      *service.JobApplicationService
+	JobApplicationRepository   repo.JobApplicationQuerier
+	TalentCollectionRepository repo.TalentCollectionRepository
+	JobRepo                    repo.JobRepository
 }
 
 func NewV1JobApplicationHandler(jobAppQuerier repo.JobApplicationQuerier) *V1JobApplicationHandler {
 	return &V1JobApplicationHandler{
-		JobApplicationService:    service.NewJobApplicationService(),
-		JobApplicationRepository: jobAppQuerier,
+		JobApplicationService:      service.NewJobApplicationService(),
+		JobApplicationRepository:   jobAppQuerier,
+		TalentCollectionRepository: *repo.NewTalentCollectionRepository(),
+		JobRepo:                    *repo.NewJobRepository(),
 	}
 }
 
@@ -67,6 +72,25 @@ func (h *V1JobApplicationHandler) CreateOne(c echo.Context) error {
 	record, err := h.JobApplicationRepository.Create(*params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	// Get Job
+	job, err := h.JobRepo.GetByID(params.JobUUID)
+	if err != nil {
+		tenlog.Error(err.Error())
+		return c.String(http.StatusBadGateway, "Error occured while creating application")
+	}
+	// add talent id to job collection associated
+	collection, err := h.TalentCollectionRepository.GetByID(job.TalentCollectionID)
+	if err != nil {
+		tenlog.Error(err.Error())
+		return c.String(http.StatusBadRequest, "Error occurred while processing job application")
+	}
+	_, err = h.TalentCollectionRepository.AddTalentToCollection(collection, params.TalentID)
+
+	if err != nil {
+		tenlog.Error(err.Error())
+		return c.String(http.StatusBadRequest, "Error occurred while processing job application")
 	}
 	return c.JSON(http.StatusCreated, record)
 }

@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/10hourlabs/tentn/ent/job"
 	"github.com/10hourlabs/tentn/ent/talentcollection"
 	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
@@ -107,6 +108,21 @@ func (tcc *TalentCollectionCreate) SetNillableID(u *uuid.UUID) *TalentCollection
 // SetUser sets the "user" edge to the User entity.
 func (tcc *TalentCollectionCreate) SetUser(u *User) *TalentCollectionCreate {
 	return tcc.SetUserID(u.ID)
+}
+
+// AddJobIDs adds the "jobs" edge to the Job entity by IDs.
+func (tcc *TalentCollectionCreate) AddJobIDs(ids ...uuid.UUID) *TalentCollectionCreate {
+	tcc.mutation.AddJobIDs(ids...)
+	return tcc
+}
+
+// AddJobs adds the "jobs" edges to the Job entity.
+func (tcc *TalentCollectionCreate) AddJobs(j ...*Job) *TalentCollectionCreate {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return tcc.AddJobIDs(ids...)
 }
 
 // Mutation returns the TalentCollectionMutation object of the builder.
@@ -302,6 +318,25 @@ func (tcc *TalentCollectionCreate) createSpec() (*TalentCollection, *sqlgraph.Cr
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.UserID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tcc.mutation.JobsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   talentcollection.JobsTable,
+			Columns: []string{talentcollection.JobsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: job.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

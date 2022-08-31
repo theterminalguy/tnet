@@ -40,9 +40,11 @@ type TalentCollection struct {
 type TalentCollectionEdges struct {
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
+	// Jobs holds the value of the jobs edge.
+	Jobs []*Job `json:"jobs,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -57,6 +59,15 @@ func (e TalentCollectionEdges) UserOrErr() (*User, error) {
 		return e.User, nil
 	}
 	return nil, &NotLoadedError{edge: "user"}
+}
+
+// JobsOrErr returns the Jobs value or an error if the edge
+// was not loaded in eager-loading.
+func (e TalentCollectionEdges) JobsOrErr() ([]*Job, error) {
+	if e.loadedTypes[1] {
+		return e.Jobs, nil
+	}
+	return nil, &NotLoadedError{edge: "jobs"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -140,6 +151,11 @@ func (tc *TalentCollection) assignValues(columns []string, values []interface{})
 // QueryUser queries the "user" edge of the TalentCollection entity.
 func (tc *TalentCollection) QueryUser() *UserQuery {
 	return (&TalentCollectionClient{config: tc.config}).QueryUser(tc)
+}
+
+// QueryJobs queries the "jobs" edge of the TalentCollection entity.
+func (tc *TalentCollection) QueryJobs() *JobQuery {
+	return (&TalentCollectionClient{config: tc.config}).QueryJobs(tc)
 }
 
 // Update returns a builder for updating this TalentCollection.

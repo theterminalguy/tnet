@@ -140,7 +140,7 @@ func init() {
 	// job.DefaultHiring holds the default value on creation for the hiring field.
 	job.DefaultHiring = jobDescHiring.Default.(bool)
 	// jobDescLocation is the schema descriptor for location field.
-	jobDescLocation := jobFields[3].Descriptor()
+	jobDescLocation := jobFields[4].Descriptor()
 	// job.DefaultLocation holds the default value on creation for the location field.
 	job.DefaultLocation = jobDescLocation.Default.(string)
 	// jobDescID is the schema descriptor for id field.

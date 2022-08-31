@@ -773,6 +773,22 @@ func (c *JobClient) QueryUser(j *Job) *UserQuery {
 	return query
 }
 
+// QueryTalentCollection queries the talent_collection edge of a Job.
+func (c *JobClient) QueryTalentCollection(j *Job) *TalentCollectionQuery {
+	query := &TalentCollectionQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := j.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(job.Table, job.FieldID, id),
+			sqlgraph.To(talentcollection.Table, talentcollection.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, job.TalentCollectionTable, job.TalentCollectionColumn),
+		)
+		fromV = sqlgraph.Neighbors(j.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryApplications queries the applications edge of a Job.
 func (c *JobClient) QueryApplications(j *Job) *JobApplicationQuery {
 	query := &JobApplicationQuery{config: c.config}
@@ -2458,6 +2474,22 @@ func (c *TalentCollectionClient) QueryUser(tc *TalentCollection) *UserQuery {
 			sqlgraph.From(talentcollection.Table, talentcollection.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, talentcollection.UserTable, talentcollection.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(tc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryJobs queries the jobs edge of a TalentCollection.
+func (c *TalentCollectionClient) QueryJobs(tc *TalentCollection) *JobQuery {
+	query := &JobQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(talentcollection.Table, talentcollection.FieldID, id),
+			sqlgraph.To(job.Table, job.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, talentcollection.JobsTable, talentcollection.JobsColumn),
 		)
 		fromV = sqlgraph.Neighbors(tc.driver.Dialect(), step)
 		return fromV, nil

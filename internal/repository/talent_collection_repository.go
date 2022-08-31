@@ -13,6 +13,7 @@ import (
 type TalentCollectionRepository struct{}
 
 type TalentCollectionParams struct {
+	ID        uuid.UUID
 	UserID    uuid.UUID
 	Name      string      `json:"name"`
 	TalentIDS []uuid.UUID `json:"talent_ids"`
@@ -154,6 +155,18 @@ func (t *TalentCollectionRepository) validateScopedUniquenessOfName(name string,
 		return errors.New("a collection with the same name already exists")
 	}
 	return nil
+}
+
+func (c *TalentCollectionRepository) AddTalentToCollection(t *ent.TalentCollection, id uuid.UUID) (*ent.TalentCollection, error) {
+	uuid := []uuid.UUID{id}
+	setUUIDsForUpdate(t, uuid)
+	res, err := t.Update().
+		SetTalentUuids(t.TalentUuids).
+		Save(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 func setUUIDsForUpdate(t *ent.TalentCollection, newUUIDs []uuid.UUID) {

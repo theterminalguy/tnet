@@ -43,6 +43,9 @@ type JobParams struct {
 	TimeZone     string   `json:"timezone_id" validate:"required"`
 	Location     string   `json:"location"`
 
+	AtsJobID           string    `json:"ats_job_id" validate:"required"`
+	TalentCollectionId uuid.UUID `json:"talent_collection_id"`
+
 	/*
 		TODO: Add support for slary range
 		StartingSalary decimal.Decimal `json:"starting_salary" validate:"required"`
@@ -126,6 +129,7 @@ func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
 		SetHiring(p.Hiring).
 		SetTitle(p.Title).
 		SetSummary(p.Summary).
+		SetAtsJobID(p.AtsJobID).
 		SetSlug(slugify(p.Title, jobUUID)).
 		SetEmployment(job.Employment(p.Employment)).
 		SetCategory(job.Category(p.Category)).
@@ -134,6 +138,7 @@ func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
 		SetRequirements(p.Requirements).
 		SetYouHave(p.YouHave).
 		SetUserID(p.UserID).
+		SetTalentCollectionID(p.TalentCollectionId).
 		SetTimezone(timeZoneName[1]).
 		Save(dBContext)
 	if err != nil {

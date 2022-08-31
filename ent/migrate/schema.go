@@ -146,6 +146,7 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "hiring", Type: field.TypeBool, Default: false},
 		{Name: "title", Type: field.TypeString},
+		{Name: "ats_job_id", Type: field.TypeString, Nullable: true},
 		{Name: "slug", Type: field.TypeString, Unique: true},
 		{Name: "location", Type: field.TypeString, Default: "Remote, Earth"},
 		{Name: "summary", Type: field.TypeString},
@@ -156,6 +157,7 @@ var (
 		{Name: "requirements", Type: field.TypeJSON},
 		{Name: "you_have", Type: field.TypeJSON},
 		{Name: "timezone", Type: field.TypeString},
+		{Name: "talent_collection_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// JobsTable holds the schema information for the "jobs" table.
@@ -165,8 +167,14 @@ var (
 		PrimaryKey: []*schema.Column{JobsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
+				Symbol:     "jobs_talent_collections_jobs",
+				Columns:    []*schema.Column{JobsColumns[17]},
+				RefColumns: []*schema.Column{TalentCollectionsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
 				Symbol:     "jobs_users_jobs",
-				Columns:    []*schema.Column{JobsColumns[16]},
+				Columns:    []*schema.Column{JobsColumns[18]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -175,7 +183,12 @@ var (
 			{
 				Name:    "job_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{JobsColumns[16]},
+				Columns: []*schema.Column{JobsColumns[18]},
+			},
+			{
+				Name:    "job_talent_collection_id",
+				Unique:  false,
+				Columns: []*schema.Column{JobsColumns[17]},
 			},
 			{
 				Name:    "job_title",
@@ -185,12 +198,12 @@ var (
 			{
 				Name:    "job_category",
 				Unique:  false,
-				Columns: []*schema.Column{JobsColumns[10]},
+				Columns: []*schema.Column{JobsColumns[11]},
 			},
 			{
 				Name:    "job_slug",
 				Unique:  true,
-				Columns: []*schema.Column{JobsColumns[6]},
+				Columns: []*schema.Column{JobsColumns[7]},
 			},
 		},
 	}
@@ -843,7 +856,8 @@ func init() {
 	EducationsTable.ForeignKeys[0].RefTable = TalentsTable
 	EmailTemplatesTable.ForeignKeys[0].RefTable = UsersTable
 	EmergencyContactsTable.ForeignKeys[0].RefTable = TalentsTable
-	JobsTable.ForeignKeys[0].RefTable = UsersTable
+	JobsTable.ForeignKeys[0].RefTable = TalentCollectionsTable
+	JobsTable.ForeignKeys[1].RefTable = UsersTable
 	JobApplicationsTable.ForeignKeys[0].RefTable = JobsTable
 	JobApplicationsTable.ForeignKeys[1].RefTable = TalentsTable
 	JobPaymentsTable.ForeignKeys[0].RefTable = JobsTable

@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
 
@@ -35,5 +36,7 @@ func (TalentCollection) Fields() []ent.Field {
 
 // Edges of the TalentCollection.
 func (TalentCollection) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.To("jobs", Job.Type),
+	}
 }
