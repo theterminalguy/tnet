@@ -43,7 +43,7 @@ type JobParams struct {
 	TimeZone     string   `json:"timezone_id" validate:"required"`
 	Location     string   `json:"location"`
 
-	AtsJobID           string    `json:"ats_job_id"`
+	AtsJobID           string    `json:"ats_job_id" validate:"required"`
 	TalentCollectionId uuid.UUID `json:"talent_collection_id"`
 
 	/*
