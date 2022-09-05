@@ -85,6 +85,7 @@ func (t *ImportTalents) Run(_ string) error {
 
 	// Global Email Index
 	globalEmailIndex, err := t.TalentRepo.FetchAllEmails()
+	tenlog.Error(globalEmailIndex)
 	if err != nil {
 		return err
 	}
