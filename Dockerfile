@@ -76,5 +76,6 @@ RUN dpkg -i wkhtmltopdf.deb
 
 COPY --from=app-build /web /web
 COPY ./public/views/ ./public/views/
+COPY cmd/generate/templates/talent-profile.html cmd/generate/templates/talent-profile.html
 
 CMD ["/web"]
