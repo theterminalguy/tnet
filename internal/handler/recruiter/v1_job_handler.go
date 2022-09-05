@@ -97,13 +97,13 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	resp, err := h.TalentCollectionRepo.Create(*collectionParams)
 	if err != nil {
 		tenlog.Error(err.Error())
-		return c.String(http.StatusBadGateway, "error occured while creating job")
+		return c.String(http.StatusBadRequest, fmt.Errorf("error occured while creating job: %v", err).Error())
 	}
 	params.TalentCollectionId = resp.ID
 	jd, err := h.JobRepo.Create(*params)
 	if err != nil {
 		tenlog.Error(err.Error())
-		return c.String(http.StatusBadGateway, "error occured while processing job")
+		return c.String(http.StatusBadRequest, "error occured while processing job: " + err.Error())
 	}
 
 	// Generate payment link
@@ -112,13 +112,13 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	_, err = pay.GenerateLink(jd.ID)
 	if err != nil {
 		tenlog.Error(err.Error())
-		return c.String(http.StatusBadGateway, "error occured while generate payment link")
+		return c.String(http.StatusBadRequest, "error occured while generate payment link: " + err.Error())
 	}
 
 	response, err := currentRecruiter.GetJobByID(jd.ID)
 	if err != nil {
 		tenlog.Error(err.Error())
-		return c.String(http.StatusBadGateway, "error occured while processing JD")
+		return c.String(http.StatusBadRequest, "error occured while processing JD: " + err.Error())
 	}
 	return c.JSON(http.StatusCreated, response)
 }
