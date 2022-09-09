@@ -16,6 +16,7 @@ type PaymentService struct{}
 func NewPaymentService(payment_type string) JobPaymentManager {
 	if payment_type == "" {
 		tenlog.Error("Unable to process any payment driver")
+		return nil
 	}
 	payments := map[string]JobPaymentManager{
 		"stripe": NewStripePayment(),

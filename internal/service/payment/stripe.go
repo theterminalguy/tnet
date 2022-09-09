@@ -2,6 +2,8 @@ package payment
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -69,6 +71,7 @@ func (p *StripePayment) Pay(req echo.Context) (string, error) {
 	payload, err := ioutil.ReadAll(req.Request().Body)
 	if err != nil {
 		tenlog.Error(err)
+		return "", fmt.Errorf("unable to process payment link request: %v", err.Error())
 	}
 
 	endpointSecret := os.Getenv("STRIPE_ENDPOINT_SECRET")
@@ -77,6 +80,7 @@ func (p *StripePayment) Pay(req echo.Context) (string, error) {
 
 	if err != nil {
 		tenlog.Error(err)
+		return "", fmt.Errorf("unable to process payment link signature: %v", err.Error())
 	}
 
 	var data repository.JobPaymentParams
@@ -86,6 +90,7 @@ func (p *StripePayment) Pay(req echo.Context) (string, error) {
 		j, err := json.Marshal(event)
 		if err != nil {
 			tenlog.Error(err)
+			return "", fmt.Errorf("invalid payload: %v", err.Error())
 		}
 		err = json.Unmarshal(j, response)
 		if err != nil {
@@ -94,6 +99,7 @@ func (p *StripePayment) Pay(req echo.Context) (string, error) {
 
 		if response.Data.ResponseObjectHandler.Metadata.JobID == "" {
 			tenlog.Error("jobID not found in metadata")
+			return "", fmt.Errorf("jobID not found in metadata: %v", err.Error())
 		}
 
 		data = repository.JobPaymentParams{
@@ -110,6 +116,7 @@ func (p *StripePayment) Pay(req echo.Context) (string, error) {
 		_, err = p.repo.Update(rID, data)
 		if err != nil {
 			tenlog.Error(err)
+			return "", fmt.Errorf("unable to update payment status: %v", err.Error())
 		}
 		return "successful", nil
 	}
@@ -123,6 +130,7 @@ func (p *StripePayment) GenerateLink(jobID uuid.UUID) (string, error) {
 
 	if priceKey == "" {
 		tenlog.Error("Stripe product key is required")
+		return "", errors.New("stripe product key is required")
 	}
 
 	params := url.Values{}
@@ -132,13 +140,15 @@ func (p *StripePayment) GenerateLink(jobID uuid.UUID) (string, error) {
 	body := strings.NewReader(params.Encode())
 	req, err := http.NewRequest("POST", endpointUrl, body)
 	if err != nil {
-		return "", err
+		tenlog.Error(err)
+		return "", fmt.Errorf("unable to process stripe payment request: %v", err.Error())
 	}
 	req.SetBasicAuth(apikey, "")
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		tenlog.Error(err)
+		return "", fmt.Errorf("unable to process stripe payment response: %v", err.Error())
 	}
 
 	result, _ := ioutil.ReadAll(resp.Body)
@@ -147,6 +157,7 @@ func (p *StripePayment) GenerateLink(jobID uuid.UUID) (string, error) {
 	err = json.Unmarshal(result, &g)
 	if err != nil {
 		tenlog.Error(err)
+		return "", fmt.Errorf("invalid stripe payload: %v", err.Error())
 	}
 
 	generateLink := repository.JobPaymentParams{
@@ -158,6 +169,7 @@ func (p *StripePayment) GenerateLink(jobID uuid.UUID) (string, error) {
 	r, err := p.repo.Create(generateLink)
 	if err != nil {
 		tenlog.Error(err)
+		return "", fmt.Errorf("unable to process payment entity: %v", err.Error())
 	}
 
 	return r.PaymentLink, nil

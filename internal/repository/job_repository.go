@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/10hourlabs/tentn/ent"
@@ -21,7 +22,9 @@ type JobQuerier interface {
 	DeleteByID(id uuid.UUID) error
 }
 
-type JobRepository struct{}
+type JobRepository struct {
+	TalentCollectionRepo TalentCollectionRepository
+}
 
 type JobParams struct {
 	UserID uuid.UUID `json:"user_id" validate:"required"`
@@ -55,7 +58,9 @@ type JobParams struct {
 }
 
 func NewJobRepository() *JobRepository {
-	return &JobRepository{}
+	return &JobRepository{
+		TalentCollectionRepo: *NewTalentCollectionRepository(),
+	}
 }
 
 func (*JobRepository) Filter(prd ...predicate.Job) ([]*ent.Job, error) {
@@ -113,8 +118,12 @@ func (*JobRepository) GetByID(id uuid.UUID) (*ent.Job, error) {
 	return j, nil
 }
 
-func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
-	err := ValidateParams(p)
+func (jp *JobRepository) Create(p JobParams) (*ent.Job, error) {
+	tx, err := dBConn.Tx(dBContext)
+	if err != nil {
+		return nil, fmt.Errorf("starting a transaction: %w", err)
+	}
+	err = ValidateParams(p)
 	if err != nil {
 		return nil, err
 	}
@@ -122,8 +131,39 @@ func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
 	if timeZoneName[1] == "" {
 		return nil, errors.New("timezone not allowed")
 	}
+
+	// Create collection
+	collectionParams := new(TalentCollectionParams)
+	collectionParams.UserID = p.UserID
+	collectionParams.Name = fmt.Sprintf("%s-%s", p.Title, p.AtsJobID)
+	if err != nil {
+		return nil, err
+	}
+	err = jp.TalentCollectionRepo.validateScopedUniquenessOfName(collectionParams.Name, p.UserID)
+	if err != nil {
+		return nil, err
+	}
+	// convert uuids to strings
+	TalentIDs := make([]string, len(collectionParams.TalentIDS))
+	for i, uuid := range collectionParams.TalentIDS {
+		TalentIDs[i] = uuid.String()
+	}
+	record, err := tx.TalentCollection.
+		Create().
+		SetName(collectionParams.Name).
+		SetUserID(p.UserID).
+		SetTalentUuids(TalentIDs).
+		Save(dBContext)
+	if err != nil {
+		return nil, rollback(tx, fmt.Errorf("failed creating the job collection: %w", err))
+	}
+	if err != nil {
+		return nil, err
+	}
+	p.TalentCollectionId = record.ID
+
 	jobUUID := uuid.New()
-	j, err := dBConn.Job.
+	j, err := tx.Job.
 		Create().
 		SetID(jobUUID).
 		SetHiring(p.Hiring).
@@ -142,9 +182,9 @@ func (*JobRepository) Create(p JobParams) (*ent.Job, error) {
 		SetTimezone(timeZoneName[1]).
 		Save(dBContext)
 	if err != nil {
-		return nil, err
+		return nil, rollback(tx, fmt.Errorf("failed creating the job: %w", err))
 	}
-	return j, err
+	return j, tx.Commit()
 }
 
 func (r *JobRepository) Update(id uuid.UUID, p JobParams) (*ent.Job, []error) {
