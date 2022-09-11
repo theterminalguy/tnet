@@ -90,20 +90,10 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	params.UserID = recruiterID
 
 	// Create collection
-	collectionParams := new(repo.TalentCollectionParams)
-	collectionParams.UserID = recruiterID
-	atsJobId := params.AtsJobID
-	collectionParams.Name = fmt.Sprintf("%s-%s", params.Title, atsJobId)
-	resp, err := h.TalentCollectionRepo.Create(*collectionParams)
-	if err != nil {
-		tenlog.Error(err.Error())
-		return c.String(http.StatusBadRequest, fmt.Errorf("error occured while creating job: %v", err).Error())
-	}
-	params.TalentCollectionId = resp.ID
 	jd, err := h.JobRepo.Create(*params)
 	if err != nil {
 		tenlog.Error(err.Error())
-		return c.String(http.StatusBadRequest, "error occured while processing job: " + err.Error())
+		return c.String(http.StatusBadRequest, "error occured while processing job: "+err.Error())
 	}
 
 	// Generate payment link
@@ -112,13 +102,13 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	_, err = pay.GenerateLink(jd.ID)
 	if err != nil {
 		tenlog.Error(err.Error())
-		return c.String(http.StatusBadRequest, "error occured while generate payment link: " + err.Error())
+		return c.String(http.StatusBadRequest, "error occured while generate payment link: "+err.Error())
 	}
 
 	response, err := currentRecruiter.GetJobByID(jd.ID)
 	if err != nil {
 		tenlog.Error(err.Error())
-		return c.String(http.StatusBadRequest, "error occured while processing JD: " + err.Error())
+		return c.String(http.StatusBadRequest, "error occured while processing JD: "+err.Error())
 	}
 	return c.JSON(http.StatusCreated, response)
 }
