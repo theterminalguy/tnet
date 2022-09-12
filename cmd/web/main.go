@@ -1,14 +1,18 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"text/template"
 
+	"github.com/10hourlabs/tentn/internal/event"
 	"github.com/10hourlabs/tentn/internal/router"
 	"github.com/10hourlabs/tentn/util"
 	"github.com/10hourlabs/tentn/util/osutil"
+	"github.com/10hourlabs/whisper"
 	"github.com/labstack/echo/v4"
 )
 
@@ -22,6 +26,10 @@ func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c 
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
+type HelloWorldHandler struct {
+	Subscription string
+}
+
 func main() {
 	e := router.DefineRoutes()
 	e.Static("/public/views/css", "public/views/css")
@@ -31,6 +39,14 @@ func main() {
 	}
 	e.Renderer = renderer
 	e.HTTPErrorHandler = util.CustomHTTPErrorHandler
+
+	bus := whisper.NewEventBus(context.Background(), os.Getenv("PUBSUB_EVENT_CONNECTION_NAME"))
+	bus.RegisterEvents(&event.HelloWorldEvent{})
+	go func() {
+		if err := whisper.Listen(bus, whisper.NewGooglePubSub()); err != nil {
+			log.Fatalf("failed to subscribe: %v\n", err)
+		}
+	}()
 
 	httpPort := fmt.Sprintf(":%v", os.Getenv("PORT"))
 	if osutil.InDevMode() && os.Getenv("SSL") == "" {

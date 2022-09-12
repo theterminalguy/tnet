@@ -142,6 +142,12 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 				Only:        []Request{CREATE_ONE},
 				Middlewares: nil,
 			},
+			{
+				Path:        "events",
+				Handler:     handler.NewInternalEventHandler(),
+				Only:        []Request{CREATE_ONE},
+				Middlewares: nil,
+			},
 		},
 	}
 	internalV1Router.BuildRoutes()
