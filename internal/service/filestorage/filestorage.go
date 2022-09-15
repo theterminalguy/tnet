@@ -1,13 +1,13 @@
 package filestorage
 
 import (
-	"mime/multipart"
+	"io"
 
 	"github.com/10hourlabs/tenlog"
 )
 
 type FileStorager interface {
-	Upload(file multipart.File) (string, error)
+	Upload(file io.ReadCloser) (string, error)
 }
 
 func NewFileStorage(storage string, file_path string) FileStorager {

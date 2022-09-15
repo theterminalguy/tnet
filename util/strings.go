@@ -59,7 +59,36 @@ func StringParamsToMap(params string) map[string]string {
 	return result
 }
 
+func SplitStringParamsToMap(params string) map[string]string {
+	split := strings.Split(params, ",")
+	if len(split) == 0 {
+		panic("invalid data, the format should be talent=talent_uuid::image_url")
+	}
+	data := make(map[string]string)
+	for _, s := range split {
+		exp := strings.Split(s, "::")
+		if exp[0] != "" && exp[1] != "" {
+			data[exp[0]] = exp[1]
+		}
+	}
+	return data
+}
+
+func convertTalentMapToString(d interface{}) string {
+	var params []string
+	for _, v := range d.([]interface{}) {
+		mp := v.(map[string]interface{})
+		img := mp["image"]
+		uid := mp["uuid"]
+		params = append(params, uid.(string)+"::"+img.(string))
+	}
+	return strings.Join(params, ",")
+}
+
 func MapToStringParams(m map[string]interface{}) string {
+	if d, ok := m["talent"]; ok {
+		return convertTalentMapToString(d)
+	}
 	var params []string
 	for k, v := range m {
 		params = append(params, k+"="+v.(string))

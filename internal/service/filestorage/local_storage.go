@@ -2,7 +2,6 @@ package filestorage
 
 import (
 	"io"
-	"mime/multipart"
 	"os"
 )
 
@@ -16,7 +15,7 @@ func NewLocalFileStorage(file_path string) *LocalFileInfo {
 	}
 }
 
-func (f *LocalFileInfo) Upload(file multipart.File) (string, error) {
+func (f *LocalFileInfo) Upload(file io.ReadCloser) (string, error) {
 	directory, err := os.Create(f.file_path)
 	if err != nil {
 		return "", err

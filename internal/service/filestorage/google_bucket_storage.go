@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"mime/multipart"
 	"os"
 	"time"
 
@@ -41,7 +40,7 @@ func NewGoogleBucketFileStorage(file_path string) *GoogleBucketFileInfo {
 	return uploader
 }
 
-func (c *GoogleBucketFileInfo) Upload(file multipart.File) (string, error) {
+func (c *GoogleBucketFileInfo) Upload(file io.ReadCloser) (string, error) {
 	ctx := context.Background()
 	uploadFolder := c.file_path
 	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
