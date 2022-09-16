@@ -10,4 +10,5 @@ var Lookup = map[string]Tasker{
 	"approve-client":       NewTaskApproveClient(),
 	"update-client-scope":  NewTaskUpdateClientScope(),
 	"make-client-internal": NewTaskMakeClientInternal(),
+	"hash-password":        NewTaskHashPassword(),
 }

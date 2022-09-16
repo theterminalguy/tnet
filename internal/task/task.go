@@ -6,42 +6,43 @@ import (
 	"strings"
 
 	"github.com/10hourlabs/tenlog"
-	"github.com/10hourlabs/tentn/util/collection"
 )
 
 type Tasker interface {
 	Run(params string) error
 }
 
-var AllowedExecutors = []string{
-	"sp@10hourlabs.com",
-	"abiodun.solomon@10hourlabs.com",
-	"therealfortune1@gmail.com",
-	"onwunmanuli@gmail.com",
-}
-
-func Run(name, params, executor string) error {
+func Run(taskName, params, executor, password string) error {
 	// executor is only required in production
 	if os.Getenv("ENV") == "production" {
-		if strings.Contains(name, "fake") {
-			// do not run fake tasks in production
-			return nil
+		if strings.Contains(taskName, "fake") {
+			return fmt.Errorf("error running task: %s", taskName)
 		}
 		if executor == "" {
-			return fmt.Errorf("executor is required")
+			return fmt.Errorf("missing executor")
 		}
-		if !collection.Contains(AllowedExecutors, executor) {
-			return fmt.Errorf("executor %s is not allowed", executor)
+		ex, ok := AllowedExecutors[executor]
+		if !ok {
+			return fmt.Errorf("excutor %s not found", executor)
 		}
-	}
-	if task, ok := Lookup[name]; ok {
-		if err := task.Run(params); err != nil {
-			tenlog.Error(fmt.Sprintf("Error running task %s: %s", name, err))
+		if err := ex.Authenticate(password); err != nil {
 			return err
 		}
-		tenlog.Info(fmt.Sprintf("Task %s completed successfully", name))
+		if !ex.CanRunTask(taskName) {
+			return fmt.Errorf("%s is not allowed to run task %s", ex.Email, taskName)
+		}
+	}
+	if task, ok := Lookup[taskName]; ok {
+		// TODO: certain tasks may take a long time to run
+		// we should run them in a non-blocking way and have a way to check their status
+		// for now, we just run them synchronously
+		if err := task.Run(params); err != nil {
+			tenlog.Error(fmt.Sprintf("Error running task %s: %s", taskName, err))
+			return err
+		}
+		tenlog.Info(fmt.Sprintf("Task %s completed successfully", taskName))
 		return nil
 	}
-	tenlog.Error(fmt.Sprintf("Task %s not found", name))
-	return fmt.Errorf("task %s not found", name)
+	tenlog.Error(fmt.Sprintf("Task %s not found", taskName))
+	return fmt.Errorf("task %s not found", taskName)
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/10hourlabs/tentn/util"
 )
 
-type TaskRunner func(name, params, executor string) error
+type TaskRunner func(name, params, executor, password string) error
 
 type InternalTaskService struct {
 	TaskRepo *repo.InternalTaskRepository
@@ -19,7 +19,7 @@ func NewInternalTaskService() *InternalTaskService {
 }
 
 func (it *InternalTaskService) Create(runTask TaskRunner, t repo.InternalTaskParams) (*ent.InternalTask, error) {
-	err := runTask(t.Name, util.MapToStringParams(t.Params), t.Executor)
+	err := runTask(t.Name, util.MapToStringParams(t.Params), t.Executor, t.Password)
 	if err != nil {
 		tr, tErr := it.TaskRepo.Create(repo.InternalTaskParams{
 			Name:      t.Name,

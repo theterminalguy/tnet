@@ -17,10 +17,10 @@ func main() {
 	fmt.Printf("Run task %s with params %s? [y/n] ", taskName, params)
 	var answer string
 	fmt.Scanln(&answer)
+	executor, password := "", "" // both are only required in production
 	if answer == "y" {
 		fmt.Println("Runnig task...")
-		executor := ""
-		err := task.Run(taskName, params, executor)
+		err := task.Run(taskName, params, executor, password)
 		if err != nil {
 			log.Fatalf("Error running task: %s", err)
 		}

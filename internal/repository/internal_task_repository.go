@@ -14,6 +14,7 @@ type InternalTaskRepository struct{}
 type InternalTaskParams struct {
 	Name     string `json:"name" validate:"required"`
 	Executor string `json:"executor" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
 
 	// params should be a hash of key-value pairs
 	Params map[string]interface{} `json:"params"`
