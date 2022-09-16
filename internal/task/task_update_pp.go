@@ -12,11 +12,11 @@ import (
 	"github.com/google/uuid"
 )
 
-type UpdateProfilePictureParams struct {
+type TaskUpdateProfilePicture struct {
 }
 
-func NewUpdateProfilePicture() *UpdateProfilePictureParams {
-	return &UpdateProfilePictureParams{}
+func NewTaskUpdateProfilePicture() *TaskUpdateProfilePicture {
+	return &TaskUpdateProfilePicture{}
 }
 
 func UpdateProfilePicture(t map[string]string) error {
@@ -61,7 +61,7 @@ func UpdateTalentImage(id uuid.UUID, f string) error {
 	return nil
 }
 
-func (*UpdateProfilePictureParams) Run(params string) error {
+func (*TaskUpdateProfilePicture) Run(params string) error {
 	t := util.SplitStringParamsToMap(params)
 	err := UpdateProfilePicture(t)
 	if err != nil {

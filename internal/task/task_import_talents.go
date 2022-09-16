@@ -19,7 +19,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type ImportTalents struct {
+type TaskImportTalents struct {
 	UserRepo      *repo.UserRepository
 	TalentRepo    *repo.TalentRepository
 	SkillsRepo    *repo.SkillRepository
@@ -28,8 +28,8 @@ type ImportTalents struct {
 	PortfolioRepo *repo.PortfolioLinkRepository
 }
 
-func NewImportTalents() *ImportTalents {
-	return &ImportTalents{
+func NewTaskImportTalents() *TaskImportTalents {
+	return &TaskImportTalents{
 		UserRepo:      repo.NewUserRepository(),
 		TalentRepo:    repo.NewTalentRepository(),
 		SkillsRepo:    repo.NewSkillRepository(),
@@ -57,7 +57,7 @@ type UpsertUserParams struct {
 	Portfolios            []*repo.PortfolioLinkParams  `json:"portfolios"`
 }
 
-func (t *ImportTalents) Run(_ string) error {
+func (t *TaskImportTalents) Run(_ string) error {
 	manyUsers := make([]*repo.UserParams, 0)
 	manyTalents := make([]*repo.TalentParams, 0)
 	manySkills := make([]*repo.SkillParams, 0)

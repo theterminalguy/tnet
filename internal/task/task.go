@@ -32,10 +32,7 @@ func Run(taskName, params, executor, password string) error {
 			return fmt.Errorf("%s is not allowed to run task %s", ex.Email, taskName)
 		}
 	}
-	if task, ok := Lookup[taskName]; ok {
-		// TODO: certain tasks may take a long time to run
-		// we should run them in a non-blocking way and have a way to check their status
-		// for now, we just run them synchronously
+	if task, ok := Lookup[Task(taskName)]; ok {
 		if err := task.Run(params); err != nil {
 			tenlog.Error(fmt.Sprintf("Error running task %s: %s", taskName, err))
 			return err

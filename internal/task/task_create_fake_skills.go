@@ -9,19 +9,19 @@ import (
 	faker "github.com/brianvoe/gofakeit/v6"
 )
 
-type CreateFakeSkill struct {
+type TaskCreateFakeSkill struct {
 	TalentRepo *repo.TalentRepository
 	SkillRepo  *repo.SkillRepository
 }
 
-func NewCreateFakeSkill() *CreateFakeSkill {
-	return &CreateFakeSkill{
+func NewTaskCreateFakeSkill() *TaskCreateFakeSkill {
+	return &TaskCreateFakeSkill{
 		TalentRepo: repo.NewTalentRepository(),
 		SkillRepo:  repo.NewSkillRepository(),
 	}
 }
 
-func (c *CreateFakeSkill) Run(_ string) error {
+func (c *TaskCreateFakeSkill) Run(_ string) error {
 	talents, err := c.TalentRepo.GetAll()
 	if err != nil {
 		return err

@@ -7,14 +7,14 @@ import (
 	"github.com/10hourlabs/tentn/util"
 )
 
-type TokGen struct {
+type TaskTokGen struct {
 }
 
-func NewTokGen() *TokGen {
-	return &TokGen{}
+func NewTaskTokGen() *TaskTokGen {
+	return &TaskTokGen{}
 }
 
-func (t *TokGen) Run(params string) error {
+func (t *TaskTokGen) Run(params string) error {
 	m := util.StringParamsToMap(params)
 	toktype, ok := m["type"]
 	if !ok {

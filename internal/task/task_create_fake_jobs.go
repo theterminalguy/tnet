@@ -10,19 +10,19 @@ import (
 	"github.com/google/uuid"
 )
 
-type CreateFakeJob struct {
+type TaskCreateFakeJob struct {
 	JobRepo  *repo.JobRepository
 	UserRepo *repo.UserRepository
 }
 
-func NewCreateFakeJob() *CreateFakeJob {
-	return &CreateFakeJob{
+func NewTaskCreateFakeJob() *TaskCreateFakeJob {
+	return &TaskCreateFakeJob{
 		JobRepo:  repo.NewJobRepository(),
 		UserRepo: repo.NewUserRepository(),
 	}
 }
 
-func (j *CreateFakeJob) CreateFakeJob(userID uuid.UUID) error {
+func (j *TaskCreateFakeJob) TaskCreateFakeJob(userID uuid.UUID) error {
 	jobParams := repo.JobParams{
 		TimeZone: "GMT",
 		Hiring: true,
@@ -70,7 +70,7 @@ func (j *CreateFakeJob) CreateFakeJob(userID uuid.UUID) error {
 	return nil
 }
 
-func (j *CreateFakeJob) Run(_ string) error {
+func (j *TaskCreateFakeJob) Run(_ string) error {
 	var errs []error
 	// TODO: make the max configurable
 	// Also the inserts is not optimized, it works fine for now but should be improved
@@ -83,7 +83,7 @@ func (j *CreateFakeJob) Run(_ string) error {
 	}
 	for _, user := range users {
 		for i := 0; i < 3; i++ {
-			err := j.CreateFakeJob(user.ID)
+			err := j.TaskCreateFakeJob(user.ID)
 			if err != nil {
 				errs = append(errs, err)
 			}

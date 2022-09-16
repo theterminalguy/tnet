@@ -13,19 +13,19 @@ import (
 	faker "github.com/brianvoe/gofakeit/v6"
 )
 
-type CreateFakeTalents struct {
+type TaskCreateFakeTalents struct {
 	UserRepo      *repo.UserRepository
 	TalentService *service.TalentService
 }
 
-func NewCreateFakeTalents() *CreateFakeTalents {
-	return &CreateFakeTalents{
+func NewTaskCreateFakeTalents() *TaskCreateFakeTalents {
+	return &TaskCreateFakeTalents{
 		UserRepo:      repo.NewUserRepository(),
 		TalentService: service.NewTalentService(),
 	}
 }
 
-func (t *CreateFakeTalents) CreateFakeTalent() error {
+func (t *TaskCreateFakeTalents) CreateFakeTalent() error {
 	fName := faker.FirstName()
 	lName := faker.LastName()
 	userParams := repo.UserParams{
@@ -72,7 +72,7 @@ func (t *CreateFakeTalents) CreateFakeTalent() error {
 	return nil
 }
 
-func (t *CreateFakeTalents) Run(_ string) error {
+func (t *TaskCreateFakeTalents) Run(_ string) error {
 	var errs []error
 	// TODO: make the max configurable
 	// Also the inserts is not optimized, it works fine for now but should be improved
