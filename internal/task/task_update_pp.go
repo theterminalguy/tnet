@@ -24,6 +24,11 @@ func UpdateProfilePicture(t map[string]string) error {
 	for tId, imageUrl := range t {
 		wg.Add(1)
 		talentId := uuid.MustParse(tId)
+		u, err := repo.NewTalentRepository().GetByID(talentId)
+		if err != nil {
+			tenlog.Error(fmt.Sprintf("Error getting talent %s: %s", talentId, err))
+			continue
+		}
 		img := imageUrl
 		res := fmt.Sprintf("Downloading... %s for %s", img, talentId)
 		fmt.Println(res)
@@ -35,22 +40,22 @@ func UpdateProfilePicture(t map[string]string) error {
 				panic(err)
 			}
 
-			err = UpdateTalentImage(talentId, link)
+			err = UpdateUserImage(u.UserID, link)
 			if err != nil {
 				tenlog.Error(err.Error())
 				panic(err)
+			} else {
+				res := fmt.Sprintf("Downloaded... %s", link)
+				fmt.Println(res)
+				fmt.Println("----")
 			}
-
-			res := fmt.Sprintf("Downloaded... %s", link)
-			fmt.Println(res)
-			fmt.Println("----")
 		}()
 	}
 	wg.Wait()
 	return nil
 }
 
-func UpdateTalentImage(id uuid.UUID, f string) error {
+func UpdateUserImage(id uuid.UUID, f string) error {
 	params := new(repo.UserParams)
 	params.PhotoURL = f
 	_, err := repo.NewUserRepository().Update(id, *params)
