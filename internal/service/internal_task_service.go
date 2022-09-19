@@ -19,7 +19,7 @@ func NewInternalTaskService() *InternalTaskService {
 }
 
 func (it *InternalTaskService) Create(runTask TaskRunner, t repo.InternalTaskParams) (*ent.InternalTask, error) {
-	err := runTask(t.Name, util.MapToStringParams(t.Params), t.Executor, t.Password)
+	err := runTask(t.Name, util.MapToStringParams(t.Params), t.Executor, t.Wand)
 	if err != nil {
 		tr, tErr := it.TaskRepo.Create(repo.InternalTaskParams{
 			Name:      t.Name,

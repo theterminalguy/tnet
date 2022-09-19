@@ -47,6 +47,7 @@ var AllowedExecutors = map[string]*Executor{
 		AllowedTasks: []string{
 			"tokgen",
 			"import-talents",
+			"update-talent-pp",
 		},
 	},
 	"fortune.nwankwo@10hourlabs.com": {
