@@ -60,6 +60,7 @@ func (h *InternalTaskHandler) CreateOne(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"data": record,
+			"err":  err.Error(),
 		})
 	}
 	return c.JSON(http.StatusCreated, record)
