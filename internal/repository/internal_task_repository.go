@@ -14,7 +14,7 @@ type InternalTaskRepository struct{}
 type InternalTaskParams struct {
 	Name     string `json:"name" validate:"required"`
 	Executor string `json:"executor" validate:"required,email"`
-	Wand     string `json:"wand" validate:"required"`
+	Password string `json:"password" validate:"required"`
 
 	// params should be a hash of key-value pairs
 	Params map[string]interface{} `json:"params"`
@@ -51,7 +51,7 @@ func (*InternalTaskRepository) GetByID(id uuid.UUID) (*ent.InternalTask, error) 
 }
 
 func (*InternalTaskRepository) Create(p InternalTaskParams) (*ent.InternalTask, error) {
-	err := ValidateParams(p)
+	err := ValidateParams(p, "name", "executor", "password")
 	if err != nil {
 		return nil, err
 	}

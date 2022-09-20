@@ -32,4 +32,5 @@ node_modules
 .idea/
 *.log
 data/talents.csv
+data/*
 

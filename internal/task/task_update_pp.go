@@ -3,7 +3,6 @@ package task
 import (
 	"errors"
 	"fmt"
-	"sync"
 
 	"github.com/10hourlabs/tenlog"
 	repo "github.com/10hourlabs/tentn/internal/repository"
@@ -20,38 +19,34 @@ func NewTaskUpdateProfilePicture() *TaskUpdateProfilePicture {
 }
 
 func UpdateProfilePicture(t map[string]string) error {
-	var wg sync.WaitGroup
-	for tId, imageUrl := range t {
-		wg.Add(1)
-		talentId := uuid.MustParse(tId)
-		u, err := repo.NewTalentRepository().GetByID(talentId)
+	updateErrs := make([]error, 0)
+
+	for id, img := range t {
+		tid := uuid.MustParse(id)
+		u, err := repo.NewTalentRepository().GetByID(tid)
 		if err != nil {
-			tenlog.Error(fmt.Sprintf("Error getting talent %s: %s", talentId, err))
+			updateErrs = append(updateErrs, err)
 			continue
 		}
-		img := imageUrl
-		res := fmt.Sprintf("Downloading... %s for %s", img, talentId)
-		fmt.Println(res)
-		go func() {
-			defer wg.Done()
-			link, err := service.NewTalentImageHandler(talentId, img).GetImage()
+		go func(talentID uuid.UUID, imageUrl string) {
+			link, err := service.NewTalentImageHandler(talentID, imageUrl).GetImage()
 			if err != nil {
-				tenlog.Error(err.Error())
-				panic(err)
+				updateErrs = append(updateErrs, err)
+				return
 			}
-
 			err = UpdateUserImage(u.UserID, link)
 			if err != nil {
-				tenlog.Error(err.Error())
-				panic(err)
-			} else {
-				res := fmt.Sprintf("Downloaded... %s", link)
-				fmt.Println(res)
-				fmt.Println("----")
+				updateErrs = append(updateErrs, err)
+				return
 			}
-		}()
+			res := fmt.Sprintf("Downloaded... %s", link)
+			fmt.Println(res)
+			fmt.Println("----")
+		}(tid, img)
 	}
-	wg.Wait()
+	if len(updateErrs) > 0 {
+		return util.LogAndReturnErrs(updateErrs, tenlog.ERROR)
+	}
 	return nil
 }
 

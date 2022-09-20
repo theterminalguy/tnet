@@ -17,6 +17,33 @@ func LogAndReturnErr(msg string, err error) error {
 	return err
 }
 
+func LogAndReturnErrs(e []error, level tenlog.LogLevel) error {
+	errs := CombineErrors(e)
+	switch level {
+	case tenlog.CRITICAL:
+		tenlog.Critical(errs)
+	case tenlog.DEBUG:
+		tenlog.Debug(errs)
+	case tenlog.INFO:
+		tenlog.Info(errs)
+	case tenlog.WARN:
+		tenlog.Warn(errs)
+	case tenlog.NOTICE:
+		tenlog.Notice(errs)
+	default:
+		tenlog.Error(errs)
+	}
+	return errs
+}
+
+func CombineErrors(errs []error) error {
+	var errStr string
+	for i, err := range errs {
+		errStr += err.Error() + fmt.Sprintf("(%d)", i)
+	}
+	return fmt.Errorf(errStr)
+}
+
 func CustomHTTPErrorHandler(err error, c echo.Context) {
 	if er, ok := err.(*echo.HTTPError); ok {
 		tenlog.Error(string(er.Error()))
