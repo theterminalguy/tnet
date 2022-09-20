@@ -14,6 +14,9 @@ func NewTaskHashPassword() *TaskHashPassword {
 }
 
 func (t *TaskHashPassword) Run(password string) error {
+	if password == "" {
+		return fmt.Errorf("password is empty")
+	}
 	hashedSecret, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return err

@@ -3,6 +3,7 @@ package task
 import (
 	"errors"
 	"fmt"
+	"sync"
 
 	"github.com/10hourlabs/tenlog"
 	repo "github.com/10hourlabs/tentn/internal/repository"
@@ -21,6 +22,7 @@ func NewTaskUpdateProfilePicture() *TaskUpdateProfilePicture {
 func UpdateProfilePicture(t map[string]string) error {
 	updateErrs := make([]error, 0)
 
+	wg := &sync.WaitGroup{}
 	for id, img := range t {
 		tid := uuid.MustParse(id)
 		u, err := repo.NewTalentRepository().GetByID(tid)
@@ -28,7 +30,10 @@ func UpdateProfilePicture(t map[string]string) error {
 			updateErrs = append(updateErrs, err)
 			continue
 		}
+		wg.Add(1)
 		go func(talentID uuid.UUID, imageUrl string) {
+			defer wg.Done()
+
 			link, err := service.NewTalentImageHandler(talentID, imageUrl).GetImage()
 			if err != nil {
 				updateErrs = append(updateErrs, err)
@@ -44,6 +49,7 @@ func UpdateProfilePicture(t map[string]string) error {
 			fmt.Println("----")
 		}(tid, img)
 	}
+	wg.Wait()
 	if len(updateErrs) > 0 {
 		return util.LogAndReturnErrs(updateErrs, tenlog.ERROR)
 	}

@@ -29,6 +29,9 @@ const (
 
 	// makeClientInternal is used to make an OAuth client internal
 	makeClientInternal Task = "make-client-internal"
+
+	// hashPassword is used to hash a password
+	hashPassword Task = "hash-password"
 )
 
 var Lookup = map[Task]Tasker{
@@ -41,4 +44,5 @@ var Lookup = map[Task]Tasker{
 	approveClient:      NewTaskApproveClient(),
 	updateClientScope:  NewTaskUpdateClientScope(),
 	makeClientInternal: NewTaskMakeClientInternal(),
+	hashPassword:       NewTaskHashPassword(),
 }
