@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/10hourlabs/tentn/internal/service/filestorage"
@@ -55,10 +56,17 @@ func (t *TalentImageParams) GetImage() (string, error) {
 func (t *TalentImageParams) saveToGoogle(fpath string, f io.ReadCloser) (string, error) {
 	g := filestorage.NewGoogleBucketFileStorage(fpath)
 	link, err := g.Upload(f)
+
 	if err != nil {
 		return "", err
 	}
-	return link, nil
+
+	u, err := url.Parse(link)
+	if err != nil {
+		return "", err
+	}
+	p := fmt.Sprintf("https://storage.googleapis.com%v", u.Path)
+	return p, nil
 }
 
 func (t *TalentImageParams) saveToLocal(fpath string, f io.ReadCloser) (string, error) {
