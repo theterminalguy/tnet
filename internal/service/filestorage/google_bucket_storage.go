@@ -9,7 +9,6 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/labstack/gommon/log"
-	"google.golang.org/api/option"
 )
 
 type GoogleBucketFileInfo struct {
@@ -27,7 +26,7 @@ var (
 )
 
 func NewGoogleBucketFileStorage(file_path string) *GoogleBucketFileInfo {
-	client, err := storage.NewClient(context.Background(), option.WithCredentialsJSON([]byte(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")))) // TODO: avoid Background context
+	client, err := storage.NewClient(context.Background()) // TODO: avoid Background context
 	if err != nil {
 		log.Fatalf("Failed to create client: %v", err)
 	}
