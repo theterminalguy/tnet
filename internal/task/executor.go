@@ -52,7 +52,7 @@ var AllowedExecutors = map[string]*Executor{
 	},
 	"fortune.nwankwo@10hourlabs.com": {
 		Email:        "fortune.nwankwo@10hourlabs.com",
-		HashedSecret: "$2a$10$duQjyZJFPluWQGvug1JUGu5uKifXTxT6eHEHesQ2cQEK7mwbCcTxC",
+		HashedSecret: "$2a$12$fgS7DkQWSe8eWI4S1d.hm.mEzZ1kreatSXucv1eZv10KLrZc0BcjW",
 		AllowedTasks: []string{
 			"update-talent-pp",
 		},
