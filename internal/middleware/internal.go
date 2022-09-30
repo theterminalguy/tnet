@@ -13,6 +13,8 @@ var allowedUsers = []string{
 	"sp@10hourlabs.com",
 	"dotun.oyelakin@10hourlabs.com",
 	"abiodun.solomon@10hourlabs.com",
+	"fortune.nwankwo@10hourlabs.com",
+	"drey.olawaye@10hourlabs.com",
 }
 
 func AuthInternalRequest() echo.MiddlewareFunc {

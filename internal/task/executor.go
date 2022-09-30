@@ -57,11 +57,12 @@ var AllowedExecutors = map[string]*Executor{
 			"update-talent-pp",
 		},
 	},
-	"onwunma.anuli@10hourlabs.com": {
-		Email:        "onwunma.anuli@10hourlabs.com",
-		HashedSecret: "$2a$10$M1C/qWkl5rVE7q18PzUa7.CV7BYExHPl23cEc/1VHyHgp7FJJRFOS",
+	"drey.olawaye@10hourlabs.com": {
+		Email:        "drey.olawaye@10hourlabs.com",
+		HashedSecret: "$2a$10$/O5vZY7Q5LxcTFjo7sGtH.WsPPwV1Irx80.dyQEoEBNU159uKDXJO",
 		AllowedTasks: []string{
 			"import-talents",
+			"update-talent-pp",
 		},
 	},
 }
