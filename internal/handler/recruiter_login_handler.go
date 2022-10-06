@@ -55,6 +55,17 @@ var slackConf *SlackOauth2Client = &SlackOauth2Client{
 		RedirectURL:  fmt.Sprintf("%s/oauth2/slack/callback", os.Getenv("APP_HOST")),
 		Scopes: []string{
 			"users.profile:read",
+			"channels:history",
+			"channels:join",
+			"channels:manage",
+			"chat:write",
+			"conversations.connect:write",
+			"files:write",
+			"groups:history",
+			"groups:write",
+			"im:history",
+			"mpim:history",
+			"team.billing:read",
 		},
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://slack.com/oauth/v2/authorize",
