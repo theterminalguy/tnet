@@ -65,4 +65,9 @@ var AllowedExecutors = map[string]*Executor{
 			"update-talent-pp",
 		},
 	},
+	"ahbot-slack@10hourlabs.com": {
+		Email:        "ahbot-slack@10hourlabs.com",
+		HashedSecret: "$2a$10$ka2YjqAXzfRy2nZIPJE6LuDES2inxlYlYFpSHMBKU4AdE9PJasFie",
+		AllowedTasks: []string{},
+	},
 }

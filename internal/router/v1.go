@@ -148,6 +148,13 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 				Only:        []Request{CREATE_ONE},
 				Middlewares: nil,
 			},
+			{
+				// /v1/internal/slack-installations
+				Path: "slack-installations",
+				Handler: handler.NewSlackInstallationHandler(),
+				Only: []Request{READ_ALL},
+				Middlewares: nil,
+			},
 		},
 	}
 	internalV1Router.BuildRoutes()
