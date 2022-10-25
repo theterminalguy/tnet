@@ -30,6 +30,12 @@ func (r *RecruiterScope) GetJobs() ([]*ent.Job, error) {
 		}).All(repo.GetDBContext())
 }
 
+func (r *RecruiterScope) GetByAtsID(id string) (*ent.Job, error) {
+	return r.Recruiter.QueryJobs().
+		Where(job.AtsJobID(id)).
+		First(repo.GetDBContext())
+}
+
 func (r *RecruiterScope) GetJobByID(id uuid.UUID) (*ent.Job, error) {
 	return r.Recruiter.QueryJobs().
 		Where(job.ID(id)).

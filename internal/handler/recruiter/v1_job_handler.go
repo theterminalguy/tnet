@@ -70,7 +70,7 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 	params := new(repo.JobParams)
 	if err := c.Bind(params); err != nil {
 		tenlog.Error(err.Error())
-		return c.String(http.StatusBadRequest, "Unable to process payload, Please try again later")
+		return c.String(http.StatusBadRequest, "unable to process payload, Please try again later")
 	}
 	if params.Summary == "" {
 		params.Summary = "N/A"
@@ -88,6 +88,18 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 		params.Category = "engineering"
 	}
 	params.UserID = recruiterID
+
+	// Check atsjob id exist for recruiter
+	r, err := currentRecruiter.GetByAtsID(params.AtsJobID)
+	if err != nil {
+		tenlog.Error(err.Error())
+		return c.String(http.StatusBadRequest, "error occured while processing job: "+err.Error())
+	}
+	if r != nil {
+		er := "error occured while processing job: Job already exist with Ats ID"
+		tenlog.Error(er)
+		return c.String(http.StatusBadRequest, er)
+	}
 
 	// Create collection
 	jd, err := h.JobRepo.Create(*params)
