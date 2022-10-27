@@ -60,7 +60,7 @@ func (s SlackPlatformAuth) Authorize(ctx echo.Context) error {
 
 	// track the current user making the request
 	// TODO: let's cache this
-	if _, err := s.saus.CreateUser(slackUserID, app.ID); err != nil {
+	if _, err := s.saus.CreateUser(slackTeamID, slackUserID, app.ID); err != nil {
 		tenlog.Error("Failed to create slack app user", err)
 		return echo.ErrUnauthorized
 	}

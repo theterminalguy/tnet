@@ -1,8 +1,6 @@
 package service
 
 import (
-	"os"
-
 	"github.com/10hourlabs/tentn/ent"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/google/uuid"
@@ -10,27 +8,40 @@ import (
 )
 
 type SlackAppUserService struct {
-	AppUser *repo.SlackAppUserRepository
+	AppUser    *repo.SlackAppUserRepository
+	AppInstall *repo.SlackAppInstallRepository
 }
 
 func NewSlackAppUserService() *SlackAppUserService {
 	return &SlackAppUserService{
-		AppUser: repo.NewSlackAppUserRepository(),
+		AppUser:    repo.NewSlackAppUserRepository(),
+		AppInstall: repo.NewSlackAppInstallRepository(),
 	}
 }
 
-func (*SlackAppUserService) GetUserInfo(slackUserID string) (*slack.User, error) {
-	api := slack.New(os.Getenv("SLACK_BOT_TOKEN"))
+func (s *SlackAppUserService) GetUserInfo(slackTeamID, slackUserID string) (*slack.User, error) {
+	install, err := s.AppInstall.GetByTeamID(slackTeamID)
+	if err != nil {
+		return nil, err
+	}
+	api := slack.New(install.AccessToken)
 	return api.GetUserInfo(slackUserID)
 }
 
-func (s *SlackAppUserService) CreateUser(slackUserID string, installID uuid.UUID) (*ent.SlackAppUser, error) {
+func (s *SlackAppUserService) CreateUser(slackTeamID, slackUserID string, installID uuid.UUID) (*ent.SlackAppUser, error) {
+	/**
+	This is like a log that keeps track of every user in a Slack Workspace
+	Using the app.
+
+	If the User is found, we return the user
+	else we fetch that user from slack and create a record in our DB
+	*/
 	user, err := s.AppUser.GetBySlackUserID(slackUserID)
 	if user != nil {
 		return user, nil
 	}
 	if ent.IsNotFound(err) {
-		user, err := s.GetUserInfo(slackUserID)
+		user, err := s.GetUserInfo(slackTeamID, slackUserID)
 		if err != nil {
 			return nil, err
 		}
