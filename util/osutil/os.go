@@ -26,9 +26,6 @@ var requiredRuntimeEnvForDev = []string{
 	"GOOGLE_OAUTH_CLIENT_SECRET",
 
 	"PAYMENT_DRIVER",
-	"STRIPE_API_KEY",
-	"STRIPE_PRODUCT_KEY",
-	"STRIPE_ENDPOINT_SECRET",
 }
 
 var requiredRuntimeEnvForProd = []string{
@@ -39,9 +36,6 @@ var requiredRuntimeEnvForProd = []string{
 	"CLOUDSQL_PG_INSTANCE",
 
 	"PAYMENT_DRIVER",
-	"STRIPE_SECRET_KEY",
-	"STRIPE_PRODUCT_ID",
-	"STRIPE_WEBHOOK_SECRET",
 }
 
 func CheckEnv() {
