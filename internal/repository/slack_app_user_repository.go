@@ -49,9 +49,10 @@ func (*SlackAppUserRepository) GetByID(id uuid.UUID) (*ent.SlackAppUser, error) 
 	return record, nil
 }
 
-func (*SlackAppUserRepository) GetBySlackUserID(id string) (*ent.SlackAppUser, error) {
+func (*SlackAppUserRepository) GetBySlackUserID(teamID, id string) (*ent.SlackAppUser, error) {
+	// TODO: aksi filter by team id
 	record, err := dBConn.SlackAppUser.Query().
-		Where(slackappuser.SlackUserID(id)).
+		Where(slackappuser.SlackUserID(id), slackappuser.SlackTeamID(teamID)).
 		Only(dBContext)
 	if err != nil {
 		return nil, err

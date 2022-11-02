@@ -402,6 +402,10 @@ func init() {
 	slackappinstall.DefaultUpdatedAt = slackappinstallDescUpdatedAt.Default.(func() time.Time)
 	// slackappinstall.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	slackappinstall.UpdateDefaultUpdatedAt = slackappinstallDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// slackappinstallDescInstallCount is the schema descriptor for install_count field.
+	slackappinstallDescInstallCount := slackappinstallFields[13].Descriptor()
+	// slackappinstall.DefaultInstallCount holds the default value on creation for the install_count field.
+	slackappinstall.DefaultInstallCount = slackappinstallDescInstallCount.Default.(int)
 	// slackappinstallDescID is the schema descriptor for id field.
 	slackappinstallDescID := slackappinstallMixinFields0[0].Descriptor()
 	// slackappinstall.DefaultID holds the default value on creation for the id field.

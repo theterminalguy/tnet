@@ -50,6 +50,9 @@ func (SlackAppInstall) Fields() []ent.Field {
 		field.Enum("payment_plan").
 			GoType(billing.PaymentPlan("")).
 			Default("free"),
+
+		field.Int("install_count").
+			Default(1),
 	}
 }
 

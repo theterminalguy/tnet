@@ -36,7 +36,7 @@ func (s *SlackAppUserService) CreateUser(slackTeamID, slackUserID string, instal
 	If the User is found, we return the user
 	else we fetch that user from slack and create a record in our DB
 	*/
-	user, err := s.AppUser.GetBySlackUserID(slackUserID)
+	user, err := s.AppUser.GetBySlackUserID(slackTeamID, slackUserID)
 	if user != nil {
 		return user, nil
 	}

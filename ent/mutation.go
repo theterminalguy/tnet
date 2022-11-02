@@ -14709,6 +14709,8 @@ type SlackAppInstallMutation struct {
 	scope                  *string
 	is_enterprise_install  *bool
 	payment_plan           *billing.PaymentPlan
+	install_count          *int
+	addinstall_count       *int
 	clearedFields          map[string]struct{}
 	user                   *uuid.UUID
 	cleareduser            bool
@@ -15488,6 +15490,62 @@ func (m *SlackAppInstallMutation) ResetPaymentPlan() {
 	m.payment_plan = nil
 }
 
+// SetInstallCount sets the "install_count" field.
+func (m *SlackAppInstallMutation) SetInstallCount(i int) {
+	m.install_count = &i
+	m.addinstall_count = nil
+}
+
+// InstallCount returns the value of the "install_count" field in the mutation.
+func (m *SlackAppInstallMutation) InstallCount() (r int, exists bool) {
+	v := m.install_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInstallCount returns the old "install_count" field's value of the SlackAppInstall entity.
+// If the SlackAppInstall object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SlackAppInstallMutation) OldInstallCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInstallCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInstallCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInstallCount: %w", err)
+	}
+	return oldValue.InstallCount, nil
+}
+
+// AddInstallCount adds i to the "install_count" field.
+func (m *SlackAppInstallMutation) AddInstallCount(i int) {
+	if m.addinstall_count != nil {
+		*m.addinstall_count += i
+	} else {
+		m.addinstall_count = &i
+	}
+}
+
+// AddedInstallCount returns the value that was added to the "install_count" field in this mutation.
+func (m *SlackAppInstallMutation) AddedInstallCount() (r int, exists bool) {
+	v := m.addinstall_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetInstallCount resets all changes to the "install_count" field.
+func (m *SlackAppInstallMutation) ResetInstallCount() {
+	m.install_count = nil
+	m.addinstall_count = nil
+}
+
 // ClearUser clears the "user" edge to the User entity.
 func (m *SlackAppInstallMutation) ClearUser() {
 	m.cleareduser = true
@@ -15587,7 +15645,7 @@ func (m *SlackAppInstallMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SlackAppInstallMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, slackappinstall.FieldCreatedAt)
 	}
@@ -15639,6 +15697,9 @@ func (m *SlackAppInstallMutation) Fields() []string {
 	if m.payment_plan != nil {
 		fields = append(fields, slackappinstall.FieldPaymentPlan)
 	}
+	if m.install_count != nil {
+		fields = append(fields, slackappinstall.FieldInstallCount)
+	}
 	return fields
 }
 
@@ -15681,6 +15742,8 @@ func (m *SlackAppInstallMutation) Field(name string) (ent.Value, bool) {
 		return m.IsEnterpriseInstall()
 	case slackappinstall.FieldPaymentPlan:
 		return m.PaymentPlan()
+	case slackappinstall.FieldInstallCount:
+		return m.InstallCount()
 	}
 	return nil, false
 }
@@ -15724,6 +15787,8 @@ func (m *SlackAppInstallMutation) OldField(ctx context.Context, name string) (en
 		return m.OldIsEnterpriseInstall(ctx)
 	case slackappinstall.FieldPaymentPlan:
 		return m.OldPaymentPlan(ctx)
+	case slackappinstall.FieldInstallCount:
+		return m.OldInstallCount(ctx)
 	}
 	return nil, fmt.Errorf("unknown SlackAppInstall field %s", name)
 }
@@ -15852,6 +15917,13 @@ func (m *SlackAppInstallMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPaymentPlan(v)
 		return nil
+	case slackappinstall.FieldInstallCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInstallCount(v)
+		return nil
 	}
 	return fmt.Errorf("unknown SlackAppInstall field %s", name)
 }
@@ -15859,13 +15931,21 @@ func (m *SlackAppInstallMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *SlackAppInstallMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addinstall_count != nil {
+		fields = append(fields, slackappinstall.FieldInstallCount)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *SlackAppInstallMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case slackappinstall.FieldInstallCount:
+		return m.AddedInstallCount()
+	}
 	return nil, false
 }
 
@@ -15874,6 +15954,13 @@ func (m *SlackAppInstallMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *SlackAppInstallMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case slackappinstall.FieldInstallCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddInstallCount(v)
+		return nil
 	}
 	return fmt.Errorf("unknown SlackAppInstall numeric field %s", name)
 }
@@ -15978,6 +16065,9 @@ func (m *SlackAppInstallMutation) ResetField(name string) error {
 		return nil
 	case slackappinstall.FieldPaymentPlan:
 		m.ResetPaymentPlan()
+		return nil
+	case slackappinstall.FieldInstallCount:
+		m.ResetInstallCount()
 		return nil
 	}
 	return fmt.Errorf("unknown SlackAppInstall field %s", name)

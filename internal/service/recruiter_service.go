@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
+	"github.com/10hourlabs/tentn/ent/slackappinstall"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/oneword"
 )
@@ -21,9 +22,28 @@ func NewRecruiterService() *RecruiterService {
 }
 
 func (rs *RecruiterService) InstallSlackApp(up repo.UserParams, sp repo.SlackAppInstallParams) (*ent.User, error) {
-	record, err := rs.UserRepo.GetByEmail(up.Email)
-	if record != nil {
-		return record, nil
+	// check if slack app already exists
+	app, err := rs.SlackAppRepo.GetByTeamID(sp.TeamID)
+	if app != nil {
+		return app.Edges.User, nil
+	}
+	if err == repo.ErrRecordDeleted {
+		app, err := rs.SlackAppRepo.GetDeletedInstallation(sp.TeamID)
+		if err != nil {
+			return nil, err
+		}
+		if err := rs.SlackAppRepo.UpdateFields(app, map[string]interface{}{
+			slackappinstall.FieldDeletedAt:           nil,
+			slackappinstall.FieldInstallCount:        app.InstallCount + 1,
+			slackappinstall.FieldAccessToken:         sp.AccessToken,
+			slackappinstall.FieldTeamName:            sp.TeamName,
+			slackappinstall.FieldBotUserID:           sp.BotUserID,
+			slackappinstall.FieldIsEnterpriseInstall: sp.IsEnterpriseInstall,
+			slackappinstall.FieldScope:               sp.Scope,
+		}); err != nil {
+			return nil, err
+		}
+		return app.Edges.User, nil
 	}
 	if ent.IsNotFound(err) {
 		up.Approved = true // Approve recruiter

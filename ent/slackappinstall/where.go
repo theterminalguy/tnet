@@ -207,6 +207,13 @@ func IsEnterpriseInstall(v bool) predicate.SlackAppInstall {
 	})
 }
 
+// InstallCount applies equality check predicate on the "install_count" field. It's identical to InstallCountEQ.
+func InstallCount(v int) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldInstallCount), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.SlackAppInstall {
 	return predicate.SlackAppInstall(func(s *sql.Selector) {
@@ -1821,6 +1828,82 @@ func PaymentPlanNotIn(vs ...billing.PaymentPlan) predicate.SlackAppInstall {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldPaymentPlan), v...))
+	})
+}
+
+// InstallCountEQ applies the EQ predicate on the "install_count" field.
+func InstallCountEQ(v int) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldInstallCount), v))
+	})
+}
+
+// InstallCountNEQ applies the NEQ predicate on the "install_count" field.
+func InstallCountNEQ(v int) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldInstallCount), v))
+	})
+}
+
+// InstallCountIn applies the In predicate on the "install_count" field.
+func InstallCountIn(vs ...int) predicate.SlackAppInstall {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldInstallCount), v...))
+	})
+}
+
+// InstallCountNotIn applies the NotIn predicate on the "install_count" field.
+func InstallCountNotIn(vs ...int) predicate.SlackAppInstall {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldInstallCount), v...))
+	})
+}
+
+// InstallCountGT applies the GT predicate on the "install_count" field.
+func InstallCountGT(v int) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldInstallCount), v))
+	})
+}
+
+// InstallCountGTE applies the GTE predicate on the "install_count" field.
+func InstallCountGTE(v int) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldInstallCount), v))
+	})
+}
+
+// InstallCountLT applies the LT predicate on the "install_count" field.
+func InstallCountLT(v int) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldInstallCount), v))
+	})
+}
+
+// InstallCountLTE applies the LTE predicate on the "install_count" field.
+func InstallCountLTE(v int) predicate.SlackAppInstall {
+	return predicate.SlackAppInstall(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldInstallCount), v))
 	})
 }
 

@@ -192,6 +192,27 @@ func (saiu *SlackAppInstallUpdate) SetNillablePaymentPlan(bp *billing.PaymentPla
 	return saiu
 }
 
+// SetInstallCount sets the "install_count" field.
+func (saiu *SlackAppInstallUpdate) SetInstallCount(i int) *SlackAppInstallUpdate {
+	saiu.mutation.ResetInstallCount()
+	saiu.mutation.SetInstallCount(i)
+	return saiu
+}
+
+// SetNillableInstallCount sets the "install_count" field if the given value is not nil.
+func (saiu *SlackAppInstallUpdate) SetNillableInstallCount(i *int) *SlackAppInstallUpdate {
+	if i != nil {
+		saiu.SetInstallCount(*i)
+	}
+	return saiu
+}
+
+// AddInstallCount adds i to the "install_count" field.
+func (saiu *SlackAppInstallUpdate) AddInstallCount(i int) *SlackAppInstallUpdate {
+	saiu.mutation.AddInstallCount(i)
+	return saiu
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (saiu *SlackAppInstallUpdate) SetUser(u *User) *SlackAppInstallUpdate {
 	return saiu.SetUserID(u.ID)
@@ -464,6 +485,20 @@ func (saiu *SlackAppInstallUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Column: slackappinstall.FieldPaymentPlan,
 		})
 	}
+	if value, ok := saiu.mutation.InstallCount(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: slackappinstall.FieldInstallCount,
+		})
+	}
+	if value, ok := saiu.mutation.AddedInstallCount(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: slackappinstall.FieldInstallCount,
+		})
+	}
 	if saiu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -729,6 +764,27 @@ func (saiuo *SlackAppInstallUpdateOne) SetNillablePaymentPlan(bp *billing.Paymen
 	if bp != nil {
 		saiuo.SetPaymentPlan(*bp)
 	}
+	return saiuo
+}
+
+// SetInstallCount sets the "install_count" field.
+func (saiuo *SlackAppInstallUpdateOne) SetInstallCount(i int) *SlackAppInstallUpdateOne {
+	saiuo.mutation.ResetInstallCount()
+	saiuo.mutation.SetInstallCount(i)
+	return saiuo
+}
+
+// SetNillableInstallCount sets the "install_count" field if the given value is not nil.
+func (saiuo *SlackAppInstallUpdateOne) SetNillableInstallCount(i *int) *SlackAppInstallUpdateOne {
+	if i != nil {
+		saiuo.SetInstallCount(*i)
+	}
+	return saiuo
+}
+
+// AddInstallCount adds i to the "install_count" field.
+func (saiuo *SlackAppInstallUpdateOne) AddInstallCount(i int) *SlackAppInstallUpdateOne {
+	saiuo.mutation.AddInstallCount(i)
 	return saiuo
 }
 
@@ -1026,6 +1082,20 @@ func (saiuo *SlackAppInstallUpdateOne) sqlSave(ctx context.Context) (_node *Slac
 			Type:   field.TypeEnum,
 			Value:  value,
 			Column: slackappinstall.FieldPaymentPlan,
+		})
+	}
+	if value, ok := saiuo.mutation.InstallCount(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: slackappinstall.FieldInstallCount,
+		})
+	}
+	if value, ok := saiuo.mutation.AddedInstallCount(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: slackappinstall.FieldInstallCount,
 		})
 	}
 	if saiuo.mutation.UserCleared() {

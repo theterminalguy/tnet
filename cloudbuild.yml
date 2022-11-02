@@ -1,47 +1,6 @@
 # This pipeline runs when a PR is raise against the develop branch
 steps:
   - name: "gcr.io/cloud-builders/docker"
-    id: "Building image for running test"
-    args:
-      [
-        "build",
-        "-t",
-        "${_TEST_IMAGE}",
-        "--target",
-        "test",
-        ".",
-        "--build-arg",
-        "GITHUB_USER=$_GITHUB_USER",
-        "--build-arg",
-        "GITHUB_PERSONAL_TOKEN=$_GITHUB_PERSONAL_TOKEN",
-      ]
-    env:
-      - "DOCKER_BUILDKIT=1"
-
-  - name: "gcr.io/cloud-builders/docker"
-    id: "Pushing the test image to Artifact registry"
-    args: ["push", "${_TEST_IMAGE}"]
-    env:
-      - "DOCKER_BUILDKIT=1"
-
-  - name: "gcr.io/cloud-builders/docker"
-    id: "Running test"
-    args:
-      [
-        "run",
-        "-e",
-        "ENV=test",
-        "-e",
-        "PORT=8080",
-        "-e",
-        "APP_HOST=http://localhost:8080",
-        "-e",
-        "JWT_SIGNED_SECRET=mysupersecret12345",
-        "--rm",
-        "${_TEST_IMAGE}",
-      ]
-
-  - name: "gcr.io/cloud-builders/docker"
     id: "Building image for production"
     args:
       [
@@ -121,7 +80,6 @@ steps:
       ]
 
 images:
-  - "${_TEST_IMAGE}"
   - "${_PRD_IMAGE}"
 
 tags: ["tentn"]
@@ -131,5 +89,4 @@ substitutions:
   _REGION: "us-central1"
   _SERVICE_NAME: "${REPO_NAME}-prod"
   _ARTIFACT_REPO: "tentn-docker-repo"
-  _TEST_IMAGE: "us-central1-docker.pkg.dev/${PROJECT_ID}/tentn-docker-repo/${REPO_NAME}-test:${SHORT_SHA}"
   _PRD_IMAGE: "us-central1-docker.pkg.dev/${PROJECT_ID}/tentn-docker-repo/${REPO_NAME}-prod:${SHORT_SHA}"

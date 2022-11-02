@@ -99,22 +99,31 @@ func (s *SlackOauth2Client) Exchange(code string) (*SlackOauthResponse, error) {
 
 type SlackUserProfile struct {
 	Profile struct {
-		FirstName string `json:"first_name"`
-		LastName  string `json:"last_name"`
-		PhotoURL  string `json:"image_192"`
-		Email     string `json:"email"`
-		Title     string `json:"title"`
-		Phone     string `json:"phone"`
+		FirstName string  `json:"first_name"`
+		LastName  *string `json:"last_name"`
+		PhotoURL  string  `json:"image_192"`
+		Email     string  `json:"email"`
+		Title     string  `json:"title"`
+		Phone     string  `json:"phone"`
 	} `json:"profile"`
 }
 
+func (s *SlackUserProfile) GetLastName(fname string) string {
+	if s.Profile.LastName == nil {
+		return fname
+	}
+	return *s.Profile.LastName
+}
+
 func (s *SlackUserProfile) FullName() string {
-	return fmt.Sprintf("%s %s", s.Profile.FirstName, s.Profile.LastName)
+	fname := s.Profile.FirstName
+	return fmt.Sprintf("%s %s", fname, s.GetLastName(fname))
 }
 
 func (s *SlackUserProfile) GetPhotoURL() string {
 	if s.Profile.PhotoURL == "" || strings.Contains(s.Profile.PhotoURL, "gravatar") {
-		return photo.GenerateDefaultPhoto(s.Profile.FirstName, s.Profile.LastName)
+		fname := s.Profile.FirstName
+		return photo.GenerateDefaultPhoto(fname, s.GetLastName(fname))
 	}
 	return s.Profile.PhotoURL
 }
@@ -161,18 +170,18 @@ func SlackOauth2CallbackHandler(c echo.Context) error {
 	code := c.QueryParam("code")
 	oauthResp, err := slackConf.Exchange(code)
 	if err != nil {
-		return err
+		return c.String(http.StatusBadRequest, fmt.Sprintf("Failed to exchange code for token: %s", err))
 	}
 	// Get user slack profile
 	slackUserProfile, err := slackConf.GetUsersProfile(oauthResp.AuthedUser.ID, oauthResp.AccessToken)
 	if err != nil {
-		return err
+		return c.String(http.StatusBadRequest, fmt.Sprintf("Failed to get user profile: %s", err))
 	}
 	rs := service.NewRecruiterService()
 	u, err := rs.InstallSlackApp(
 		repo.UserParams{
 			FirstName: slackUserProfile.Profile.FirstName,
-			LastName:  slackUserProfile.Profile.LastName,
+			LastName:  slackUserProfile.GetLastName(slackUserProfile.Profile.FirstName),
 			PhotoURL:  slackUserProfile.GetPhotoURL(),
 			Email:     oauthResp.GetRecruitersEmail(),
 		},
@@ -191,7 +200,7 @@ func SlackOauth2CallbackHandler(c echo.Context) error {
 			IsEnterpriseInstall: oauthResp.IsEnterpriseInstall,
 		})
 	if err != nil {
-		return err
+		return c.String(http.StatusBadRequest, fmt.Sprintf("Failed to install Slack app: %s", err))
 	}
 	ses, err := repo.NewSessionRepository().GetSessionByTeamID(oauthResp.Team.ID)
 	if ses != nil && ses.DeletedAt == nil {
@@ -209,7 +218,7 @@ func SlackOauth2CallbackHandler(c echo.Context) error {
 	})
 	token, err := claims.GenerateToken()
 	if err != nil {
-		return err
+		return c.String(http.StatusBadRequest, fmt.Sprintf("Failed to generate token: %s", err))
 	}
 	session.Values["token"] = token
 	session.Options.Domain = os.Getenv("APP_HOST")

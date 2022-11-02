@@ -150,10 +150,17 @@ func DefineV1Routes(e *echo.Echo) *echo.Echo {
 			},
 			{
 				// /v1/internal/slack-installations
-				Path: "slack-installations",
-				Handler: handler.NewSlackInstallationHandler(),
-				Only: []Request{READ_ALL},
+				Path:        "slack-installations",
+				Handler:     handler.NewSlackInstallationHandler(),
+				Only:        []Request{READ_ALL},
 				Middlewares: nil,
+			},
+			{
+				// /v1/internal/slack-installations
+				SingularPath: "slack-uninstall",
+				Handler:      handler.NewSlackInstallationHandler(),
+				Only:         []Request{UPDATE},
+				Middlewares:  nil,
 			},
 		},
 	}

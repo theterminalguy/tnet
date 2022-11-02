@@ -49,6 +49,8 @@ const (
 	FieldIsEnterpriseInstall = "is_enterprise_install"
 	// FieldPaymentPlan holds the string denoting the payment_plan field in the database.
 	FieldPaymentPlan = "payment_plan"
+	// FieldInstallCount holds the string denoting the install_count field in the database.
+	FieldInstallCount = "install_count"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeSlackAppUsers holds the string denoting the slack_app_users edge name in mutations.
@@ -91,6 +93,7 @@ var Columns = []string{
 	FieldScope,
 	FieldIsEnterpriseInstall,
 	FieldPaymentPlan,
+	FieldInstallCount,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -110,6 +113,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultInstallCount holds the default value on creation for the "install_count" field.
+	DefaultInstallCount int
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

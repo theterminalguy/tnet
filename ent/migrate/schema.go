@@ -596,6 +596,7 @@ var (
 		{Name: "scope", Type: field.TypeString},
 		{Name: "is_enterprise_install", Type: field.TypeBool},
 		{Name: "payment_plan", Type: field.TypeEnum, Enums: []string{"free"}, Default: "free"},
+		{Name: "install_count", Type: field.TypeInt, Default: 1},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// SlackAppInstallsTable holds the schema information for the "slack_app_installs" table.
@@ -606,7 +607,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "slack_app_installs_users_slack_app_installs",
-				Columns:    []*schema.Column{SlackAppInstallsColumns[17]},
+				Columns:    []*schema.Column{SlackAppInstallsColumns[18]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -615,7 +616,7 @@ var (
 			{
 				Name:    "slackappinstall_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{SlackAppInstallsColumns[17]},
+				Columns: []*schema.Column{SlackAppInstallsColumns[18]},
 			},
 			{
 				Name:    "slackappinstall_team_id",

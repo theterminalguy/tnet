@@ -182,6 +182,20 @@ func (saic *SlackAppInstallCreate) SetNillablePaymentPlan(bp *billing.PaymentPla
 	return saic
 }
 
+// SetInstallCount sets the "install_count" field.
+func (saic *SlackAppInstallCreate) SetInstallCount(i int) *SlackAppInstallCreate {
+	saic.mutation.SetInstallCount(i)
+	return saic
+}
+
+// SetNillableInstallCount sets the "install_count" field if the given value is not nil.
+func (saic *SlackAppInstallCreate) SetNillableInstallCount(i *int) *SlackAppInstallCreate {
+	if i != nil {
+		saic.SetInstallCount(*i)
+	}
+	return saic
+}
+
 // SetID sets the "id" field.
 func (saic *SlackAppInstallCreate) SetID(u uuid.UUID) *SlackAppInstallCreate {
 	saic.mutation.SetID(u)
@@ -299,6 +313,10 @@ func (saic *SlackAppInstallCreate) defaults() {
 		v := slackappinstall.DefaultPaymentPlan
 		saic.mutation.SetPaymentPlan(v)
 	}
+	if _, ok := saic.mutation.InstallCount(); !ok {
+		v := slackappinstall.DefaultInstallCount
+		saic.mutation.SetInstallCount(v)
+	}
 	if _, ok := saic.mutation.ID(); !ok {
 		v := slackappinstall.DefaultID()
 		saic.mutation.SetID(v)
@@ -350,6 +368,9 @@ func (saic *SlackAppInstallCreate) check() error {
 		if err := slackappinstall.PaymentPlanValidator(v); err != nil {
 			return &ValidationError{Name: "payment_plan", err: fmt.Errorf(`ent: validator failed for field "SlackAppInstall.payment_plan": %w`, err)}
 		}
+	}
+	if _, ok := saic.mutation.InstallCount(); !ok {
+		return &ValidationError{Name: "install_count", err: errors.New(`ent: missing required field "SlackAppInstall.install_count"`)}
 	}
 	return nil
 }
@@ -514,6 +535,14 @@ func (saic *SlackAppInstallCreate) createSpec() (*SlackAppInstall, *sqlgraph.Cre
 			Column: slackappinstall.FieldPaymentPlan,
 		})
 		_node.PaymentPlan = value
+	}
+	if value, ok := saic.mutation.InstallCount(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: slackappinstall.FieldInstallCount,
+		})
+		_node.InstallCount = value
 	}
 	if nodes := saic.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
