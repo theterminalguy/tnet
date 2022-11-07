@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/10hourlabs/tentn/ent/talent"
@@ -381,6 +382,24 @@ func (r *TalentRepository) DeleteByID(id uuid.UUID) error {
 		return err
 	}
 	return nil
+}
+
+func (r *TalentRepository) GetTalentByIDs(Ids ...interface{}) ([]*ent.Talent, error) {
+	record, err := dBConn.Talent.Query().
+		WithUser().
+		WithPortfoliolinks().
+		WithEducations().
+		WithWorkExperiences().
+		WithSkills().
+		Where(func(s *sql.Selector) {
+			s.Where(sql.In(talent.FieldID, Ids...))
+		}).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+
+	return record, nil
 }
 
 func (r *TalentRepository) GetTalentByUserID(userID uuid.UUID) (*decorator.TalentResponse, error) {

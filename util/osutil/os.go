@@ -36,6 +36,9 @@ var requiredRuntimeEnvForProd = []string{
 	"CLOUDSQL_PG_INSTANCE",
 
 	"PAYMENT_DRIVER",
+
+	"ALGOLIA_APP_ID",
+	"ALGOLIA_API_KEY",
 }
 
 func CheckEnv() {

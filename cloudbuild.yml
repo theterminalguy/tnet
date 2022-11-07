@@ -77,6 +77,10 @@ steps:
         "STRIPE_API_KEY=${_STRIPE_API_KEY}",
         "--set-env-vars",
         "PAYMENT_DRIVER=${_PAYMENT_DRIVER}",
+        "--set-env-vars",
+        "ALGOLIA_APP_ID=${_ALGOLIA_APP_ID}",
+        "--set-env-vars",
+        "ALGOLIA_API_KEY=${_ALGOLIA_API_KEY}",
       ]
 
 images:
