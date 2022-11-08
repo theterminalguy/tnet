@@ -54,6 +54,7 @@ var slackConf *SlackOauth2Client = &SlackOauth2Client{
 		ClientSecret: os.Getenv("SLACK_OAUTH_CLIENT_SECRET"),
 		RedirectURL:  fmt.Sprintf("%s/oauth2/slack/callback", os.Getenv("APP_HOST")),
 		Scopes: []string{
+			"users:read",
 			"users.profile:read",
 			"channels:history",
 			"channels:join",
