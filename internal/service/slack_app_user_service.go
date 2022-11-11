@@ -25,7 +25,20 @@ func (s *SlackAppUserService) GetUserInfo(slackTeamID, slackUserID string) (*sla
 		return nil, err
 	}
 	api := slack.New(install.AccessToken)
-	return api.GetUserInfo(slackUserID)
+	user, err := api.GetUserInfo(slackUserID)
+	if err != nil {
+		return nil, err
+	}
+	if user.Profile.Email == "" {
+		userProfile, err := api.GetUserProfile(&slack.GetUserProfileParameters{
+			UserID: slackUserID,
+		})
+		if err != nil {
+			return nil, err
+		}
+		user.Profile.Email = userProfile.Email
+	}
+	return user, nil
 }
 
 func (s *SlackAppUserService) CreateUser(slackTeamID, slackUserID string, installID uuid.UUID) (*ent.SlackAppUser, error) {
