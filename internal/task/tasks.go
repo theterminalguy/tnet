@@ -32,6 +32,9 @@ const (
 
 	// hashPassword is used to hash a password
 	hashPassword Task = "hash-password"
+
+	// migrate search index schema
+	migrateSearchIndex Task = "add-talents-to-search-index"
 )
 
 var Lookup = map[Task]Tasker{
@@ -45,4 +48,5 @@ var Lookup = map[Task]Tasker{
 	updateClientScope:  NewTaskUpdateClientScope(),
 	makeClientInternal: NewTaskMakeClientInternal(),
 	hashPassword:       NewTaskHashPassword(),
+	migrateSearchIndex: NewTaskMigrateSearchIndex(),
 }

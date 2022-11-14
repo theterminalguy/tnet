@@ -39,6 +39,7 @@ var requiredRuntimeEnvForProd = []string{
 
 	"ALGOLIA_APP_ID",
 	"ALGOLIA_API_KEY",
+	"ALGOLIA_WRITE_KEY",
 }
 
 func CheckEnv() {

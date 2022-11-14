@@ -103,6 +103,33 @@ func (*TalentRepository) GetAll() ([]*ent.Talent, error) {
 	return Talents, nil
 }
 
+func (*TalentRepository) GetTotalCount() int {
+	return dBConn.Talent.Query().
+		WithUser().
+		WithEducations().
+		WithWorkExperiences().
+		WithPortfoliolinks().
+		WithSkills().
+		CountX(dBContext)
+}
+
+func (*TalentRepository) GetAllWithEdges(limit int, offset int) ([]*ent.Talent, error) {
+	talents, err := dBConn.Talent.Query().
+		WithUser().
+		WithEducations().
+		WithWorkExperiences().
+		WithPortfoliolinks().
+		WithSkills().
+		Order(ent.Asc(talent.FieldCreatedAt)).
+		Limit(limit).
+		Offset(offset).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+	return talents, nil
+}
+
 func (*TalentRepository) GetByEmail(email string) (*decorator.TalentResponse, error) {
 	record, err := dBConn.Talent.Query().
 		Where(talent.And(

@@ -64,6 +64,7 @@ func (t *TaskImportTalents) Run(_ string) error {
 	manyPortfolios := make([]*repo.PortfolioLinkParams, 0)
 	manyEducations := make([]*repo.EducationParams, 0)
 	manyWorkExperiences := make([]*repo.WorkExperienceParams, 0)
+	buildSearchIndex := make([]SearchIndexSchema, 0)
 
 	var csvReader *csv.Reader
 	resp, err := osutil.ReadCSVFromURL("https://storage.googleapis.com/tentn-bucket/temp/talents.csv")
@@ -107,12 +108,20 @@ func (t *TaskImportTalents) Run(_ string) error {
 			fmt.Printf("An error occured %s\n", err.Error())
 			panic("something bad happened")
 		}
+		talentIndex, err := buildTalentIndex(td)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		manyUsers = append(manyUsers, td.User)
 		manyTalents = append(manyTalents, td.Talent)
 		manySkills = append(manySkills, td.Skills...)
 		manyPortfolios = append(manyPortfolios, td.Portfolios...)
 		manyEducations = append(manyEducations, td.Educations...)
 		manyWorkExperiences = append(manyWorkExperiences, td.WorkExperiences...)
+
+		buildSearchIndex = append(buildSearchIndex, talentIndex)
+
 		emailCache[usersEmail] = true
 	}
 	var errs []error
@@ -160,10 +169,73 @@ func (t *TaskImportTalents) Run(_ string) error {
 		log.Println("Error upserting work experiences:", err)
 	}
 
+	// TODO: singleton pattern should be used for algolia connection
+	indexStore := NewTaskMigrateSearchIndex()
+	_, err = indexStore.SaveIndex(buildSearchIndex)
+	if err != nil {
+		return err
+	}
+
 	if len(errs) > 0 {
 		return fmt.Errorf("%v", errs)
 	}
 	return nil
+}
+
+func buildTalentIndex(v *TalentData) (SearchIndexSchema, error) {
+	skills := make([]Skills, 0)
+	education := make([]Educations, 0)
+	workExp := make([]WorkExperiences, 0)
+	layoutISO := "2006-03-05"
+	careerDate, err := time.Parse(layoutISO, v.Talent.ProfessionalStartDate)
+	if err != nil {
+		return SearchIndexSchema{}, err
+	}
+
+	talent := SearchIndexSchema{
+		ID:                v.Talent.ID,
+		ObjectID:          v.Talent.ID,
+		Timezone:          v.Talent.TimeZone,
+		IsAvailable:       v.Talent.Available,
+		PreferredJobTitle: v.Talent.PreferredJobTitle,
+		CareerStartDate:   careerDate,
+		JobPreference:     v.Talent.JobPreference.String(),
+		Country: Country{
+			City:  v.Talent.City,
+			Code:  v.Talent.CountryCode,
+			State: v.Talent.State,
+		},
+	}
+
+	for _, s := range v.Skills {
+		skills = append(skills, Skills{
+			Name:              s.Name,
+			YearsOfExperience: int(s.YearsOfExperience),
+		})
+	}
+
+	for _, s := range v.WorkExperiences {
+		workExp = append(workExp, WorkExperiences{
+			Location:            s.Location,
+			JobTitle:            s.JobTitle,
+			Description:         s.Description,
+			PrimaryTechnologies: s.PrimaryTechnologies,
+		})
+	}
+
+	for _, s := range v.Educations {
+		education = append(education, Educations{
+			Location:        s.Location,
+			InstitutionName: s.InstitutionName,
+			Degree:          s.Degree,
+			Program:         s.Program,
+		})
+	}
+	talent.Skills = skills
+	talent.Educations = education
+	talent.WorkExperiences = workExp
+
+	return talent, nil
 }
 
 type TalentData struct {
