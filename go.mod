@@ -48,6 +48,7 @@ require (
 	cloud.google.com/go v0.104.0 // indirect
 	cloud.google.com/go/storage v1.23.0
 	github.com/agext/levenshtein v1.2.1 // indirect
+	github.com/algolia/algoliasearch-client-go/v3 v3.26.1
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
