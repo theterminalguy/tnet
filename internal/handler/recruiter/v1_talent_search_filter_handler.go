@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/10hourlabs/rql/parser"
 	"github.com/10hourlabs/tentn/internal/middleware/globalctx"
 	"github.com/10hourlabs/tentn/internal/paginator"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/search"
 	"github.com/10hourlabs/tentn/internal/service"
+	q "github.com/10hourlabs/tentn/internal/service/query"
 	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -31,20 +31,20 @@ func NewV1TalentSearchFilterHandler() *V1TalentSearchFilterHandler {
 }
 
 func (h *V1TalentSearchFilterHandler) Search(c echo.Context) error {
-	talentSearch := new(search.TalentSearch)
 	query := c.QueryString()
 	var records *paginator.OffsetPaginater
 	var vldErrs []error
 
 	page := c.QueryParam("cursor")
 	if c.QueryParams().Has("q") && c.QueryParams().Get("q") != "" {
-		// use the RQL parser here
-		query, err := parser.Eval(c.QueryParam("q"))
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, err)
-		}
-		records, vldErrs = talentSearch.Search(page, query)
+		// use the Algolia | RQL parser here
+		records, vldErrs = q.GetSearchInstance.Query(&q.SearchParams{
+			Limit: 10,
+			Page:  page,
+			Text:  c.QueryParams().Get("q"),
+		})
 	} else {
+		talentSearch := new(search.TalentSearch)
 		records, vldErrs = talentSearch.Search(page, query)
 	}
 	if vldErrs != nil {
@@ -63,6 +63,7 @@ func (h *V1TalentSearchFilterHandler) Search(c echo.Context) error {
 	if _, err := h.SearchLogRepo.Create(searchLog); err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
+
 	return c.JSON(http.StatusOK, records)
 }
 

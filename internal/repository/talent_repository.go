@@ -130,6 +130,24 @@ func (*TalentRepository) GetAllWithEdges(limit int, offset int) ([]*ent.Talent, 
 	return talents, nil
 }
 
+func (r *TalentRepository) GetTalentByUserIDs(userIDs ...interface{}) ([]*ent.Talent, error) {
+	record, err := dBConn.Talent.Query().
+		WithUser().
+		WithPortfoliolinks().
+		WithEducations().
+		WithWorkExperiences().
+		WithSkills().
+		Where(func(s *sql.Selector) {
+			s.Where(sql.In(talent.FieldID, userIDs...))
+		}).
+		All(dBContext)
+	if err != nil {
+		return nil, err
+	}
+
+	return record, nil
+}
+
 func (*TalentRepository) GetByEmail(email string) (*decorator.TalentResponse, error) {
 	record, err := dBConn.Talent.Query().
 		Where(talent.And(

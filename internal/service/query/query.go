@@ -2,10 +2,11 @@ package query
 
 import (
 	"github.com/10hourlabs/tenlog"
+	"github.com/10hourlabs/tentn/internal/paginator"
 )
 
 type SearchServiceHandler interface {
-	Query(params SearchParams) (SearchResult, error)
+	Query(params *SearchParams) (*paginator.OffsetPaginater, []error)
 }
 
 type SearchParams struct {
@@ -21,6 +22,14 @@ type SearchResult struct {
 	Items         []map[string]interface{} `json:"items"`
 }
 
+var GetSearchInstance SearchServiceHandler
+
+func init() {
+	if GetSearchInstance == nil {
+		GetSearchInstance = NewSearchService("algolia")
+	}
+}
+
 func NewSearchService(query_type string) SearchServiceHandler {
 	if query_type == "" {
 		tenlog.Error("Unable to process query engine")
@@ -33,8 +42,4 @@ func NewSearchService(query_type string) SearchServiceHandler {
 	}
 
 	return query[query_type]
-}
-
-func Logger() error {
-	return nil
 }
