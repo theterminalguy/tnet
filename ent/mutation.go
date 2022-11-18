@@ -17324,6 +17324,7 @@ type TalentMutation struct {
 	pronoun                   *string
 	preferred_job_title       *string
 	is_available              *bool
+	slug                      *string
 	professional_start_date   *time.Time
 	email                     *string
 	phone                     *string
@@ -17851,6 +17852,55 @@ func (m *TalentMutation) OldIsAvailable(ctx context.Context) (v bool, err error)
 // ResetIsAvailable resets all changes to the "is_available" field.
 func (m *TalentMutation) ResetIsAvailable() {
 	m.is_available = nil
+}
+
+// SetSlug sets the "slug" field.
+func (m *TalentMutation) SetSlug(s string) {
+	m.slug = &s
+}
+
+// Slug returns the value of the "slug" field in the mutation.
+func (m *TalentMutation) Slug() (r string, exists bool) {
+	v := m.slug
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSlug returns the old "slug" field's value of the Talent entity.
+// If the Talent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TalentMutation) OldSlug(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSlug is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSlug requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSlug: %w", err)
+	}
+	return oldValue.Slug, nil
+}
+
+// ClearSlug clears the value of the "slug" field.
+func (m *TalentMutation) ClearSlug() {
+	m.slug = nil
+	m.clearedFields[talent.FieldSlug] = struct{}{}
+}
+
+// SlugCleared returns if the "slug" field was cleared in this mutation.
+func (m *TalentMutation) SlugCleared() bool {
+	_, ok := m.clearedFields[talent.FieldSlug]
+	return ok
+}
+
+// ResetSlug resets all changes to the "slug" field.
+func (m *TalentMutation) ResetSlug() {
+	m.slug = nil
+	delete(m.clearedFields, talent.FieldSlug)
 }
 
 // SetProfessionalStartDate sets the "professional_start_date" field.
@@ -18649,7 +18699,7 @@ func (m *TalentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TalentMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 21)
 	if m.created_at != nil {
 		fields = append(fields, talent.FieldCreatedAt)
 	}
@@ -18679,6 +18729,9 @@ func (m *TalentMutation) Fields() []string {
 	}
 	if m.is_available != nil {
 		fields = append(fields, talent.FieldIsAvailable)
+	}
+	if m.slug != nil {
+		fields = append(fields, talent.FieldSlug)
 	}
 	if m.professional_start_date != nil {
 		fields = append(fields, talent.FieldProfessionalStartDate)
@@ -18738,6 +18791,8 @@ func (m *TalentMutation) Field(name string) (ent.Value, bool) {
 		return m.PreferredJobTitle()
 	case talent.FieldIsAvailable:
 		return m.IsAvailable()
+	case talent.FieldSlug:
+		return m.Slug()
 	case talent.FieldProfessionalStartDate:
 		return m.ProfessionalStartDate()
 	case talent.FieldEmail:
@@ -18787,6 +18842,8 @@ func (m *TalentMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldPreferredJobTitle(ctx)
 	case talent.FieldIsAvailable:
 		return m.OldIsAvailable(ctx)
+	case talent.FieldSlug:
+		return m.OldSlug(ctx)
 	case talent.FieldProfessionalStartDate:
 		return m.OldProfessionalStartDate(ctx)
 	case talent.FieldEmail:
@@ -18885,6 +18942,13 @@ func (m *TalentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsAvailable(v)
+		return nil
+	case talent.FieldSlug:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSlug(v)
 		return nil
 	case talent.FieldProfessionalStartDate:
 		v, ok := value.(time.Time)
@@ -18992,6 +19056,9 @@ func (m *TalentMutation) ClearedFields() []string {
 	if m.FieldCleared(talent.FieldUserID) {
 		fields = append(fields, talent.FieldUserID)
 	}
+	if m.FieldCleared(talent.FieldSlug) {
+		fields = append(fields, talent.FieldSlug)
+	}
 	if m.FieldCleared(talent.FieldProfessionalSummary) {
 		fields = append(fields, talent.FieldProfessionalSummary)
 	}
@@ -19014,6 +19081,9 @@ func (m *TalentMutation) ClearField(name string) error {
 		return nil
 	case talent.FieldUserID:
 		m.ClearUserID()
+		return nil
+	case talent.FieldSlug:
+		m.ClearSlug()
 		return nil
 	case talent.FieldProfessionalSummary:
 		m.ClearProfessionalSummary()
@@ -19055,6 +19125,9 @@ func (m *TalentMutation) ResetField(name string) error {
 		return nil
 	case talent.FieldIsAvailable:
 		m.ResetIsAvailable()
+		return nil
+	case talent.FieldSlug:
+		m.ResetSlug()
 		return nil
 	case talent.FieldProfessionalStartDate:
 		m.ResetProfessionalStartDate()

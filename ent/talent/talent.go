@@ -34,6 +34,8 @@ const (
 	FieldPreferredJobTitle = "preferred_job_title"
 	// FieldIsAvailable holds the string denoting the is_available field in the database.
 	FieldIsAvailable = "is_available"
+	// FieldSlug holds the string denoting the slug field in the database.
+	FieldSlug = "slug"
 	// FieldProfessionalStartDate holds the string denoting the professional_start_date field in the database.
 	FieldProfessionalStartDate = "professional_start_date"
 	// FieldEmail holds the string denoting the email field in the database.
@@ -143,6 +145,7 @@ var Columns = []string{
 	FieldPronoun,
 	FieldPreferredJobTitle,
 	FieldIsAvailable,
+	FieldSlug,
 	FieldProfessionalStartDate,
 	FieldEmail,
 	FieldPhone,

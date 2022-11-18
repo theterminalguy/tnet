@@ -121,6 +121,20 @@ func (tc *TalentCreate) SetIsAvailable(b bool) *TalentCreate {
 	return tc
 }
 
+// SetSlug sets the "slug" field.
+func (tc *TalentCreate) SetSlug(s string) *TalentCreate {
+	tc.mutation.SetSlug(s)
+	return tc
+}
+
+// SetNillableSlug sets the "slug" field if the given value is not nil.
+func (tc *TalentCreate) SetNillableSlug(s *string) *TalentCreate {
+	if s != nil {
+		tc.SetSlug(*s)
+	}
+	return tc
+}
+
 // SetProfessionalStartDate sets the "professional_start_date" field.
 func (tc *TalentCreate) SetProfessionalStartDate(t time.Time) *TalentCreate {
 	tc.mutation.SetProfessionalStartDate(t)
@@ -580,6 +594,14 @@ func (tc *TalentCreate) createSpec() (*Talent, *sqlgraph.CreateSpec) {
 			Column: talent.FieldIsAvailable,
 		})
 		_node.IsAvailable = value
+	}
+	if value, ok := tc.mutation.Slug(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: talent.FieldSlug,
+		})
+		_node.Slug = value
 	}
 	if value, ok := tc.mutation.ProfessionalStartDate(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

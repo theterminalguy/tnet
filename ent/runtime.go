@@ -453,7 +453,7 @@ func init() {
 	// talent.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	talent.UpdateDefaultUpdatedAt = talentDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// talentDescCountryCode is the schema descriptor for country_code field.
-	talentDescCountryCode := talentFields[9].Descriptor()
+	talentDescCountryCode := talentFields[10].Descriptor()
 	// talent.CountryCodeValidator is a validator for the "country_code" field. It is called by the builders before save.
 	talent.CountryCodeValidator = func() func(string) error {
 		validators := talentDescCountryCode.Validators
@@ -471,7 +471,7 @@ func init() {
 		}
 	}()
 	// talentDescLocale is the schema descriptor for locale field.
-	talentDescLocale := talentFields[13].Descriptor()
+	talentDescLocale := talentFields[14].Descriptor()
 	// talent.DefaultLocale holds the default value on creation for the locale field.
 	talent.DefaultLocale = talentDescLocale.Default.(string)
 	// talentDescID is the schema descriptor for id field.

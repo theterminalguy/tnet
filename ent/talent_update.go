@@ -119,6 +119,26 @@ func (tu *TalentUpdate) SetIsAvailable(b bool) *TalentUpdate {
 	return tu
 }
 
+// SetSlug sets the "slug" field.
+func (tu *TalentUpdate) SetSlug(s string) *TalentUpdate {
+	tu.mutation.SetSlug(s)
+	return tu
+}
+
+// SetNillableSlug sets the "slug" field if the given value is not nil.
+func (tu *TalentUpdate) SetNillableSlug(s *string) *TalentUpdate {
+	if s != nil {
+		tu.SetSlug(*s)
+	}
+	return tu
+}
+
+// ClearSlug clears the value of the "slug" field.
+func (tu *TalentUpdate) ClearSlug() *TalentUpdate {
+	tu.mutation.ClearSlug()
+	return tu
+}
+
 // SetProfessionalStartDate sets the "professional_start_date" field.
 func (tu *TalentUpdate) SetProfessionalStartDate(t time.Time) *TalentUpdate {
 	tu.mutation.SetProfessionalStartDate(t)
@@ -631,6 +651,19 @@ func (tu *TalentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: talent.FieldIsAvailable,
+		})
+	}
+	if value, ok := tu.mutation.Slug(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: talent.FieldSlug,
+		})
+	}
+	if tu.mutation.SlugCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: talent.FieldSlug,
 		})
 	}
 	if value, ok := tu.mutation.ProfessionalStartDate(); ok {
@@ -1223,6 +1256,26 @@ func (tuo *TalentUpdateOne) SetIsAvailable(b bool) *TalentUpdateOne {
 	return tuo
 }
 
+// SetSlug sets the "slug" field.
+func (tuo *TalentUpdateOne) SetSlug(s string) *TalentUpdateOne {
+	tuo.mutation.SetSlug(s)
+	return tuo
+}
+
+// SetNillableSlug sets the "slug" field if the given value is not nil.
+func (tuo *TalentUpdateOne) SetNillableSlug(s *string) *TalentUpdateOne {
+	if s != nil {
+		tuo.SetSlug(*s)
+	}
+	return tuo
+}
+
+// ClearSlug clears the value of the "slug" field.
+func (tuo *TalentUpdateOne) ClearSlug() *TalentUpdateOne {
+	tuo.mutation.ClearSlug()
+	return tuo
+}
+
 // SetProfessionalStartDate sets the "professional_start_date" field.
 func (tuo *TalentUpdateOne) SetProfessionalStartDate(t time.Time) *TalentUpdateOne {
 	tuo.mutation.SetProfessionalStartDate(t)
@@ -1759,6 +1812,19 @@ func (tuo *TalentUpdateOne) sqlSave(ctx context.Context) (_node *Talent, err err
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: talent.FieldIsAvailable,
+		})
+	}
+	if value, ok := tuo.mutation.Slug(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: talent.FieldSlug,
+		})
+	}
+	if tuo.mutation.SlugCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: talent.FieldSlug,
 		})
 	}
 	if value, ok := tuo.mutation.ProfessionalStartDate(); ok {

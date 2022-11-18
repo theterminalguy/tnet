@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -195,8 +196,11 @@ func (r *TalentRepository) Create(p TalentParams) (*decorator.TalentResponse, er
 	if timeZoneName == nil {
 		return nil, errors.New("timezone not allowed")
 	}
+	tUUID := uuid.New()
+	fullName := fmt.Sprintf("%s-%s", p.FirstName, p.LastName)
 	q := dBConn.Talent.
 		Create().
+		SetID(tUUID).
 		SetFirstName(p.FirstName).
 		SetLastName(p.LastName).
 		SetPreferredName(p.PreferredName).
@@ -204,6 +208,7 @@ func (r *TalentRepository) Create(p TalentParams) (*decorator.TalentResponse, er
 		SetPreferredJobTitle(p.PreferredJobTitle).
 		SetProfessionalStartDate(startDate).
 		SetEmail(p.Email).
+		SetSlug(slugify(fullName, tUUID)).
 		SetPhone(p.Phone).
 		SetCountryCode(p.CountryCode).
 		SetCity(p.City).
@@ -475,6 +480,7 @@ func (*TalentRepository) UpsertMany(params []*TalentParams) error {
 		if err != nil {
 			log.Println("Error parsing date", err)
 		}
+		fullName := fmt.Sprintf("%s-%s", p.FirstName, p.LastName)
 		builders[i] = dBConn.Talent.
 			Create().
 			SetID(p.ID).
@@ -490,6 +496,7 @@ func (*TalentRepository) UpsertMany(params []*TalentParams) error {
 			SetCountryCode(p.CountryCode).
 			SetCity(p.City).
 			SetUserID(p.UserID).
+			SetSlug(slugify(fullName, p.ID)).
 			SetJobPreference(p.JobPreference).
 			SetIsAvailable(p.Available).
 			SetTimezone(p.TimeZone).

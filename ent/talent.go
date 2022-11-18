@@ -38,6 +38,8 @@ type Talent struct {
 	PreferredJobTitle string `json:"preferred_job_title,omitempty"`
 	// IsAvailable holds the value of the "is_available" field.
 	IsAvailable bool `json:"is_available,omitempty"`
+	// Slug holds the value of the "slug" field.
+	Slug string `json:"slug,omitempty"`
 	// ProfessionalStartDate holds the value of the "professional_start_date" field.
 	ProfessionalStartDate time.Time `json:"career_start_date"`
 	// Email holds the value of the "email" field.
@@ -170,7 +172,7 @@ func (*Talent) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case talent.FieldIsAvailable:
 			values[i] = new(sql.NullBool)
-		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity, talent.FieldJobPreference, talent.FieldTimezone, talent.FieldLocale, talent.FieldState, talent.FieldProfessionalSummary:
+		case talent.FieldFirstName, talent.FieldLastName, talent.FieldPreferredName, talent.FieldPronoun, talent.FieldPreferredJobTitle, talent.FieldSlug, talent.FieldEmail, talent.FieldPhone, talent.FieldCountryCode, talent.FieldCity, talent.FieldJobPreference, talent.FieldTimezone, talent.FieldLocale, talent.FieldState, talent.FieldProfessionalSummary:
 			values[i] = new(sql.NullString)
 		case talent.FieldCreatedAt, talent.FieldUpdatedAt, talent.FieldDeletedAt, talent.FieldProfessionalStartDate:
 			values[i] = new(sql.NullTime)
@@ -257,6 +259,12 @@ func (t *Talent) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field is_available", values[i])
 			} else if value.Valid {
 				t.IsAvailable = value.Bool
+			}
+		case talent.FieldSlug:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field slug", values[i])
+			} else if value.Valid {
+				t.Slug = value.String
 			}
 		case talent.FieldProfessionalStartDate:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -408,6 +416,8 @@ func (t *Talent) String() string {
 	builder.WriteString(t.PreferredJobTitle)
 	builder.WriteString(", is_available=")
 	builder.WriteString(fmt.Sprintf("%v", t.IsAvailable))
+	builder.WriteString(", slug=")
+	builder.WriteString(t.Slug)
 	builder.WriteString(", professional_start_date=")
 	builder.WriteString(t.ProfessionalStartDate.Format(time.ANSIC))
 	builder.WriteString(", email=")

@@ -691,6 +691,7 @@ var (
 		{Name: "pronoun", Type: field.TypeString},
 		{Name: "preferred_job_title", Type: field.TypeString},
 		{Name: "is_available", Type: field.TypeBool},
+		{Name: "slug", Type: field.TypeString, Nullable: true},
 		{Name: "professional_start_date", Type: field.TypeTime},
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "phone", Type: field.TypeString},
@@ -711,7 +712,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "talents_users_talents",
-				Columns:    []*schema.Column{TalentsColumns[20]},
+				Columns:    []*schema.Column{TalentsColumns[21]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -720,12 +721,12 @@ var (
 			{
 				Name:    "talent_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{TalentsColumns[20]},
+				Columns: []*schema.Column{TalentsColumns[21]},
 			},
 			{
 				Name:    "talent_email_phone",
 				Unique:  true,
-				Columns: []*schema.Column{TalentsColumns[11], TalentsColumns[12]},
+				Columns: []*schema.Column{TalentsColumns[12], TalentsColumns[13]},
 			},
 		},
 	}
