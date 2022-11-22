@@ -178,3 +178,16 @@ API key can be generated using the following command:
 $ openssl rand -base64 32
 ```
 Once generated, set the value in your .env file as INTERNAL_API_KEY
+
+
+## Hot reload with [cosmtrek/air](https://github.com/cosmtrek/air)
+
+First, install air using
+
+```shell
+curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s
+```
+
+Then move the air binary in `./bin/air` to `/usr/local/bin`
+
+Run `$ air ` for hot reload 🎉
