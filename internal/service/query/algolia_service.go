@@ -70,17 +70,11 @@ func (alg *AlgoliaService) Query(params *SearchParams) (*paginator.OffsetPaginat
 		return nil, errs
 	}
 
-	var items []interface{}
-
-	for _, v := range talents {
-		items = append(items, v)
-	}
-
 	result := &paginator.OffsetPaginater{
 		Total:         res.NbPages,
 		ItemsThisPage: res.HitsPerPage,
 		NextCursor:    strconv.Itoa(page),
-		Items:         items,
+		Items:         talents,
 	}
 
 	return result, nil

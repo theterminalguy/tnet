@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/10hourlabs/tentn/internal/middleware/globalctx"
+	"github.com/10hourlabs/tentn/internal/middleware/header"
 	"github.com/10hourlabs/tentn/internal/paginator"
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/search"
@@ -38,8 +39,13 @@ func (h *V1TalentSearchFilterHandler) Search(c echo.Context) error {
 	page := c.QueryParam("cursor")
 	if c.QueryParams().Has("q") && c.QueryParams().Get("q") != "" {
 		// use the Algolia | RQL parser here
+		platform := c.Request().Header.Get(header.X_TN_PLATFORM)
+		pageLimit := 3
+		if platform == "platform/web" {
+			pageLimit = 10
+		}
 		records, vldErrs = q.GetSearchInstance.Query(&q.SearchParams{
-			Limit: 10,
+			Limit: pageLimit,
 			Page:  page,
 			Text:  c.QueryParams().Get("q"),
 		})

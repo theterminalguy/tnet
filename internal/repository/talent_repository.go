@@ -131,7 +131,7 @@ func (*TalentRepository) GetAllWithEdges(limit int, offset int) ([]*ent.Talent, 
 	return talents, nil
 }
 
-func (r *TalentRepository) GetTalentByUserIDs(userIDs ...interface{}) ([]*ent.Talent, error) {
+func (r *TalentRepository) GetTalentByUserIDs(userIDs ...interface{}) ([]interface{}, error) {
 	record, err := dBConn.Talent.Query().
 		WithUser().
 		WithPortfoliolinks().
@@ -145,8 +145,12 @@ func (r *TalentRepository) GetTalentByUserIDs(userIDs ...interface{}) ([]*ent.Ta
 	if err != nil {
 		return nil, err
 	}
-
-	return record, nil
+	var talentList []interface{}
+	for _, t := range record {
+		response := decorator.DecorateTalent(t)
+		talentList = append(talentList, response)
+	}
+	return talentList, nil
 }
 
 func (*TalentRepository) GetByEmail(email string) (*decorator.TalentResponse, error) {
