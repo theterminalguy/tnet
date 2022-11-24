@@ -70,10 +70,16 @@ func (alg *AlgoliaService) Query(params *SearchParams) (*paginator.OffsetPaginat
 		return nil, errs
 	}
 
+	next := 0
+	if page < res.NbPages {
+		next = page + 1
+	} else {
+		next = res.NbPages
+	}
 	result := &paginator.OffsetPaginater{
 		Total:         res.NbPages,
 		ItemsThisPage: res.HitsPerPage,
-		NextCursor:    strconv.Itoa(page),
+		NextCursor:    strconv.Itoa(next),
 		Items:         talents,
 	}
 
