@@ -132,7 +132,10 @@ func (*TalentRepository) GetAllWithEdges(limit int, offset int) ([]*ent.Talent, 
 }
 
 func (r *TalentRepository) GetTalentByUserIDs(userIDs ...interface{}) ([]interface{}, error) {
-	record, err := dBConn.Talent.Query().
+	var ps []predicate.Talent
+	ps = append(ps, talent.HasEducations(), talent.HasSkills(), talent.HasWorkExperiences(), talent.HasPortfoliolinks())
+
+	record, err := dBConn.Debug().Talent.Query().
 		WithUser().
 		WithPortfoliolinks().
 		WithEducations().
@@ -141,6 +144,7 @@ func (r *TalentRepository) GetTalentByUserIDs(userIDs ...interface{}) ([]interfa
 		Where(func(s *sql.Selector) {
 			s.Where(sql.In(talent.FieldID, userIDs...))
 		}).
+		Where(ps...).
 		All(dBContext)
 	if err != nil {
 		return nil, err
