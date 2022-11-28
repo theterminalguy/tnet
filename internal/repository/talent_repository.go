@@ -109,9 +109,14 @@ func (*TalentRepository) GetTotalCount() int {
 		WithUser().
 		WithEducations().
 		WithWorkExperiences().
-		WithPortfoliolinks().
 		WithSkills().
 		CountX(dBContext)
+}
+
+func hasTalentEdges() []predicate.Talent {
+	var pt []predicate.Talent
+	pt = append(pt, talent.HasEducations(), talent.HasSkills(), talent.HasWorkExperiences(), talent.HasPortfoliolinks())
+	return pt
 }
 
 func (*TalentRepository) GetAllWithEdges(limit int, offset int) ([]*ent.Talent, error) {
@@ -119,8 +124,8 @@ func (*TalentRepository) GetAllWithEdges(limit int, offset int) ([]*ent.Talent, 
 		WithUser().
 		WithEducations().
 		WithWorkExperiences().
-		WithPortfoliolinks().
 		WithSkills().
+		Where(hasTalentEdges()...).
 		Order(ent.Asc(talent.FieldCreatedAt)).
 		Limit(limit).
 		Offset(offset).
@@ -132,10 +137,7 @@ func (*TalentRepository) GetAllWithEdges(limit int, offset int) ([]*ent.Talent, 
 }
 
 func (r *TalentRepository) GetTalentByUserIDs(userIDs ...interface{}) ([]interface{}, error) {
-	var ps []predicate.Talent
-	ps = append(ps, talent.HasEducations(), talent.HasSkills(), talent.HasWorkExperiences(), talent.HasPortfoliolinks())
-
-	record, err := dBConn.Debug().Talent.Query().
+	record, err := dBConn.Talent.Query().
 		WithUser().
 		WithPortfoliolinks().
 		WithEducations().
@@ -144,7 +146,7 @@ func (r *TalentRepository) GetTalentByUserIDs(userIDs ...interface{}) ([]interfa
 		Where(func(s *sql.Selector) {
 			s.Where(sql.In(talent.FieldID, userIDs...))
 		}).
-		Where(ps...).
+		Where(hasTalentEdges()...).
 		All(dBContext)
 	if err != nil {
 		return nil, err
