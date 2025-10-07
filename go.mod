@@ -19,6 +19,9 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/slack-go/slack v0.10.3
 	github.com/stretchr/testify v1.7.1
+	github.com/theterminalguy/rql v0.0.2
+	github.com/theterminalguy/tenlog v0.0.0-20250925234803-e359fe81f4f6
+	github.com/theterminalguy/whisper v0.0.0-20250925234649-d59b4d946d7d
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
 	golang.org/x/oauth2 v0.0.0-20220622183110-fd043fe589d2
 )
@@ -32,7 +35,6 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.4.0 // indirect
 	github.com/googleapis/go-type-adapters v1.0.0 // indirect
-	github.com/theterminalguy/rql v0.0.2 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
