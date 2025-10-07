@@ -8,7 +8,6 @@ import (
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/10hourlabs/tentn/internal/middleware/globalctx"
 	"github.com/10hourlabs/tentn/internal/middleware/userauth"
-	"github.com/10hourlabs/tentn/oneword"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 )
@@ -30,7 +29,7 @@ func AuthorizieUser() echo.MiddlewareFunc {
 			if err := globalctx.SetCurrentUserContext(c); err != nil {
 				return echo.ErrUnauthorized
 			}
-			user := c.Get(oneword.CurrentUser).(*ent.User)
+			user := c.Get("currentUser").(*ent.User)
 			if _, ok := roleAuth[user.Role]; !ok {
 				tenlog.Error("role not found", "role", user.Role)
 				return echo.ErrUnauthorized

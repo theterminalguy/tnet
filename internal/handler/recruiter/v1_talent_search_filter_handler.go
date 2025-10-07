@@ -12,7 +12,6 @@ import (
 	"github.com/10hourlabs/tentn/internal/search"
 	"github.com/10hourlabs/tentn/internal/service"
 	q "github.com/10hourlabs/tentn/internal/service/query"
-	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -78,7 +77,7 @@ func (*V1TalentSearchFilterHandler) ReadAll(c echo.Context) error {
 }
 
 func (v *V1TalentSearchFilterHandler) ReadByID(c echo.Context) error {
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

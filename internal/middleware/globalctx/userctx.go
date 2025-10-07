@@ -3,7 +3,6 @@ package globalctx
 import (
 	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/oneword"
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -26,10 +25,10 @@ func SetCurrentUserContext(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	ctx.Set(oneword.CurrentUser, user)
+	ctx.Set("currentUser", user)
 	if user.Role == userrole.Developer {
 		clientID := claims["aud"].(string)
-		ctx.Set(oneword.ClientID, clientID)
+		ctx.Set("clientID", clientID)
 	}
 	return nil
 }

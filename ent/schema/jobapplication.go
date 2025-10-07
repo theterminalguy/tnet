@@ -3,7 +3,6 @@ package schema
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/oneword"
 )
 
 // JobApplication holds the schema definition for the JobApplication entity.
@@ -27,15 +26,15 @@ func (JobApplication) Mixin() []ent.Mixin {
 		UUIDMixin{},
 		TimeStampMixin{},
 		BelongsToMixin{
-			ParentName: oneword.Talent,
+			ParentName: "talent",
 			ParentType: Talent.Type,
-			Ref:        oneword.JobApplications,
+			Ref:        "job_applications",
 			ForeignKey: "talent_id",
 		},
 		BelongsToMixin{
-			ParentName: oneword.Job,
+			ParentName: "job",
 			ParentType: Job.Type,
-			Ref:        oneword.Applications,
+			Ref:        "applications",
 			ForeignKey: "job_id",
 		},
 	}
@@ -44,13 +43,13 @@ func (JobApplication) Mixin() []ent.Mixin {
 // Fields of the JobApplication.
 func (JobApplication) Fields() []ent.Field {
 	return []ent.Field{
-		field.String(oneword.ReferralSource),
+		field.String("referral_source"),
 
-		field.Enum(oneword.Status).
+		field.Enum("status").
 			Values(JobApplicationStatuses()...).
-			Default(oneword.Screening),
+			Default("screening"),
 
-		field.Text(oneword.Note).
+		field.Text("note").
 			Optional(),
 	}
 }

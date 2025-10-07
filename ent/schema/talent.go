@@ -2,7 +2,6 @@ package schema
 
 import (
 	"entgo.io/ent/schema/edge"
-	"github.com/10hourlabs/tentn/oneword"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
@@ -31,33 +30,33 @@ func (Talent) Mixin() []ent.Mixin {
 // Fields of the Talent.
 func (Talent) Fields() []ent.Field {
 	return []ent.Field{
-		field.String(oneword.FirstName),
-		field.String(oneword.LastName),
-		field.String(oneword.PreferredName),
+		field.String("first_name"),
+		field.String("last_name"),
+		field.String("preferred_name"),
 
-		field.String(oneword.Pronoun),
+		field.String("pronoun"),
 
-		field.String(oneword.PreferredJobTitle),
+		field.String("preferred_job_title"),
 
 		field.Bool("is_available"),
 
 		field.String("slug").
 			Optional(),
 
-		field.Time(oneword.ProfessionalStartDate).StructTag(`json:"career_start_date"`),
+		field.Time("professional_start_date").StructTag(`json:"career_start_date"`),
 
-		field.String(oneword.Email).
+		field.String("email").
 			Unique(),
 
 		// TODO: remove unique constraint
 		// due to migration erro
-		field.String(oneword.Phone),
+		field.String("phone"),
 
-		field.String(oneword.CoutryCode).
+		field.String("country_code").
 			MinLen(2).
 			MaxLen(2),
 
-		field.String(oneword.City),
+		field.String("city"),
 
 		field.Enum("job_preference").Values(JobPreferences()...),
 
@@ -74,7 +73,7 @@ func (Talent) Fields() []ent.Field {
 func (Talent) Indexes() []ent.Index {
 	// first_name, last_name, email, phone, country_code, city, preferred name, pronoun
 	return []ent.Index{
-		index.Fields(oneword.Email, oneword.Phone).
+		index.Fields("email", "phone").
 			Unique(),
 	}
 }
@@ -82,11 +81,11 @@ func (Talent) Indexes() []ent.Index {
 // Edges of the Talent.
 func (Talent) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To(oneword.PortfolioLinks, PortfolioLink.Type),
+		edge.To("portfoliolinks", PortfolioLink.Type),
 
-		edge.To(oneword.Skills, Skill.Type),
+		edge.To("skills", Skill.Type),
 
-		edge.To(oneword.JobApplications, JobApplication.Type),
+		edge.To("job_applications", JobApplication.Type),
 
 		edge.To("work_experiences", WorkExperience.Type),
 

@@ -10,7 +10,6 @@ import (
 	"github.com/10hourlabs/tentn/internal/repository/scope"
 	"github.com/10hourlabs/tentn/internal/search"
 	"github.com/10hourlabs/tentn/internal/service/payment"
-	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -41,7 +40,7 @@ func (h *V1RecruiterJobHandler) Search(c echo.Context) error {
 }
 
 func (h *V1RecruiterJobHandler) ReadAll(c echo.Context) error {
-	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
+	currentRecruiter := c.Get("currentRecruiter").(*scope.RecruiterScope)
 	jobs, err := currentRecruiter.GetJobs()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
@@ -51,8 +50,8 @@ func (h *V1RecruiterJobHandler) ReadAll(c echo.Context) error {
 
 // ReadByID return a job by its id. The job must be created by the recruiter
 func (h *V1RecruiterJobHandler) ReadByID(c echo.Context) error {
-	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	currentRecruiter := c.Get("currentRecruiter").(*scope.RecruiterScope)
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -65,7 +64,7 @@ func (h *V1RecruiterJobHandler) ReadByID(c echo.Context) error {
 
 // CreateOne creates a new job for the recruiter
 func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
-	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
+	currentRecruiter := c.Get("currentRecruiter").(*scope.RecruiterScope)
 	recruiterID := currentRecruiter.GetID()
 	params := new(repo.JobParams)
 	if err := c.Bind(params); err != nil {
@@ -127,8 +126,8 @@ func (h *V1RecruiterJobHandler) CreateOne(c echo.Context) error {
 
 // UpdateByID updates a job by its id. The job must be created by the recruiter
 func (h *V1RecruiterJobHandler) UpdateByID(c echo.Context) error {
-	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	currentRecruiter := c.Get("currentRecruiter").(*scope.RecruiterScope)
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -149,8 +148,8 @@ func (h *V1RecruiterJobHandler) UpdateByID(c echo.Context) error {
 
 // DeleteByID deletes a job by its id. The job must be created by the recruiter
 func (h *V1RecruiterJobHandler) DeleteOne(c echo.Context) error {
-	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	currentRecruiter := c.Get("currentRecruiter").(*scope.RecruiterScope)
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

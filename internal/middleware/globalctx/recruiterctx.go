@@ -3,7 +3,6 @@ package globalctx
 import (
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/internal/repository/scope"
-	"github.com/10hourlabs/tentn/oneword"
 	"github.com/labstack/echo/v4"
 )
 
@@ -24,6 +23,6 @@ func SetCurrentRecruiterContext(ctx echo.Context, u *ent.User) error {
 	// A possible solution would be to have one "recruiter" but
 	// multiple "platform_users". For example,
 	// one recruiter then multiple slack_app_users.
-	ctx.Set(oneword.CurrentRecruiter, currentRecruiter)
+	ctx.Set("currentRecruiter", currentRecruiter)
 	return nil
 }

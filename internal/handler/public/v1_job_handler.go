@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -37,7 +36,7 @@ func (h *V1PublicJobHandler) ReadAll(c echo.Context) error {
 // Should not return any jobs that are not scoped to the talent,
 // even if the correct ID is provided
 func (h *V1PublicJobHandler) ReadByID(c echo.Context) error {
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

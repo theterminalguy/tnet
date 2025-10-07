@@ -3,7 +3,6 @@ package schema
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/oneword"
 )
 
 // EmailTemplate holds the schema definition for the EmailTemplate entity.
@@ -32,9 +31,9 @@ func (EmailTemplate) Fields() []ent.Field {
 
 		field.Text("body"),
 
-		field.Enum(oneword.Status).
+		field.Enum("status").
 			Values(JobApplicationStatuses()...).
-			Default(oneword.Screening),
+			Default("screening"),
 
 		field.JSON("cc", []string{}),
 		field.JSON("bcc", []string{}),

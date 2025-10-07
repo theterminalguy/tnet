@@ -6,7 +6,6 @@ import (
 	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/10hourlabs/tentn/internal/repository/scope"
 	"github.com/10hourlabs/tentn/internal/service"
-	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -28,7 +27,7 @@ func (h *V1TalentCollectionHandler) Search(c echo.Context) error {
 }
 
 func (h *V1TalentCollectionHandler) ReadAll(c echo.Context) error {
-	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
+	currentRecruiter := c.Get("currentRecruiter").(*scope.RecruiterScope)
 	name := c.QueryParam("name")
 	if name != "" {
 		records, err := currentRecruiter.GetTalentCollectionByName(name)
@@ -45,8 +44,8 @@ func (h *V1TalentCollectionHandler) ReadAll(c echo.Context) error {
 }
 
 func (h *V1TalentCollectionHandler) ReadByID(c echo.Context) error {
-	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	currentRecruiter := c.Get("currentRecruiter").(*scope.RecruiterScope)
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -58,7 +57,7 @@ func (h *V1TalentCollectionHandler) ReadByID(c echo.Context) error {
 }
 
 func (h *V1TalentCollectionHandler) CreateOne(c echo.Context) error {
-	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
+	currentRecruiter := c.Get("currentRecruiter").(*scope.RecruiterScope)
 	params := new(repo.TalentCollectionParams)
 	params.UserID = currentRecruiter.GetID()
 	if err := c.Bind(params); err != nil {
@@ -72,8 +71,8 @@ func (h *V1TalentCollectionHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *V1TalentCollectionHandler) UpdateByID(c echo.Context) error {
-	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	currentRecruiter := c.Get("currentRecruiter").(*scope.RecruiterScope)
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -98,11 +97,11 @@ func (h *V1TalentCollectionHandler) UpdateByID(c echo.Context) error {
 }
 
 func (h *V1TalentCollectionHandler) DeleteOne(c echo.Context) error {
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
+	currentRecruiter := c.Get("currentRecruiter").(*scope.RecruiterScope)
 	err = currentRecruiter.DeleteCollection(id)
 	if err != nil {
 		return c.String(http.StatusNotFound, err.Error())

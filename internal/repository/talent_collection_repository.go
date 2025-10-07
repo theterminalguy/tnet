@@ -5,7 +5,6 @@ import (
 
 	"github.com/10hourlabs/tentn/ent"
 	"github.com/10hourlabs/tentn/ent/talentcollection"
-	"github.com/10hourlabs/tentn/oneword"
 	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
 )
@@ -87,7 +86,7 @@ func (r *TalentCollectionRepository) Update(id uuid.UUID, p TalentCollectionPara
 		return nil, err
 	}
 	prevName := record.Name
-	if prevName == oneword.Favorite {
+	if prevName == "Favorite" {
 		p.Name = prevName
 	}
 	if p.Name == "" {

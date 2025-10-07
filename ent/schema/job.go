@@ -5,7 +5,6 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
-	"github.com/10hourlabs/tentn/oneword"
 )
 
 // Job holds the schema definition for the Job entity.
@@ -53,39 +52,39 @@ func JobCategories() []string {
 // Fields of the Job.
 func (Job) Fields() []ent.Field {
 	return []ent.Field{
-		field.Bool(oneword.Hiring).
+		field.Bool("hiring").
 			Default(false).
 			StructTag(`json:"hiring"`),
 
-		field.String(oneword.Title),
+		field.String("title"),
 
-		field.String(oneword.AtsJobId).Optional(),
+		field.String("ats_job_id").Optional(),
 
 		// Todo, add a default title for this
-		field.String(oneword.Slug).
+		field.String("slug").
 			Unique().
 			Immutable(),
 
-		field.String(oneword.Location).
-			Default(oneword.RemoteEarth),
+		field.String("location").
+			Default("Remote, Earth"),
 
-		field.String(oneword.Summary),
+		field.String("summary"),
 
 		// TODO: Add endpoint for returning these values
-		field.Enum(oneword.Employment).
+		field.Enum("employment").
 			Values(EmploymentTypes()...),
 
 		// TODO: Add endpoint for returning these values
-		field.Enum(oneword.Category).
+		field.Enum("category").
 			Values(JobCategories()...),
 
-		field.String(oneword.Thumbnail),
+		field.String("thumbnail"),
 
-		field.JSON(oneword.WeHave, []string{}),
+		field.JSON("we_have", []string{}),
 
-		field.JSON(oneword.Requirements, []string{}),
+		field.JSON("requirements", []string{}),
 
-		field.JSON(oneword.YouHave, []string{}),
+		field.JSON("you_have", []string{}),
 
 		field.String("timezone"),
 	}
@@ -94,10 +93,10 @@ func (Job) Fields() []ent.Field {
 // Indexes for the Job
 func (Job) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields(oneword.Title),
-		index.Fields(oneword.Category),
+		index.Fields("title"),
+		index.Fields("category"),
 
-		index.Fields(oneword.Slug).
+		index.Fields("slug").
 			Unique(),
 	}
 }
@@ -105,7 +104,7 @@ func (Job) Indexes() []ent.Index {
 // Edges of the Job.
 func (Job) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To(oneword.Applications, JobApplication.Type),
+		edge.To("applications", JobApplication.Type),
 		edge.To("job_payments", JobPayment.Type),
 	}
 }

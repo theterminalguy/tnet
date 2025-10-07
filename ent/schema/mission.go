@@ -3,7 +3,6 @@ package schema
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/oneword"
 )
 
 // Mission holds the schema definition for the Mission entity.
@@ -24,7 +23,7 @@ func (Mission) Mixin() []ent.Mixin {
 		UUIDMixin{},
 		TimeStampMixin{},
 		BelongsToMixin{
-			ParentName: oneword.Talent,
+			ParentName: "talent",
 			ParentType: Talent.Type,
 			Ref:        "missions",
 			ForeignKey: "talent_id",
