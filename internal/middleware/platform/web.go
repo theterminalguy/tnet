@@ -3,9 +3,9 @@ package platform
 import (
 	"errors"
 
-	"github.com/10hourlabs/tentn/internal/middleware/globalctx"
-	"github.com/10hourlabs/tentn/internal/middleware/header"
-	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/theterminalguy/tentn/internal/middleware/globalctx"
+	"github.com/theterminalguy/tentn/internal/middleware/header"
+	repo "github.com/theterminalguy/tentn/internal/repository"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )

@@ -1,7 +1,7 @@
 package payment
 
 import (
-	"github.com/10hourlabs/tenlog"
+	"github.com/theterminalguy/tenlog"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )

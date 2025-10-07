@@ -5,11 +5,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/schema/userrole"
-	"github.com/10hourlabs/tentn/ent/user"
-	"github.com/10hourlabs/tentn/util"
-	"github.com/10hourlabs/tentn/util/collection"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/schema/userrole"
+	"github.com/theterminalguy/tentn/ent/user"
+	"github.com/theterminalguy/tentn/util"
+	"github.com/theterminalguy/tentn/util/collection"
 	"github.com/google/uuid"
 )
 

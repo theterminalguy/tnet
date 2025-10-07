@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/slackappuser"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/slackappuser"
 	"github.com/google/uuid"
 )
 

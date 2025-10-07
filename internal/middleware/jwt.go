@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/10hourlabs/tenlog"
-	"github.com/10hourlabs/tentn/internal/entsm"
-	"github.com/10hourlabs/tentn/internal/tokgen"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tentn/internal/entsm"
+	"github.com/theterminalguy/tentn/internal/tokgen"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )

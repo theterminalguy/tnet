@@ -3,8 +3,8 @@ package decorator
 import (
 	"time"
 
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/talent"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/talent"
 	"github.com/google/uuid"
 )
 

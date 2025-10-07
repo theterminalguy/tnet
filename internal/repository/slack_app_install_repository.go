@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/slackappinstall"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/slackappinstall"
 	"github.com/google/uuid"
 )
 

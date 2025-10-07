@@ -1,8 +1,8 @@
 package globalctx
 
 import (
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/internal/repository/scope"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/internal/repository/scope"
 	"github.com/labstack/echo/v4"
 )
 

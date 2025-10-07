@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/internal/paginator"
-	"github.com/10hourlabs/tentn/util/collection"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/job"
+	"github.com/theterminalguy/tentn/ent/predicate"
+	"github.com/theterminalguy/tentn/internal/paginator"
+	"github.com/theterminalguy/tentn/util/collection"
 	"github.com/google/uuid"
 )
 

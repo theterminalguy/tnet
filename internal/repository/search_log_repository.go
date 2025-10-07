@@ -3,8 +3,8 @@ package repository
 import (
 	"time"
 
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/searchlog"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/searchlog"
 	"github.com/google/uuid"
 )
 

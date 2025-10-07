@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/10hourlabs/tentn/ent/oauth2client"
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/util"
-	"github.com/10hourlabs/tentn/util/collection"
+	"github.com/theterminalguy/tentn/ent/oauth2client"
+	repo "github.com/theterminalguy/tentn/internal/repository"
+	"github.com/theterminalguy/tentn/util"
+	"github.com/theterminalguy/tentn/util/collection"
 	"github.com/google/uuid"
 )
 

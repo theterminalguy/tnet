@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"entgo.io/ent/dialect"
-	"github.com/10hourlabs/tentn/ent"
+	"github.com/theterminalguy/tentn/ent"
 	_ "github.com/mattn/go-sqlite3"
 )
 

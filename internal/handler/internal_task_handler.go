@@ -3,9 +3,9 @@ package handler
 import (
 	"net/http"
 
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/service"
-	"github.com/10hourlabs/tentn/internal/task"
+	repo "github.com/theterminalguy/tentn/internal/repository"
+	"github.com/theterminalguy/tentn/internal/service"
+	"github.com/theterminalguy/tentn/internal/task"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )

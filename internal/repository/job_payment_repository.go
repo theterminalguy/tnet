@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/jobpayment"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/jobpayment"
 	"github.com/google/uuid"
 )
 

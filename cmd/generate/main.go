@@ -8,7 +8,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/10hourlabs/tentn/util"
+	"github.com/theterminalguy/tentn/util"
 )
 
 type Templater interface {

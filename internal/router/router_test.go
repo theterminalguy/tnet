@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/10hourlabs/tentn/internal/handler"
+	"github.com/theterminalguy/tentn/internal/handler"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )

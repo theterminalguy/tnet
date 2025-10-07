@@ -1,6 +1,6 @@
 package event
 
-import "github.com/10hourlabs/whisper"
+import "github.com/theterminalguy/whisper"
 
 var Events = []whisper.EventHandler{
 	&HelloWorldEvent{},

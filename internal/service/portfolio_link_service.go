@@ -4,8 +4,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/10hourlabs/tentn/ent"
-	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/theterminalguy/tentn/ent"
+	repo "github.com/theterminalguy/tentn/internal/repository"
 	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
 )

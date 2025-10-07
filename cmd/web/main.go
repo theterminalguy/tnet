@@ -6,9 +6,9 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/10hourlabs/tentn/internal/router"
-	"github.com/10hourlabs/tentn/util"
-	"github.com/10hourlabs/tentn/util/osutil"
+	"github.com/theterminalguy/tentn/internal/router"
+	"github.com/theterminalguy/tentn/util"
+	"github.com/theterminalguy/tentn/util/osutil"
 	"github.com/labstack/echo/v4"
 )
 

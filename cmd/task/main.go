@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/10hourlabs/tentn/internal/task"
+	"github.com/theterminalguy/tentn/internal/task"
 )
 
 func main() {

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/repository/scope"
-	"github.com/10hourlabs/tentn/internal/search"
-	"github.com/10hourlabs/tentn/internal/service"
+	repo "github.com/theterminalguy/tentn/internal/repository"
+	"github.com/theterminalguy/tentn/internal/repository/scope"
+	"github.com/theterminalguy/tentn/internal/search"
+	"github.com/theterminalguy/tentn/internal/service"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )

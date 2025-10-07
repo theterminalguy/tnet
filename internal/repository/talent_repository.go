@@ -8,13 +8,13 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/talent"
-	"github.com/10hourlabs/tentn/internal/decorator"
-	"github.com/10hourlabs/tentn/internal/paginator"
-	"github.com/10hourlabs/tentn/util/collection"
-	"github.com/10hourlabs/tentn/util/date"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/predicate"
+	"github.com/theterminalguy/tentn/ent/talent"
+	"github.com/theterminalguy/tentn/internal/decorator"
+	"github.com/theterminalguy/tentn/internal/paginator"
+	"github.com/theterminalguy/tentn/util/collection"
+	"github.com/theterminalguy/tentn/util/date"
 	"github.com/google/uuid"
 )
 

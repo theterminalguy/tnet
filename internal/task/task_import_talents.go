@@ -11,11 +11,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/10hourlabs/tenlog"
-	"github.com/10hourlabs/tentn/ent/schema/userrole"
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/util/osutil"
-	"github.com/10hourlabs/tentn/util/photo"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tentn/ent/schema/userrole"
+	repo "github.com/theterminalguy/tentn/internal/repository"
+	"github.com/theterminalguy/tentn/util/osutil"
+	"github.com/theterminalguy/tentn/util/photo"
 	"github.com/google/uuid"
 )
 

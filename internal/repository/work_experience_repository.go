@@ -3,11 +3,11 @@ package repository
 import (
 	"time"
 
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/workexperience"
-	"github.com/10hourlabs/tentn/util/collection"
-	"github.com/10hourlabs/tentn/util/date"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/predicate"
+	"github.com/theterminalguy/tentn/ent/workexperience"
+	"github.com/theterminalguy/tentn/util/collection"
+	"github.com/theterminalguy/tentn/util/date"
 	"github.com/google/uuid"
 )
 

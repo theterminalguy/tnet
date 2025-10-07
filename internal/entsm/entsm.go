@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	repo "github.com/10hourlabs/tentn/internal/repository"
+	repo "github.com/theterminalguy/tentn/internal/repository"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 )

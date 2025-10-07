@@ -4,8 +4,8 @@ import (
 	"errors"
 	"math/rand"
 
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	mathutil "github.com/10hourlabs/tentn/util/math"
+	repo "github.com/theterminalguy/tentn/internal/repository"
+	mathutil "github.com/theterminalguy/tentn/util/math"
 	faker "github.com/brianvoe/gofakeit/v6"
 )
 

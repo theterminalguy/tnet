@@ -7,8 +7,8 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/10hourlabs/tentn/internal/service/filestorage"
-	"github.com/10hourlabs/tentn/util/osutil"
+	"github.com/theterminalguy/tentn/internal/service/filestorage"
+	"github.com/theterminalguy/tentn/util/osutil"
 	"github.com/google/uuid"
 )
 

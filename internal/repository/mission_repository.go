@@ -4,10 +4,10 @@ import (
 	"errors"
 	"time"
 
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/mission"
-	"github.com/10hourlabs/tentn/util/collection"
-	"github.com/10hourlabs/tentn/util/date"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/mission"
+	"github.com/theterminalguy/tentn/util/collection"
+	"github.com/theterminalguy/tentn/util/date"
 	"github.com/google/uuid"
 )
 

@@ -3,9 +3,9 @@ package repository
 import (
 	"time"
 
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/internaltask"
-	"github.com/10hourlabs/tentn/util"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/internaltask"
+	"github.com/theterminalguy/tentn/util"
 	"github.com/google/uuid"
 )
 

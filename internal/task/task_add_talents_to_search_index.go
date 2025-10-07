@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/internal/repository"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/internal/repository"
 	"github.com/algolia/algoliasearch-client-go/v3/algolia/search"
 	"github.com/google/uuid"
 )

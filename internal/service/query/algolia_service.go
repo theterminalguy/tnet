@@ -5,8 +5,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/10hourlabs/tentn/internal/paginator"
-	"github.com/10hourlabs/tentn/internal/repository"
+	"github.com/theterminalguy/tentn/internal/paginator"
+	"github.com/theterminalguy/tentn/internal/repository"
 	"github.com/algolia/algoliasearch-client-go/v3/algolia/opt"
 	"github.com/algolia/algoliasearch-client-go/v3/algolia/search"
 	"github.com/google/uuid"

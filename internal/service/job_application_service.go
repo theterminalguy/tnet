@@ -4,12 +4,12 @@ import (
 	"errors"
 	"os"
 
-	"github.com/10hourlabs/tenlog"
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/job"
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/repository/scope"
-	"github.com/10hourlabs/tentn/util/collection"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/job"
+	repo "github.com/theterminalguy/tentn/internal/repository"
+	"github.com/theterminalguy/tentn/internal/repository/scope"
+	"github.com/theterminalguy/tentn/util/collection"
 	"github.com/google/uuid"
 )
 
@@ -45,7 +45,7 @@ func (j *JobApplicationService) Validateq(jb ent.Job, pfLinks []*ent.PortfolioLi
 
 	// TODO: This maybe improved upon using ent edge query
 	// example can be found here -- https://entgo.io/docs/predicates/#edge-predicates
-	// Jira Ticket -- https://10hourlabs.atlassian.net/browse/MP-1
+	// Jira Ticket -- https://theterminalguy.atlassian.net/browse/MP-1
 
 	//check if Talent has linkedin (required for every job category)
 	hasLinkedIn := j.ContainsLinkedIn(pfLinks)

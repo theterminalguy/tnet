@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/10hourlabs/tentn/ent"
+	"github.com/theterminalguy/tentn/ent"
 	"github.com/golang-jwt/jwt"
 )
 

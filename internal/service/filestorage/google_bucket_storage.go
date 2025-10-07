@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
-	"github.com/10hourlabs/tenlog"
-	"github.com/10hourlabs/tentn/util"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tentn/util"
 )
 
 type GoogleBucketFileInfo struct {

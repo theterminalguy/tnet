@@ -4,9 +4,6 @@ go 1.17
 
 require (
 	entgo.io/ent v0.10.1
-	github.com/theterminalguy/rql v0.0.1
-	github.com/theterminalguy/tenlog v0.0.0-20220801122950-7a05f864f4ab
-	github.com/theterminalguy/whisper v0.0.0-20220912174557-741163dbcca9
 	github.com/SebastiaanKlippert/go-wkhtmltopdf v1.7.2
 	github.com/brianvoe/gofakeit/v6 v6.15.0
 	github.com/go-oauth2/oauth2/v4 v4.4.3

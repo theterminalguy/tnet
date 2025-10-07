@@ -1,13 +1,13 @@
 package router
 
 import (
-	"github.com/10hourlabs/tentn/internal/handler"
-	public_handler "github.com/10hourlabs/tentn/internal/handler/public"
-	recruiter_handler "github.com/10hourlabs/tentn/internal/handler/recruiter"
-	talent_handler "github.com/10hourlabs/tentn/internal/handler/talent"
-	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/theterminalguy/tentn/internal/handler"
+	public_handler "github.com/theterminalguy/tentn/internal/handler/public"
+	recruiter_handler "github.com/theterminalguy/tentn/internal/handler/recruiter"
+	talent_handler "github.com/theterminalguy/tentn/internal/handler/talent"
+	repo "github.com/theterminalguy/tentn/internal/repository"
 
-	"github.com/10hourlabs/tentn/internal/middleware"
+	"github.com/theterminalguy/tentn/internal/middleware"
 	"github.com/labstack/echo/v4"
 )
 

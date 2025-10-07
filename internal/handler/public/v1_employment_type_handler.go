@@ -3,7 +3,7 @@ package public
 import (
 	"net/http"
 
-	"github.com/10hourlabs/tentn/ent/schema"
+	"github.com/theterminalguy/tentn/ent/schema"
 	"github.com/labstack/echo/v4"
 )
 

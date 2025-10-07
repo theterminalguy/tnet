@@ -3,7 +3,7 @@ package filestorage
 import (
 	"io"
 
-	"github.com/10hourlabs/tenlog"
+	"github.com/theterminalguy/tenlog"
 )
 
 type FileStorager interface {

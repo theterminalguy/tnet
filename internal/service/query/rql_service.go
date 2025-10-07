@@ -1,9 +1,9 @@
 package query
 
 import (
-	"github.com/10hourlabs/rql/parser"
-	"github.com/10hourlabs/tentn/internal/paginator"
-	"github.com/10hourlabs/tentn/internal/search"
+	"github.com/theterminalguy/rql/parser"
+	"github.com/theterminalguy/tentn/internal/paginator"
+	"github.com/theterminalguy/tentn/internal/search"
 )
 
 type RQLService struct{}

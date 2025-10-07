@@ -4,10 +4,10 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/10hourlabs/tenlog"
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/schema/userrole"
-	"github.com/10hourlabs/tentn/internal/middleware/globalctx"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/schema/userrole"
+	"github.com/theterminalguy/tentn/internal/middleware/globalctx"
 	"github.com/labstack/echo/v4"
 )
 

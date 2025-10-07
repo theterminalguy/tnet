@@ -4,12 +4,12 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/10hourlabs/tenlog"
-	"github.com/10hourlabs/tentn/ent/schema/billing"
-	"github.com/10hourlabs/tentn/internal/middleware/globalctx"
-	"github.com/10hourlabs/tentn/internal/middleware/header"
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/service"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tentn/ent/schema/billing"
+	"github.com/theterminalguy/tentn/internal/middleware/globalctx"
+	"github.com/theterminalguy/tentn/internal/middleware/header"
+	repo "github.com/theterminalguy/tentn/internal/repository"
+	"github.com/theterminalguy/tentn/internal/service"
 	"github.com/labstack/echo/v4"
 )
 

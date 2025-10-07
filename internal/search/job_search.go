@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/job"
+	"github.com/theterminalguy/tentn/ent/predicate"
+	repo "github.com/theterminalguy/tentn/internal/repository"
 )
 
 type JobSearch struct {

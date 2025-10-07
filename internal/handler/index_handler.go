@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/10hourlabs/tentn/internal/entsm"
+	"github.com/theterminalguy/tentn/internal/entsm"
 	"github.com/labstack/echo/v4"
 )
 

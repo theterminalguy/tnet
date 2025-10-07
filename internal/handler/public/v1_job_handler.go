@@ -3,7 +3,7 @@ package public
 import (
 	"net/http"
 
-	repo "github.com/10hourlabs/tentn/internal/repository"
+	repo "github.com/theterminalguy/tentn/internal/repository"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )

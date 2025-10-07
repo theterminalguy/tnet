@@ -3,8 +3,8 @@ package repository
 import (
 	"time"
 
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/emailtemplate"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/emailtemplate"
 	"github.com/google/uuid"
 )
 
@@ -75,7 +75,7 @@ func (*EmailTemplateRepository) Create(p EmailTemplateParams) (*ent.EmailTemplat
 		SetUserID(p.UserID).
 		SetStatus(p.Status).
 		SetSubject(p.Subject).
-		SetFrom("balogun.tobi@10hourlabs.com").
+		SetFrom("balogun.tobi@theterminalguy.com").
 		Save(dBContext)
 	if err != nil {
 		return nil, err

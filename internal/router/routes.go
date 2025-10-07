@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/10hourlabs/tentn/internal/handler"
-	"github.com/10hourlabs/tentn/internal/handler/authserver"
+	"github.com/theterminalguy/tentn/internal/handler"
+	"github.com/theterminalguy/tentn/internal/handler/authserver"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )

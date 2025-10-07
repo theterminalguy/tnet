@@ -3,9 +3,9 @@ package service
 import (
 	"fmt"
 
-	"github.com/10hourlabs/tentn/ent"
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/util"
+	"github.com/theterminalguy/tentn/ent"
+	repo "github.com/theterminalguy/tentn/internal/repository"
+	"github.com/theterminalguy/tentn/util"
 )
 
 type TaskRunner func(name, params, executor, password string) error

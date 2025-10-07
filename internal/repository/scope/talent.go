@@ -1,13 +1,13 @@
 package scope
 
 import (
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/education"
-	"github.com/10hourlabs/tentn/ent/jobapplication"
-	"github.com/10hourlabs/tentn/ent/portfoliolink"
-	"github.com/10hourlabs/tentn/ent/skill"
-	"github.com/10hourlabs/tentn/ent/workexperience"
-	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/education"
+	"github.com/theterminalguy/tentn/ent/jobapplication"
+	"github.com/theterminalguy/tentn/ent/portfoliolink"
+	"github.com/theterminalguy/tentn/ent/skill"
+	"github.com/theterminalguy/tentn/ent/workexperience"
+	repo "github.com/theterminalguy/tentn/internal/repository"
 	"github.com/google/uuid"
 )
 

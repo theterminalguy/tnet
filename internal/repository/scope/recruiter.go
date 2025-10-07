@@ -1,11 +1,11 @@
 package scope
 
 import (
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/jobapplication"
-	"github.com/10hourlabs/tentn/ent/talentcollection"
-	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tentn/ent/job"
+	"github.com/theterminalguy/tentn/ent/jobapplication"
+	"github.com/theterminalguy/tentn/ent/talentcollection"
+	repo "github.com/theterminalguy/tentn/internal/repository"
 	"github.com/google/uuid"
 )
 

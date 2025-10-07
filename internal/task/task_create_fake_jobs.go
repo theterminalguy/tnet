@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"math/rand"
 
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/util/collection"
+	repo "github.com/theterminalguy/tentn/internal/repository"
+	"github.com/theterminalguy/tentn/util/collection"
 	"github.com/google/uuid"
 )
 

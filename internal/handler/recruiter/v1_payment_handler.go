@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/10hourlabs/tentn/internal/service/payment"
+	"github.com/theterminalguy/tentn/internal/service/payment"
 	"github.com/labstack/echo/v4"
 )
 
