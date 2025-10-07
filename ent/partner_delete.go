@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/partner"
-	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/partner"
+	"github.com/theterminalguy/tnet/ent/predicate"
 )
 
 // PartnerDelete is the builder for deleting a Partner entity.

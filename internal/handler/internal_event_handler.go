@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/10hourlabs/whisper"
+	"github.com/theterminalguy/whisper"
 	"github.com/labstack/echo/v4"
 )
 

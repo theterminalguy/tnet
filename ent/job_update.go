@@ -11,13 +11,13 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/jobapplication"
-	"github.com/10hourlabs/tentn/ent/jobpayment"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/talentcollection"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/job"
+	"github.com/theterminalguy/tnet/ent/jobapplication"
+	"github.com/theterminalguy/tnet/ent/jobpayment"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/talentcollection"
+	"github.com/theterminalguy/tnet/ent/user"
 )
 
 // JobUpdate is the builder for updating Job entities.

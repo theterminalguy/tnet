@@ -11,12 +11,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/10hourlabs/tenlog"
-	"github.com/10hourlabs/tentn/ent/schema/userrole"
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/util/osutil"
-	"github.com/10hourlabs/tentn/util/photo"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tnet/ent/schema/userrole"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/util/osutil"
+	"github.com/theterminalguy/tnet/util/photo"
 )
 
 type TaskImportTalents struct {

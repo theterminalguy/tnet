@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/repository/scope"
-	"github.com/10hourlabs/tentn/internal/search"
-	"github.com/10hourlabs/tentn/internal/service"
-	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/internal/repository/scope"
+	"github.com/theterminalguy/tnet/internal/search"
+	"github.com/theterminalguy/tnet/internal/service"
 )
 
 type V1RecruiterJobApplicationHandler struct {
@@ -40,8 +39,8 @@ func (h *V1RecruiterJobApplicationHandler) ReadAll(c echo.Context) error {
 }
 
 func (h *V1RecruiterJobApplicationHandler) ReadByID(c echo.Context) error {
-	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	currentRecruiter := c.Get("currentRecruiter").(*scope.RecruiterScope)
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -57,8 +56,8 @@ func (h *V1RecruiterJobApplicationHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *V1RecruiterJobApplicationHandler) UpdateByID(c echo.Context) error {
-	currentRecruiter := c.Get(oneword.CurrentRecruiter).(*scope.RecruiterScope)
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	currentRecruiter := c.Get("currentRecruiter").(*scope.RecruiterScope)
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

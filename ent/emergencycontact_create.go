@@ -10,9 +10,9 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/emergencycontact"
-	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/emergencycontact"
+	"github.com/theterminalguy/tnet/ent/talent"
 )
 
 // EmergencyContactCreate is the builder for creating a EmergencyContact entity.

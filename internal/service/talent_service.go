@@ -1,10 +1,10 @@
 package service
 
 import (
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/schema/userrole"
-	"github.com/10hourlabs/tentn/internal/decorator"
-	repo "github.com/10hourlabs/tentn/internal/repository"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/schema/userrole"
+	"github.com/theterminalguy/tnet/internal/decorator"
+	repo "github.com/theterminalguy/tnet/internal/repository"
 )
 
 type TalentService struct {

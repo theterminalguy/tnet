@@ -5,7 +5,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
-	"github.com/10hourlabs/tentn/ent/schema/billing"
+	"github.com/theterminalguy/tnet/ent/schema/billing"
 )
 
 // SlackAppInstall holds the schema definition for the SlackAppInstall entity.

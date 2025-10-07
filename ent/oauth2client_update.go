@@ -11,11 +11,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/oauth2client"
-	"github.com/10hourlabs/tentn/ent/oauth2token"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/oauth2client"
+	"github.com/theterminalguy/tnet/ent/oauth2token"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/user"
 )
 
 // Oauth2ClientUpdate is the builder for updating Oauth2Client entities.

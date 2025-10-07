@@ -8,10 +8,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/internal/repository"
 	"github.com/algolia/algoliasearch-client-go/v3/algolia/search"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/internal/repository"
 )
 
 type TaskMigrateSearchIndex struct {

@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/portfoliolink"
-	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/portfoliolink"
+	"github.com/theterminalguy/tnet/ent/predicate"
 )
 
 // PortfolioLinkDelete is the builder for deleting a PortfolioLink entity.

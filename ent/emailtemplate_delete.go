@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/emailtemplate"
-	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/emailtemplate"
+	"github.com/theterminalguy/tnet/ent/predicate"
 )
 
 // EmailTemplateDelete is the builder for deleting a EmailTemplate entity.

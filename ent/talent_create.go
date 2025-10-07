@@ -10,16 +10,16 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/education"
-	"github.com/10hourlabs/tentn/ent/emergencycontact"
-	"github.com/10hourlabs/tentn/ent/jobapplication"
-	"github.com/10hourlabs/tentn/ent/mission"
-	"github.com/10hourlabs/tentn/ent/portfoliolink"
-	"github.com/10hourlabs/tentn/ent/skill"
-	"github.com/10hourlabs/tentn/ent/talent"
-	"github.com/10hourlabs/tentn/ent/user"
-	"github.com/10hourlabs/tentn/ent/workexperience"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/education"
+	"github.com/theterminalguy/tnet/ent/emergencycontact"
+	"github.com/theterminalguy/tnet/ent/jobapplication"
+	"github.com/theterminalguy/tnet/ent/mission"
+	"github.com/theterminalguy/tnet/ent/portfoliolink"
+	"github.com/theterminalguy/tnet/ent/skill"
+	"github.com/theterminalguy/tnet/ent/talent"
+	"github.com/theterminalguy/tnet/ent/user"
+	"github.com/theterminalguy/tnet/ent/workexperience"
 )
 
 // TalentCreate is the builder for creating a Talent entity.

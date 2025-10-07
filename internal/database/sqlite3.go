@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"entgo.io/ent/dialect"
-	"github.com/10hourlabs/tentn/ent"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/theterminalguy/tnet/ent"
 )
 
 type DBSQLite3 struct {

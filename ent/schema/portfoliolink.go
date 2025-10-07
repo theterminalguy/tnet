@@ -5,7 +5,6 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
-	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 )
 
@@ -25,9 +24,9 @@ func (PortfolioLink) Mixin() []ent.Mixin {
 // Fields of the PortfolioLink.
 func (PortfolioLink) Fields() []ent.Field {
 	return []ent.Field{
-		field.String(oneword.URL),
+		field.String("url"),
 
-		field.String(oneword.Name),
+		field.String("name"),
 
 		field.UUID("talent_id", uuid.UUID{}).
 			Optional().
@@ -45,8 +44,8 @@ func (PortfolioLink) Indexes() []ent.Index {
 // Edges of the PortfolioLink.
 func (PortfolioLink) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From(oneword.Talent, Talent.Type).
-			Ref(oneword.PortfolioLinks).
+		edge.From("talent", Talent.Type).
+			Ref("portfoliolinks").
 			Unique().
 			Field("talent_id"),
 	}

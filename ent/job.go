@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/talentcollection"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/job"
+	"github.com/theterminalguy/tnet/ent/talentcollection"
+	"github.com/theterminalguy/tnet/ent/user"
 )
 
 // Job is the model entity for the Job schema.

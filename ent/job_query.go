@@ -12,13 +12,13 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/jobapplication"
-	"github.com/10hourlabs/tentn/ent/jobpayment"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/talentcollection"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/job"
+	"github.com/theterminalguy/tnet/ent/jobapplication"
+	"github.com/theterminalguy/tnet/ent/jobpayment"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/talentcollection"
+	"github.com/theterminalguy/tnet/ent/user"
 )
 
 // JobQuery is the builder for querying Job entities.
@@ -409,7 +409,6 @@ func (jq *JobQuery) WithJobPayments(opts ...func(*JobPaymentQuery)) *JobQuery {
 //		GroupBy(job.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (jq *JobQuery) GroupBy(field string, fields ...string) *JobGroupBy {
 	group := &JobGroupBy{config: jq.config}
 	group.fields = append([]string{field}, fields...)
@@ -434,7 +433,6 @@ func (jq *JobQuery) GroupBy(field string, fields ...string) *JobGroupBy {
 //	client.Job.Query().
 //		Select(job.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (jq *JobQuery) Select(fields ...string) *JobSelect {
 	jq.fields = append(jq.fields, fields...)
 	return &JobSelect{JobQuery: jq}

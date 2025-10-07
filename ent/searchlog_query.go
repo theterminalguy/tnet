@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/searchlog"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/searchlog"
 )
 
 // SearchLogQuery is the builder for querying SearchLog entities.
@@ -263,7 +263,6 @@ func (slq *SearchLogQuery) Clone() *SearchLogQuery {
 //		GroupBy(searchlog.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (slq *SearchLogQuery) GroupBy(field string, fields ...string) *SearchLogGroupBy {
 	group := &SearchLogGroupBy{config: slq.config}
 	group.fields = append([]string{field}, fields...)
@@ -288,7 +287,6 @@ func (slq *SearchLogQuery) GroupBy(field string, fields ...string) *SearchLogGro
 //	client.SearchLog.Query().
 //		Select(searchlog.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (slq *SearchLogQuery) Select(fields ...string) *SearchLogSelect {
 	slq.fields = append(slq.fields, fields...)
 	return &SearchLogSelect{SearchLogQuery: slq}

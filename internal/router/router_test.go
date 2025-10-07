@@ -5,9 +5,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/10hourlabs/tentn/internal/handler"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
+	"github.com/theterminalguy/tnet/internal/handler"
 )
 
 var e = echo.New()

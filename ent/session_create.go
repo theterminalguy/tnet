@@ -10,9 +10,9 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/session"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/session"
+	"github.com/theterminalguy/tnet/ent/user"
 )
 
 // SessionCreate is the builder for creating a Session entity.

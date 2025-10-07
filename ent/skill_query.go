@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/skill"
-	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/skill"
+	"github.com/theterminalguy/tnet/ent/talent"
 )
 
 // SkillQuery is the builder for querying Skill entities.
@@ -300,7 +300,6 @@ func (sq *SkillQuery) WithTalent(opts ...func(*TalentQuery)) *SkillQuery {
 //		GroupBy(skill.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (sq *SkillQuery) GroupBy(field string, fields ...string) *SkillGroupBy {
 	group := &SkillGroupBy{config: sq.config}
 	group.fields = append([]string{field}, fields...)
@@ -325,7 +324,6 @@ func (sq *SkillQuery) GroupBy(field string, fields ...string) *SkillGroupBy {
 //	client.Skill.Query().
 //		Select(skill.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (sq *SkillQuery) Select(fields ...string) *SkillSelect {
 	sq.fields = append(sq.fields, fields...)
 	return &SkillSelect{SkillQuery: sq}

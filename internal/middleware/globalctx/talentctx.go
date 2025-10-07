@@ -1,11 +1,10 @@
 package globalctx
 
 import (
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/repository/scope"
-	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/internal/repository/scope"
 )
 
 func SetCurrentTalentContext(ctx echo.Context, userID uuid.UUID) error {
@@ -23,6 +22,6 @@ func SetCurrentTalentContext(ctx echo.Context, userID uuid.UUID) error {
 		return err
 	}
 	currentTalent := scope.NewTalentScope(talent.GetTalent())
-	ctx.Set(oneword.CurrentTalent, currentTalent)
+	ctx.Set("currentTalent", currentTalent)
 	return nil
 }

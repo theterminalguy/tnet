@@ -10,9 +10,9 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/portfoliolink"
-	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/portfoliolink"
+	"github.com/theterminalguy/tnet/ent/talent"
 )
 
 // PortfolioLinkCreate is the builder for creating a PortfolioLink entity.

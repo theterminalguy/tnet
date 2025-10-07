@@ -12,11 +12,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/slackappinstall"
-	"github.com/10hourlabs/tentn/ent/slackappuser"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/slackappinstall"
+	"github.com/theterminalguy/tnet/ent/slackappuser"
+	"github.com/theterminalguy/tnet/ent/user"
 )
 
 // SlackAppInstallQuery is the builder for querying SlackAppInstall entities.
@@ -337,7 +337,6 @@ func (saiq *SlackAppInstallQuery) WithSlackAppUsers(opts ...func(*SlackAppUserQu
 //		GroupBy(slackappinstall.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (saiq *SlackAppInstallQuery) GroupBy(field string, fields ...string) *SlackAppInstallGroupBy {
 	group := &SlackAppInstallGroupBy{config: saiq.config}
 	group.fields = append([]string{field}, fields...)
@@ -362,7 +361,6 @@ func (saiq *SlackAppInstallQuery) GroupBy(field string, fields ...string) *Slack
 //	client.SlackAppInstall.Query().
 //		Select(slackappinstall.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (saiq *SlackAppInstallQuery) Select(fields ...string) *SlackAppInstallSelect {
 	saiq.fields = append(saiq.fields, fields...)
 	return &SlackAppInstallSelect{SlackAppInstallQuery: saiq}

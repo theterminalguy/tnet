@@ -4,11 +4,11 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/10hourlabs/tenlog"
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/schema/userrole"
-	"github.com/10hourlabs/tentn/internal/middleware/globalctx"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/schema/userrole"
+	"github.com/theterminalguy/tnet/internal/middleware/globalctx"
 )
 
 type TalentAuth struct {

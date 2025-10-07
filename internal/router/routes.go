@@ -1,10 +1,10 @@
 package router
 
 import (
-	"github.com/10hourlabs/tentn/internal/handler"
-	"github.com/10hourlabs/tentn/internal/handler/authserver"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/theterminalguy/tnet/internal/handler"
+	"github.com/theterminalguy/tnet/internal/handler/authserver"
 )
 
 func DefineRoutes() *echo.Echo {

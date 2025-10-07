@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/skill"
-	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/skill"
+	"github.com/theterminalguy/tnet/ent/talent"
 )
 
 // Skill is the model entity for the Skill schema.

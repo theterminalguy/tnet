@@ -8,27 +8,27 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/education"
-	"github.com/10hourlabs/tentn/ent/emailtemplate"
-	"github.com/10hourlabs/tentn/ent/emergencycontact"
-	"github.com/10hourlabs/tentn/ent/internaltask"
-	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/jobapplication"
-	"github.com/10hourlabs/tentn/ent/jobpayment"
-	"github.com/10hourlabs/tentn/ent/mission"
-	"github.com/10hourlabs/tentn/ent/oauth2client"
-	"github.com/10hourlabs/tentn/ent/oauth2token"
-	"github.com/10hourlabs/tentn/ent/partner"
-	"github.com/10hourlabs/tentn/ent/portfoliolink"
-	"github.com/10hourlabs/tentn/ent/searchlog"
-	"github.com/10hourlabs/tentn/ent/session"
-	"github.com/10hourlabs/tentn/ent/skill"
-	"github.com/10hourlabs/tentn/ent/slackappinstall"
-	"github.com/10hourlabs/tentn/ent/slackappuser"
-	"github.com/10hourlabs/tentn/ent/talent"
-	"github.com/10hourlabs/tentn/ent/talentcollection"
-	"github.com/10hourlabs/tentn/ent/user"
-	"github.com/10hourlabs/tentn/ent/workexperience"
+	"github.com/theterminalguy/tnet/ent/education"
+	"github.com/theterminalguy/tnet/ent/emailtemplate"
+	"github.com/theterminalguy/tnet/ent/emergencycontact"
+	"github.com/theterminalguy/tnet/ent/internaltask"
+	"github.com/theterminalguy/tnet/ent/job"
+	"github.com/theterminalguy/tnet/ent/jobapplication"
+	"github.com/theterminalguy/tnet/ent/jobpayment"
+	"github.com/theterminalguy/tnet/ent/mission"
+	"github.com/theterminalguy/tnet/ent/oauth2client"
+	"github.com/theterminalguy/tnet/ent/oauth2token"
+	"github.com/theterminalguy/tnet/ent/partner"
+	"github.com/theterminalguy/tnet/ent/portfoliolink"
+	"github.com/theterminalguy/tnet/ent/searchlog"
+	"github.com/theterminalguy/tnet/ent/session"
+	"github.com/theterminalguy/tnet/ent/skill"
+	"github.com/theterminalguy/tnet/ent/slackappinstall"
+	"github.com/theterminalguy/tnet/ent/slackappuser"
+	"github.com/theterminalguy/tnet/ent/talent"
+	"github.com/theterminalguy/tnet/ent/talentcollection"
+	"github.com/theterminalguy/tnet/ent/user"
+	"github.com/theterminalguy/tnet/ent/workexperience"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -119,7 +119,6 @@ type AggregateFunc func(*sql.Selector) string
 //	GroupBy(field1, field2).
 //	Aggregate(ent.As(ent.Sum(field1), "sum_field1"), (ent.As(ent.Sum(field2), "sum_field2")).
 //	Scan(ctx, &v)
-//
 func As(fn AggregateFunc, end string) AggregateFunc {
 	return func(s *sql.Selector) string {
 		return sql.As(fn(s), end)

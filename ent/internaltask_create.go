@@ -10,8 +10,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/internaltask"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/internaltask"
 )
 
 // InternalTaskCreate is the builder for creating a InternalTask entity.

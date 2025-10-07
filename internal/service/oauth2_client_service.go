@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/10hourlabs/tenlog"
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/oauth2client"
-	"github.com/10hourlabs/tentn/ent/schema/userrole"
-	"github.com/10hourlabs/tentn/ent/user"
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/util"
-	"github.com/10hourlabs/tentn/util/photo"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/oauth2client"
+	"github.com/theterminalguy/tnet/ent/schema/userrole"
+	"github.com/theterminalguy/tnet/ent/user"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/util"
+	"github.com/theterminalguy/tnet/util/photo"
 	"golang.org/x/crypto/bcrypt"
 )
 

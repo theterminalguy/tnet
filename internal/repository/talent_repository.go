@@ -8,14 +8,14 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/talent"
-	"github.com/10hourlabs/tentn/internal/decorator"
-	"github.com/10hourlabs/tentn/internal/paginator"
-	"github.com/10hourlabs/tentn/util/collection"
-	"github.com/10hourlabs/tentn/util/date"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/talent"
+	"github.com/theterminalguy/tnet/internal/decorator"
+	"github.com/theterminalguy/tnet/internal/paginator"
+	"github.com/theterminalguy/tnet/util/collection"
+	"github.com/theterminalguy/tnet/util/date"
 )
 
 var ErrInvalidReferralCode error = errors.New("invalid referral code")

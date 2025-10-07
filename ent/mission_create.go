@@ -10,10 +10,10 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/mission"
-	"github.com/10hourlabs/tentn/ent/partner"
-	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/mission"
+	"github.com/theterminalguy/tnet/ent/partner"
+	"github.com/theterminalguy/tnet/ent/talent"
 )
 
 // MissionCreate is the builder for creating a Mission entity.

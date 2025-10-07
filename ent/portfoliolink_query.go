@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/portfoliolink"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/portfoliolink"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/talent"
 )
 
 // PortfolioLinkQuery is the builder for querying PortfolioLink entities.
@@ -300,7 +300,6 @@ func (plq *PortfolioLinkQuery) WithTalent(opts ...func(*TalentQuery)) *Portfolio
 //		GroupBy(portfoliolink.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (plq *PortfolioLinkQuery) GroupBy(field string, fields ...string) *PortfolioLinkGroupBy {
 	group := &PortfolioLinkGroupBy{config: plq.config}
 	group.fields = append([]string{field}, fields...)
@@ -325,7 +324,6 @@ func (plq *PortfolioLinkQuery) GroupBy(field string, fields ...string) *Portfoli
 //	client.PortfolioLink.Query().
 //		Select(portfoliolink.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (plq *PortfolioLinkQuery) Select(fields ...string) *PortfolioLinkSelect {
 	plq.fields = append(plq.fields, fields...)
 	return &PortfolioLinkSelect{PortfolioLinkQuery: plq}

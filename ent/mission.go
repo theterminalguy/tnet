@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/mission"
-	"github.com/10hourlabs/tentn/ent/partner"
-	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/mission"
+	"github.com/theterminalguy/tnet/ent/partner"
+	"github.com/theterminalguy/tnet/ent/talent"
 )
 
 // Mission is the model entity for the Mission schema.

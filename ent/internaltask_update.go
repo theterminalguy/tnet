@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/internaltask"
-	"github.com/10hourlabs/tentn/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/internaltask"
+	"github.com/theterminalguy/tnet/ent/predicate"
 )
 
 // InternalTaskUpdate is the builder for updating InternalTask entities.

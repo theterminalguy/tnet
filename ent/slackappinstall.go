@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/schema/billing"
-	"github.com/10hourlabs/tentn/ent/slackappinstall"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/schema/billing"
+	"github.com/theterminalguy/tnet/ent/slackappinstall"
+	"github.com/theterminalguy/tnet/ent/user"
 )
 
 // SlackAppInstall is the model entity for the SlackAppInstall schema.

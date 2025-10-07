@@ -1,11 +1,10 @@
 package service
 
 import (
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/schema/userrole"
-	"github.com/10hourlabs/tentn/ent/slackappinstall"
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/oneword"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/schema/userrole"
+	"github.com/theterminalguy/tnet/ent/slackappinstall"
+	repo "github.com/theterminalguy/tnet/internal/repository"
 )
 
 type RecruiterService struct {
@@ -61,7 +60,7 @@ func (rs *RecruiterService) InstallSlackApp(up repo.UserParams, sp repo.SlackApp
 		// create a new "Favorite" collection for the recruiter
 		rs.CollectionRepo.Create(repo.TalentCollectionParams{
 			UserID: recruiter.ID,
-			Name:   oneword.Favorite,
+			Name:   "Favorite",
 		})
 		return recruiter, nil
 	}

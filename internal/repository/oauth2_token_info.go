@@ -3,10 +3,10 @@ package repository
 import (
 	"time"
 
-	"github.com/10hourlabs/tenlog"
-	"github.com/10hourlabs/tentn/ent"
 	"github.com/go-oauth2/oauth2/v4"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tnet/ent"
 )
 
 type Oauth2TokenInfo struct {

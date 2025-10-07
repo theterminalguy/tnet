@@ -5,9 +5,9 @@ package enttest
 import (
 	"context"
 
-	"github.com/10hourlabs/tentn/ent"
+	"github.com/theterminalguy/tnet/ent"
 	// required by schema hooks.
-	_ "github.com/10hourlabs/tentn/ent/runtime"
+	_ "github.com/theterminalguy/tnet/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
 )

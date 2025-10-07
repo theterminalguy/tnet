@@ -7,9 +7,9 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/10hourlabs/tentn/internal/service/filestorage"
-	"github.com/10hourlabs/tentn/util/osutil"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/internal/service/filestorage"
+	"github.com/theterminalguy/tnet/util/osutil"
 )
 
 type TalentImageParams struct {

@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/education"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/education"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/talent"
 )
 
 // EducationQuery is the builder for querying Education entities.
@@ -300,7 +300,6 @@ func (eq *EducationQuery) WithTalent(opts ...func(*TalentQuery)) *EducationQuery
 //		GroupBy(education.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (eq *EducationQuery) GroupBy(field string, fields ...string) *EducationGroupBy {
 	group := &EducationGroupBy{config: eq.config}
 	group.fields = append([]string{field}, fields...)
@@ -325,7 +324,6 @@ func (eq *EducationQuery) GroupBy(field string, fields ...string) *EducationGrou
 //	client.Education.Query().
 //		Select(education.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (eq *EducationQuery) Select(fields ...string) *EducationSelect {
 	eq.fields = append(eq.fields, fields...)
 	return &EducationSelect{EducationQuery: eq}

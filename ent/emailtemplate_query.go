@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/emailtemplate"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/emailtemplate"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/user"
 )
 
 // EmailTemplateQuery is the builder for querying EmailTemplate entities.
@@ -300,7 +300,6 @@ func (etq *EmailTemplateQuery) WithUser(opts ...func(*UserQuery)) *EmailTemplate
 //		GroupBy(emailtemplate.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (etq *EmailTemplateQuery) GroupBy(field string, fields ...string) *EmailTemplateGroupBy {
 	group := &EmailTemplateGroupBy{config: etq.config}
 	group.fields = append([]string{field}, fields...)
@@ -325,7 +324,6 @@ func (etq *EmailTemplateQuery) GroupBy(field string, fields ...string) *EmailTem
 //	client.EmailTemplate.Query().
 //		Select(emailtemplate.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (etq *EmailTemplateQuery) Select(fields ...string) *EmailTemplateSelect {
 	etq.fields = append(etq.fields, fields...)
 	return &EmailTemplateSelect{EmailTemplateQuery: etq}

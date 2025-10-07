@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/10hourlabs/tenlog"
+	"github.com/theterminalguy/tenlog"
 )
 
 type Tasker interface {

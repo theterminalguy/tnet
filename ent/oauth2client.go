@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/oauth2client"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/oauth2client"
+	"github.com/theterminalguy/tnet/ent/user"
 )
 
 // Oauth2Client is the model entity for the Oauth2Client schema.

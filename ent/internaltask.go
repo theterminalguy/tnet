@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/internaltask"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/internaltask"
 )
 
 // InternalTask is the model entity for the InternalTask schema.

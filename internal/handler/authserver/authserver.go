@@ -5,11 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/10hourlabs/tenlog"
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/service"
-	"github.com/10hourlabs/tentn/internal/tokgen"
-	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/go-oauth2/oauth2/v4"
 	oauth2_error "github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/generates"
@@ -17,6 +12,11 @@ import (
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tenlog"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/internal/service"
+	"github.com/theterminalguy/tnet/internal/tokgen"
+	"github.com/theterminalguy/tnet/util/collection"
 )
 
 var (

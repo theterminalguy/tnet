@@ -1,12 +1,12 @@
 package scope
 
 import (
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/jobapplication"
-	"github.com/10hourlabs/tentn/ent/talentcollection"
-	repo "github.com/10hourlabs/tentn/internal/repository"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/job"
+	"github.com/theterminalguy/tnet/ent/jobapplication"
+	"github.com/theterminalguy/tnet/ent/talentcollection"
+	repo "github.com/theterminalguy/tnet/internal/repository"
 )
 
 type RecruiterScope struct {

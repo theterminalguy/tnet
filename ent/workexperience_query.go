@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/talent"
-	"github.com/10hourlabs/tentn/ent/workexperience"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/talent"
+	"github.com/theterminalguy/tnet/ent/workexperience"
 )
 
 // WorkExperienceQuery is the builder for querying WorkExperience entities.
@@ -300,7 +300,6 @@ func (weq *WorkExperienceQuery) WithTalent(opts ...func(*TalentQuery)) *WorkExpe
 //		GroupBy(workexperience.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (weq *WorkExperienceQuery) GroupBy(field string, fields ...string) *WorkExperienceGroupBy {
 	group := &WorkExperienceGroupBy{config: weq.config}
 	group.fields = append([]string{field}, fields...)
@@ -325,7 +324,6 @@ func (weq *WorkExperienceQuery) GroupBy(field string, fields ...string) *WorkExp
 //	client.WorkExperience.Query().
 //		Select(workexperience.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (weq *WorkExperienceQuery) Select(fields ...string) *WorkExperienceSelect {
 	weq.fields = append(weq.fields, fields...)
 	return &WorkExperienceSelect{WorkExperienceQuery: weq}

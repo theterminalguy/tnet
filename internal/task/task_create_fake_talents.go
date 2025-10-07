@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/10hourlabs/tentn/ent/schema"
-	"github.com/10hourlabs/tentn/ent/talent"
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/service"
-	"github.com/10hourlabs/tentn/util/collection"
-	"github.com/10hourlabs/tentn/util/date"
 	faker "github.com/brianvoe/gofakeit/v6"
+	"github.com/theterminalguy/tnet/ent/schema"
+	"github.com/theterminalguy/tnet/ent/talent"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/internal/service"
+	"github.com/theterminalguy/tnet/util/collection"
+	"github.com/theterminalguy/tnet/util/date"
 )
 
 type TaskCreateFakeTalents struct {

@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/searchlog"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/searchlog"
 )
 
 // SearchLog is the model entity for the SearchLog schema.

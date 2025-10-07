@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/internaltask"
-	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/internaltask"
+	"github.com/theterminalguy/tnet/ent/predicate"
 )
 
 // InternalTaskQuery is the builder for querying InternalTask entities.
@@ -263,7 +263,6 @@ func (itq *InternalTaskQuery) Clone() *InternalTaskQuery {
 //		GroupBy(internaltask.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (itq *InternalTaskQuery) GroupBy(field string, fields ...string) *InternalTaskGroupBy {
 	group := &InternalTaskGroupBy{config: itq.config}
 	group.fields = append([]string{field}, fields...)
@@ -288,7 +287,6 @@ func (itq *InternalTaskQuery) GroupBy(field string, fields ...string) *InternalT
 //	client.InternalTask.Query().
 //		Select(internaltask.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (itq *InternalTaskQuery) Select(fields ...string) *InternalTaskSelect {
 	itq.fields = append(itq.fields, fields...)
 	return &InternalTaskSelect{InternalTaskQuery: itq}

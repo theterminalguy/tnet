@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/service"
-	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/internal/service"
 )
 
 // DO NOT expose any methods to the outside world untill we have a better idea of what we want to do with it.
@@ -33,7 +32,7 @@ func (h *UserHandler) ReadAll(c echo.Context) error {
 }
 
 func (h *UserHandler) ReadByID(c echo.Context) error {
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -57,7 +56,7 @@ func (h *UserHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *UserHandler) UpdateByID(c echo.Context) error {
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -73,7 +72,7 @@ func (h *UserHandler) UpdateByID(c echo.Context) error {
 }
 
 func (h *UserHandler) DeleteOne(c echo.Context) error {
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

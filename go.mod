@@ -1,12 +1,9 @@
-module github.com/10hourlabs/tentn
+module github.com/theterminalguy/tnet
 
 go 1.17
 
 require (
 	entgo.io/ent v0.10.1
-	github.com/10hourlabs/rql v0.0.1
-	github.com/10hourlabs/tenlog v0.0.0-20220801122950-7a05f864f4ab
-	github.com/10hourlabs/whisper v0.0.0-20220912174557-741163dbcca9
 	github.com/SebastiaanKlippert/go-wkhtmltopdf v1.7.2
 	github.com/brianvoe/gofakeit/v6 v6.15.0
 	github.com/go-oauth2/oauth2/v4 v4.4.3
@@ -22,6 +19,9 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/slack-go/slack v0.10.3
 	github.com/stretchr/testify v1.7.1
+	github.com/theterminalguy/rql v0.0.2
+	github.com/theterminalguy/tenlog v0.0.0-20250925234803-e359fe81f4f6
+	github.com/theterminalguy/whisper v0.0.0-20250925234649-d59b4d946d7d
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
 	golang.org/x/oauth2 v0.0.0-20220622183110-fd043fe589d2
 )

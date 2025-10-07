@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/slackappinstall"
-	"github.com/10hourlabs/tentn/ent/slackappuser"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/slackappinstall"
+	"github.com/theterminalguy/tnet/ent/slackappuser"
 )
 
 // SlackAppUserQuery is the builder for querying SlackAppUser entities.
@@ -300,7 +300,6 @@ func (sauq *SlackAppUserQuery) WithSlackAppInstall(opts ...func(*SlackAppInstall
 //		GroupBy(slackappuser.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (sauq *SlackAppUserQuery) GroupBy(field string, fields ...string) *SlackAppUserGroupBy {
 	group := &SlackAppUserGroupBy{config: sauq.config}
 	group.fields = append([]string{field}, fields...)
@@ -325,7 +324,6 @@ func (sauq *SlackAppUserQuery) GroupBy(field string, fields ...string) *SlackApp
 //	client.SlackAppUser.Query().
 //		Select(slackappuser.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (sauq *SlackAppUserQuery) Select(fields ...string) *SlackAppUserSelect {
 	sauq.fields = append(sauq.fields, fields...)
 	return &SlackAppUserSelect{SlackAppUserQuery: sauq}

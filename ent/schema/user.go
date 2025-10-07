@@ -5,8 +5,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
-	"github.com/10hourlabs/tentn/ent/schema/userrole"
-	"github.com/10hourlabs/tentn/oneword"
+	"github.com/theterminalguy/tnet/ent/schema/userrole"
 )
 
 // User holds the schema definition for the User entity.
@@ -25,8 +24,8 @@ func (User) Mixin() []ent.Mixin {
 // Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
-		field.String(oneword.FirstName),
-		field.String(oneword.LastName),
+		field.String("first_name"),
+		field.String("last_name"),
 		field.String("email"),
 		field.Enum("role").
 			GoType(userrole.Role("")),

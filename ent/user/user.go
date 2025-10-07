@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/10hourlabs/tentn/ent/schema/userrole"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/schema/userrole"
 )
 
 const (

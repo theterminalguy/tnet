@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/10hourlabs/tentn/util/date"
+	"github.com/theterminalguy/tnet/util/date"
 )
 
 var (

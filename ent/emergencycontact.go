@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/10hourlabs/tentn/ent/emergencycontact"
-	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/emergencycontact"
+	"github.com/theterminalguy/tnet/ent/talent"
 )
 
 // EmergencyContact is the model entity for the EmergencyContact schema.

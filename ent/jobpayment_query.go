@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/jobpayment"
-	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/job"
+	"github.com/theterminalguy/tnet/ent/jobpayment"
+	"github.com/theterminalguy/tnet/ent/predicate"
 )
 
 // JobPaymentQuery is the builder for querying JobPayment entities.
@@ -300,7 +300,6 @@ func (jpq *JobPaymentQuery) WithJob(opts ...func(*JobQuery)) *JobPaymentQuery {
 //		GroupBy(jobpayment.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (jpq *JobPaymentQuery) GroupBy(field string, fields ...string) *JobPaymentGroupBy {
 	group := &JobPaymentGroupBy{config: jpq.config}
 	group.fields = append([]string{field}, fields...)
@@ -325,7 +324,6 @@ func (jpq *JobPaymentQuery) GroupBy(field string, fields ...string) *JobPaymentG
 //	client.JobPayment.Query().
 //		Select(jobpayment.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (jpq *JobPaymentQuery) Select(fields ...string) *JobPaymentSelect {
 	jpq.fields = append(jpq.fields, fields...)
 	return &JobPaymentSelect{JobPaymentQuery: jpq}

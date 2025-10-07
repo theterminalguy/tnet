@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/10hourlabs/tenlog"
+	"github.com/theterminalguy/tenlog"
 	"github.com/labstack/echo/v4"
 )
 

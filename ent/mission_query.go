@@ -11,11 +11,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/mission"
-	"github.com/10hourlabs/tentn/ent/partner"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/mission"
+	"github.com/theterminalguy/tnet/ent/partner"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/talent"
 )
 
 // MissionQuery is the builder for querying Mission entities.
@@ -336,7 +336,6 @@ func (mq *MissionQuery) WithPartner(opts ...func(*PartnerQuery)) *MissionQuery {
 //		GroupBy(mission.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (mq *MissionQuery) GroupBy(field string, fields ...string) *MissionGroupBy {
 	group := &MissionGroupBy{config: mq.config}
 	group.fields = append([]string{field}, fields...)
@@ -361,7 +360,6 @@ func (mq *MissionQuery) GroupBy(field string, fields ...string) *MissionGroupBy 
 //	client.Mission.Query().
 //		Select(mission.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (mq *MissionQuery) Select(fields ...string) *MissionSelect {
 	mq.fields = append(mq.fields, fields...)
 	return &MissionSelect{MissionQuery: mq}

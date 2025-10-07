@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/emergencycontact"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/emergencycontact"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/talent"
 )
 
 // EmergencyContactQuery is the builder for querying EmergencyContact entities.
@@ -300,7 +300,6 @@ func (ecq *EmergencyContactQuery) WithTalent(opts ...func(*TalentQuery)) *Emerge
 //		GroupBy(emergencycontact.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (ecq *EmergencyContactQuery) GroupBy(field string, fields ...string) *EmergencyContactGroupBy {
 	group := &EmergencyContactGroupBy{config: ecq.config}
 	group.fields = append([]string{field}, fields...)
@@ -325,7 +324,6 @@ func (ecq *EmergencyContactQuery) GroupBy(field string, fields ...string) *Emerg
 //	client.EmergencyContact.Query().
 //		Select(emergencycontact.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (ecq *EmergencyContactQuery) Select(fields ...string) *EmergencyContactSelect {
 	ecq.fields = append(ecq.fields, fields...)
 	return &EmergencyContactSelect{EmergencyContactQuery: ecq}

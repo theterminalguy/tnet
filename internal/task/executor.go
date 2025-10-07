@@ -3,7 +3,7 @@ package task
 import (
 	"errors"
 
-	"github.com/10hourlabs/tentn/util/collection"
+	"github.com/theterminalguy/tnet/util/collection"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -34,15 +34,15 @@ func (e *Executor) CanRunTask(taskName string) bool {
 }
 
 var AllowedExecutors = map[string]*Executor{
-	"sp@10hourlabs.com": {
-		Email:        "sp@10hourlabs.com",
+	"sp@theterminalguy.com": {
+		Email:        "sp@theterminalguy.com",
 		HashedSecret: "$2a$10$D8h9YIEiliWZ2TgEcUlme.zirTu46RW.8yBDemM9uqaq1eJM07Gwu",
 		AllowedTasks: []string{
 			"*",
 		},
 	},
-	"abiodun.solomon@10hourlabs.com": {
-		Email:        "abiodun.solomon@10hourlabs.com",
+	"abiodun.solomon@theterminalguy.com": {
+		Email:        "abiodun.solomon@theterminalguy.com",
 		HashedSecret: "$2a$10$Pd/xmOzFTu1TKfGHUFoKc.kJ4DeWjgkwoWGgBHfmZhDTTWUM8112.",
 		AllowedTasks: []string{
 			"tokgen",
@@ -50,23 +50,23 @@ var AllowedExecutors = map[string]*Executor{
 			"update-talent-pp",
 		},
 	},
-	"fortune.nwankwo@10hourlabs.com": {
-		Email:        "fortune.nwankwo@10hourlabs.com",
+	"fortune.nwankwo@theterminalguy.com": {
+		Email:        "fortune.nwankwo@theterminalguy.com",
 		HashedSecret: "$2a$12$fgS7DkQWSe8eWI4S1d.hm.mEzZ1kreatSXucv1eZv10KLrZc0BcjW",
 		AllowedTasks: []string{
 			"update-talent-pp",
 		},
 	},
-	"drey.olawaye@10hourlabs.com": {
-		Email:        "drey.olawaye@10hourlabs.com",
+	"drey.olawaye@theterminalguy.com": {
+		Email:        "drey.olawaye@theterminalguy.com",
 		HashedSecret: "$2a$10$/O5vZY7Q5LxcTFjo7sGtH.WsPPwV1Irx80.dyQEoEBNU159uKDXJO",
 		AllowedTasks: []string{
 			"import-talents",
 			"update-talent-pp",
 		},
 	},
-	"ahbot-slack@10hourlabs.com": {
-		Email:        "ahbot-slack@10hourlabs.com",
+	"ahbot-slack@theterminalguy.com": {
+		Email:        "ahbot-slack@theterminalguy.com",
 		HashedSecret: "$2a$10$ka2YjqAXzfRy2nZIPJE6LuDES2inxlYlYFpSHMBKU4AdE9PJasFie",
 		AllowedTasks: []string{},
 	},

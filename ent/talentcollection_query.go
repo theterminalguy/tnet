@@ -12,11 +12,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/talentcollection"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/job"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/talentcollection"
+	"github.com/theterminalguy/tnet/ent/user"
 )
 
 // TalentCollectionQuery is the builder for querying TalentCollection entities.
@@ -337,7 +337,6 @@ func (tcq *TalentCollectionQuery) WithJobs(opts ...func(*JobQuery)) *TalentColle
 //		GroupBy(talentcollection.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (tcq *TalentCollectionQuery) GroupBy(field string, fields ...string) *TalentCollectionGroupBy {
 	group := &TalentCollectionGroupBy{config: tcq.config}
 	group.fields = append([]string{field}, fields...)
@@ -362,7 +361,6 @@ func (tcq *TalentCollectionQuery) GroupBy(field string, fields ...string) *Talen
 //	client.TalentCollection.Query().
 //		Select(talentcollection.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (tcq *TalentCollectionQuery) Select(fields ...string) *TalentCollectionSelect {
 	tcq.fields = append(tcq.fields, fields...)
 	return &TalentCollectionSelect{TalentCollectionQuery: tcq}

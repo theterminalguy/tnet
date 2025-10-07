@@ -12,10 +12,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/mission"
-	"github.com/10hourlabs/tentn/ent/partner"
-	"github.com/10hourlabs/tentn/ent/predicate"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/mission"
+	"github.com/theterminalguy/tnet/ent/partner"
+	"github.com/theterminalguy/tnet/ent/predicate"
 )
 
 // PartnerQuery is the builder for querying Partner entities.
@@ -301,7 +301,6 @@ func (pq *PartnerQuery) WithMissions(opts ...func(*MissionQuery)) *PartnerQuery 
 //		GroupBy(partner.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (pq *PartnerQuery) GroupBy(field string, fields ...string) *PartnerGroupBy {
 	group := &PartnerGroupBy{config: pq.config}
 	group.fields = append([]string{field}, fields...)
@@ -326,7 +325,6 @@ func (pq *PartnerQuery) GroupBy(field string, fields ...string) *PartnerGroupBy 
 //	client.Partner.Query().
 //		Select(partner.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (pq *PartnerQuery) Select(fields ...string) *PartnerSelect {
 	pq.fields = append(pq.fields, fields...)
 	return &PartnerSelect{PartnerQuery: pq}

@@ -6,10 +6,10 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/10hourlabs/tentn/internal/router"
-	"github.com/10hourlabs/tentn/util"
-	"github.com/10hourlabs/tentn/util/osutil"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tnet/internal/router"
+	"github.com/theterminalguy/tnet/util"
+	"github.com/theterminalguy/tnet/util/osutil"
 )
 
 // TemplateRenderer is a custom html/template renderer for Echo framework

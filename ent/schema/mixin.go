@@ -8,7 +8,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
-	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 )
 
@@ -18,15 +17,15 @@ type TimeStampMixin struct {
 
 func (TimeStampMixin) Fields() []ent.Field {
 	return []ent.Field{
-		field.Time(oneword.CreatedAt).
+		field.Time("created_at").
 			Immutable().
 			Default(time.Now),
 
-		field.Time(oneword.UpdatedAt).
+		field.Time("updated_at").
 			Default(time.Now).
 			UpdateDefault(time.Now),
 
-		field.Time(oneword.DeletedAt).
+		field.Time("deleted_at").
 			Nillable().
 			Optional().
 			StructTag(`json:"deleted_at"`),

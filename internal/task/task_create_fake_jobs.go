@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"math/rand"
 
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/util/collection"
 )
 
 type TaskCreateFakeJob struct {
@@ -25,7 +25,7 @@ func NewTaskCreateFakeJob() *TaskCreateFakeJob {
 func (j *TaskCreateFakeJob) TaskCreateFakeJob(userID uuid.UUID) error {
 	jobParams := repo.JobParams{
 		TimeZone: "GMT",
-		Hiring: true,
+		Hiring:   true,
 		Title: (func() string {
 			return []string{"Front-End Developer", "Back-End Developer"}[rand.Intn(2)]
 		})(),

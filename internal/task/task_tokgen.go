@@ -3,8 +3,8 @@ package task
 import (
 	"fmt"
 
-	"github.com/10hourlabs/tentn/internal/tokgen"
-	"github.com/10hourlabs/tentn/util"
+	"github.com/theterminalguy/tnet/internal/tokgen"
+	"github.com/theterminalguy/tnet/util"
 )
 
 type TaskTokGen struct {

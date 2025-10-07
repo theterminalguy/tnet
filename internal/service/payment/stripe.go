@@ -11,11 +11,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/10hourlabs/tenlog"
-	"github.com/10hourlabs/tentn/internal/repository"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/stripe/stripe-go/webhook"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tnet/internal/repository"
 )
 
 type ResponseDataHandler struct {

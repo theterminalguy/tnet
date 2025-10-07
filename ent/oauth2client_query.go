@@ -12,11 +12,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/oauth2client"
-	"github.com/10hourlabs/tentn/ent/oauth2token"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/user"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/oauth2client"
+	"github.com/theterminalguy/tnet/ent/oauth2token"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/user"
 )
 
 // Oauth2ClientQuery is the builder for querying Oauth2Client entities.
@@ -337,7 +337,6 @@ func (oq *Oauth2ClientQuery) WithOauth2Tokens(opts ...func(*Oauth2TokenQuery)) *
 //		GroupBy(oauth2client.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (oq *Oauth2ClientQuery) GroupBy(field string, fields ...string) *Oauth2ClientGroupBy {
 	group := &Oauth2ClientGroupBy{config: oq.config}
 	group.fields = append([]string{field}, fields...)
@@ -362,7 +361,6 @@ func (oq *Oauth2ClientQuery) GroupBy(field string, fields ...string) *Oauth2Clie
 //	client.Oauth2Client.Query().
 //		Select(oauth2client.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (oq *Oauth2ClientQuery) Select(fields ...string) *Oauth2ClientSelect {
 	oq.fields = append(oq.fields, fields...)
 	return &Oauth2ClientSelect{Oauth2ClientQuery: oq}

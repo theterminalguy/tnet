@@ -5,16 +5,15 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/10hourlabs/tentn/internal/middleware/globalctx"
-	"github.com/10hourlabs/tentn/internal/middleware/header"
-	"github.com/10hourlabs/tentn/internal/paginator"
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/search"
-	"github.com/10hourlabs/tentn/internal/service"
-	q "github.com/10hourlabs/tentn/internal/service/query"
-	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tnet/internal/middleware/globalctx"
+	"github.com/theterminalguy/tnet/internal/middleware/header"
+	"github.com/theterminalguy/tnet/internal/paginator"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/internal/search"
+	"github.com/theterminalguy/tnet/internal/service"
+	q "github.com/theterminalguy/tnet/internal/service/query"
 )
 
 type V1TalentSearchFilterHandler struct {
@@ -78,7 +77,7 @@ func (*V1TalentSearchFilterHandler) ReadAll(c echo.Context) error {
 }
 
 func (v *V1TalentSearchFilterHandler) ReadByID(c echo.Context) error {
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

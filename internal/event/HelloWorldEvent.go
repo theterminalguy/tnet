@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/10hourlabs/whisper"
+	"github.com/theterminalguy/whisper"
 )
 
 type HelloWorldEventPayload struct {

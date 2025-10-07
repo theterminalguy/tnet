@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/10hourlabs/tentn/ent"
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/service"
-	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tnet/ent"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/internal/service"
 )
 
 type V1TalentProfileHandler struct {
@@ -33,7 +32,7 @@ func (h *V1TalentProfileHandler) ReadAll(c echo.Context) error {
 }
 
 func (h *V1TalentProfileHandler) ReadByID(c echo.Context) error {
-	user := c.Get(oneword.CurrentUser).(*ent.User)
+	user := c.Get("currentUser").(*ent.User)
 	talent, err := h.TalentRepository.GetTalentByUserID(user.ID)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -46,7 +45,7 @@ func (h *V1TalentProfileHandler) CreateOne(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	user := c.Get(oneword.CurrentUser).(*ent.User)
+	user := c.Get("currentUser").(*ent.User)
 	a, err := h.TalentService.CreateProfile(user, *params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -59,7 +58,7 @@ func (h *V1TalentProfileHandler) UpdateByID(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return err
 	}
-	user := c.Get(oneword.CurrentUser).(*ent.User)
+	user := c.Get("currentUser").(*ent.User)
 	a, vldErrs := h.TalentService.UpdateProfile(user, params)
 	if vldErrs != nil {
 		return c.String(http.StatusBadRequest, fmt.Errorf("%v", vldErrs).Error())
@@ -68,7 +67,7 @@ func (h *V1TalentProfileHandler) UpdateByID(c echo.Context) error {
 }
 
 func (h *V1TalentProfileHandler) DeleteOne(c echo.Context) error {
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

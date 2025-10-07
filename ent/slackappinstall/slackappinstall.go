@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/10hourlabs/tentn/ent/schema/billing"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/schema/billing"
 )
 
 const (

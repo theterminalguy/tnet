@@ -1,8 +1,8 @@
 package userauth
 
 import (
-	"github.com/10hourlabs/tentn/ent"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tnet/ent"
 )
 
 type RoleAuther interface {

@@ -4,16 +4,16 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/10hourlabs/tenlog"
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/schema/userrole"
-	"github.com/10hourlabs/tentn/internal/middleware/header"
-	"github.com/10hourlabs/tentn/internal/middleware/platform"
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/util"
-	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/schema/userrole"
+	"github.com/theterminalguy/tnet/internal/middleware/header"
+	"github.com/theterminalguy/tnet/internal/middleware/platform"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/util"
+	"github.com/theterminalguy/tnet/util/collection"
 )
 
 type DeveloperAuth struct {

@@ -11,11 +11,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/10hourlabs/tentn/ent/job"
-	"github.com/10hourlabs/tentn/ent/jobapplication"
-	"github.com/10hourlabs/tentn/ent/predicate"
-	"github.com/10hourlabs/tentn/ent/talent"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/job"
+	"github.com/theterminalguy/tnet/ent/jobapplication"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/talent"
 )
 
 // JobApplicationQuery is the builder for querying JobApplication entities.
@@ -336,7 +336,6 @@ func (jaq *JobApplicationQuery) WithJob(opts ...func(*JobQuery)) *JobApplication
 //		GroupBy(jobapplication.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (jaq *JobApplicationQuery) GroupBy(field string, fields ...string) *JobApplicationGroupBy {
 	group := &JobApplicationGroupBy{config: jaq.config}
 	group.fields = append([]string{field}, fields...)
@@ -361,7 +360,6 @@ func (jaq *JobApplicationQuery) GroupBy(field string, fields ...string) *JobAppl
 //	client.JobApplication.Query().
 //		Select(jobapplication.FieldCreatedAt).
 //		Scan(ctx, &v)
-//
 func (jaq *JobApplicationQuery) Select(fields ...string) *JobApplicationSelect {
 	jaq.fields = append(jaq.fields, fields...)
 	return &JobApplicationSelect{JobApplicationQuery: jaq}

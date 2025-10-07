@@ -10,10 +10,10 @@ ENV GITHUB_PERSONAL_TOKEN=$GITHUB_PERSONAL_TOKEN
 
 WORKDIR /app
 
-RUN git config \
-    --global \
-    url."https://${GITHUB_USER}:$GITHUB_PERSONAL_TOKEN@github.com".insteadOf \
-    "https://github.com"
+# RUN git config \
+#     --global \
+#     url."https://${GITHUB_USER}:$GITHUB_PERSONAL_TOKEN@github.com".insteadOf \
+#     "https://github.com"
 
 COPY go.* ./
 RUN go mod download

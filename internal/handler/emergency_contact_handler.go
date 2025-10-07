@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/service"
-	"github.com/10hourlabs/tentn/oneword"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/internal/service"
 )
 
 type EmergencyContactHandler struct {
@@ -32,7 +31,7 @@ func (h *EmergencyContactHandler) ReadAll(c echo.Context) error {
 }
 
 func (h *EmergencyContactHandler) ReadByID(c echo.Context) error {
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -56,7 +55,7 @@ func (h *EmergencyContactHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *EmergencyContactHandler) UpdateByID(c echo.Context) error {
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -72,7 +71,7 @@ func (h *EmergencyContactHandler) UpdateByID(c echo.Context) error {
 }
 
 func (h *EmergencyContactHandler) DeleteOne(c echo.Context) error {
-	id, err := uuid.Parse(c.Param(oneword.UUID))
+	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

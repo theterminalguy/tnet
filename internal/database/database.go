@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/10hourlabs/tentn/ent"
+	"github.com/theterminalguy/tnet/ent"
 )
 
 type Databaser interface {

@@ -4,13 +4,13 @@ import (
 	"errors"
 	"os"
 
-	"github.com/10hourlabs/tenlog"
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/job"
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/repository/scope"
-	"github.com/10hourlabs/tentn/util/collection"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/job"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/internal/repository/scope"
+	"github.com/theterminalguy/tnet/util/collection"
 )
 
 type JobApplicationService struct {
@@ -45,7 +45,7 @@ func (j *JobApplicationService) Validateq(jb ent.Job, pfLinks []*ent.PortfolioLi
 
 	// TODO: This maybe improved upon using ent edge query
 	// example can be found here -- https://entgo.io/docs/predicates/#edge-predicates
-	// Jira Ticket -- https://10hourlabs.atlassian.net/browse/MP-1
+	// Jira Ticket -- https://theterminalguy.atlassian.net/browse/MP-1
 
 	//check if Talent has linkedin (required for every job category)
 	hasLinkedIn := j.ContainsLinkedIn(pfLinks)
@@ -64,7 +64,7 @@ func (j *JobApplicationService) Validateq(jb ent.Job, pfLinks []*ent.PortfolioLi
 	return errors.New("no linkedin profile for talent")
 }
 
-//ContainsGithub checks to see if the array of given links contain Github
+// ContainsGithub checks to see if the array of given links contain Github
 func (*JobApplicationService) ContainsGithub(pfLinks []*ent.PortfolioLink) error {
 	var arr = make([]string, len(pfLinks))
 	for _, val := range pfLinks {
@@ -77,7 +77,7 @@ func (*JobApplicationService) ContainsGithub(pfLinks []*ent.PortfolioLink) error
 	return errors.New("need a github profile for this role")
 }
 
-//ContainsProductLinks checks to see if the array of given links contain either Dribble or Behance
+// ContainsProductLinks checks to see if the array of given links contain either Dribble or Behance
 func (*JobApplicationService) ContainsProductLinks(pfLinks []*ent.PortfolioLink) error {
 	var arr = make([]string, len(pfLinks))
 	for _, val := range pfLinks {
@@ -90,7 +90,7 @@ func (*JobApplicationService) ContainsProductLinks(pfLinks []*ent.PortfolioLink)
 	return errors.New("need a dribble or behance profile for this role")
 }
 
-//ContainsLinkedin checks to see if the array of given links contain LinkedIn
+// ContainsLinkedin checks to see if the array of given links contain LinkedIn
 func (*JobApplicationService) ContainsLinkedIn(pfLinks []*ent.PortfolioLink) bool {
 	var arr = make([]string, len(pfLinks))
 	for _, val := range pfLinks {

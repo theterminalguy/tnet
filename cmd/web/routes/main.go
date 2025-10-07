@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/10hourlabs/tentn/internal/router"
+	"github.com/theterminalguy/tnet/internal/router"
 )
 
 func main() {

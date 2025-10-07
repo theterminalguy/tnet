@@ -1,4 +1,4 @@
-**Jira Issue**: [INTR-xxx](https://10hourlabs.atlassian.net/browse/INTR-xxx) 
+**Jira Issue**: [INTR-xxx](https://theterminalguy.atlassian.net/browse/INTR-xxx)
 
 ## Issue Summary
 
@@ -10,11 +10,9 @@ Enter a detailed description of what you worked on here
 - [ ] I wrote enough tests where necessary
 - [ ] I selected at least one reviewer
 - [ ] I squashed my commits
-- [ ] My final squashed commit message is very detailed. 
+- [ ] My final squashed commit message is very detailed.
 
-See [5 Useful Tips For A Better Commit Message](
-https://thoughtbot.com/blog/5-useful-tips-for-a-better-commit-message)
-
+See [5 Useful Tips For A Better Commit Message](https://thoughtbot.com/blog/5-useful-tips-for-a-better-commit-message)
 
 ## Additional Notes
 

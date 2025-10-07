@@ -3,10 +3,10 @@ package task
 import (
 	"fmt"
 
-	repo "github.com/10hourlabs/tentn/internal/repository"
-	"github.com/10hourlabs/tentn/internal/service"
-	"github.com/10hourlabs/tentn/util"
 	"github.com/google/uuid"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/internal/service"
+	"github.com/theterminalguy/tnet/util"
 )
 
 type TaskApproveClient struct {

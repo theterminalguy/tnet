@@ -3,10 +3,10 @@ package repository
 import (
 	"time"
 
-	"github.com/10hourlabs/tentn/ent"
-	"github.com/10hourlabs/tentn/ent/internaltask"
-	"github.com/10hourlabs/tentn/util"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/internaltask"
+	"github.com/theterminalguy/tnet/util"
 )
 
 type InternalTaskRepository struct{}

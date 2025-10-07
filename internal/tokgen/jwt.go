@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/10hourlabs/tentn/ent"
 	"github.com/golang-jwt/jwt"
+	"github.com/theterminalguy/tnet/ent"
 )
 
 type Token string

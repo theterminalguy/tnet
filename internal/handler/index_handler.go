@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
-	"github.com/10hourlabs/tentn/internal/entsm"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tnet/internal/entsm"
 )
 
 func IndexHandler(c echo.Context) error {
