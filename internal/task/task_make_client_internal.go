@@ -3,10 +3,10 @@ package task
 import (
 	"fmt"
 
-	"github.com/theterminalguy/tentn/ent/oauth2client"
-	repo "github.com/theterminalguy/tentn/internal/repository"
-	"github.com/theterminalguy/tentn/util"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent/oauth2client"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/util"
 )
 
 type TaskMakeClientInternal struct {

@@ -3,9 +3,9 @@ package repository
 import (
 	"time"
 
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/emailtemplate"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/emailtemplate"
 )
 
 type EmailTemplateRepository struct{}

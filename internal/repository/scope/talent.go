@@ -1,14 +1,14 @@
 package scope
 
 import (
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/education"
-	"github.com/theterminalguy/tentn/ent/jobapplication"
-	"github.com/theterminalguy/tentn/ent/portfoliolink"
-	"github.com/theterminalguy/tentn/ent/skill"
-	"github.com/theterminalguy/tentn/ent/workexperience"
-	repo "github.com/theterminalguy/tentn/internal/repository"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/education"
+	"github.com/theterminalguy/tnet/ent/jobapplication"
+	"github.com/theterminalguy/tnet/ent/portfoliolink"
+	"github.com/theterminalguy/tnet/ent/skill"
+	"github.com/theterminalguy/tnet/ent/workexperience"
+	repo "github.com/theterminalguy/tnet/internal/repository"
 )
 
 type TalentScope struct {

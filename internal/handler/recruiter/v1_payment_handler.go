@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/theterminalguy/tentn/internal/service/payment"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tnet/internal/service/payment"
 )
 
 type PaymentHandler struct{}

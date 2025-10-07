@@ -1,14 +1,14 @@
 package router
 
 import (
-	"github.com/theterminalguy/tentn/internal/handler"
-	public_handler "github.com/theterminalguy/tentn/internal/handler/public"
-	recruiter_handler "github.com/theterminalguy/tentn/internal/handler/recruiter"
-	talent_handler "github.com/theterminalguy/tentn/internal/handler/talent"
-	repo "github.com/theterminalguy/tentn/internal/repository"
+	"github.com/theterminalguy/tnet/internal/handler"
+	public_handler "github.com/theterminalguy/tnet/internal/handler/public"
+	recruiter_handler "github.com/theterminalguy/tnet/internal/handler/recruiter"
+	talent_handler "github.com/theterminalguy/tnet/internal/handler/talent"
+	repo "github.com/theterminalguy/tnet/internal/repository"
 
-	"github.com/theterminalguy/tentn/internal/middleware"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tnet/internal/middleware"
 )
 
 func DefineV1Routes(e *echo.Echo) *echo.Echo {

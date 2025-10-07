@@ -6,8 +6,8 @@ import (
 	"html/template"
 	"time"
 
-	"github.com/theterminalguy/tentn/ent"
 	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
+	"github.com/theterminalguy/tnet/ent"
 )
 
 type PDFService struct {

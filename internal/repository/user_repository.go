@@ -5,12 +5,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/schema/userrole"
-	"github.com/theterminalguy/tentn/ent/user"
-	"github.com/theterminalguy/tentn/util"
-	"github.com/theterminalguy/tentn/util/collection"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/schema/userrole"
+	"github.com/theterminalguy/tnet/ent/user"
+	"github.com/theterminalguy/tnet/util"
+	"github.com/theterminalguy/tnet/util/collection"
 )
 
 type UserRepository struct{}

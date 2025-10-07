@@ -3,9 +3,9 @@ package service
 import (
 	"fmt"
 
-	"github.com/theterminalguy/tentn/ent"
-	repo "github.com/theterminalguy/tentn/internal/repository"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	repo "github.com/theterminalguy/tnet/internal/repository"
 )
 
 const MaxNumOfFavoriteTalents = 20

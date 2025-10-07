@@ -1,3 +1,4 @@
+//go:build ignore
 // +build ignore
 
 package main
@@ -8,7 +9,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/theterminalguy/tentn/util"
+	"github.com/theterminalguy/tnet/util"
 )
 
 type Templater interface {
@@ -19,9 +20,9 @@ type Templater interface {
 }
 
 type Template struct {
-	FileName string
-	Entity   string
-	Kind     string
+	FileName    string
+	Entity      string
+	Kind        string
 	PackageName string
 }
 
@@ -85,21 +86,21 @@ func (t *Template) sourceDir() string {
 func GenerateTemplates(entityName, fileName, packageName string) {
 	var templates []Templater
 	templates = append(templates, &Template{
-		Entity:   entityName,
-		FileName: fileName,
-		Kind:     "service",
+		Entity:      entityName,
+		FileName:    fileName,
+		Kind:        "service",
 		PackageName: packageName,
 	})
 	templates = append(templates, &Template{
-		Entity:   entityName,
-		FileName: fileName,
-		Kind:     "repository",
+		Entity:      entityName,
+		FileName:    fileName,
+		Kind:        "repository",
 		PackageName: packageName,
 	})
 	templates = append(templates, &Template{
-		Entity:   entityName,
-		FileName: fileName,
-		Kind:     "handler",
+		Entity:      entityName,
+		FileName:    fileName,
+		Kind:        "handler",
 		PackageName: packageName,
 	})
 	for _, t := range templates {

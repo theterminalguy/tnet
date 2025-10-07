@@ -4,9 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/jobpayment"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/jobpayment"
 )
 
 type JobPaymentRepository struct{}

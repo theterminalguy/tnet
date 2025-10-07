@@ -3,8 +3,8 @@ package repository
 import (
 	"time"
 
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/session"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/session"
 )
 
 type SessionRepository struct{}

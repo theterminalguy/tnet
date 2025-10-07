@@ -3,7 +3,7 @@ package task
 import (
 	"errors"
 
-	"github.com/theterminalguy/tentn/util/collection"
+	"github.com/theterminalguy/tnet/util/collection"
 	"golang.org/x/crypto/bcrypt"
 )
 

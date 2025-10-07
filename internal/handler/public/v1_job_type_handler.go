@@ -3,8 +3,8 @@ package public
 import (
 	"net/http"
 
-	"github.com/theterminalguy/tentn/ent/schema"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tnet/ent/schema"
 )
 
 type V1JobTypeHandler struct {

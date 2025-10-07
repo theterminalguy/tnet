@@ -5,11 +5,11 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/predicate"
-	"github.com/theterminalguy/tentn/ent/skill"
-	repo "github.com/theterminalguy/tentn/internal/repository"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/skill"
+	repo "github.com/theterminalguy/tnet/internal/repository"
 )
 
 type SkillSearch struct {

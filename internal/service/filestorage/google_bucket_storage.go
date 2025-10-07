@@ -8,7 +8,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/theterminalguy/tenlog"
-	"github.com/theterminalguy/tentn/util"
+	"github.com/theterminalguy/tnet/util"
 )
 
 type GoogleBucketFileInfo struct {

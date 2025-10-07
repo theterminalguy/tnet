@@ -6,13 +6,13 @@ import (
 	"net/url"
 
 	"github.com/theterminalguy/tenlog"
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/oauth2client"
-	"github.com/theterminalguy/tentn/ent/schema/userrole"
-	"github.com/theterminalguy/tentn/ent/user"
-	repo "github.com/theterminalguy/tentn/internal/repository"
-	"github.com/theterminalguy/tentn/util"
-	"github.com/theterminalguy/tentn/util/photo"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/oauth2client"
+	"github.com/theterminalguy/tnet/ent/schema/userrole"
+	"github.com/theterminalguy/tnet/ent/user"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/util"
+	"github.com/theterminalguy/tnet/util/photo"
 	"golang.org/x/crypto/bcrypt"
 )
 

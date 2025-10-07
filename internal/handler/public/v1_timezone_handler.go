@@ -3,8 +3,8 @@ package public
 import (
 	"net/http"
 
-	repo "github.com/theterminalguy/tentn/internal/repository"
 	"github.com/labstack/echo/v4"
+	repo "github.com/theterminalguy/tnet/internal/repository"
 )
 
 type V1TimezoneHandler struct {

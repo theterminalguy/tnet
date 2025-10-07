@@ -1,9 +1,9 @@
 package globalctx
 
 import (
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/internal/repository/scope"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/internal/repository/scope"
 )
 
 func SetCurrentRecruiterContext(ctx echo.Context, u *ent.User) error {

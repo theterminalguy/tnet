@@ -3,7 +3,7 @@ package repository
 import (
 	"strings"
 
-	"github.com/theterminalguy/tentn/ent"
+	"github.com/theterminalguy/tnet/ent"
 	"golang.org/x/crypto/bcrypt"
 )
 

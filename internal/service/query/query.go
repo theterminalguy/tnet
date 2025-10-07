@@ -2,7 +2,7 @@ package query
 
 import (
 	"github.com/theterminalguy/tenlog"
-	"github.com/theterminalguy/tentn/internal/paginator"
+	"github.com/theterminalguy/tnet/internal/paginator"
 )
 
 type SearchServiceHandler interface {

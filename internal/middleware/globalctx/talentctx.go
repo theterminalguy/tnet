@@ -1,10 +1,10 @@
 package globalctx
 
 import (
-	repo "github.com/theterminalguy/tentn/internal/repository"
-	"github.com/theterminalguy/tentn/internal/repository/scope"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/internal/repository/scope"
 )
 
 func SetCurrentTalentContext(ctx echo.Context, userID uuid.UUID) error {

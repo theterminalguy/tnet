@@ -1,11 +1,11 @@
 package globalctx
 
 import (
-	"github.com/theterminalguy/tentn/ent/schema/userrole"
-	repo "github.com/theterminalguy/tentn/internal/repository"
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tnet/ent/schema/userrole"
+	repo "github.com/theterminalguy/tnet/internal/repository"
 )
 
 func SetCurrentUserContext(ctx echo.Context) error {

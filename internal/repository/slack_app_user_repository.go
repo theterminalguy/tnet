@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/slackappuser"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/slackappuser"
 )
 
 type SlackAppUserRepository struct{}

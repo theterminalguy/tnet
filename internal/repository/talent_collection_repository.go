@@ -3,10 +3,10 @@ package repository
 import (
 	"errors"
 
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/talentcollection"
-	"github.com/theterminalguy/tentn/util/collection"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/talentcollection"
+	"github.com/theterminalguy/tnet/util/collection"
 )
 
 type TalentCollectionRepository struct{}

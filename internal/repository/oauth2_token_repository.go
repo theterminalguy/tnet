@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/oauth2token"
 	"github.com/go-oauth2/oauth2/v4"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/oauth2token"
 )
 
 type Oauth2TokenRepository struct{}

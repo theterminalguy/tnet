@@ -4,11 +4,11 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/theterminalguy/tenlog"
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/schema/userrole"
-	"github.com/theterminalguy/tentn/internal/middleware/globalctx"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/schema/userrole"
+	"github.com/theterminalguy/tnet/internal/middleware/globalctx"
 )
 
 type RecruiterAuth struct {

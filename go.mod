@@ -32,6 +32,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.4.0 // indirect
 	github.com/googleapis/go-type-adapters v1.0.0 // indirect
+	github.com/theterminalguy/rql v0.0.2 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect

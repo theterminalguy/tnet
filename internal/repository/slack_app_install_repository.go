@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/slackappinstall"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/slackappinstall"
 )
 
 type SlackAppInstallRepository struct{}

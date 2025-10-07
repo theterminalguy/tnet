@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/job"
-	"github.com/theterminalguy/tentn/ent/predicate"
-	"github.com/theterminalguy/tentn/internal/paginator"
-	"github.com/theterminalguy/tentn/util/collection"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/job"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/internal/paginator"
+	"github.com/theterminalguy/tnet/util/collection"
 )
 
 type JobQuerier interface {

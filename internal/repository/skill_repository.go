@@ -4,11 +4,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/predicate"
-	"github.com/theterminalguy/tentn/ent/skill"
-	"github.com/theterminalguy/tentn/util/collection"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/skill"
+	"github.com/theterminalguy/tnet/util/collection"
 )
 
 type SkillQuerier interface {

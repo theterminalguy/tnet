@@ -6,9 +6,9 @@ import (
 	"os"
 
 	"entgo.io/ent/dialect"
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/migrate"
 	_ "github.com/lib/pq"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/migrate"
 )
 
 type DBPostgres struct {

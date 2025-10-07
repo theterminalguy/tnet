@@ -2,8 +2,8 @@ package query
 
 import (
 	"github.com/theterminalguy/rql/parser"
-	"github.com/theterminalguy/tentn/internal/paginator"
-	"github.com/theterminalguy/tentn/internal/search"
+	"github.com/theterminalguy/tnet/internal/paginator"
+	"github.com/theterminalguy/tnet/internal/search"
 )
 
 type RQLService struct{}

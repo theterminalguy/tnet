@@ -3,7 +3,7 @@ package service
 import (
 	"errors"
 
-	"github.com/theterminalguy/tentn/internal/repository"
+	"github.com/theterminalguy/tnet/internal/repository"
 )
 
 type SlackAppUninstallParams struct {

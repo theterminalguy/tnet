@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/theterminalguy/tentn/internal/middleware/header"
-	"github.com/theterminalguy/tentn/util/collection"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tnet/internal/middleware/header"
+	"github.com/theterminalguy/tnet/util/collection"
 )
 
 var allowedUsers = []string{

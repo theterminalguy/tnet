@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/theterminalguy/tentn/internal/middleware/globalctx"
-	"github.com/theterminalguy/tentn/internal/middleware/header"
-	"github.com/theterminalguy/tentn/internal/paginator"
-	repo "github.com/theterminalguy/tentn/internal/repository"
-	"github.com/theterminalguy/tentn/internal/search"
-	"github.com/theterminalguy/tentn/internal/service"
-	q "github.com/theterminalguy/tentn/internal/service/query"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tnet/internal/middleware/globalctx"
+	"github.com/theterminalguy/tnet/internal/middleware/header"
+	"github.com/theterminalguy/tnet/internal/paginator"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/internal/search"
+	"github.com/theterminalguy/tnet/internal/service"
+	q "github.com/theterminalguy/tnet/internal/service/query"
 )
 
 type V1TalentSearchFilterHandler struct {

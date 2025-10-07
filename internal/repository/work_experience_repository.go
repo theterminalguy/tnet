@@ -3,12 +3,12 @@ package repository
 import (
 	"time"
 
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/predicate"
-	"github.com/theterminalguy/tentn/ent/workexperience"
-	"github.com/theterminalguy/tentn/util/collection"
-	"github.com/theterminalguy/tentn/util/date"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/workexperience"
+	"github.com/theterminalguy/tnet/util/collection"
+	"github.com/theterminalguy/tnet/util/date"
 )
 
 type WorkExperienceQuerier interface {

@@ -4,11 +4,11 @@ import (
 	"errors"
 	"time"
 
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/mission"
-	"github.com/theterminalguy/tentn/util/collection"
-	"github.com/theterminalguy/tentn/util/date"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/mission"
+	"github.com/theterminalguy/tnet/util/collection"
+	"github.com/theterminalguy/tnet/util/date"
 )
 
 type MissionRepository struct{}

@@ -3,10 +3,10 @@ package repository
 import (
 	"time"
 
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/ent/emergencycontact"
-	"github.com/theterminalguy/tentn/util/collection"
 	"github.com/google/uuid"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/ent/emergencycontact"
+	"github.com/theterminalguy/tnet/util/collection"
 )
 
 type EmergencyContactQuerier interface {

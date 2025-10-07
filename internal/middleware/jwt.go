@@ -5,11 +5,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/theterminalguy/tenlog"
-	"github.com/theterminalguy/tentn/internal/entsm"
-	"github.com/theterminalguy/tentn/internal/tokgen"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tnet/internal/entsm"
+	"github.com/theterminalguy/tnet/internal/tokgen"
 )
 
 // ExtractJWTTokenFromWebSession extracts the JWT token from the session

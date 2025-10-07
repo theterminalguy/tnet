@@ -9,13 +9,13 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqljson"
-	"github.com/theterminalguy/tentn/ent/predicate"
-	"github.com/theterminalguy/tentn/ent/skill"
-	"github.com/theterminalguy/tentn/ent/talent"
-	"github.com/theterminalguy/tentn/internal/paginator"
-	repo "github.com/theterminalguy/tentn/internal/repository"
-	"github.com/theterminalguy/tentn/util"
-	"github.com/theterminalguy/tentn/util/collection"
+	"github.com/theterminalguy/tnet/ent/predicate"
+	"github.com/theterminalguy/tnet/ent/skill"
+	"github.com/theterminalguy/tnet/ent/talent"
+	"github.com/theterminalguy/tnet/internal/paginator"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/util"
+	"github.com/theterminalguy/tnet/util/collection"
 )
 
 type TalentSearch struct {

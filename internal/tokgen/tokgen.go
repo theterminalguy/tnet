@@ -3,7 +3,7 @@ package tokgen
 import (
 	"fmt"
 
-	repo "github.com/theterminalguy/tentn/internal/repository"
+	repo "github.com/theterminalguy/tnet/internal/repository"
 )
 
 func GenerateRecruiterJWT(email string, m *JWTMeta) (string, error) {

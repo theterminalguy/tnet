@@ -8,14 +8,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/theterminalguy/tentn/internal/entsm"
-	repo "github.com/theterminalguy/tentn/internal/repository"
-	"github.com/theterminalguy/tentn/internal/service"
-	"github.com/theterminalguy/tentn/internal/tokgen"
-	"github.com/theterminalguy/tentn/randutil"
-	"github.com/theterminalguy/tentn/util/photo"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tnet/internal/entsm"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/internal/service"
+	"github.com/theterminalguy/tnet/internal/tokgen"
+	"github.com/theterminalguy/tnet/randutil"
+	"github.com/theterminalguy/tnet/util/photo"
 	"golang.org/x/oauth2"
 )
 

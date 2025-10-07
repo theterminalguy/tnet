@@ -4,9 +4,9 @@ import (
 	"errors"
 	"math/rand"
 
-	repo "github.com/theterminalguy/tentn/internal/repository"
-	mathutil "github.com/theterminalguy/tentn/util/math"
 	faker "github.com/brianvoe/gofakeit/v6"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	mathutil "github.com/theterminalguy/tnet/util/math"
 )
 
 type TaskCreateFakeSkill struct {
@@ -32,7 +32,7 @@ func (c *TaskCreateFakeSkill) Run(_ string) error {
 	for _, talent := range talents {
 		for i := 0; i < 3; i++ {
 			sp := repo.SkillParams{
-				TalentID:        talent.ID,
+				TalentID:          talent.ID,
 				YearsOfExperience: mathutil.RandomFloat32([]float32{}),
 				Preferred: (func() bool {
 					return []bool{true, false}[rand.Intn(2)]

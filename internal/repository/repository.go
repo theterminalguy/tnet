@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/theterminalguy/tenlog"
-	"github.com/theterminalguy/tentn/ent"
-	"github.com/theterminalguy/tentn/internal/database"
-	"github.com/theterminalguy/tentn/util/osutil"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tnet/ent"
+	"github.com/theterminalguy/tnet/internal/database"
+	"github.com/theterminalguy/tnet/util/osutil"
 )
 
 var (
@@ -112,7 +112,7 @@ func GetDBContext() context.Context {
 	return dBContext
 }
 
-//TODO: This is a linear implementation and should be optimized
+// TODO: This is a linear implementation and should be optimized
 func LinearCheckElemArray(a, b []string) bool {
 	if len(a) > len(b) {
 		return false

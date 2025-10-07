@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/theterminalguy/tentn/ent"
-	repo "github.com/theterminalguy/tentn/internal/repository"
-	"github.com/theterminalguy/tentn/internal/service"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tnet/ent"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/internal/service"
 )
 
 type V1TalentProfileHandler struct {

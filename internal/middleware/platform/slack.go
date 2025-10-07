@@ -4,13 +4,13 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/theterminalguy/tenlog"
-	"github.com/theterminalguy/tentn/ent/schema/billing"
-	"github.com/theterminalguy/tentn/internal/middleware/globalctx"
-	"github.com/theterminalguy/tentn/internal/middleware/header"
-	repo "github.com/theterminalguy/tentn/internal/repository"
-	"github.com/theterminalguy/tentn/internal/service"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/tenlog"
+	"github.com/theterminalguy/tnet/ent/schema/billing"
+	"github.com/theterminalguy/tnet/internal/middleware/globalctx"
+	"github.com/theterminalguy/tnet/internal/middleware/header"
+	repo "github.com/theterminalguy/tnet/internal/repository"
+	"github.com/theterminalguy/tnet/internal/service"
 )
 
 type SlackPlatformAuth struct {
