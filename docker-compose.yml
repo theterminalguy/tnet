@@ -1,17 +1,27 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:14
+  mysql:
+    image: mysql:8.0
     networks:
       - tentn
     ports:
-      - 5432:5432
+      - 3306:3306
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - mysql:/var/lib/mysql
     env_file:
       - .env
-  
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   redis:
     image: redis:7.0-alpine
     networks:
@@ -23,22 +33,10 @@ services:
     env_file:
       - .env
 
-  pgadmin:
-    depends_on:
-      - postgres
-    image: dpage/pgadmin4
-    networks:
-      - tentn
-    ports:
-      - 5050:80
-    volumes:
-      - pgadmin:/var/lib/pgadmin
-    env_file:
-      - .env
-
   web:
     depends_on:
-      - postgres
+      mysql:
+        condition: service_healthy
     build:
       context: .
       target: ${STAGE}
@@ -69,9 +67,8 @@ services:
       - .env
 
 volumes:
-  postgres:
+  mysql:
   redis:
-  pgadmin:
 
 networks:
   tentn:

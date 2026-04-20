@@ -1,6 +1,8 @@
 module github.com/theterminalguy/tnet
 
-go 1.17
+go 1.21.0
+
+toolchain go1.22.2
 
 require (
 	entgo.io/ent v0.10.1
@@ -8,6 +10,7 @@ require (
 	github.com/brianvoe/gofakeit/v6 v6.15.0
 	github.com/go-oauth2/oauth2/v4 v4.4.3
 	github.com/go-playground/validator/v10 v10.10.1
+	github.com/go-sql-driver/mysql v1.9.3
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/securecookie v1.1.1
@@ -15,7 +18,6 @@ require (
 	github.com/gosimple/slug v1.12.0
 	github.com/labstack/echo/v4 v4.9.0
 	github.com/labstack/gommon v0.3.1
-	github.com/lib/pq v1.10.4
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/slack-go/slack v0.10.3
 	github.com/stretchr/testify v1.7.1
@@ -30,6 +32,7 @@ require (
 	cloud.google.com/go/compute v1.7.0 // indirect
 	cloud.google.com/go/iam v0.3.0 // indirect
 	cloud.google.com/go/pubsub v1.25.1 // indirect
+	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/getsentry/sentry-go v0.13.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect

@@ -13,11 +13,8 @@ up: ## Start all services
 dev: ## Run the web server in dev mode without using docker
 	ENV=dev go run cmd/web/main.go
 
-pg: ## Starts the postgres server
-	docker-compose -f docker-compose.yml up -d postgres
-
-pgadmin: ## Start PG Admin
-	docker-compose -f docker-compose.yml up -d pgadmin
+mysql: ## Starts the mysql server
+	docker-compose -f docker-compose.yml up -d mysql
 
 down: ## Stop all services
 	STAGE=app-build docker-compose -f docker-compose.yml down

@@ -232,6 +232,18 @@ func (r *TalentRepository) Create(p TalentParams) (*decorator.TalentResponse, er
 	if err != nil {
 		return nil, err
 	}
+	// Reload with edges so DecorateTalent can access Edges.User
+	a, err = dBConn.Talent.Query().
+		WithUser().
+		WithEducations().
+		WithWorkExperiences().
+		WithPortfoliolinks().
+		WithSkills().
+		Where(talent.ID(a.ID)).
+		Only(dBContext)
+	if err != nil {
+		return nil, err
+	}
 	response := decorator.DecorateTalent(a)
 	return response, nil
 }

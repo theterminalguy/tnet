@@ -15,12 +15,11 @@ var requiredRuntimeEnv = []string{
 }
 
 var requiredRuntimeEnvForDev = []string{
-	"POSTGRES_HOST",
-	"POSTGRES_PORT",
-	"POSTGRES_USER",
-	"POSTGRES_PASSWORD",
-	"POSTGRES_DB",
-	"POSTGRES_SSL_MODE",
+	"MYSQL_HOST",
+	"MYSQL_PORT",
+	"MYSQL_USER",
+	"MYSQL_PASSWORD",
+	"MYSQL_DATABASE",
 
 	"GOOGLE_OAUTH_CLIENT_ID",
 	"GOOGLE_OAUTH_CLIENT_SECRET",
@@ -29,11 +28,11 @@ var requiredRuntimeEnvForDev = []string{
 }
 
 var requiredRuntimeEnvForProd = []string{
-	"CLOUDSQL_PG_USER",
-	"CLOUDSQL_PG_PASSWORD",
-	"CLOUDSQL_PG_DBNAME",
-	"CLOUDSQL_PG_SOCKET_DIR",
-	"CLOUDSQL_PG_INSTANCE",
+	"MYSQL_HOST",
+	"MYSQL_PORT",
+	"MYSQL_USER",
+	"MYSQL_PASSWORD",
+	"MYSQL_DATABASE",
 
 	"PAYMENT_DRIVER",
 
