@@ -44,7 +44,7 @@ func init() {
 	if os.Getenv("ENV") == "staging" || os.Getenv("ENV") == "test" {
 		client, err = database.NewSQLite3InMemoryClient()
 	} else {
-		client, err = database.NewPostgresClient()
+		client, err = database.NewMySQLClient()
 	}
 	if err != nil {
 		panic(fmt.Sprintf("Database Error %v", err))
